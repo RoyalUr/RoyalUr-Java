@@ -109,16 +109,6 @@ public abstract class BoardShape {
 
     @Override
     public @Nonnull String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (int x = 0; x < width; ++x) {
-            if (x > 0) {
-                builder.append("\n");
-            }
-
-            for (int y = 0; y < height; ++y) {
-                builder.append(contains(x, y) ? '.' : ' ');
-            }
-        }
-        return builder.toString();
+        return name;
     }
 }
