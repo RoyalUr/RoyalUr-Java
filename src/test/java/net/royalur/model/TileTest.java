@@ -17,8 +17,8 @@ public class TileTest {
         assertEquals(1, tile.y);
 
         tile = new Tile(25, 999);
-        assertEquals(2, tile.x);
-        assertEquals(1, tile.y);
+        assertEquals(25, tile.x);
+        assertEquals(999, tile.y);
 
         assertThrows(IllegalArgumentException.class, () -> new Tile(-1, 0));
         assertThrows(IllegalArgumentException.class, () -> new Tile(0, -1));
