@@ -23,6 +23,12 @@ public class BoardTest {
 
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
+    public void testCopy(BoardShape shape) {
+        Board board = new Board(shape);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testContains(BoardShape shape) {
         Board board = new Board(shape);
 

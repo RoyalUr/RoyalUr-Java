@@ -2,6 +2,8 @@ package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -67,6 +69,42 @@ public abstract class BoardShape {
         this.width = maxX + 1;
         this.height = maxY + 1;
         this.area = tiles.size();
+
+        List<Tile> tilesByColumn = new ArrayList<>();
+    }
+
+    /**
+     * The tiles that fall within the bounds of this board shape,
+     * ordered by ascending row number and then ascending column number.
+     */
+    public final @Nonnull List<Tile> getTilesByRow() {
+        List<Tile> tilesByRow = new ArrayList<>();
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                Tile tile = new Tile(x, y);
+                if (contains(tile)) {
+                    tilesByRow.add(tile);
+                }
+            }
+        }
+        return tilesByRow;
+    }
+
+    /**
+     * The tiles that fall within the bounds of this board shape,
+     * ordered into columns with ascending row number.
+     */
+    public final @Nonnull List<Tile> getTilesByColumn() {
+        List<Tile> tilesByColumn = new ArrayList<>();
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                Tile tile = new Tile(x, y);
+                if (contains(tile)) {
+                    tilesByColumn.add(tile);
+                }
+            }
+        }
+        return tilesByColumn;
     }
 
     /**

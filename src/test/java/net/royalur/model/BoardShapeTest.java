@@ -7,6 +7,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +61,48 @@ public class BoardShapeTest {
 
         // Contains should have been true for an area number of tiles.
         assertEquals(shape.area, area);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeProvider.class)
+    public void testGetTilesByRow(BoardShape shape) {
+        List<Tile> byRow = shape.getTilesByRow();
+        assertEquals(shape.area, byRow.size());
+
+        Set<Tile> seen = new HashSet<>();
+        Tile last = null;
+        for (Tile tile : byRow) {
+            assertNotNull(tile);
+
+            if (last != null) {
+                assertTrue(tile.y > last.y || (tile.y == last.y && tile.x > last.x));
+            }
+            assertTrue(shape.contains(tile));
+            assertTrue(seen.add(tile));
+            last = tile;
+        }
+        assertEquals(shape.area, seen.size());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeProvider.class)
+    public void testGetTilesByColumn(BoardShape shape) {
+        List<Tile> byCol = shape.getTilesByColumn();
+        assertEquals(shape.area, byCol.size());
+
+        Set<Tile> seen = new HashSet<>();
+        Tile last = null;
+        for (Tile tile : byCol) {
+            assertNotNull(tile);
+
+            if (last != null) {
+                assertTrue(tile.x > last.x || (tile.x == last.x && tile.y > last.y));
+            }
+            assertTrue(shape.contains(tile));
+            assertTrue(seen.add(tile));
+            last = tile;
+        }
+        assertEquals(shape.area, seen.size());
     }
 
     @Test
