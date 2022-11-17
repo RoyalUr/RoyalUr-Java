@@ -105,6 +105,12 @@ public class TileTest {
         assertEquals(oneZero, new Tile(1, 0));
         assertEquals(zeroOne, new Tile(0, 1));
         assertEquals(oneOne, new Tile(1, 1));
+
+        Object notTile = new Object();
+        assertNotEquals(zeroZero, notTile);
+        assertNotEquals(oneZero, notTile);
+        assertNotEquals(zeroOne, notTile);
+        assertNotEquals(oneOne, notTile);
     }
 
     @Test
@@ -129,6 +135,15 @@ public class TileTest {
         assertEquals(new Tile(3, 15), Tile.fromString("D15"));
         assertEquals(new Tile(5, 99), Tile.fromString("F99"));
         assertEquals(new Tile(10, 789), Tile.fromString("K789"));
+
+        assertEquals(new Tile(0, 0), Tile.fromString("a0"));
+        assertEquals(new Tile(0, 1), Tile.fromString("a1"));
+        assertEquals(new Tile(1, 0), Tile.fromString("b0"));
+        assertEquals(new Tile(1, 1), Tile.fromString("b1"));
+        assertEquals(new Tile(2, 7), Tile.fromString("c7"));
+        assertEquals(new Tile(3, 15), Tile.fromString("d15"));
+        assertEquals(new Tile(5, 99), Tile.fromString("f99"));
+        assertEquals(new Tile(10, 789), Tile.fromString("k789"));
 
         assertThrows(IllegalArgumentException.class, () -> Tile.fromString("A"));
         assertThrows(IllegalArgumentException.class, () -> Tile.fromString("B"));
