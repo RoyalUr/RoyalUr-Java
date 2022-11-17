@@ -191,4 +191,149 @@ public class BoardTest {
         assertNotEquals(aseb1, notBoard);
         assertNotEquals(aseb2, notBoard);
     }
+
+    @Test
+    public void testToString() {
+        Board standard1 = new Board(new StandardBoardShape());
+        Board standard2 = new Board(new StandardBoardShape());
+        Board aseb1 = new Board(new AsebBoardShape());
+        Board aseb2 = new Board(new AsebBoardShape());
+
+        assertEquals(
+                "....  ..\n" +
+                "........\n" +
+                "....  ..",
+                standard1.toString()
+        );
+        assertEquals(
+                "....        \n" +
+                "............\n" +
+                "....        ",
+                aseb1.toString()
+        );
+
+        assertEquals(standard1.toString(), standard1.toString());
+        assertEquals(standard1.toString(), standard2.toString());
+        assertEquals(standard2.toString(), standard1.toString());
+        assertEquals(standard2.toString(), standard2.toString());
+
+        assertEquals(aseb1.toString(), aseb2.toString());
+        assertEquals(aseb1.toString(), aseb2.toString());
+        assertEquals(aseb2.toString(), aseb1.toString());
+        assertEquals(aseb2.toString(), aseb2.toString());
+
+        assertNotEquals(standard1.toString(), aseb1.toString());
+        assertNotEquals(standard1.toString(), aseb2.toString());
+        assertNotEquals(standard2.toString(), aseb1.toString());
+        assertNotEquals(standard2.toString(), aseb2.toString());
+
+        standard1.set(0, 0, Player.LIGHT);
+        assertEquals(
+                "L...  ..\n" +
+                "........\n" +
+                "....  ..",
+                standard1.toString()
+        );
+        assertEquals(standard1.toString(), standard1.toString());
+        assertNotEquals(standard1.toString(), standard2.toString());
+        assertNotEquals(standard1.toString(), aseb1.toString());
+
+        standard2.set(0, 0, Player.LIGHT);
+        assertEquals(standard2.toString(), standard2.toString());
+        assertEquals(standard1.toString(), standard2.toString());
+        assertNotEquals(standard2.toString(), aseb1.toString());
+
+        standard1.set(2, 6, Player.DARK);
+        assertEquals(
+                "L...  ..\n" +
+                "........\n" +
+                "....  D.",
+                standard1.toString()
+        );
+        assertEquals(standard1.toString(), standard1.toString());
+        assertNotEquals(standard1.toString(), standard2.toString());
+        assertNotEquals(standard1.toString(), aseb1.toString());
+
+        standard2.set(2, 6, Player.LIGHT);
+        assertEquals(
+                "L...  ..\n" +
+                "........\n" +
+                "....  L.",
+                standard2.toString()
+        );
+        assertEquals(standard2.toString(), standard2.toString());
+        assertNotEquals(standard1.toString(), standard2.toString());
+        assertNotEquals(standard2.toString(), aseb1.toString());
+
+        aseb1.set(1, 10, Player.DARK);
+        assertEquals(
+                "....        \n" +
+                "..........D.\n" +
+                "....        ",
+                aseb1.toString()
+        );
+        assertEquals(aseb1.toString(), aseb1.toString());
+        assertNotEquals(aseb1.toString(), aseb2.toString());
+        assertNotEquals(aseb1.toString(), standard1.toString());
+
+        aseb1.set(1, 10, null);
+        assertEquals(
+                "....        \n" +
+                "............\n" +
+                "....        ",
+                aseb1.toString()
+        );
+        assertEquals(aseb1.toString(), aseb1.toString());
+        assertEquals(aseb1.toString(), aseb2.toString());
+        assertNotEquals(aseb1.toString(), standard1.toString());
+
+        aseb1.set(1, 10, Player.LIGHT);
+        assertEquals(
+                "....        \n" +
+                "..........L.\n" +
+                "....        ",
+                aseb1.toString()
+        );
+        aseb2.set(1, 10, Player.DARK);
+        assertEquals(
+                "....        \n" +
+                "..........D.\n" +
+                "....        ",
+                aseb2.toString()
+        );
+        assertEquals(aseb1.toString(), aseb1.toString());
+        assertNotEquals(aseb1.toString(), aseb2.toString());
+        assertNotEquals(aseb1.toString(), standard1.toString());
+
+        aseb2.set(1, 10, Player.LIGHT);
+        assertEquals(
+                "....        \n" +
+                "..........L.\n" +
+                "....        ",
+                aseb2.toString()
+        );
+        assertEquals(aseb1.toString(), aseb1.toString());
+        assertEquals(aseb1.toString(), aseb2.toString());
+        assertNotEquals(aseb1.toString(), standard1.toString());
+
+        for (Tile tile : standard1.shape.getTilesByRow()) {
+            standard1.set(tile, (tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK);
+        }
+        assertEquals(
+                "LDLD  LD\n" +
+                "DLDLDLDL\n" +
+                "LDLD  LD",
+                standard1.toString()
+        );
+
+        for (Tile tile : aseb1.shape.getTilesByRow()) {
+            aseb1.set(tile, (tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK);
+        }
+        assertEquals(
+                "LDLD        \n" +
+                "DLDLDLDLDLDL\n" +
+                "LDLD        ",
+                aseb1.toString()
+        );
+    }
 }
