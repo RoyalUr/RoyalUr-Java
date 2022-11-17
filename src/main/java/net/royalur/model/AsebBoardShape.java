@@ -1,5 +1,6 @@
-package net.royalur.model.boardshape;
+package net.royalur.model;
 
+import net.royalur.model.BoardShape;
 import net.royalur.model.Tile;
 
 import javax.annotation.Nonnull;

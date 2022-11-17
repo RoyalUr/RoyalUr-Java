@@ -2,7 +2,6 @@ package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.royalur.model.boardshape.BoardShape;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.

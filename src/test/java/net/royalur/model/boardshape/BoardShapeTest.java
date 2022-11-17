@@ -1,5 +1,8 @@
 package net.royalur.model.boardshape;
 
+import net.royalur.model.AsebBoardShape;
+import net.royalur.model.BoardShape;
+import net.royalur.model.StandardBoardShape;
 import net.royalur.model.Tile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
