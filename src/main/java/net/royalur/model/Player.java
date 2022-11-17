@@ -40,6 +40,19 @@ public enum Player {
     }
 
     /**
+     * Retrieves the Player representing the other player.
+     * @return The Player representing the other player.
+     */
+    public Player getOtherPlayer() {
+        switch (this) {
+            case LIGHT: return DARK;
+            case DARK: return LIGHT;
+            default:
+                throw new IllegalArgumentException("Unknown Player " + this);
+        }
+    }
+
+    /**
      * Converts {@param player} to a single character that can be used
      * to textually represent a piece.
      *
