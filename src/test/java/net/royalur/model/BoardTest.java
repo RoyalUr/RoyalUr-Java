@@ -75,6 +75,53 @@ public class BoardTest {
         assertEquals(board.area, area);
     }
 
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
+    public void testGetSet(BoardShape shape) {
+        Board board1 = new Board(shape);
+        Board board2 = new Board(shape);
+
+        for (Tile tile : shape.getTilesByColumn()) {
+            assertNull(board2.get(tile.x, tile.y));
+            assertNull(board1.get(tile));
+        }
+
+        for (Player player : Player.values()) {
+            // Deliberately includes out-of-bounds coordinates.
+            for (int x = -1; x <= shape.width; ++x) {
+                for (int y = -1; y <= shape.height; ++y) {
+                    // Copies to be used in Lambda expressions.
+                    int tileX = x, tileY = y;
+
+                    if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
+                        assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
+                        assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
+                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, player));
+                        continue;
+                    }
+
+                    Tile tile = new Tile(x, y);
+                    if (shape.contains(tile)) {
+                        board1.set(tileX, tileY, player);
+                        board2.set(tile, player);
+                        assertEquals(player, board1.get(tileX, tileY));
+                        assertEquals(player, board2.get(tile));
+                    } else {
+                        assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
+                        assertThrows(IllegalArgumentException.class, () -> board2.get(tile));
+                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, player));
+                        assertThrows(IllegalArgumentException.class, () -> board2.set(tile, player));
+                    }
+                }
+            }
+
+            for (Tile tile : shape.getTilesByColumn()) {
+                assertEquals(player, board2.get(tile.x, tile.y));
+                assertEquals(player, board1.get(tile));
+            }
+        }
+    }
+
     @Test
     public void testEquals() {
         Board standard1 = new Board(new StandardBoardShape());
