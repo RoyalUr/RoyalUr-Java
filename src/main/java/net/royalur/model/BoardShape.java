@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * A type of board shape available for the Royal Game of Ur.
  */
-public abstract class BoardShape {
+public class BoardShape {
 
     /**
      * The name of this shape of board.
@@ -79,8 +79,6 @@ public abstract class BoardShape {
         this.width = maxX + 1;
         this.height = maxY + 1;
         this.area = tiles.size();
-
-        List<Tile> tilesByColumn = new ArrayList<>();
     }
 
     /**

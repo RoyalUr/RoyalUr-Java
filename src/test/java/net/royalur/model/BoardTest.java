@@ -184,5 +184,11 @@ public class BoardTest {
         assertEquals(aseb1, aseb1);
         assertEquals(aseb1, aseb2);
         assertNotEquals(aseb1, standard1);
+
+        Object notBoard = new Object();
+        assertNotEquals(standard1, notBoard);
+        assertNotEquals(standard2, notBoard);
+        assertNotEquals(aseb1, notBoard);
+        assertNotEquals(aseb2, notBoard);
     }
 }

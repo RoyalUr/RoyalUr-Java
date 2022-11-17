@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,25 @@ public class BoardShapeTest {
                     Arguments.of(new AsebBoardShape())
             );
         }
+    }
+
+    @Test
+    public void testNew() {
+        assertThrows(IllegalArgumentException.class, () -> new BoardShape("test", Collections.emptySet()));
+
+        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)));
+        assertEquals(1, singleTile.width);
+        assertEquals(1, singleTile.height);
+        assertEquals(1, singleTile.area);
+
+        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(0, 1))));
+        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(1, 0))));
+        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(1, 1))));
+
+        BoardShape noZeroZero = new BoardShape("noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)));
+        assertEquals(2, noZeroZero.width);
+        assertEquals(2, noZeroZero.height);
+        assertEquals(2, noZeroZero.area);
     }
 
     @Test
@@ -116,16 +136,30 @@ public class BoardShapeTest {
         assertEquals(standard1, standard2);
         assertEquals(standard2, standard1);
         assertEquals(standard2, standard2);
+        assertEquals(standard1.hashCode(), standard1.hashCode());
+        assertEquals(standard1.hashCode(), standard2.hashCode());
+        assertEquals(standard2.hashCode(), standard1.hashCode());
+        assertEquals(standard2.hashCode(), standard2.hashCode());
 
         assertEquals(aseb1, aseb2);
         assertEquals(aseb1, aseb2);
         assertEquals(aseb2, aseb1);
         assertEquals(aseb2, aseb2);
+        assertEquals(aseb1.hashCode(), aseb1.hashCode());
+        assertEquals(aseb1.hashCode(), aseb2.hashCode());
+        assertEquals(aseb2.hashCode(), aseb1.hashCode());
+        assertEquals(aseb2.hashCode(), aseb2.hashCode());
 
         assertNotEquals(standard1, aseb1);
         assertNotEquals(standard1, aseb2);
         assertNotEquals(standard2, aseb1);
         assertNotEquals(standard2, aseb2);
+
+        Object notShape = new Object();
+        assertNotEquals(standard1, notShape);
+        assertNotEquals(standard2, notShape);
+        assertNotEquals(aseb1, notShape);
+        assertNotEquals(aseb2, notShape);
     }
 
     @ParameterizedTest
