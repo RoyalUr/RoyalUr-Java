@@ -1,12 +1,9 @@
 package net.royalur;
 
 /**
- * Hello world!
- *
+ * Holds general information about this program.
  */
 public class RoyalGameOfUr {
 
-    public static void main( String[] args ){
-        System.out.println("Hello World!");
-    }
+    public static final String VERSION = "0.0.1";
 }
