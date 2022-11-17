@@ -1,8 +1,5 @@
 package net.royalur.model;
 
-import net.royalur.model.BoardShape;
-import net.royalur.model.Tile;
-
 import javax.annotation.Nonnull;
 import java.util.Set;
 

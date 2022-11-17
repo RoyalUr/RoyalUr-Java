@@ -27,6 +27,24 @@ public class Board {
     }
 
     /**
+     * @param template Another board to use as a template to copy from.
+     */
+    protected Board(@Nonnull Board template) {
+        this(template.shape);
+        for (int x = 0; x < shape.width; ++x) {
+            System.arraycopy(template.pieces[x], 0, pieces[x], 0, shape.height);
+        }
+    }
+
+    /**
+     * Creates an exact copy of this board.
+     * @return An exact copy of this board.
+     */
+    public Board copy() {
+        return new Board(this);
+    }
+
+    /**
      * Determines whether {@param tile} falls within the bounds of this board.
      *
      * @param tile The tile to be bounds-checked.
