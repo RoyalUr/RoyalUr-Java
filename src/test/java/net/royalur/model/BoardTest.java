@@ -27,6 +27,26 @@ public class BoardTest {
         Board board = new Board(shape);
         Board copy = board.copy();
         assertEquals(board, copy);
+
+        for (Tile tile : shape.getTilesByRow()) {
+            for (Player player : Player.values())  {
+                copy = board.copy();
+                copy.set(tile, player);
+                assertNotEquals(board, copy);
+                assertEquals(copy, copy.copy());
+            }
+        }
+
+        for (Player player : Player.values()) {
+            copy = board.copy();
+            for (Tile tile : shape.getTilesByColumn()) {
+                board.set(tile, player);
+            }
+            assertNotEquals(board, copy);
+            for (Tile tile : shape.getTilesByColumn()) {
+                assertNotEquals(player, copy.get(tile));
+            }
+        }
     }
 
     @ParameterizedTest
