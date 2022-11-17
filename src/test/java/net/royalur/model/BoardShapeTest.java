@@ -1,9 +1,5 @@
-package net.royalur.model.boardshape;
+package net.royalur.model;
 
-import net.royalur.model.AsebBoardShape;
-import net.royalur.model.BoardShape;
-import net.royalur.model.StandardBoardShape;
-import net.royalur.model.Tile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardShapeTest {
 
-    static class BoardShapeProvider implements ArgumentsProvider {
+    public static class BoardShapeProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
@@ -28,7 +24,7 @@ public class BoardShapeTest {
     }
 
     @Test
-    public void testStandardProperties() {
+    public void testBasicProperties() {
         BoardShape standard = new StandardBoardShape();
         assertEquals(3, standard.width);
         assertEquals(8, standard.height);

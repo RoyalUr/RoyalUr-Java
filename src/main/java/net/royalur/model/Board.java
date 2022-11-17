@@ -14,6 +14,21 @@ public class Board {
     public final @Nonnull BoardShape shape;
 
     /**
+     * The number of x-coordinates that exist in this board.
+     */
+    public final int width;
+
+    /**
+     * The number of y-coordinates that exist in this board.
+     */
+    public final int height;
+
+    /**
+     * The number of tiles contained in this board.
+     */
+    public final int area;
+
+    /**
      * The pieces on the tiles of this board.
      */
     private final @Nonnull Player[][] pieces;
@@ -23,7 +38,10 @@ public class Board {
      */
     public Board(@Nonnull BoardShape shape) {
         this.shape = shape;
-        this.pieces = new Player[shape.width][shape.height];
+        this.width = shape.width;
+        this.height = shape.height;
+        this.area = shape.area;
+        this.pieces = new Player[width][height];
     }
 
     /**
@@ -127,7 +145,28 @@ public class Board {
     }
 
     @Override
-    public String toString() {
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !obj.getClass().equals(getClass()))
+            return false;
+
+        Board other = (Board) obj;
+        if (width != other.width || height != other.height || !shape.equals(other.shape))
+            return false;
+
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                if (!contains(x, y))
+                    continue;
+
+                if (get(x, y) != other.get(x, y))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
         for (int x = 0; x < shape.width; ++x) {
             if (x > 0) {

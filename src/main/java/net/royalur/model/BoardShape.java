@@ -17,7 +17,7 @@ public abstract class BoardShape {
     /**
      * The set of tiles that fall within the bounds of this board shape.
      */
-    public final @Nonnull Set<Tile> boardTiles;
+    public final @Nonnull Set<Tile> tiles;
 
     /**
      * The number of x-coordinates that exist in this board shape.
@@ -36,20 +36,20 @@ public abstract class BoardShape {
 
     /**
      * @param name A name for this shape of board.
-     * @param boardTiles The set of tiles that fall within the bounds of this board shape.
+     * @param tiles The set of tiles that fall within the bounds of this board shape.
      */
-    public BoardShape(@Nonnull String name, @Nonnull Set<Tile> boardTiles) {
-        if (boardTiles.size() == 0)
+    public BoardShape(@Nonnull String name, @Nonnull Set<Tile> tiles) {
+        if (tiles.size() == 0)
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
         this.name = name;
-        this.boardTiles = boardTiles;
+        this.tiles = tiles;
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
-        for (Tile tile : boardTiles) {
+        for (Tile tile : tiles) {
             minX = Math.min(minX, tile.x);
             minY = Math.min(minY, tile.y);
             maxX = Math.max(maxX, tile.x);
@@ -66,7 +66,7 @@ public abstract class BoardShape {
 
         this.width = maxX + 1;
         this.height = maxY + 1;
-        this.area = boardTiles.size();
+        this.area = tiles.size();
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class BoardShape {
      * @return Whether the given tile falls within the bounds of this board.
      */
     public boolean contains(@Nonnull Tile tile) {
-        return boardTiles.contains(tile);
+        return tiles.contains(tile);
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class BoardShape {
 
     @Override
     public int hashCode() {
-        return boardTiles.hashCode();
+        return tiles.hashCode();
     }
 
     @Override
@@ -102,7 +102,7 @@ public abstract class BoardShape {
             return false;
 
         BoardShape other = (BoardShape) obj;
-        return boardTiles.equals(other.boardTiles);
+        return tiles.equals(other.tiles);
     }
 
     @Override
