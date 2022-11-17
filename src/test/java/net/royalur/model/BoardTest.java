@@ -190,6 +190,7 @@ public class BoardTest {
         assertNotEquals(standard2, notBoard);
         assertNotEquals(aseb1, notBoard);
         assertNotEquals(aseb2, notBoard);
+        assertNotEquals(standard1, null);
     }
 
     @Test

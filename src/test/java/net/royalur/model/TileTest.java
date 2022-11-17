@@ -111,6 +111,7 @@ public class TileTest {
         assertNotEquals(oneZero, notTile);
         assertNotEquals(zeroOne, notTile);
         assertNotEquals(oneOne, notTile);
+        assertNotEquals(zeroZero, null);
     }
 
     @Test

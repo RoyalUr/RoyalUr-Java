@@ -126,6 +126,24 @@ public class BoardShapeTest {
     }
 
     @Test
+    public void testHashCode() {
+        BoardShape standard1 = new StandardBoardShape();
+        BoardShape standard2 = new StandardBoardShape();
+        BoardShape aseb1 = new AsebBoardShape();
+        BoardShape aseb2 = new AsebBoardShape();
+
+        assertEquals(standard1.hashCode(), standard1.hashCode());
+        assertEquals(standard1.hashCode(), standard2.hashCode());
+        assertEquals(standard2.hashCode(), standard1.hashCode());
+        assertEquals(standard2.hashCode(), standard2.hashCode());
+
+        assertEquals(aseb1.hashCode(), aseb1.hashCode());
+        assertEquals(aseb1.hashCode(), aseb2.hashCode());
+        assertEquals(aseb2.hashCode(), aseb1.hashCode());
+        assertEquals(aseb2.hashCode(), aseb2.hashCode());
+    }
+
+    @Test
     public void testEquals() {
         BoardShape standard1 = new StandardBoardShape();
         BoardShape standard2 = new StandardBoardShape();
@@ -136,19 +154,11 @@ public class BoardShapeTest {
         assertEquals(standard1, standard2);
         assertEquals(standard2, standard1);
         assertEquals(standard2, standard2);
-        assertEquals(standard1.hashCode(), standard1.hashCode());
-        assertEquals(standard1.hashCode(), standard2.hashCode());
-        assertEquals(standard2.hashCode(), standard1.hashCode());
-        assertEquals(standard2.hashCode(), standard2.hashCode());
 
         assertEquals(aseb1, aseb2);
         assertEquals(aseb1, aseb2);
         assertEquals(aseb2, aseb1);
         assertEquals(aseb2, aseb2);
-        assertEquals(aseb1.hashCode(), aseb1.hashCode());
-        assertEquals(aseb1.hashCode(), aseb2.hashCode());
-        assertEquals(aseb2.hashCode(), aseb1.hashCode());
-        assertEquals(aseb2.hashCode(), aseb2.hashCode());
 
         assertNotEquals(standard1, aseb1);
         assertNotEquals(standard1, aseb2);
@@ -160,6 +170,7 @@ public class BoardShapeTest {
         assertNotEquals(standard2, notShape);
         assertNotEquals(aseb1, notShape);
         assertNotEquals(aseb2, notShape);
+        assertNotEquals(standard1, null);
     }
 
     @ParameterizedTest
