@@ -25,6 +25,8 @@ public class BoardTest {
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testCopy(BoardShape shape) {
         Board board = new Board(shape);
+        Board copy = board.copy();
+        assertEquals(board, copy);
     }
 
     @ParameterizedTest
