@@ -24,5 +24,10 @@ public enum GameStateType {
     /**
      * A state where a player has won.
      */
-    WIN
+    WIN,
+
+    /**
+     * Reserved for custom game states.
+     */
+    CUSTOM
 }
