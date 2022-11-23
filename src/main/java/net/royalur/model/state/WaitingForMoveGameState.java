@@ -30,6 +30,11 @@ public class WaitingForMoveGameState extends PlayableGameState {
             @Nonnull Roll roll) {
 
         super(GameStateType.WAITING_FOR_MOVE, board, lightPlayer, darkPlayer, turn);
+        if (roll.value <= 0) {
+            throw new IllegalArgumentException(
+                    "The waiting for move game state must have a roll of at least 1, not " + roll.value
+            );
+        }
         this.roll = roll;
     }
 

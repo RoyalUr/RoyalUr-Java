@@ -30,6 +30,6 @@ public class StandardDice implements Dice<Roll> {
     @Override
     public @Nonnull Roll roll() {
         // Each generated bit represents a roll of a D2 dice.
-        return new Roll(Integer.bitCount(random.nextInt(16)));
+        return Roll.of(Integer.bitCount(random.nextInt(16)));
     }
 }

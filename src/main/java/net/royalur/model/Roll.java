@@ -39,11 +39,9 @@ public class Roll {
     public final int value;
 
     public Roll(int value) {
-        if (value <= 0) {
-            throw new IllegalArgumentException(
-                    "The waiting for move game state must have a roll of at least 1, not " + value
-            );
-        }
+        if (value < 0)
+            throw new IllegalArgumentException("Rolls cannot be negative. Initialised with roll of " + value);
+
         this.value = value;
     }
 
