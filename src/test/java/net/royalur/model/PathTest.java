@@ -1,4 +1,4 @@
-package net.royalur.rules;
+package net.royalur.model;
 
 import net.royalur.model.Path;
 import net.royalur.model.Player;
