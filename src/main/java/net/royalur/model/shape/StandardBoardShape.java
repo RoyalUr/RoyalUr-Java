@@ -18,6 +18,11 @@ import java.util.Set;
  */
 public class StandardBoardShape extends BoardShape {
 
+    /**
+     * The set of all tiles that exist on the standard board.
+     * Any tile that exists in this set is on the standard board,
+     * and any tiles that don't do not fall on the standard board.
+     */
     public static final @Nonnull Set<Tile> BOARD_TILES = Set.of(
             new Tile(0, 3),
             new Tile(0, 2),
