@@ -1,5 +1,7 @@
 package net.royalur.model;
 
+import net.royalur.model.shape.AsebBoardShape;
+import net.royalur.model.shape.StandardBoardShape;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;

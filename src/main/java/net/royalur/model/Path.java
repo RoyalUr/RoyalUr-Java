@@ -1,7 +1,4 @@
-package net.royalur.rules;
-
-import net.royalur.model.Player;
-import net.royalur.model.Tile;
+package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

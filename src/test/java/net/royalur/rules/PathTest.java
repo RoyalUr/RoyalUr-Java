@@ -1,5 +1,6 @@
 package net.royalur.rules;
 
+import net.royalur.model.Path;
 import net.royalur.model.Player;
 import net.royalur.model.Tile;
 import org.junit.jupiter.api.Test;
