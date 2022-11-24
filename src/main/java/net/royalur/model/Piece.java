@@ -52,10 +52,7 @@ public class Piece {
      * @return The character representing {@param piece}.
      */
     public static char toChar(@Nullable Piece piece) {
-        if (piece == null)
-            return '.';
-
-        return Player.toChar(piece.owner);
+        return Player.toChar(piece != null ? piece.owner : null);
     }
 
     @Override
