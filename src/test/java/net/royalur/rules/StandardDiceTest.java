@@ -49,15 +49,18 @@ public class StandardDiceTest {
     }
 
     @Test
-    public void testDice() {
+    public void testDiceNoSeed() {
         StandardDice dice1 = new StandardDice();
         StandardDice dice2 = new StandardDice();
         double diceMatchRatio = testDice(dice1, dice2);
         assertTrue(diceMatchRatio < 0.6);
+    }
 
-        dice1 = new StandardDice(new Random(42));
-        dice2 = new StandardDice(new Random(42));
-        diceMatchRatio = testDice(dice1, dice2);
+    @Test
+    public void testDiceWithSeed() {
+        StandardDice dice1 = new StandardDice(new Random(42));
+        StandardDice dice2 = new StandardDice(new Random(42));
+        double diceMatchRatio = testDice(dice1, dice2);
         assertEquals(1.0, diceMatchRatio);
     }
 }

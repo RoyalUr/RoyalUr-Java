@@ -10,12 +10,12 @@ public class BoardTest {
 
     @Test
     public void testBasicProperties() {
-        Board standard = new Board(new StandardBoardShape());
+        Board<Piece> standard = new Board<>(new StandardBoardShape());
         assertEquals(3, standard.width);
         assertEquals(8, standard.height);
         assertEquals(20, standard.area);
 
-        Board aseb = new Board(new AsebBoardShape());
+        Board<Piece> aseb = new Board<>(new AsebBoardShape());
         assertEquals(3, aseb.width);
         assertEquals(12, aseb.height);
         assertEquals(20, aseb.area);
@@ -24,27 +24,30 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testCopy(BoardShape shape) {
-        Board board = new Board(shape);
-        Board copy = board.copy();
+        Board<Piece> board = new Board<>(shape);
+        Board<Piece> copy = board.copy();
         assertEquals(board, copy);
 
         for (Tile tile : shape.getTilesByRow()) {
             for (Player player : Player.values())  {
+                Piece piece = Piece.of(player);
                 copy = board.copy();
-                copy.set(tile, player);
+                copy.set(tile, piece);
                 assertNotEquals(board, copy);
                 assertEquals(copy, copy.copy());
             }
         }
 
         for (Player player : Player.values()) {
+            Piece piece = Piece.of(player);
+
             copy = board.copy();
             for (Tile tile : shape.getTilesByColumn()) {
-                board.set(tile, player);
+                board.set(tile, piece);
             }
             assertNotEquals(board, copy);
             for (Tile tile : shape.getTilesByColumn()) {
-                assertNotEquals(player, copy.get(tile));
+                assertNotEquals(piece, copy.get(tile));
             }
         }
     }
@@ -52,7 +55,7 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testContains(BoardShape shape) {
-        Board board = new Board(shape);
+        Board<Piece> board = new Board<>(shape);
 
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
@@ -78,8 +81,8 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testGetSet(BoardShape shape) {
-        Board board1 = new Board(shape);
-        Board board2 = new Board(shape);
+        Board<Piece> board1 = new Board<>(shape);
+        Board<Piece> board2 = new Board<>(shape);
 
         for (Tile tile : shape.getTilesByColumn()) {
             assertNull(board2.get(tile.x, tile.y));
@@ -87,6 +90,7 @@ public class BoardTest {
         }
 
         for (Player player : Player.values()) {
+            Piece piece = Piece.of(player);
             // Deliberately includes out-of-bounds coordinates.
             for (int x = -1; x <= shape.width; ++x) {
                 for (int y = -1; y <= shape.height; ++y) {
@@ -96,38 +100,38 @@ public class BoardTest {
                     if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
-                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, player));
+                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, piece));
                         continue;
                     }
 
                     Tile tile = new Tile(x, y);
                     if (shape.contains(tile)) {
-                        board1.set(tileX, tileY, player);
-                        board2.set(tile, player);
-                        assertEquals(player, board1.get(tileX, tileY));
-                        assertEquals(player, board2.get(tile));
+                        board1.set(tileX, tileY, piece);
+                        board2.set(tile, piece);
+                        assertEquals(piece, board1.get(tileX, tileY));
+                        assertEquals(piece, board2.get(tile));
                     } else {
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board2.get(tile));
-                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, player));
-                        assertThrows(IllegalArgumentException.class, () -> board2.set(tile, player));
+                        assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, piece));
+                        assertThrows(IllegalArgumentException.class, () -> board2.set(tile, piece));
                     }
                 }
             }
 
             for (Tile tile : shape.getTilesByColumn()) {
-                assertEquals(player, board2.get(tile.x, tile.y));
-                assertEquals(player, board1.get(tile));
+                assertEquals(piece, board2.get(tile.x, tile.y));
+                assertEquals(piece, board1.get(tile));
             }
         }
     }
 
     @Test
     public void testEquals() {
-        Board standard1 = new Board(new StandardBoardShape());
-        Board standard2 = new Board(new StandardBoardShape());
-        Board aseb1 = new Board(new AsebBoardShape());
-        Board aseb2 = new Board(new AsebBoardShape());
+        Board<Piece> standard1 = new Board<>(new StandardBoardShape());
+        Board<Piece> standard2 = new Board<>(new StandardBoardShape());
+        Board<Piece> aseb1 = new Board<>(new AsebBoardShape());
+        Board<Piece> aseb2 = new Board<>(new AsebBoardShape());
 
         assertEquals(standard1, standard1);
         assertEquals(standard1, standard2);
@@ -144,27 +148,27 @@ public class BoardTest {
         assertNotEquals(standard2, aseb1);
         assertNotEquals(standard2, aseb2);
 
-        standard1.set(0, 0, Player.LIGHT);
+        standard1.set(0, 0, Piece.of(Player.LIGHT));
         assertEquals(standard1, standard1);
         assertNotEquals(standard1, standard2);
         assertNotEquals(standard1, aseb1);
 
-        standard2.set(0, 0, Player.LIGHT);
+        standard2.set(0, 0, Piece.of(Player.LIGHT));
         assertEquals(standard2, standard2);
         assertEquals(standard1, standard2);
         assertNotEquals(standard2, aseb1);
 
-        standard1.set(2, 6, Player.DARK);
+        standard1.set(2, 6, Piece.of(Player.DARK));
         assertEquals(standard1, standard1);
         assertNotEquals(standard1, standard2);
         assertNotEquals(standard1, aseb1);
 
-        standard2.set(2, 6, Player.LIGHT);
+        standard2.set(2, 6, Piece.of(Player.LIGHT));
         assertEquals(standard2, standard2);
         assertNotEquals(standard1, standard2);
         assertNotEquals(standard2, aseb1);
 
-        aseb1.set(1, 10, Player.DARK);
+        aseb1.set(1, 10, Piece.of(Player.DARK));
         assertEquals(aseb1, aseb1);
         assertNotEquals(aseb1, aseb2);
         assertNotEquals(aseb1, standard1);
@@ -174,13 +178,13 @@ public class BoardTest {
         assertEquals(aseb1, aseb2);
         assertNotEquals(aseb1, standard1);
 
-        aseb1.set(1, 10, Player.LIGHT);
-        aseb2.set(1, 10, Player.DARK);
+        aseb1.set(1, 10, Piece.of(Player.LIGHT));
+        aseb2.set(1, 10, Piece.of(Player.DARK));
         assertEquals(aseb1, aseb1);
         assertNotEquals(aseb1, aseb2);
         assertNotEquals(aseb1, standard1);
 
-        aseb2.set(1, 10, Player.LIGHT);
+        aseb2.set(1, 10, Piece.of(Player.LIGHT));
         assertEquals(aseb1, aseb1);
         assertEquals(aseb1, aseb2);
         assertNotEquals(aseb1, standard1);
@@ -195,10 +199,10 @@ public class BoardTest {
 
     @Test
     public void testToString() {
-        Board standard1 = new Board(new StandardBoardShape());
-        Board standard2 = new Board(new StandardBoardShape());
-        Board aseb1 = new Board(new AsebBoardShape());
-        Board aseb2 = new Board(new AsebBoardShape());
+        Board<Piece> standard1 = new Board<>(new StandardBoardShape());
+        Board<Piece> standard2 = new Board<>(new StandardBoardShape());
+        Board<Piece> aseb1 = new Board<>(new AsebBoardShape());
+        Board<Piece> aseb2 = new Board<>(new AsebBoardShape());
 
         assertEquals(
                 "....  ..\n" +
@@ -228,7 +232,7 @@ public class BoardTest {
         assertNotEquals(standard2.toString(), aseb1.toString());
         assertNotEquals(standard2.toString(), aseb2.toString());
 
-        standard1.set(0, 0, Player.LIGHT);
+        standard1.set(0, 0, Piece.of(Player.LIGHT));
         assertEquals(
                 "L...  ..\n" +
                 "........\n" +
@@ -239,12 +243,12 @@ public class BoardTest {
         assertNotEquals(standard1.toString(), standard2.toString());
         assertNotEquals(standard1.toString(), aseb1.toString());
 
-        standard2.set(0, 0, Player.LIGHT);
+        standard2.set(0, 0, Piece.of(Player.LIGHT));
         assertEquals(standard2.toString(), standard2.toString());
         assertEquals(standard1.toString(), standard2.toString());
         assertNotEquals(standard2.toString(), aseb1.toString());
 
-        standard1.set(2, 6, Player.DARK);
+        standard1.set(2, 6, Piece.of(Player.DARK));
         assertEquals(
                 "L...  ..\n" +
                 "........\n" +
@@ -255,7 +259,7 @@ public class BoardTest {
         assertNotEquals(standard1.toString(), standard2.toString());
         assertNotEquals(standard1.toString(), aseb1.toString());
 
-        standard2.set(2, 6, Player.LIGHT);
+        standard2.set(2, 6, Piece.of(Player.LIGHT));
         assertEquals(
                 "L...  ..\n" +
                 "........\n" +
@@ -266,7 +270,7 @@ public class BoardTest {
         assertNotEquals(standard1.toString(), standard2.toString());
         assertNotEquals(standard2.toString(), aseb1.toString());
 
-        aseb1.set(1, 10, Player.DARK);
+        aseb1.set(1, 10, Piece.of(Player.DARK));
         assertEquals(
                 "....        \n" +
                 "..........D.\n" +
@@ -288,14 +292,14 @@ public class BoardTest {
         assertEquals(aseb1.toString(), aseb2.toString());
         assertNotEquals(aseb1.toString(), standard1.toString());
 
-        aseb1.set(1, 10, Player.LIGHT);
+        aseb1.set(1, 10, Piece.of(Player.LIGHT));
         assertEquals(
                 "....        \n" +
                 "..........L.\n" +
                 "....        ",
                 aseb1.toString()
         );
-        aseb2.set(1, 10, Player.DARK);
+        aseb2.set(1, 10, Piece.of(Player.DARK));
         assertEquals(
                 "....        \n" +
                 "..........D.\n" +
@@ -306,7 +310,7 @@ public class BoardTest {
         assertNotEquals(aseb1.toString(), aseb2.toString());
         assertNotEquals(aseb1.toString(), standard1.toString());
 
-        aseb2.set(1, 10, Player.LIGHT);
+        aseb2.set(1, 10, Piece.of(Player.LIGHT));
         assertEquals(
                 "....        \n" +
                 "..........L.\n" +
@@ -318,7 +322,7 @@ public class BoardTest {
         assertNotEquals(aseb1.toString(), standard1.toString());
 
         for (Tile tile : standard1.shape.getTilesByRow()) {
-            standard1.set(tile, (tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK);
+            standard1.set(tile, Piece.of((tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK));
         }
         assertEquals(
                 "LDLD  LD\n" +
@@ -328,7 +332,7 @@ public class BoardTest {
         );
 
         for (Tile tile : aseb1.shape.getTilesByRow()) {
-            aseb1.set(tile, (tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK);
+            aseb1.set(tile, Piece.of((tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK));
         }
         assertEquals(
                 "LDLD        \n" +
