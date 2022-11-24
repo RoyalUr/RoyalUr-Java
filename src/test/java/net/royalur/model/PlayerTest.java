@@ -12,4 +12,10 @@ public class PlayerTest {
         assertEquals('L', Player.toChar(Player.LIGHT));
         assertEquals('D', Player.toChar(Player.DARK));
     }
+
+    @Test
+    public void testGetOtherPlayer() {
+        assertEquals(Player.DARK, Player.LIGHT.getOtherPlayer());
+        assertEquals(Player.LIGHT, Player.DARK.getOtherPlayer());
+    }
 }
