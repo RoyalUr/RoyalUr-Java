@@ -6,8 +6,13 @@ import javax.annotation.Nonnull;
 
 /**
  * A GameState where a player has won.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of rolls that may be stored in this game state.
  */
-public class WinGameState extends GameState {
+public class WinGameState<
+        P extends Piece, S extends PlayerState, R extends Roll
+> extends GameState<P, S, R> {
 
     /**
      * The player that won the game.
@@ -26,9 +31,9 @@ public class WinGameState extends GameState {
      * @param winner The winning player.
      */
     public WinGameState(
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer,
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer,
             @Nonnull Player winner) {
 
         super(GameStateType.WIN, board, lightPlayer, darkPlayer);
@@ -45,7 +50,7 @@ public class WinGameState extends GameState {
      * Retrieves the state of the player that won the game.
      * @return The state of the player that won the game.
      */
-    public PlayerState getWinner() {
+    public S getWinner() {
         return getPlayer(winner);
     }
 
@@ -53,7 +58,7 @@ public class WinGameState extends GameState {
      * Retrieves the state of the player that lost the game.
      * @return The state of the player that lost the game.
      */
-    public PlayerState getLoser() {
+    public S getLoser() {
         return getPlayer(loser);
     }
 

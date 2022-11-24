@@ -5,8 +5,11 @@ import javax.annotation.Nonnull;
 /**
  * A game state represents a single point within a game.
  * This class is immutable.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class GameState {
+public abstract class GameState<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
      * The type of this game state, representing its purpose.
@@ -16,17 +19,17 @@ public abstract class GameState {
     /**
      * The state of the pieces on the board.
      */
-    public final @Nonnull Board board;
+    public final @Nonnull Board<P> board;
 
     /**
      * The state of the light player.
      */
-    public final @Nonnull PlayerState lightPlayer;
+    public final @Nonnull S lightPlayer;
 
     /**
      * The state of the dark player.
      */
-    public final @Nonnull PlayerState darkPlayer;
+    public final @Nonnull S darkPlayer;
 
     /**
      * @param type The type of this game state, representing its purpose.
@@ -36,9 +39,9 @@ public abstract class GameState {
      */
     public GameState(
             @Nonnull GameStateType type,
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer) {
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer) {
 
         if (lightPlayer.player != Player.LIGHT)
             throw new IllegalArgumentException("The lightPlayer should be of Player.LIGHT, not " + lightPlayer.player);
@@ -62,7 +65,7 @@ public abstract class GameState {
      * @param player The player to retrieve the state of.
      * @return The state of the player {@param player}.
      */
-    public @Nonnull PlayerState getPlayer(@Nonnull Player player) {
+    public @Nonnull S getPlayer(@Nonnull Player player) {
         switch (player) {
             case LIGHT: return lightPlayer;
             case DARK: return darkPlayer;

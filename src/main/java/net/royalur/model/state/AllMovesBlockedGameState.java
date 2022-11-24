@@ -1,21 +1,23 @@
 package net.royalur.model.state;
 
-import net.royalur.model.Board;
-import net.royalur.model.Player;
-import net.royalur.model.PlayerState;
-import net.royalur.model.Roll;
+import net.royalur.model.*;
 
 import javax.annotation.Nonnull;
 
 /**
  * A GameState that represents a roll that resulted in no available moves due to all moves being blocked.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of roll that was made in this game state.
  */
-public class AllMovesBlockedGameState extends InfoGameState {
+public class AllMovesBlockedGameState<
+        P extends Piece, S extends PlayerState, R extends Roll
+> extends InfoGameState<P, S, R> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    public final @Nonnull Roll roll;
+    public final @Nonnull R roll;
 
     /**
      * @param board       The state of the pieces on the board.
@@ -26,11 +28,11 @@ public class AllMovesBlockedGameState extends InfoGameState {
      *                    used as the number of places to move a piece.
      */
     public AllMovesBlockedGameState(
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer,
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer,
             @Nonnull Player turn,
-            @Nonnull Roll roll) {
+            @Nonnull R roll) {
 
         super(board, lightPlayer, darkPlayer, turn);
 

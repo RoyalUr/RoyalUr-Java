@@ -6,8 +6,13 @@ import javax.annotation.Nonnull;
 
 /**
  * A GameState that is included while the game is still ongoing.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class OngoingGameState extends GameState {
+public abstract class OngoingGameState<
+        P extends Piece, S extends PlayerState, R extends Roll
+> extends GameState<P, S, R> {
 
     /**
      * The player who can make the next interaction with the game.
@@ -23,9 +28,9 @@ public abstract class OngoingGameState extends GameState {
      */
     public OngoingGameState(
             @Nonnull GameStateType type,
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer,
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer,
             @Nonnull Player turn) {
 
         super(type, board, lightPlayer, darkPlayer);
@@ -36,7 +41,7 @@ public abstract class OngoingGameState extends GameState {
      * Retrieves the state of the player that we are waiting on to interact with the game.
      * @return The state of the player that we are waiting on to interact with the game.
      */
-    public @Nonnull PlayerState getTurnPlayer() {
+    public @Nonnull S getTurnPlayer() {
         return getPlayer(turn);
     }
 }

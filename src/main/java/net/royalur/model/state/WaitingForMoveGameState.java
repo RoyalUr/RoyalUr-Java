@@ -6,13 +6,18 @@ import javax.annotation.Nonnull;
 
 /**
  * A GameState where we are waiting for a player to make a move.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of the roll that was made to get into this game state.
  */
-public class WaitingForMoveGameState extends PlayableGameState {
+public class WaitingForMoveGameState<
+        P extends Piece, S extends PlayerState, R extends Roll
+> extends PlayableGameState<P, S, R> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    public final @Nonnull Roll roll;
+    public final @Nonnull R roll;
 
     /**
      * @param board       The state of the pieces on the board.
@@ -23,11 +28,11 @@ public class WaitingForMoveGameState extends PlayableGameState {
      *                    used as the number of places to move a piece.
      */
     public WaitingForMoveGameState(
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer,
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer,
             @Nonnull Player turn,
-            @Nonnull Roll roll) {
+            @Nonnull R roll) {
 
         super(GameStateType.WAITING_FOR_MOVE, board, lightPlayer, darkPlayer, turn);
         if (roll.value <= 0) {

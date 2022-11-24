@@ -6,8 +6,13 @@ import javax.annotation.Nonnull;
 
 /**
  * A GameState where we are waiting for interactions from a player.
+ * @param <P> The type of pieces that are stored on the board in this game state.
+ * @param <S> The type of state that is stored for each player.
+ * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class PlayableGameState extends OngoingGameState {
+public abstract class PlayableGameState<
+        P extends Piece, S extends PlayerState, R extends Roll
+> extends OngoingGameState<P, S, R> {
 
     /**
      * @param type The type of this game state, representing its purpose.
@@ -18,9 +23,9 @@ public abstract class PlayableGameState extends OngoingGameState {
      */
     public PlayableGameState(
             @Nonnull GameStateType type,
-            @Nonnull Board board,
-            @Nonnull PlayerState lightPlayer,
-            @Nonnull PlayerState darkPlayer,
+            @Nonnull Board<P> board,
+            @Nonnull S lightPlayer,
+            @Nonnull S darkPlayer,
             @Nonnull Player turn) {
 
         super(type, board, lightPlayer, darkPlayer, turn);
