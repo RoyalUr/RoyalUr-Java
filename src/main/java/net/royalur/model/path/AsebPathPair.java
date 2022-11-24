@@ -92,7 +92,7 @@ public class AsebPathPair extends PathPair {
         }
     }
 
-    protected AsebPathPair() {
+    public AsebPathPair() {
         super("Aseb", new AsebLightPath(), new AsebDarkPath());
     }
 }

@@ -49,7 +49,7 @@ public class PathPair {
 
     @Override
     public int hashCode() {
-        return lightPath.hashCode() ^ (37 * darkPath.hashCode());
+        return name.hashCode() ^ (37 * lightPath.hashCode()) ^ (91 * darkPath.hashCode());
     }
 
     /**
@@ -70,14 +70,19 @@ public class PathPair {
             return false;
 
         PathPair other = (PathPair) obj;
-        return lightPath.equals(other.lightPath) && darkPath.equals(other.darkPath);
+        return name.equals(other.name) && lightPath.equals(other.lightPath) && darkPath.equals(other.darkPath);
     }
 
     @Override
     public @Nonnull String toString() {
-        if (lightPath.name.equals(darkPath.name))
-            return lightPath.name;
+        if (lightPath.name.equals(darkPath.name)) {
+            if (lightPath.name.equals(name))
+                return name;
 
-        return lightPath.name + " (" + Player.LIGHT.name + "), " + darkPath.name + " (" + Player.DARK.name + ")";
+            return name + " (of " + lightPath.name + " paths)";
+        }
+        return name + " (" +
+                Player.LIGHT.name + ": " + lightPath.name + " path, " +
+                Player.DARK.name + ": " + darkPath.name + " path)";
     }
 }
