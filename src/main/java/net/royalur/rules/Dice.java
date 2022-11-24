@@ -9,5 +9,9 @@ import javax.annotation.Nonnull;
  */
 public interface Dice<R extends Roll> {
 
+    /**
+     * Generates a random roll using this dice.
+     * @return A random roll of this dice.
+     */
     @Nonnull R roll();
 }

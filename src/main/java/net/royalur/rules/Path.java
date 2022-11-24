@@ -42,6 +42,9 @@ public class Path implements Iterable<Tile> {
      * @param tiles The ordered list of tiles that pieces must progress through on the board.
      */
     public Path(@Nonnull String name, @Nonnull Player player, @Nonnull List<Tile> tiles) {
+        if (tiles.isEmpty())
+            throw new IllegalArgumentException("Paths must have at least one tile");
+
         this.name = name;
         this.player = player;
         this.tiles = Collections.unmodifiableList(new ArrayList<>(tiles));
@@ -93,10 +96,15 @@ public class Path implements Iterable<Tile> {
     @Override
     public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(name).append("(").append(player).append("):");
+        if (!name.isEmpty()) {
+            builder.append(name).append(" (").append(player.name).append(")");
+        } else {
+            builder.append(player.name);
+        }
+        builder.append(": ");
         for (int index = 0; index < tiles.size(); ++index) {
             if (index > 0) {
-                builder.append(",");
+                builder.append(", ");
             }
             builder.append(tiles.get(index));
         }
