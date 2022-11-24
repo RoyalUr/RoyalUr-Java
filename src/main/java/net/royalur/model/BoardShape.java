@@ -20,6 +20,11 @@ public class BoardShape {
     public final @Nonnull Set<Tile> tiles;
 
     /**
+     * The set of tiles that represent rosette tiles in this board shape.
+     */
+    public final @Nonnull Set<Tile> rosetteTiles;
+
+    /**
      * The number of x-coordinates that exist in this board shape.
      */
     public final int width;
@@ -47,15 +52,17 @@ public class BoardShape {
     private @Nullable List<Tile> tilesByColumn = null;
 
     /**
-     * @param name A name for this shape of board.
-     * @param tiles The set of tiles that fall within the bounds of this board shape.
+     * @param name         A name for this shape of board.
+     * @param tiles        The set of tiles that fall within the bounds of this board shape.
+     * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
      */
-    public BoardShape(@Nonnull String name, @Nonnull Set<Tile> tiles) {
+    public BoardShape(@Nonnull String name, @Nonnull Set<Tile> tiles, @Nonnull Set<Tile> rosetteTiles) {
         if (tiles.size() == 0)
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
         this.name = name;
         this.tiles = tiles;
+        this.rosetteTiles = rosetteTiles;
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
@@ -79,6 +86,15 @@ public class BoardShape {
         this.width = maxX + 1;
         this.height = maxY + 1;
         this.area = tiles.size();
+
+        for (Tile tile : rosetteTiles) {
+            if (!contains(tile)) {
+                throw new IllegalArgumentException(
+                        "rosetteTiles should not include any tiles that are off of the game board," +
+                                "but it contains " + tile
+                );
+            }
+        }
     }
 
     /**
@@ -143,9 +159,31 @@ public class BoardShape {
         return contains(new Tile(x, y));
     }
 
+    /**
+     * Determines whether {@param tile} is a rosette tile on this board.
+     * @param tile The tile to check if it is a rosette.
+     * @return Whether the given tile is a rosette tile on this board.
+     */
+    public boolean isRosette(@Nonnull Tile tile) {
+        return rosetteTiles.contains(tile);
+    }
+
+    /**
+     * Determines whether the tile at the coordinates ({@param x}, {@param y})
+     * is a rosette tile on this board.
+     * @param x The x-coordinate of the tile to be checked for being a rosette.
+     * @param y The y-coordinate of the tile to be checked for being a rosette.
+     * @return Whether the given tile is a rosette tile on this board.
+     */
+    public boolean isRosette(int x, int y) {
+        if (!Tile.isValid(x, y))
+            return false;
+        return isRosette(new Tile(x, y));
+    }
+
     @Override
     public int hashCode() {
-        return tiles.hashCode();
+        return name.hashCode() ^ (31 * tiles.hashCode()) ^ (97 * rosetteTiles.hashCode());
     }
 
     @Override
@@ -154,7 +192,7 @@ public class BoardShape {
             return false;
 
         BoardShape other = (BoardShape) obj;
-        return tiles.equals(other.tiles);
+        return name.equals(other.name) && tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
     }
 
     @Override

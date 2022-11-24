@@ -50,14 +50,27 @@ public class StandardBoardShape extends BoardShape {
             new Tile(2, 6)
     );
 
+    /**
+     * The set of rosette tiles that exist on the standard board.
+     */
+    public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
+            new Tile(0, 0),
+            new Tile(2, 0),
+            new Tile(1, 3),
+            new Tile(0, 6),
+            new Tile(2, 6)
+    );
+
     public StandardBoardShape() {
-        super("Standard", BOARD_TILES);
+        super("Standard", BOARD_TILES, ROSETTE_TILES);
     }
 
+    @Override
     public boolean contains(@Nonnull Tile tile) {
         return contains(tile.x, tile.y);
     }
 
+    @Override
     public boolean contains(int x, int y) {
         return x >= 0 && x < 3 && y >= 0 && y < 8 && (x == 1 || (y < 4 || y >= 6));
     }

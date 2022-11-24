@@ -50,7 +50,18 @@ public class AsebBoardShape extends BoardShape {
             new Tile(1, 11)
     );
 
+    /**
+     * The set of rosette tiles that exist on the Aseb board.
+     */
+    public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
+            new Tile(0, 0),
+            new Tile(2, 0),
+            new Tile(1, 3),
+            new Tile(1, 7),
+            new Tile(1, 11)
+    );
+
     public AsebBoardShape() {
-        super("Aseb", BOARD_TILES);
+        super("Aseb", BOARD_TILES, ROSETTE_TILES);
     }
 }

@@ -30,22 +30,85 @@ public class BoardShapeTest {
     }
 
     @Test
-    public void testNew() {
-        assertThrows(IllegalArgumentException.class, () -> new BoardShape("test", Collections.emptySet()));
+    public void testNewNoRosettes() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("test", Collections.emptySet(), Collections.emptySet())
+        );
 
-        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)));
+        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)), Collections.emptySet());
         assertEquals(1, singleTile.width);
         assertEquals(1, singleTile.height);
         assertEquals(1, singleTile.area);
 
-        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(0, 1))));
-        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(1, 0))));
-        assertThrows(IllegalArgumentException.class, () -> new BoardShape("notZero", Set.of(new Tile(1, 1))));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(0, 1)), Collections.emptySet())
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(1, 0)), Collections.emptySet())
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(1, 1)), Collections.emptySet())
+        );
 
-        BoardShape noZeroZero = new BoardShape("noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)));
+        BoardShape noZeroZero = new BoardShape(
+                "noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Collections.emptySet());
         assertEquals(2, noZeroZero.width);
         assertEquals(2, noZeroZero.height);
         assertEquals(2, noZeroZero.area);
+    }
+
+    @Test
+    public void testNewWithRosettes() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("test", Collections.emptySet(), Set.of(new Tile(0, 0)))
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("test", Set.of(new Tile(0, 0)), Set.of(new Tile(1, 1)))
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("test", Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape(
+                        "test", Set.of(new Tile(0, 0), new Tile(0, 1)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+        );
+
+        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0)));
+        assertEquals(1, singleTile.width);
+        assertEquals(1, singleTile.height);
+        assertEquals(1, singleTile.area);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(0, 1)), Set.of(new Tile(0, 1)))
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(1, 0)), Set.of(new Tile(1, 0)))
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)))
+        );
+
+        BoardShape noZeroZero = new BoardShape(
+                "noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 1)));
+        assertEquals(2, noZeroZero.width);
+        assertEquals(2, noZeroZero.height);
+        assertEquals(2, noZeroZero.area);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new BoardShape("notZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 0)))
+        );
     }
 
     @Test
@@ -83,6 +146,30 @@ public class BoardShapeTest {
 
         // Contains should have been true for an area number of tiles.
         assertEquals(shape.area, area);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeProvider.class)
+    public void testIsRosette(BoardShape shape) {
+        // Deliberately includes out-of-bounds coordinates.
+        int rosetteCount = 0;
+        for (int x = -1; x <= shape.width; ++x) {
+            for (int y = -1; y <= shape.height; ++y) {
+                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
+                    assertFalse(shape.isRosette(x, y));
+                    continue;
+                }
+
+                Tile tile = new Tile(x, y);
+                assertEquals(shape.isRosette(tile), shape.isRosette(x, y));
+                if (shape.isRosette(tile)) {
+                    rosetteCount += 1;
+                }
+            }
+        }
+
+        // We should have seen all of the rosettes.
+        assertEquals(shape.rosetteTiles.size(), rosetteCount);
     }
 
     @ParameterizedTest
