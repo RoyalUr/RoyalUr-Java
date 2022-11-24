@@ -74,4 +74,18 @@ public class StandardBoardShape extends BoardShape {
     public boolean contains(int x, int y) {
         return x >= 0 && x < 3 && y >= 0 && y < 8 && (x == 1 || (y < 4 || y >= 6));
     }
+
+    @Override
+    public boolean isRosette(@Nonnull Tile tile) {
+        return isRosette(tile.x, tile.y);
+    }
+
+    @Override
+    public boolean isRosette(int x, int y) {
+        if (x == 1) {
+            return y == 3;
+        } else {
+            return (x >= 0 && x < 3) && (y == 0 || y == 6);
+        }
+    }
 }

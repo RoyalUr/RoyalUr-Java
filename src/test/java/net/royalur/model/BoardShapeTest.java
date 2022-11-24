@@ -150,6 +150,29 @@ public class BoardShapeTest {
 
     @ParameterizedTest
     @ArgumentsSource(BoardShapeProvider.class)
+    public void testContainsWithCopy(BoardShape shape) {
+        // Create an untyped copy of the board shape, to ensure it acts the same for contains.
+        BoardShape copy = new BoardShape(shape.name, shape.tiles, shape.rosetteTiles);
+
+        // Deliberately includes out-of-bounds coordinates.
+        for (int x = -1; x <= shape.width; ++x) {
+            for (int y = -1; y <= shape.height; ++y) {
+                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
+                    assertFalse(shape.contains(x, y));
+                    assertFalse(copy.contains(x, y));
+                    continue;
+                }
+
+                Tile tile = new Tile(x, y);
+                assertEquals(shape.contains(tile), shape.contains(x, y));
+                assertEquals(shape.contains(tile), copy.contains(tile));
+                assertEquals(shape.contains(x, y), copy.contains(x, y));
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeProvider.class)
     public void testIsRosette(BoardShape shape) {
         // Deliberately includes out-of-bounds coordinates.
         int rosetteCount = 0;
@@ -168,8 +191,31 @@ public class BoardShapeTest {
             }
         }
 
-        // We should have seen all of the rosettes.
+        // We should have seen all rosettes.
         assertEquals(shape.rosetteTiles.size(), rosetteCount);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BoardShapeProvider.class)
+    public void testIsRosetteWithCopy(BoardShape shape) {
+        // Create an untyped copy of the board shape, to ensure it acts the same for contains.
+        BoardShape copy = new BoardShape(shape.name, shape.tiles, shape.rosetteTiles);
+
+        // Deliberately includes out-of-bounds coordinates.
+        for (int x = -1; x <= shape.width; ++x) {
+            for (int y = -1; y <= shape.height; ++y) {
+                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
+                    assertFalse(shape.isRosette(x, y));
+                    assertFalse(copy.isRosette(x, y));
+                    continue;
+                }
+
+                Tile tile = new Tile(x, y);
+                assertEquals(shape.isRosette(tile), shape.isRosette(x, y));
+                assertEquals(shape.isRosette(tile), copy.isRosette(tile));
+                assertEquals(shape.isRosette(x, y), copy.isRosette(x, y));
+            }
+        }
     }
 
     @ParameterizedTest
