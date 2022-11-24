@@ -9,6 +9,11 @@ import javax.annotation.Nullable;
 public class PathPair {
 
     /**
+     * The name of this pair of paths.
+     */
+    public final @Nonnull String name;
+
+    /**
      * The path that the light player's pieces must take.
      */
     public final @Nonnull Path lightPath;
@@ -22,7 +27,7 @@ public class PathPair {
      * @param lightPath The path that the light player's pieces must take.
      * @param darkPath The path that the dark player's pieces must take.
      */
-    public PathPair(@Nonnull Path lightPath, @Nonnull Path darkPath) {
+    public PathPair(@Nonnull String name, @Nonnull Path lightPath, @Nonnull Path darkPath) {
         if (lightPath.player != Player.LIGHT) {
             throw new IllegalArgumentException(
                     "The lightPath is not intended for the " + Player.LIGHT.name + " player. " +
@@ -37,6 +42,7 @@ public class PathPair {
                     " as the intended player."
             );
         }
+        this.name = name;
         this.lightPath = lightPath;
         this.darkPath = darkPath;
     }
