@@ -1,8 +1,5 @@
 package net.royalur.model;
 
-import net.royalur.model.Path;
-import net.royalur.model.Player;
-import net.royalur.model.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -181,6 +178,8 @@ public class PathTest {
         assertEquals(path1, path1);
         assertEquals(path1, path2);
         assertEquals(path2, path1);
+        assertNotEquals(path1, new Path("Path", Player.LIGHT, tileList));
+        assertNotEquals(path1, new Path("", Player.LIGHT, tileList));
 
         Path path3 = new Path("path", Player.DARK, tileList);
         Path path4 = new Path("path", Player.DARK, tileList);
@@ -189,6 +188,7 @@ public class PathTest {
         assertEquals(path4, path3);
         assertNotEquals(path3, path1);
         assertNotEquals(path1, path3);
+        assertNotEquals(path3, new Path("Path", Player.DARK, tileList));
 
         Path path5 = new Path("", Player.LIGHT, tileList);
         Path path6 = new Path("", Player.LIGHT, tileList);
@@ -199,6 +199,7 @@ public class PathTest {
         assertNotEquals(path1, path5);
         assertNotEquals(path5, path3);
         assertNotEquals(path3, path5);
+        assertNotEquals(path5, new Path("Path", Player.LIGHT, tileList));
 
         tileList.add(new Tile(1, 0));
         tileList.add(new Tile(1, 1));
@@ -214,6 +215,7 @@ public class PathTest {
         assertNotEquals(path3, path7);
         assertNotEquals(path7, path5);
         assertNotEquals(path5, path7);
+        assertNotEquals(path7, new Path("Path", Player.LIGHT, tileList));
 
         List<Tile> tileList2 = new ArrayList<>();
         tileList2.add(new Tile(1, 1));
@@ -232,6 +234,8 @@ public class PathTest {
         assertNotEquals(path7, path9);
         assertNotEquals(path10, path7);
         assertNotEquals(path7, path10);
+        assertNotEquals(path9, new Path("path", Player.DARK, tileList2));
+        assertNotEquals(path10, new Path("Path", Player.LIGHT, tileList2));
 
         Object notPath = new Object();
         assertNotEquals(path1, notPath);
