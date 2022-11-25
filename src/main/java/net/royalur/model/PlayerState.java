@@ -48,54 +48,13 @@ public class PlayerState {
     }
 
     /**
+     * This constructor uses the default name from {@param player}.
      * @param player The player that this state represents.
      * @param pieces The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
      */
     public PlayerState(@Nonnull Player player, int pieces, int score) {
         this(player, player.name, pieces, score);
-    }
-
-    /**
-     * Copies this player state with its number of pieces replaced by {@param newPieceCount}.
-     * @param newPieceCount The number of pieces that the returned player state should have.
-     * @return A copy of this player state with its number of pieces replaced by {@param newPieceCount}.
-     */
-    public @Nonnull PlayerState withPieceCount(int newPieceCount) {
-        return new PlayerState(player, name, newPieceCount, score);
-    }
-
-    /**
-     * Copies this player state with its score replaced by {@param newScore}.
-     * @param newScore The score that the returned player state should have.
-     * @return A copy of this player state with its score replaced by {@param newScore}.
-     */
-    public @Nonnull PlayerState withScore(int newScore) {
-        return new PlayerState(player, name, pieces, newScore);
-    }
-
-    /**
-     * Copies this player state with its number of pieces incremented by 1.
-     * @return A copy of this player state with its number of pieces incremented by 1.
-     */
-    public @Nonnull PlayerState withOneMorePiece() {
-        return withPieceCount(pieces + 1);
-    }
-
-    /**
-     * Copies this player state with its number of pieces decremented by 1.
-     * @return A copy of this player state with its number of pieces decremented by 1.
-     */
-    public @Nonnull PlayerState withOneLessPiece() {
-        return withPieceCount(pieces - 1);
-    }
-
-    /**
-     * Copies this player state with its score incremented by 1.
-     * @return A copy of this player state with its score incremented by 1.
-     */
-    public @Nonnull PlayerState withOneMoreScore() {
-        return withScore(score + 1);
     }
 
     @Override
