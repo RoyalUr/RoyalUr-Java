@@ -32,4 +32,9 @@ public class StandardDice implements Dice<Roll> {
         // Each generated bit represents a roll of a D2 dice.
         return Roll.of(Integer.bitCount(random.nextInt(16)));
     }
+
+    @Override
+    public int getMaxRoll() {
+        return 4;
+    }
 }

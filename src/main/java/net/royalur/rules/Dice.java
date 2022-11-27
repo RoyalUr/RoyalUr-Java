@@ -14,4 +14,10 @@ public interface Dice<R extends Roll> {
      * @return A random roll of this dice.
      */
     @Nonnull R roll();
+
+    /**
+     * Retrieves the maximum value that this dice could possibly roll.
+     * @return The maximum value that this dice could possibly roll.
+     */
+    int getMaxRoll();
 }
