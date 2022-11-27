@@ -46,6 +46,11 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
             @Nonnull PathPair paths,
             @Nonnull Dice<R> dice
     ) {
+        if (!boardShape.isCompatible(paths.lightPath)) {
+            throw new IllegalArgumentException(
+                    "The " + paths.name + " paths are not compatible with the " + boardShape.name + " board shape"
+            );
+        }
         this.name = name;
         this.boardShape = boardShape;
         this.paths = paths;

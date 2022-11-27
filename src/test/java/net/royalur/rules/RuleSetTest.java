@@ -49,7 +49,7 @@ public class RuleSetTest {
                             new AsebBoardShape(),
                             new AsebPathPair(),
                             new StandardDice(),
-                            7
+                            5
                     )))
             );
         }

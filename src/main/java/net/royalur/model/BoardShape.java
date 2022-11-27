@@ -181,6 +181,19 @@ public class BoardShape {
         return isRosette(new Tile(x, y));
     }
 
+    /**
+     * Determines whether {@param path} could be traversed on this shape of board.
+     * @param path The path to check for compatibility.
+     * @return Whether {@param path} could be traversed on this shape of board.
+     */
+    public boolean isCompatible(@Nonnull Path path) {
+        for (Tile tile : path.tiles) {
+            if (!contains(tile))
+                return false;
+        }
+        return true;
+    }
+
     @Override
     public int hashCode() {
         return name.hashCode() ^ (31 * tiles.hashCode()) ^ (97 * rosetteTiles.hashCode());
