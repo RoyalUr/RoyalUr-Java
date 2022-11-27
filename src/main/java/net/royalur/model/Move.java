@@ -34,10 +34,10 @@ public class Move<P extends Piece> {
     protected final @Nullable P toPiece;
 
     /**
-     * The piece that will be displaced by this move, or {@code null}
-     * if no piece would be displaced by this move.
+     * The piece that will be captured by this move, or {@code null}
+     * if no piece would be captured by this move.
      */
-    protected final @Nullable P displacedPiece;
+    protected final @Nullable P capturedPiece;
 
     /**
      * Creates a new move with origin {@param from} and destination {@param to}.
@@ -53,13 +53,13 @@ public class Move<P extends Piece> {
      *                  moving a piece off of the board.
      * @param toPiece   The piece that will be placed at the destination of the move, or
      *                  {@code null} if moving a piece off of the board.
-     * @param displacedPiece The piece that will be displaced by this move, or {@code null}
-     *                       if no piece would be displaced by this move.
+     * @param capturedPiece The piece that will be captured by this move, or {@code null}
+     *                       if no piece would be captured by this move.
      */
     public Move(
             @Nullable Tile from, @Nullable P fromPiece,
             @Nullable Tile to, @Nullable P toPiece,
-            @Nullable P displacedPiece
+            @Nullable P capturedPiece
     ) {
         if (from == null && to == null)
             throw new IllegalArgumentException("from and to cannot both be null");
@@ -72,7 +72,7 @@ public class Move<P extends Piece> {
         this.to = to;
         this.fromPiece = fromPiece;
         this.toPiece = toPiece;
-        this.displacedPiece = displacedPiece;
+        this.capturedPiece = capturedPiece;
     }
 
     /**
@@ -92,11 +92,11 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Determines whether this move is displacing an existing piece on the board.
-     * @return Whether this move is displacing an existing piece on the board.
+     * Determines whether this move is capturing an existing piece on the board.
+     * @return Whether this move is capturing an existing piece on the board.
      */
-    public boolean displacesPiece() {
-        return displacedPiece != null;
+    public boolean capturesPiece() {
+        return capturedPiece != null;
     }
 
     /**
@@ -158,15 +158,15 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Retrieves the piece that will be displaced by this move. If there is no piece
+     * Retrieves the piece that will be captured by this move. If there is no piece
      * that will be displayed, this will throw an error.
-     * @return The piece that will be displaced by this move.
+     * @return The piece that will be captured by this move.
      */
-    public @Nonnull P getDisplacedPiece() {
-        if (displacedPiece == null)
-            throw new IllegalStateException("This move does not displace a piece");
+    public @Nonnull P getCapturedPiece() {
+        if (capturedPiece == null)
+            throw new IllegalStateException("This move does not capture a piece");
 
-        return displacedPiece;
+        return capturedPiece;
     }
 
     /**
@@ -186,7 +186,7 @@ public class Move<P extends Piece> {
     public int hashCode() {
         return Objects.hashCode(from) ^ (31 * Objects.hashCode(fromPiece)) ^
                 (113 * Objects.hashCode(to)) ^ (149 * Objects.hashCode(toPiece)) ^
-                (191 * Objects.hashCode(displacedPiece));
+                (191 * Objects.hashCode(capturedPiece));
     }
 
     @Override
@@ -197,6 +197,6 @@ public class Move<P extends Piece> {
         Move<?> other = (Move<?>) obj;
         return Objects.equals(from, other.from) && Objects.equals(fromPiece, other.fromPiece) &&
                 Objects.equals(to, other.to) && Objects.equals(toPiece, other.toPiece) &&
-                Objects.equals(displacedPiece, other.displacedPiece);
+                Objects.equals(capturedPiece, other.capturedPiece);
     }
 }

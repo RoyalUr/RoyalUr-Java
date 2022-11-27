@@ -109,9 +109,16 @@ public abstract class SimpleRuleSet<
             // Check if the destination is free.
             int destPathIndex = index + roll.value;
             Tile dest = path.get(destPathIndex);
-            P destPiece = board.get(dest); // destPiece == null || destPiece.owner != player
-            if (destPiece != null && destPiece.owner == player.player)
-                continue;
+            P destPiece = board.get(dest);
+            if (destPiece != null)  {
+                // Can't capture your own pieces.
+                if (destPiece.owner == player.player)
+                    continue;
+
+                // Can't capture pieces on rosettes.
+                if (board.shape.isRosette(dest))
+                    continue;
+            }
 
             // Generate the move.
             P movedPiece;
@@ -178,7 +185,7 @@ public abstract class SimpleRuleSet<
 
         // Apply the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
-        if (move.displacesPiece()) {
+        if (move.capturesPiece()) {
             otherPlayer.addPiece();
         }
 
