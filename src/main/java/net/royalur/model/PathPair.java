@@ -47,6 +47,20 @@ public class PathPair {
         this.darkPath = darkPath;
     }
 
+    /**
+     * Retrieves the path for the player {@param player}.
+     * @param player The player to get the path for.
+     * @return The path for the given player.
+     */
+    public @Nonnull Path get(@Nonnull Player player) {
+        switch (player) {
+            case LIGHT: return lightPath;
+            case DARK: return darkPath;
+            default:
+                throw new IllegalArgumentException("Unknown player " + player);
+        }
+    }
+
     @Override
     public int hashCode() {
         return name.hashCode() ^ (37 * lightPath.hashCode()) ^ (91 * darkPath.hashCode());

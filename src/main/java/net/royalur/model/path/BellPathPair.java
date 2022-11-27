@@ -9,36 +9,36 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * The standard paths that are used for Aseb.
+ * The pair of paths proposed by Bell for the Royal Game of Ur.
  */
-public class AsebPathPair extends PathPair {
+public class BellPathPair extends PathPair {
 
     /**
-     * The name given to the Aseb paths.
+     * The name given to Bell's paths.
      */
-    public static final String NAME = "Aseb";
+    public static final String NAME = "Bell";
 
     /**
-     * A standard path used for Aseb.
+     * A path proposed by Bell.
      */
-    public static abstract class AsebPath extends Path {
+    public static abstract class BellPath extends Path {
         /**
          * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
          */
-        protected AsebPath(@Nonnull Player player, @Nonnull List<Tile> tiles) {
+        protected BellPath(@Nonnull Player player, @Nonnull List<Tile> tiles) {
             super(NAME, player, tiles);
         }
     }
 
     /**
-     * The Aseb path for the light player.
+     * Bell's path for the light player.
      */
-    public static class AsebLightPath extends AsebPath {
+    public static class BellLightPath extends BellPath {
 
         /**
          * The ordered list of tiles that must be traversed by pieces
-         * on the Aseb board for the light player.
+         * on the standard board for the light player.
          */
         public static final @Nonnull List<Tile> TILES = List.of(
                 new Tile(0, 3),
@@ -53,25 +53,23 @@ public class AsebPathPair extends PathPair {
                 new Tile(1, 5),
                 new Tile(1, 6),
                 new Tile(1, 7),
-                new Tile(1, 8),
-                new Tile(1, 9),
-                new Tile(1, 10),
-                new Tile(1, 11)
+                new Tile(0, 7),
+                new Tile(0, 6)
         );
 
-        public AsebLightPath() {
+        public BellLightPath() {
             super(Player.LIGHT, TILES);
         }
     }
 
     /**
-     * The Aseb path for the dark player.
+     * Bell's path for the dark player.
      */
-    public static class AsebDarkPath extends AsebPath {
+    public static class BellDarkPath extends BellPath {
 
         /**
          * The ordered list of tiles that must be traversed by pieces
-         * on the Aseb board for the dark player.
+         * on the standard board for the dark player.
          */
         public static final @Nonnull List<Tile> TILES = List.of(
                 new Tile(2, 3),
@@ -86,18 +84,16 @@ public class AsebPathPair extends PathPair {
                 new Tile(1, 5),
                 new Tile(1, 6),
                 new Tile(1, 7),
-                new Tile(1, 8),
-                new Tile(1, 9),
-                new Tile(1, 10),
-                new Tile(1, 11)
+                new Tile(2, 7),
+                new Tile(2, 6)
         );
 
-        public AsebDarkPath() {
+        public BellDarkPath() {
             super(Player.DARK, TILES);
         }
     }
 
-    public AsebPathPair() {
-        super(NAME, new AsebLightPath(), new AsebDarkPath());
+    public BellPathPair() {
+        super(NAME, new BellLightPath(), new BellDarkPath());
     }
 }
