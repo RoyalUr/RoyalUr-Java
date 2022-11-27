@@ -96,7 +96,7 @@ public abstract class SimpleRuleSet<
                 if (piece == null || piece.owner != player.player || piece.pathIndex != index)
                     continue;
 
-            } else if (player.pieces > 0) {
+            } else if (player.pieceCount > 0) {
                 // Introduce a piece to the board.
                 tile = null;
                 piece = null;

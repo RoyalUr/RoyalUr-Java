@@ -22,7 +22,7 @@ public class PlayerState {
     /**
      * The number of pieces that the player has yet to play.
      */
-    public final int pieces;
+    public final int pieceCount;
 
     /**
      * The number of pieces that the player has taken off the board.
@@ -32,35 +32,35 @@ public class PlayerState {
     /**
      * @param player The player that this state represents.
      * @param name The name of the player that this state represents.
-     * @param pieces The number of pieces that the player has yet to play.
+     * @param pieceCount The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
      */
-    public PlayerState(@Nonnull Player player, @Nonnull String name, int pieces, int score) {
-        if (pieces < 0)
-            throw new IllegalArgumentException("pieces must be at least 0: Not: " + pieces);
+    public PlayerState(@Nonnull Player player, @Nonnull String name, int pieceCount, int score) {
+        if (pieceCount < 0)
+            throw new IllegalArgumentException("pieceCount must be at least 0: Not: " + pieceCount);
         if (score < 0)
             throw new IllegalArgumentException("score must be at least 0: Not: " + score);
 
         this.player = player;
         this.name = name;
-        this.pieces = pieces;
+        this.pieceCount = pieceCount;
         this.score = score;
     }
 
     /**
      * This constructor uses the default name from {@param player}.
      * @param player The player that this state represents.
-     * @param pieces The number of pieces that the player has yet to play.
+     * @param pieceCount The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
      */
-    public PlayerState(@Nonnull Player player, int pieces, int score) {
-        this(player, player.name, pieces, score);
+    public PlayerState(@Nonnull Player player, int pieceCount, int score) {
+        this(player, player.name, pieceCount, score);
     }
 
     @Override
     public int hashCode() {
         return player.hashCode() ^ (37 * name.hashCode())
-                ^ (97 * Integer.hashCode(pieces)) ^ (137 * Integer.hashCode(score));
+                ^ (97 * Integer.hashCode(pieceCount)) ^ (137 * Integer.hashCode(score));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class PlayerState {
 
         PlayerState other = (PlayerState) obj;
         return player == other.player && name.equals(other.name) &&
-                pieces == other.pieces && score == other.score;
+                pieceCount == other.pieceCount && score == other.score;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class PlayerState {
         }
         builder.append("\n");
 
-        builder.append("Pieces: ").append(pieces).append("\n");
+        builder.append("Pieces: ").append(pieceCount).append("\n");
         builder.append("Score: ").append(score);
         return builder.toString();
     }
