@@ -1,9 +1,7 @@
 package net.royalur.rules.simple;
 
 import net.royalur.model.*;
-import net.royalur.model.state.WaitingForMoveGameState;
-import net.royalur.model.state.WaitingForRollGameState;
-import net.royalur.model.state.WinGameState;
+import net.royalur.model.state.*;
 import net.royalur.rules.Dice;
 import net.royalur.rules.RuleSet;
 
@@ -127,6 +125,35 @@ public abstract class SimpleRuleSet<
         return moves;
     }
 
+    public @Nonnull List<GameState<P, S, R>> applyRoll(
+            @Nonnull WaitingForRollGameState<P, S, R> state,
+            @Nonnull R roll
+    ) {
+
+        // If the player rolled zero, we need to change the turn to the other player.
+        if (roll.value == 0) {
+            Player newTurn = state.turn.getOtherPlayer();
+            return List.of(
+                    new RolledZeroGameState<>(state.board, state.lightPlayer, state.darkPlayer, state.turn, roll),
+                    new WaitingForRollGameState<>(state.board, state.lightPlayer, state.darkPlayer, newTurn)
+            );
+        }
+
+        // Determine if the player has any available moves.
+        List<Move<P>> availableMoves = findAvailableMoves(state.board, state.getTurnPlayer(), roll);
+        if (availableMoves.isEmpty()) {
+            Player newTurn = state.turn.getOtherPlayer();
+            return List.of(
+                    new AllMovesBlockedGameState<>(state.board, state.lightPlayer, state.darkPlayer, state.turn, roll),
+                    new WaitingForRollGameState<>(state.board, state.lightPlayer, state.darkPlayer, newTurn)
+            );
+        }
+
+        // The player has moves they can make.
+        return List.of(new WaitingForMoveGameState<>(
+                state.board, state.lightPlayer, state.darkPlayer, state.turn, roll
+        ));
+    }
 
     public @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state,
