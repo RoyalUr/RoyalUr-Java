@@ -11,26 +11,26 @@ public class PlayerStateTest {
         PlayerState player = new PlayerState(Player.LIGHT, 1, 1);
         assertEquals(Player.LIGHT, player.player);
         assertEquals(Player.LIGHT.name, player.name);
-        assertEquals(1, player.pieceCount);
-        assertEquals(1, player.score);
+        assertEquals(1, player.getPieceCount());
+        assertEquals(1, player.getScore());
 
         player = new PlayerState(Player.DARK, 2, 3);
         assertEquals(Player.DARK, player.player);
         assertEquals(Player.DARK.name, player.name);
-        assertEquals(2, player.pieceCount);
-        assertEquals(3, player.score);
+        assertEquals(2, player.getPieceCount());
+        assertEquals(3, player.getScore());
 
         player = new PlayerState(Player.LIGHT, "Jeff", 5, 4);
         assertEquals(Player.LIGHT, player.player);
         assertEquals("Jeff", player.name);
-        assertEquals(5, player.pieceCount);
-        assertEquals(4, player.score);
+        assertEquals(5, player.getPieceCount());
+        assertEquals(4, player.getScore());
 
         player = new PlayerState(Player.DARK, "Bob", 10, 11);
         assertEquals(Player.DARK, player.player);
         assertEquals("Bob", player.name);
-        assertEquals(10, player.pieceCount);
-        assertEquals(11, player.score);
+        assertEquals(10, player.getPieceCount());
+        assertEquals(11, player.getScore());
 
         assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, 1, -1));

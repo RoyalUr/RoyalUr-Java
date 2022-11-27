@@ -44,4 +44,12 @@ public abstract class OngoingGameState<
     public @Nonnull S getTurnPlayer() {
         return getPlayer(turn);
     }
+
+    /**
+     * Retrieves the state of the player that is waiting for their own turn.
+     * @return The state of the player that is waiting for their own turn.
+     */
+    public @Nonnull S getWaitingPlayer() {
+        return getPlayer(turn);
+    }
 }

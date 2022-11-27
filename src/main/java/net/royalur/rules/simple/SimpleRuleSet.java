@@ -1,6 +1,9 @@
 package net.royalur.rules.simple;
 
 import net.royalur.model.*;
+import net.royalur.model.state.WaitingForMoveGameState;
+import net.royalur.model.state.WaitingForRollGameState;
+import net.royalur.model.state.WinGameState;
 import net.royalur.rules.Dice;
 import net.royalur.rules.RuleSet;
 
@@ -96,7 +99,7 @@ public abstract class SimpleRuleSet<
                 if (piece == null || piece.owner != player.player || piece.pathIndex != index)
                     continue;
 
-            } else if (player.pieceCount > 0) {
+            } else if (player.getPieceCount() > 0) {
                 // Introduce a piece to the board.
                 tile = null;
                 piece = null;
@@ -122,5 +125,49 @@ public abstract class SimpleRuleSet<
             moves.add(new Move<>(tile, piece, dest, movedPiece, destPiece));
         }
         return moves;
+    }
+
+
+    public @Nonnull List<GameState<P, S, R>> applyMove(
+            @Nonnull WaitingForMoveGameState<P, S, R> state,
+            @Nonnull Move<P> move
+    ) {
+
+        // Apply the move to the board.
+        Board<P> board = state.board.copy();
+        move.apply(board);
+
+        // Apply the move to the player that made the move.
+        S turnPlayer = state.getTurnPlayer();
+        if (move.isIntroducingPiece() || move.isScoringPiece()) {
+            turnPlayer = PlayerState.safeCopy(turnPlayer);
+            if (move.isIntroducingPiece()) {
+                turnPlayer.subtractPiece();
+            }
+            if (move.isScoringPiece()) {
+                turnPlayer.scorePiece();
+            }
+        }
+
+        // Apply the move to the other player.
+        S otherPlayer = state.getWaitingPlayer();
+        if (move.displacesPiece()) {
+            otherPlayer.addPiece();
+        }
+
+        // Determine which player is which.
+        S lightPlayer = (turnPlayer.player == Player.LIGHT ? turnPlayer : otherPlayer);
+        S darkPlayer = (turnPlayer.player == Player.DARK ? turnPlayer : otherPlayer);
+
+        // Check if the player has won the game.
+        if (move.isScoringPiece() && turnPlayer.getScore() >= startingPieceCount)
+            return List.of(new WinGameState<>(board, lightPlayer, darkPlayer, state.turn));
+
+        // Determine who's turn it will be in the next state.
+        Player turn = state.turn;
+        if (!move.isLandingOnRosette(board.shape)) {
+            turn = turn.getOtherPlayer();
+        }
+        return List.of(new WaitingForRollGameState<>(board, lightPlayer, darkPlayer, turn));
     }
 }

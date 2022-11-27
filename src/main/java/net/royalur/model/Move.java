@@ -169,6 +169,19 @@ public class Move<P extends Piece> {
         return displacedPiece;
     }
 
+    /**
+     * Apply this move to update the board {@param board}.
+     * @param board The board to update by applying this move.
+     */
+    public void apply(@Nonnull Board<P> board) {
+        if (from != null) {
+            board.set(from, null);
+        }
+        if (to != null) {
+            board.set(to, toPiece);
+        }
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(from) ^ (31 * Objects.hashCode(fromPiece)) ^

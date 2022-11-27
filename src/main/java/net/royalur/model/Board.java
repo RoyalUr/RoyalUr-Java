@@ -59,7 +59,7 @@ public class Board<P extends Piece> {
      * Creates an exact copy of this board.
      * @return An exact copy of this board.
      */
-    public Board<P> copy() {
+    public @Nonnull Board<P> copy() {
         return new Board<>(this);
     }
 

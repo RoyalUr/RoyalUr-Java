@@ -1,6 +1,7 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
+import net.royalur.model.state.WaitingForMoveGameState;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -100,4 +101,23 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      */
     public abstract @Nonnull List<Move<P>> findAvailableMoves(
             @Nonnull Board<P> board, @Nonnull S player, @Nonnull R roll);
+
+    /**
+     * Applies the move {@param move} to the state {@param state} to
+     * generate the new state of the game. Multiple game states may
+     * be returned to include information game states for maintaining
+     * history. However, the latest or highest-index game state will
+     * represent the state of the game after the move was made.
+     * <p>
+     * This method does not check that the given move is a valid move
+     * from the current game state.
+     *
+     * @param state The current state of the game.
+     * @param move The move that the player chose to make from this position.
+     * @return A list of new game states after the given move was made. The
+     *         list may include historical information game states, and will
+     *         always include the new state of the game as its last element.
+     */
+    public abstract @Nonnull List<GameState<P, S, R>> applyMove(
+            @Nonnull WaitingForMoveGameState<P, S, R> state, @Nonnull Move<P> move);
 }
