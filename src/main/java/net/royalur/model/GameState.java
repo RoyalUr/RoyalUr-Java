@@ -48,6 +48,14 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
         if (darkPlayer.player != Player.DARK)
             throw new IllegalArgumentException("The darkPlayer should be of Player.DARK, not " + lightPlayer.player);
 
+        // Enforce that the GameStateTypes match the types used for the game states.
+        if (!type.baseClass.isInstance(this)) {
+            throw new IllegalArgumentException(
+                    "This state's type is " + type + ", but the state is not a subclass of " + type.baseClass + ". " +
+                    "This state is of type " + getClass() + " instead"
+            );
+        }
+
         this.type = type;
         this.board = board;
         this.lightPlayer = lightPlayer;
