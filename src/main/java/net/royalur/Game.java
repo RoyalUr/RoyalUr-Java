@@ -1,8 +1,10 @@
 package net.royalur;
 
+import net.royalur.agent.Agent;
 import net.royalur.model.*;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public abstract class Game<P extends Piece, S extends PlayerState, R extends Roll> {
+public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
      * The set of rules that are being used for this game.
@@ -81,6 +83,14 @@ public abstract class Game<P extends Piece, S extends PlayerState, R extends Rol
      */
     public @Nonnull GameState<P, S, R> getCurrentState() {
         return states.get(states.size() - 1);
+    }
+
+    /**
+     * Determines whether the game is currently in a finished state.
+     * @return Whether the game is currently in a finished state.
+     */
+    public boolean isFinished() {
+        return getCurrentState() instanceof WinGameState;
     }
 
     /**
@@ -252,5 +262,69 @@ public abstract class Game<P extends Piece, S extends PlayerState, R extends Rol
     public void makeMove(@Nonnull Move<P> move) {
         WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
         addStates(rules.applyMove(state, move));
+    }
+
+    /**
+     * Completes this game using the two agents to play its moves.
+     * @param light The agent to play as the light player.
+     * @param dark The agent to play as the dark player.
+     * @return The number of actions that were made by both agents combined. Includes rolls of the dice and moves.
+     */
+    public int playAutonomously(@Nonnull Agent<P, S, R> light, @Nonnull Agent<P, S, R> dark) {
+        if (light.player != Player.LIGHT)
+            throw new IllegalArgumentException("Expected the light agent to be playing as Player.LIGHT");
+        if (dark.player != Player.DARK)
+            throw new IllegalArgumentException("Expected the dark agent to be playing as Player.DARK");
+
+        int moves = 0;
+        while (!isFinished()) {
+            if (!isPlayable()) {
+                throw new IllegalStateException(
+                        "Encountered an unplayable state that is not the end of the game: " +
+                                getCurrentState().getClass().getSimpleName()
+                );
+            }
+
+            moves += 1;
+            S turnPlayer = getTurnPlayer();
+            switch (turnPlayer.player) {
+                case LIGHT:
+                    light.playTurn();
+                    break;
+                case DARK:
+                    dark.playTurn();
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown player " + turnPlayer.player);
+            }
+        }
+        return moves;
+    }
+
+    /**
+     * Creates a builder to assist in constructing games with custom settings.
+     * @return A builder to assist in constructing games with custom settings.
+     */
+    public static @Nonnull GameBuilder builder() {
+        return new GameBuilder();
+    }
+
+    /**
+     * Creates a standard game that follows the default rules on RoyalUr.net. Therefore,
+     * this uses the simple rules, the standard board shape, Bell's path, the standard dice,
+     * and seven starting pieces per player.
+     * @return A standard game.
+     */
+    public static @Nonnull Game<SimplePiece, PlayerState, Roll> createStandard() {
+        return builder().standard().build();
+    }
+
+    /**
+     * Creates a game of Aseb. This uses the simple rules, the Aseb board shape,
+     * the Aseb paths, the standard dice, and five starting pieces per player.
+     * @return A game of Aseb.
+     */
+    public static @Nonnull Game<SimplePiece, PlayerState, Roll> createAseb() {
+        return builder().aseb().build();
     }
 }

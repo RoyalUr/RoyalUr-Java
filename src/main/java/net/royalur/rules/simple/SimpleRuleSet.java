@@ -183,7 +183,7 @@ public abstract class SimpleRuleSet<
             }
         }
 
-        // Apply the move to the other player.
+        // Apply the effects of the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
         if (move.capturesPiece()) {
             otherPlayer.addPiece();
