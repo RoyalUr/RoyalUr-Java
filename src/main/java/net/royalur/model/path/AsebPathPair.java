@@ -25,9 +25,16 @@ public class AsebPathPair extends PathPair {
         /**
          * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
+         * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.
+         * @param endTile   The tile that pieces should be moved to so that they can be moved off the board.
          */
-        protected AsebPath(@Nonnull Player player, @Nonnull List<Tile> tiles) {
-            super(NAME, player, tiles);
+        protected AsebPath(
+                @Nonnull Player player,
+                @Nonnull List<Tile> tiles,
+                @Nonnull Tile startTile,
+                @Nonnull Tile endTile
+        ) {
+            super(NAME, player, tiles, startTile, endTile);
         }
     }
 
@@ -59,8 +66,11 @@ public class AsebPathPair extends PathPair {
                 new Tile(1, 11)
         );
 
+        public static final @Nonnull Tile START_TILE = new Tile(0, 4);
+        public static final @Nonnull Tile END_TILE = new Tile(1, 12);
+
         public AsebLightPath() {
-            super(Player.LIGHT, TILES);
+            super(Player.LIGHT, TILES, START_TILE, END_TILE);
         }
     }
 
@@ -92,8 +102,11 @@ public class AsebPathPair extends PathPair {
                 new Tile(1, 11)
         );
 
+        public static final @Nonnull Tile START_TILE = new Tile(2, 4);
+        public static final @Nonnull Tile END_TILE = new Tile(1, 12);
+
         public AsebDarkPath() {
-            super(Player.DARK, TILES);
+            super(Player.DARK, TILES, START_TILE, END_TILE);
         }
     }
 

@@ -10,55 +10,67 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PathTest {
 
+    private static final Tile T00 = new Tile(0, 0);
+    private static final Tile T01 = new Tile(0, 1);
+    private static final Tile T10 = new Tile(1, 0);
+    private static final Tile T11 = new Tile(1, 1);
+    private static final Tile T20 = new Tile(2, 0);
+    private static final Tile T21 = new Tile(2, 1);
+    private static final Tile T12 = new Tile(1, 2);
+
     @Test
     public void testNew() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path = new Path("path", Player.LIGHT, tileList);
+        Path path = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertEquals("path", path.name);
         assertEquals(Player.LIGHT, path.player);
         assertEquals(1, path.length);
         assertEquals(tileList, path.tiles);
         assertNotSame(tileList, path.tiles);
+        assertEquals(T01, path.startTile);
+        assertEquals(T10, path.endTile);
 
-        tileList.add(new Tile(1, 1));
+        tileList.add(T11);
         assertNotEquals(tileList, path.tiles);
         assertEquals(1, path.length);
 
-        path = new Path("", Player.DARK, tileList);
+        path = new Path("", Player.DARK, tileList, T01, T21);
         assertEquals("", path.name);
         assertEquals(Player.DARK, path.player);
+        assertEquals(2, path.length);
         assertEquals(tileList, path.tiles);
         assertNotSame(tileList, path.tiles);
-        assertEquals(2, path.length);
+        assertEquals(T01, path.startTile);
+        assertEquals(T21, path.endTile);
 
-        tileList.add(new Tile(1, 2));
+        tileList.add(T12);
         assertNotEquals(tileList, path.tiles);
         assertEquals(2, path.length);
 
-        assertThrows(IllegalArgumentException.class, () -> new Path("path", Player.LIGHT, List.of()));
+        assertThrows(IllegalArgumentException.class, () -> new Path("path", Player.LIGHT, List.of(), T01, T21));
     }
 
     @Test
     public void testGet() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path1 = new Path("path", Player.LIGHT, tileList);
-        assertEquals(new Tile(0, 0), path1.get(0));
+        Path path1 = new Path("path", Player.LIGHT, tileList, T01, T10);
+        assertEquals(T00, path1.get(0));
         assertThrows(IndexOutOfBoundsException.class, () -> path1.get(-1));
         assertThrows(IndexOutOfBoundsException.class, () -> path1.get(1));
 
-        tileList.add(new Tile(0, 1));
-        tileList.add(new Tile(1, 1));
-        tileList.add(new Tile(2, 1));
+        tileList.add(T01);
+        tileList.add(T11);
+        tileList.add(T21);
 
-        Path path2 = new Path("path", Player.LIGHT, tileList);
-        assertEquals(new Tile(0, 0), path2.get(0));
-        assertEquals(new Tile(0, 1), path2.get(1));
-        assertEquals(new Tile(1, 1), path2.get(2));
-        assertEquals(new Tile(2, 1), path2.get(3));
+        Path path2 = new Path("path", Player.LIGHT, tileList, T01, T10);
+        assertEquals(T00, path2.get(0));
+        assertEquals(T01, path2.get(1));
+        assertEquals(T11, path2.get(2));
+        assertEquals(T21, path2.get(3));
         assertThrows(IndexOutOfBoundsException.class, () -> path2.get(-1));
         assertThrows(IndexOutOfBoundsException.class, () -> path2.get(4));
     }
@@ -66,69 +78,69 @@ public class PathTest {
     @Test
     public void testIterator() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path = new Path("path", Player.LIGHT, tileList);
+        Path path = new Path("path", Player.LIGHT, tileList, T01, T10);
         Iterator<Tile> iter = path.iterator();
         assertTrue(iter.hasNext());
-        assertEquals(new Tile(0, 0), iter.next());
+        assertEquals(T00, iter.next());
         assertFalse(iter.hasNext());
 
-        tileList.add(new Tile(0, 1));
-        tileList.add(new Tile(1, 1));
-        tileList.add(new Tile(2, 1));
+        tileList.add(T01);
+        tileList.add(T11);
+        tileList.add(T21);
         assertFalse(iter.hasNext());
 
-        path = new Path("path", Player.LIGHT, tileList);
+        path = new Path("path", Player.LIGHT, tileList, T01, T10);
         iter = path.iterator();
         assertTrue(iter.hasNext());
-        assertEquals(new Tile(0, 0), iter.next());
+        assertEquals(T00, iter.next());
         assertTrue(iter.hasNext());
-        assertEquals(new Tile(0, 1), iter.next());
+        assertEquals(T01, iter.next());
         assertTrue(iter.hasNext());
-        assertEquals(new Tile(1, 1), iter.next());
+        assertEquals(T11, iter.next());
         assertTrue(iter.hasNext());
-        assertEquals(new Tile(2, 1), iter.next());
+        assertEquals(T21, iter.next());
         assertFalse(iter.hasNext());
     }
 
     @Test
     public void testHashCode() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path1 = new Path("path", Player.LIGHT, tileList);
-        Path path2 = new Path("path", Player.LIGHT, tileList);
+        Path path1 = new Path("path", Player.LIGHT, tileList, T01, T10);
+        Path path2 = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertEquals(path1.hashCode(), path2.hashCode());
 
-        path1 = new Path("path", Player.DARK, tileList);
-        path2 = new Path("path", Player.DARK, tileList);
+        path1 = new Path("path", Player.DARK, tileList, T01, T11);
+        path2 = new Path("path", Player.DARK, tileList, T01, T11);
         assertEquals(path1.hashCode(), path2.hashCode());
 
-        path1 = new Path("", Player.LIGHT, tileList);
-        path2 = new Path("", Player.LIGHT, tileList);
+        path1 = new Path("", Player.LIGHT, tileList, T21, T10);
+        path2 = new Path("", Player.LIGHT, tileList, T21, T10);
         assertEquals(path1.hashCode(), path2.hashCode());
 
-        tileList.add(new Tile(1, 0));
-        tileList.add(new Tile(1, 1));
+        tileList.add(T10);
+        tileList.add(T11);
 
-        path1 = new Path("path", Player.LIGHT, tileList);
-        path2 = new Path("path", Player.LIGHT, tileList);
+        path1 = new Path("path", Player.LIGHT, tileList, T21, T11);
+        path2 = new Path("path", Player.LIGHT, tileList, T21, T11);
         assertEquals(path1.hashCode(), path2.hashCode());
     }
 
     @Test
     public void testIsEquivalent() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path1 = new Path("path", Player.LIGHT, tileList);
-        Path path2 = new Path("path", Player.LIGHT, tileList);
+        Path path1 = new Path("path", Player.LIGHT, tileList, T01, T10);
+        Path path2 = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertTrue(path1.isEquivalent(path2));
         assertTrue(path2.isEquivalent(path1));
 
-        Path path3 = new Path("path", Player.DARK, tileList);
-        Path path4 = new Path("path", Player.DARK, tileList);
+        Path path3 = new Path("path", Player.DARK, tileList, T01, T11);
+        Path path4 = new Path("path", Player.DARK, tileList, T01, T11);
         assertTrue(path3.isEquivalent(path4));
         assertTrue(path4.isEquivalent(path3));
         assertTrue(path1.isEquivalent(path4));
@@ -136,8 +148,8 @@ public class PathTest {
         assertTrue(path2.isEquivalent(path4));
         assertTrue(path3.isEquivalent(path2));
 
-        Path path5 = new Path("", Player.LIGHT, tileList);
-        Path path6 = new Path("", Player.LIGHT, tileList);
+        Path path5 = new Path("", Player.LIGHT, tileList, T21, T10);
+        Path path6 = new Path("", Player.LIGHT, tileList, T21, T10);
         assertTrue(path5.isEquivalent(path6));
         assertTrue(path6.isEquivalent(path5));
         assertTrue(path1.isEquivalent(path5));
@@ -145,11 +157,11 @@ public class PathTest {
         assertTrue(path4.isEquivalent(path6));
         assertTrue(path6.isEquivalent(path4));
 
-        tileList.add(new Tile(1, 0));
-        tileList.add(new Tile(1, 1));
+        tileList.add(T10);
+        tileList.add(T11);
 
-        Path path7 = new Path("path", Player.LIGHT, tileList);
-        Path path8 = new Path("path", Player.LIGHT, tileList);
+        Path path7 = new Path("path", Player.LIGHT, tileList, T21, T11);
+        Path path8 = new Path("path", Player.LIGHT, tileList, T21, T11);
         assertTrue(path7.isEquivalent(path8));
         assertTrue(path8.isEquivalent(path7));
         assertFalse(path7.isEquivalent(path1));
@@ -157,10 +169,10 @@ public class PathTest {
         assertFalse(path7.isEquivalent(path5));
 
         List<Tile> tileList2 = new ArrayList<>();
-        tileList2.add(new Tile(1, 1));
-        tileList2.add(new Tile(1, 0));
-        tileList2.add(new Tile(0, 0));
-        Path path9 = new Path("Path", Player.DARK, tileList2);
+        tileList2.add(T11);
+        tileList2.add(T10);
+        tileList2.add(T00);
+        Path path9 = new Path("Path", Player.DARK, tileList2, T21, T11);
         assertTrue(path9.isEquivalent(path9));
         assertFalse(path9.isEquivalent(path1));
         assertFalse(path1.isEquivalent(path9));
@@ -171,27 +183,32 @@ public class PathTest {
     @Test
     public void testEquals() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path1 = new Path("path", Player.LIGHT, tileList);
-        Path path2 = new Path("path", Player.LIGHT, tileList);
+        Path path1 = new Path("path", Player.LIGHT, tileList, T01, T10);
+        Path path2 = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertEquals(path1, path1);
         assertEquals(path1, path2);
         assertEquals(path2, path1);
-        assertNotEquals(path1, new Path("Path", Player.LIGHT, tileList));
-        assertNotEquals(path1, new Path("", Player.LIGHT, tileList));
+        assertNotEquals(path1, new Path("Path", Player.LIGHT, tileList, T01, T10));
+        assertNotEquals(path1, new Path("", Player.LIGHT, tileList, T01, T10));
+        assertNotEquals(path1, new Path("path", Player.LIGHT, tileList, T01, T11));
+        assertNotEquals(path1, new Path("path", Player.LIGHT, tileList, T21, T10));
+        assertNotEquals(path1, new Path("path", Player.LIGHT, tileList, T21, T11));
 
-        Path path3 = new Path("path", Player.DARK, tileList);
-        Path path4 = new Path("path", Player.DARK, tileList);
+        Path path3 = new Path("path", Player.DARK, tileList, T21, T10);
+        Path path4 = new Path("path", Player.DARK, tileList, T21, T10);
         assertEquals(path3, path3);
         assertEquals(path3, path4);
         assertEquals(path4, path3);
         assertNotEquals(path3, path1);
         assertNotEquals(path1, path3);
-        assertNotEquals(path3, new Path("Path", Player.DARK, tileList));
+        assertNotEquals(path3, new Path("Path", Player.DARK, tileList, T21, T10));
+        assertNotEquals(path3, new Path("Path", Player.DARK, tileList, T21, T11));
+        assertNotEquals(path3, new Path("Path", Player.DARK, tileList, T01, T10));
 
-        Path path5 = new Path("", Player.LIGHT, tileList);
-        Path path6 = new Path("", Player.LIGHT, tileList);
+        Path path5 = new Path("", Player.LIGHT, tileList, T01, T10);
+        Path path6 = new Path("", Player.LIGHT, tileList, T01, T10);
         assertEquals(path5, path5);
         assertEquals(path5, path6);
         assertEquals(path6, path5);
@@ -199,13 +216,15 @@ public class PathTest {
         assertNotEquals(path1, path5);
         assertNotEquals(path5, path3);
         assertNotEquals(path3, path5);
-        assertNotEquals(path5, new Path("Path", Player.LIGHT, tileList));
+        assertNotEquals(path5, new Path("Path", Player.LIGHT, tileList, T01, T10));
+        assertNotEquals(path5, new Path("Path", Player.LIGHT, tileList, T21, T10));
+        assertNotEquals(path5, new Path("Path", Player.LIGHT, tileList, T01, T11));
 
-        tileList.add(new Tile(1, 0));
-        tileList.add(new Tile(1, 1));
+        tileList.add(T10);
+        tileList.add(T11);
 
-        Path path7 = new Path("path", Player.LIGHT, tileList);
-        Path path8 = new Path("path", Player.LIGHT, tileList);
+        Path path7 = new Path("path", Player.LIGHT, tileList, T01, T12);
+        Path path8 = new Path("path", Player.LIGHT, tileList, T01, T12);
         assertEquals(path7, path7);
         assertEquals(path7, path8);
         assertEquals(path8, path7);
@@ -215,14 +234,16 @@ public class PathTest {
         assertNotEquals(path3, path7);
         assertNotEquals(path7, path5);
         assertNotEquals(path5, path7);
-        assertNotEquals(path7, new Path("Path", Player.LIGHT, tileList));
+        assertNotEquals(path7, new Path("Path", Player.LIGHT, tileList, T01, T12));
+        assertNotEquals(path7, new Path("Path", Player.LIGHT, tileList, T21, T12));
+        assertNotEquals(path7, new Path("Path", Player.LIGHT, tileList, T01, T21));
 
         List<Tile> tileList2 = new ArrayList<>();
-        tileList2.add(new Tile(1, 1));
-        tileList2.add(new Tile(1, 0));
-        tileList2.add(new Tile(0, 0));
-        Path path9 = new Path("Path", Player.DARK, tileList2);
-        Path path10 = new Path("path", Player.LIGHT, tileList2);
+        tileList2.add(T11);
+        tileList2.add(T10);
+        tileList2.add(T00);
+        Path path9 = new Path("Path", Player.DARK, tileList2, T21, T12);
+        Path path10 = new Path("path", Player.LIGHT, tileList2, T01, T12);
         assertEquals(path9, path9);
         assertNotEquals(path9, path1);
         assertNotEquals(path1, path9);
@@ -234,8 +255,8 @@ public class PathTest {
         assertNotEquals(path7, path9);
         assertNotEquals(path10, path7);
         assertNotEquals(path7, path10);
-        assertNotEquals(path9, new Path("path", Player.DARK, tileList2));
-        assertNotEquals(path10, new Path("Path", Player.LIGHT, tileList2));
+        assertNotEquals(path9, new Path("path", Player.DARK, tileList2, T21, T12));
+        assertNotEquals(path10, new Path("Path", Player.LIGHT, tileList2, T01, T12));
 
         Object notPath = new Object();
         assertNotEquals(path1, notPath);
@@ -248,28 +269,28 @@ public class PathTest {
     @Test
     public void testToString() {
         List<Tile> tileList = new ArrayList<>();
-        tileList.add(new Tile(0, 0));
+        tileList.add(T00);
 
-        Path path = new Path("path", Player.LIGHT, tileList);
+        Path path = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertEquals("path (Light): A0", path.toString());
 
-        path = new Path("path", Player.DARK, tileList);
+        path = new Path("path", Player.DARK, tileList, T21, T10);
         assertEquals("path (Dark): A0", path.toString());
 
-        path = new Path("", Player.LIGHT, tileList);
+        path = new Path("", Player.LIGHT, tileList, T01, T11);
         assertEquals("Light: A0", path.toString());
 
-        tileList.add(new Tile(1, 0));
-        tileList.add(new Tile(1, 1));
+        tileList.add(T10);
+        tileList.add(T11);
 
-        path = new Path("path", Player.LIGHT, tileList);
+        path = new Path("path", Player.LIGHT, tileList, T01, T10);
         assertEquals("path (Light): A0, B0, B1", path.toString());
 
         List<Tile> tileList2 = new ArrayList<>();
-        tileList2.add(new Tile(1, 1));
-        tileList2.add(new Tile(1, 0));
-        tileList2.add(new Tile(0, 0));
-        path = new Path("Path", Player.DARK, tileList2);
+        tileList2.add(T11);
+        tileList2.add(T10);
+        tileList2.add(T00);
+        path = new Path("Path", Player.DARK, tileList2, T21, T12);
         assertEquals("Path (Dark): B1, B0, A0", path.toString());
     }
 }

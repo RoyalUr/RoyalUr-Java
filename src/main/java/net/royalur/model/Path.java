@@ -29,16 +29,41 @@ public class Path implements Iterable<Tile> {
     public final @Nonnull List<Tile> tiles;
 
     /**
+     * A tile that exists off the board, which represents where the player's
+     * piece should start from to get on to the board. This is mainly useful
+     * for building user interfaces.
+     */
+    public final @Nonnull Tile startTile;
+
+    /**
+     * A tile that exists off the board, which represents where the player's
+     * piece should end on when it is taken off of the board. This is mainly
+     * useful for building user interfaces.
+     */
+    public final @Nonnull Tile endTile;
+
+    /**
      * The number of tiles in this path.
      */
     public final int length;
 
     /**
-     * @param name The name of this path.
-     * @param player The player that this path is intended for.
-     * @param tiles The ordered list of tiles that pieces must progress through on the board.
+     * @param name      The name of this path.
+     * @param player    The player that this path is intended for.
+     * @param tiles     The ordered list of tiles that pieces must progress through on the board.
+     * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.
+     * @param endTile   The tile that pieces should be moved to so that they can be moved off the board.
      */
-    public Path(@Nonnull String name, @Nonnull Player player, @Nonnull List<Tile> tiles) {
+    public Path(
+            @Nonnull String name,
+            @Nonnull Player player,
+            @Nonnull List<Tile> tiles,
+            @Nonnull Tile startTile,
+            @Nonnull Tile endTile
+    ) {
+
+        this.startTile = startTile;
+        this.endTile = endTile;
         if (tiles.isEmpty())
             throw new IllegalArgumentException("Paths must have at least one tile");
 
@@ -66,13 +91,14 @@ public class Path implements Iterable<Tile> {
 
     @Override
     public int hashCode() {
-        return name.hashCode() ^ (37 * player.hashCode()) ^ (97 * tiles.hashCode());
+        return name.hashCode() ^ (37 * player.hashCode()) ^
+                (97 * tiles.hashCode()) ^ (227 * startTile.hashCode()) ^ (283 * endTile.hashCode());
     }
 
     /**
      * Determines whether the path the tiles must take around the board is
      * equivalent between this path and {@param other}. This ignores the name
-     * and intended player of the paths.
+     * and intended player of the paths, and the start and end tiles.
      * @param other The path to check for equivalency.
      * @return Whether the path the tiles must take around the board is equivalent
      *         between this path and {@param other}.
@@ -87,7 +113,8 @@ public class Path implements Iterable<Tile> {
             return false;
 
         Path other = (Path) obj;
-        return name.equals(other.name) && player == other.player && isEquivalent(other);
+        return name.equals(other.name) && player == other.player && isEquivalent(other) &&
+                startTile.equals(other.startTile) && endTile.equals(other.endTile);
     }
 
     @Override

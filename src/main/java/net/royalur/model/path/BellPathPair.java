@@ -26,8 +26,13 @@ public class BellPathPair extends PathPair {
          * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
          */
-        protected BellPath(@Nonnull Player player, @Nonnull List<Tile> tiles) {
-            super(NAME, player, tiles);
+        protected BellPath(
+                @Nonnull Player player,
+                @Nonnull List<Tile> tiles,
+                @Nonnull Tile startTile,
+                @Nonnull Tile endTile
+        ) {
+            super(NAME, player, tiles, startTile, endTile);
         }
     }
 
@@ -57,8 +62,11 @@ public class BellPathPair extends PathPair {
                 new Tile(0, 6)
         );
 
+        public static final @Nonnull Tile START_TILE = new Tile(0, 4);
+        public static final @Nonnull Tile END_TILE = new Tile(0, 5);
+
         public BellLightPath() {
-            super(Player.LIGHT, TILES);
+            super(Player.LIGHT, TILES, START_TILE, END_TILE);
         }
     }
 
@@ -88,8 +96,11 @@ public class BellPathPair extends PathPair {
                 new Tile(2, 6)
         );
 
+        public static final @Nonnull Tile START_TILE = new Tile(2, 4);
+        public static final @Nonnull Tile END_TILE = new Tile(2, 5);
+
         public BellDarkPath() {
-            super(Player.DARK, TILES);
+            super(Player.DARK, TILES, START_TILE, END_TILE);
         }
     }
 
