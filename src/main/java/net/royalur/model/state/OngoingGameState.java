@@ -50,6 +50,6 @@ public abstract class OngoingGameState<
      * @return The state of the player that is waiting for their own turn.
      */
     public @Nonnull S getWaitingPlayer() {
-        return getPlayer(turn);
+        return getPlayer(turn.getOtherPlayer());
     }
 }
