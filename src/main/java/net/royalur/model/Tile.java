@@ -25,8 +25,6 @@ public class Tile {
     public Tile(int x, int y) {
         if (x < 0 || x >= 26)
             throw new IllegalArgumentException("x must fall within the range [0, 25]. Invalid value: " + x);
-        if (y < 0)
-            throw new IllegalArgumentException("y must be at least zero. Invalid value: " + y);
 
         this.x = x;
         this.y = y;
@@ -75,6 +73,7 @@ public class Tile {
      *  - A0 represents (0, 0)
      *  - C2 represents (2, 2)
      *  - B7 represents (1, 7)
+     *  - B-1 represents (1, -1)
      *
      * @param tile The text representation of the tile's location.
      * @return The tile that the given text is representing.

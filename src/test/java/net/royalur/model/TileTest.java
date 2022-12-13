@@ -29,14 +29,11 @@ public class TileTest {
         }
 
         assertThrows(IllegalArgumentException.class, () -> new Tile(-1, 0));
-        assertThrows(IllegalArgumentException.class, () -> new Tile(0, -1));
         assertThrows(IllegalArgumentException.class, () -> new Tile(26, 0));
         assertThrows(IllegalArgumentException.class, () -> new Tile(-1, -1));
         assertThrows(IllegalArgumentException.class, () -> new Tile(-5, 5));
-        assertThrows(IllegalArgumentException.class, () -> new Tile(5, -5));
         assertThrows(IllegalArgumentException.class, () -> new Tile(-5, -4));
         assertThrows(IllegalArgumentException.class, () -> new Tile(35, 4));
-        assertThrows(IllegalArgumentException.class, () -> new Tile(35, -9));
     }
 
     @Test
@@ -120,6 +117,7 @@ public class TileTest {
         assertEquals("A1", new Tile(0, 1).toString());
         assertEquals("B0", new Tile(1, 0).toString());
         assertEquals("B1", new Tile(1, 1).toString());
+        assertEquals("B-1", new Tile(1, -1).toString());
         assertEquals("C7", new Tile(2, 7).toString());
         assertEquals("D15", new Tile(3, 15).toString());
         assertEquals("F99", new Tile(5, 99).toString());
@@ -132,6 +130,7 @@ public class TileTest {
         assertEquals(new Tile(0, 1), Tile.fromString("A1"));
         assertEquals(new Tile(1, 0), Tile.fromString("B0"));
         assertEquals(new Tile(1, 1), Tile.fromString("B1"));
+        assertEquals(new Tile(1, -1), Tile.fromString("B-1"));
         assertEquals(new Tile(2, 7), Tile.fromString("C7"));
         assertEquals(new Tile(3, 15), Tile.fromString("D15"));
         assertEquals(new Tile(5, 99), Tile.fromString("F99"));
@@ -160,7 +159,7 @@ public class TileTest {
     @Test
     public void testToFromString() {
         for (int x = 0; x < 26; ++x) {
-            for (int y = 0; y < 50; ++y) {
+            for (int y = -1; y < 50; ++y) {
                 Tile tile = new Tile(x, y);
                 assertEquals(tile, Tile.fromString(tile.toString()));
             }
