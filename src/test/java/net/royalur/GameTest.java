@@ -5,6 +5,7 @@ import net.royalur.model.Player;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
+import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
@@ -49,11 +50,25 @@ public class GameTest {
         RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>(game, Player.LIGHT);
         RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>(game, Player.DARK);
         int actions = game.playAutonomously(light, dark);
-        System.out.println(actions);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 91 actions.
         int winMinActions = (2 /* roll + move */) * (6 /* min. moves per piece */) * (7 /* pieces */);
+        int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
+        assertTrue(actions >= winMinActions + loseMinActions);
+        assertTrue(game.states.size() >= actions);
+    }
+
+    @RepeatedTest(3)
+    public void testStandardMurrayGameRandom() {
+        Game<SimplePiece, PlayerState, Roll> game = Game.builder().standard().paths(new MurrayPathPair()).build();
+        RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>(game, Player.LIGHT);
+        RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>(game, Player.DARK);
+        int actions = game.playAutonomously(light, dark);
+        assertTrue(game.isFinished());
+
+        // The shortest possible game requires 105 actions.
+        int winMinActions = (2 /* roll + move */) * (7 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
         assertTrue(game.states.size() >= actions);
