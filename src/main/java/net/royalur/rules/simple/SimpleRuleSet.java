@@ -78,9 +78,10 @@ public abstract class SimpleRuleSet<
 
         // Check if a piece can be taken off the board.
         if (roll.value <= path.length) {
-            Tile scoreTile = path.get(path.length - roll.value);
+            int scorePathIndex = path.length - roll.value;
+            Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
-            if (scorePiece != null && scorePiece.owner == player.player) {
+            if (scorePiece != null && scorePiece.owner == player.player && scorePiece.pathIndex == scorePathIndex) {
                 moves.add(new Move<>(scoreTile, scorePiece, null, null, null));
             }
         }
