@@ -10,6 +10,9 @@ import java.util.List;
 
 /**
  * The pair of paths proposed by Bell for the Royal Game of Ur.
+ * <p>
+ * Citation: R.C. Bell, Board and Table Games From Many Civilizations,
+ * revised ed., Vol. 1 and 2, Dover Publications, Inc., New York, 1979.
  */
 public class BellPathPair extends PathPair {
 

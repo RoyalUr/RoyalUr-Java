@@ -10,6 +10,12 @@ import java.util.List;
 
 /**
  * The pair of paths proposed by Masters for the Royal Game of Ur.
+ * <p>
+ * Citation: J. Masters, The Royal Game of Ur & The Game of 20 Squares (2021).
+ * Available at
+ * <a href="https://www.tradgames.org.uk/games/Royal-Game-Ur.htm">
+ *     https://www.tradgames.org.uk/games/Royal-Game-Ur.htm
+ * </a>.
  */
 public class MastersPathPair extends PathPair {
 

@@ -10,6 +10,10 @@ import java.util.List;
 
 /**
  * The standard paths that are used for Aseb.
+ * <p>
+ * Citation: W. Crist, A.E. Dunn-Vaturi, and A. de Voogt,
+ * Ancient Egyptians at Play: Board Games Across Borders,
+ * Bloomsbury Egyptology, Bloomsbury Academic, London, 2016.
  */
 public class AsebPathPair extends PathPair {
 
