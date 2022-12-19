@@ -1,7 +1,6 @@
 package net.royalur;
 
 import net.royalur.agent.RandomAgent;
-import net.royalur.model.Player;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
 import net.royalur.model.path.BellPathPair;
@@ -21,8 +20,8 @@ public class RGUStatistics {
 
     private static int testRandomAgentActions(Supplier<Game<SimplePiece, PlayerState, Roll>> gameGenerator) {
         Game<SimplePiece, PlayerState, Roll> game = gameGenerator.get();
-        RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>(game, Player.LIGHT);
-        RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>(game, Player.DARK);
+        RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>();
         return game.playAutonomously(light, dark);
     }
 

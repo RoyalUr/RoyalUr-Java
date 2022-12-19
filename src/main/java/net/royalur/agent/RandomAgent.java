@@ -1,6 +1,5 @@
 package net.royalur.agent;
 
-import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.state.WaitingForMoveGameState;
 
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * An agent that makes random moves in games.
+ * An agent that makes random moves in games. This is not thread-safe.
  */
 public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll> extends Agent<P, S, R> {
 
@@ -18,13 +17,13 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
      */
     private final Random random;
 
-    public RandomAgent(@Nonnull Random random, @Nonnull Game<P, S, R> game, @Nonnull Player player) {
-        super("random", game, player);
+    public RandomAgent(@Nonnull Random random) {
+        super("random");
         this.random = random;
     }
 
-    public RandomAgent(@Nonnull Game<P, S, R> game, @Nonnull Player player) {
-        this(new Random(), game, player);
+    public RandomAgent() {
+        this(new Random());
     }
 
     @Override

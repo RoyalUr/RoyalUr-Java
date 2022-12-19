@@ -3,15 +3,13 @@ package net.royalur.agent;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.state.WaitingForMoveGameState;
-import net.royalur.rules.RuleSet;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * An agent that can autonomously play the Royal Game of Ur. Agents are designed to be created
- * for a specific game, and live for the life of that game. This is intended to allow the agents
- * to store state if needed for their AI.
+ * An agent that can autonomously play the Royal Game of Ur. Agents are designed to be used
+ * on any game, and should not hold game-specific state.
  * @param <P> The type of pieces that this agent can interact with.
  * @param <S> The type of player state that this agent can interact with.
  * @param <R> The type of rolls that may be made by this agent or their opponent.
@@ -23,32 +21,16 @@ public abstract class Agent<P extends Piece, S extends PlayerState, R extends Ro
      */
     public final @Nonnull String name;
 
-    /**
-     * The game that this agent is to play in.
-     */
-    public final @Nonnull Game<P, S, R> game;
-
-    /**
-     * The rules that this agent is to play by.
-     */
-    public final @Nonnull RuleSet<P, S, R> rules;
-
-    /**
-     * The player that this agent is playing as.
-     */
-    public final @Nonnull Player player;
-
-    protected Agent(@Nonnull String name, @Nonnull Game<P, S, R> game, @Nonnull Player player) {
+    protected Agent(@Nonnull String name) {
         this.name = name;
-        this.game = game;
-        this.rules = game.rules;
-        this.player = player;
     }
 
     /**
-     * Initiates the agent to play their turn in the game.
+     * Initiates the agent to play their turn in the given game.
+     * @param game The game to play a turn in.
+     * @param player The player to play the turn as.
      */
-    public void playTurn() {
+    public void playTurn(@Nonnull Game<P, S, R> game, @Nonnull Player player) {
         if (game.isFinished())
             throw new IllegalStateException("The game has already been completed");
         if (!game.isPlayable())

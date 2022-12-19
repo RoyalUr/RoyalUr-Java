@@ -271,11 +271,6 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The number of actions that were made by both agents combined. Includes rolls of the dice and moves.
      */
     public int playAutonomously(@Nonnull Agent<P, S, R> light, @Nonnull Agent<P, S, R> dark) {
-        if (light.player != Player.LIGHT)
-            throw new IllegalArgumentException("Expected the light agent to be playing as Player.LIGHT");
-        if (dark.player != Player.DARK)
-            throw new IllegalArgumentException("Expected the dark agent to be playing as Player.DARK");
-
         int moves = 0;
         while (!isFinished()) {
             if (!isPlayable()) {
@@ -289,10 +284,10 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
             S turnPlayer = getTurnPlayer();
             switch (turnPlayer.player) {
                 case LIGHT:
-                    light.playTurn();
+                    light.playTurn(this, Player.LIGHT);
                     break;
                 case DARK:
-                    dark.playTurn();
+                    dark.playTurn(this, Player.DARK);
                     break;
                 default:
                     throw new IllegalStateException("Unknown player " + turnPlayer.player);
