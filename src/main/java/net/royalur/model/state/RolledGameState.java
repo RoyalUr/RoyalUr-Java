@@ -5,14 +5,14 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState that represents a roll that resulted in no available moves due to all moves being blocked.
+ * A GameState that represents a roll that was made.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of roll that was made in this game state.
  */
-public class AllMovesBlockedGameState<
+public class RolledGameState<
         P extends Piece, S extends PlayerState, R extends Roll
-> extends InfoGameState<P, S, R> {
+> extends ActionGameState<P, S, R> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
@@ -27,7 +27,7 @@ public class AllMovesBlockedGameState<
      * @param roll        The value of the dice that was rolled that can be
      *                    used as the number of places to move a piece.
      */
-    public AllMovesBlockedGameState(
+    public RolledGameState(
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
@@ -36,16 +36,11 @@ public class AllMovesBlockedGameState<
 
         super(board, lightPlayer, darkPlayer, turn);
 
-        if (roll.value == 0) {
-            throw new IllegalArgumentException(
-                    "All moves cannot be blocked when no moves are possible (rolled zero)"
-            );
-        }
         this.roll = roll;
     }
 
     @Override
     public @Nonnull String describe() {
-        return "The player " + getTurnPlayer().name + " rolled " + roll +", but all moves are blocked.";
+        return "The player " + getTurnPlayer().name + " rolled " + roll +".";
     }
 }

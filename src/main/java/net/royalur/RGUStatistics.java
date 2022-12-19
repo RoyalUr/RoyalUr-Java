@@ -57,7 +57,14 @@ public class RGUStatistics {
             for (GameStatsTarget target : GameStatsTarget.values()) {
                 double movesMean = summary.getMovesStatistic(target, SummaryStat.MEAN);
                 double movesStd = summary.getMovesStatistic(target, SummaryStat.STD_DEV);
-                System.out.println("- " + target.name + ": " + ((int) movesMean) + " ± " + ((int) movesStd));
+                double rollsMean = summary.getRollsStatistic(target, SummaryStat.MEAN);
+                double rollsStd = summary.getRollsStatistic(target, SummaryStat.STD_DEV);
+                System.out.printf(
+                        "%-15s%-19s%-19s%n",
+                        target.name + ":",
+                        ((int) movesMean) + " moves ± " + ((int) movesStd) + ",",
+                        ((int) rollsMean) + " rolls ± " + ((int) rollsStd)
+                );
             }
             System.out.println();
         }

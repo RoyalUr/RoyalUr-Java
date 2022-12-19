@@ -1,6 +1,6 @@
 package net.royalur.model;
 
-import net.royalur.model.state.InfoGameState;
+import net.royalur.model.state.ActionGameState;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
 import net.royalur.model.state.WinGameState;
@@ -16,7 +16,7 @@ public enum GameStateType {
      * A state that is included just for information,
      * but which cannot be played from.
      */
-    INFO(InfoGameState.class),
+    INFO(ActionGameState.class),
 
     /**
      * A state where a player is yet to make a move.

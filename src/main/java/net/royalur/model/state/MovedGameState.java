@@ -10,14 +10,19 @@ import javax.annotation.Nonnull;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of the roll that had the value of zero.
  */
-public class RolledZeroGameState<
+public class MovedGameState<
         P extends Piece, S extends PlayerState, R extends Roll
-> extends InfoGameState<P, S, R> {
+> extends ActionGameState<P, S, R> {
 
     /**
-     * The roll of zero that was made.
+     * The roll of the dice that was used for the move.
      */
     public final @Nonnull R roll;
+
+    /**
+     * The move that was made.
+     */
+    public final @Nonnull Move<P> move;
 
     /**
      * @param board       The state of the pieces on the board.
@@ -25,25 +30,23 @@ public class RolledZeroGameState<
      * @param darkPlayer  The state of the dark player.
      * @param turn        The player who can roll the dice.
      */
-    public RolledZeroGameState(
+    public MovedGameState(
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
             @Nonnull Player turn,
-            @Nonnull R roll) {
+            @Nonnull R roll,
+            @Nonnull Move<P> move) {
 
         super(board, lightPlayer, darkPlayer, turn);
 
-        if (roll.value != 0) {
-            throw new IllegalArgumentException(
-                    "The roll that was made does not have a value of zero. It has a value of " + roll.value
-            );
-        }
         this.roll = roll;
+        this.move = move;
     }
 
     @Override
     public @Nonnull String describe() {
-        return "The player " + getTurnPlayer().name + " rolled 0, so no pieces can be moved.";
+        return "The player " + getTurnPlayer().name + " rolled " + roll + ", " +
+                "and moved their " + move.getSource() + " piece to " + move.getDestination() + ".";
     }
 }

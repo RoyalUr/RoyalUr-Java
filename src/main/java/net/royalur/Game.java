@@ -54,6 +54,23 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Retrieves the states that represent the actions that have been
+     * made so far in the game. The last state in the list represents
+     * the last action that was taken in this game.
+     * @return The states that represent the actions that have been
+     *         made so far in the game.
+     */
+    public List<ActionGameState<P, S, R>> getActionStates() {
+        List<ActionGameState<P, S, R>> actionStates = new ArrayList<>();
+        for (GameState<P, S, R> state : states) {
+            if (state instanceof ActionGameState) {
+                actionStates.add((ActionGameState<P, S, R>) state);
+            }
+        }
+        return Collections.unmodifiableList(actionStates);
+    }
+
+    /**
      * Adds all states from {@param states} to this game.
      * @param states The states to add to this game.
      */

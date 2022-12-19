@@ -2,9 +2,7 @@ package net.royalur.stats;
 
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.state.PlayableGameState;
-import net.royalur.model.state.WaitingForMoveGameState;
-import net.royalur.model.state.WaitingForRollGameState;
+import net.royalur.model.state.*;
 
 import javax.annotation.Nonnull;
 
@@ -52,7 +50,7 @@ public class GameStats {
      * @return The number of moves counted for the target {@param target}.
      */
     public int getMoves(@Nonnull GameStatsTarget target) {
-        return rolls[target.ordinal()];
+        return moves[target.ordinal()];
     }
 
     /**
@@ -89,36 +87,20 @@ public class GameStats {
         int[] rolls = new int[GameStatsTarget.values().length];
         int[] moves = new int[GameStatsTarget.values().length];
 
-        // Count all the rolls and moves by counting pending states.
-        PlayableGameState<?, ?, ?> lastPlayableState = null;
+        // Count all the rolls and moves.
         for (GameState<?, ?, ?> state : game.getStates()) {
-            if (!state.isPlayable())
+            if (!(state instanceof ActionGameState))
                 continue;
 
-            PlayableGameState<?, ?, ?> playableState = (PlayableGameState<?, ?, ?>) state;
-            lastPlayableState = playableState;
-            PlayerState playerState = playableState.getTurnPlayer();
-            Player player = playerState.player;
+            ActionGameState<?, ?, ?> actionState = (ActionGameState<?, ?, ?>) state;
+            Player player = actionState.getTurnPlayer().player;
 
-            if (playableState instanceof WaitingForRollGameState) {
+            if (actionState instanceof RolledGameState) {
                 rolls[GameStatsTarget.OVERALL.ordinal()] += 1;
                 rolls[GameStatsTarget.get(player).ordinal()] += 1;
-            } else if (playableState instanceof WaitingForMoveGameState) {
+            } else if (actionState instanceof MovedGameState) {
                 moves[GameStatsTarget.OVERALL.ordinal()] += 1;
                 moves[GameStatsTarget.get(player).ordinal()] += 1;
-            }
-        }
-
-        // Revert the last pending state.
-        if (lastPlayableState != null && !game.isFinished()) {
-            Player player = lastPlayableState.getTurnPlayer().player;
-            if (lastPlayableState instanceof WaitingForRollGameState) {
-                rolls[GameStatsTarget.OVERALL.ordinal()] -= 1;
-                rolls[GameStatsTarget.get(player).ordinal()] -= 1;
-            }
-            if (lastPlayableState instanceof WaitingForMoveGameState) {
-                moves[GameStatsTarget.OVERALL.ordinal()] -= 1;
-                moves[GameStatsTarget.get(player).ordinal()] -= 1;
             }
         }
 

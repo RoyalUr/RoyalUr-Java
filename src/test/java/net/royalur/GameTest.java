@@ -9,6 +9,7 @@ import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameTest {
@@ -25,7 +26,7 @@ public class GameTest {
         int winMinActions = (2 /* roll + move */) * (4 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = (2 /* zeroes rolled per piece scored */) * (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
-        assertTrue(game.states.size() >= actions);
+        assertEquals(actions, game.getActionStates().size());
     }
 
     @RepeatedTest(3)
@@ -40,7 +41,7 @@ public class GameTest {
         int winMinActions = (2 /* roll + move */) * (5 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
-        assertTrue(game.states.size() >= actions);
+        assertEquals(actions, game.getActionStates().size());
     }
 
     @RepeatedTest(3)
@@ -55,7 +56,7 @@ public class GameTest {
         int winMinActions = (2 /* roll + move */) * (6 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
-        assertTrue(game.states.size() >= actions);
+        assertEquals(actions, game.getActionStates().size());
     }
 
     @RepeatedTest(3)
@@ -70,7 +71,7 @@ public class GameTest {
         int winMinActions = (2 /* roll + move */) * (7 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
-        assertTrue(game.states.size() >= actions);
+        assertEquals(actions, game.getActionStates().size());
     }
 
     @RepeatedTest(3)
@@ -85,6 +86,6 @@ public class GameTest {
         int winMinActions = (2 /* roll + move */) * (5 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = /* 1  zero rolled per piece scored */ (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
-        assertTrue(game.states.size() >= actions);
+        assertEquals(actions, game.getActionStates().size());
     }
 }
