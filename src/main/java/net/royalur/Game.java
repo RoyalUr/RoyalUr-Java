@@ -8,6 +8,7 @@ import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * The states that have occurred so far in the game.
      * The last state in the list is the current state of the game.
      */
-    public final @Nonnull List<GameState<P, S, R>> states;
+    private final @Nonnull List<GameState<P, S, R>> states;
 
     /**
      * @param rules The set of rules that are being used for this game.
@@ -41,6 +42,15 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
         this.rules = rules;
         this.states = new ArrayList<>();
         addStates(states);
+    }
+
+    /**
+     * Retrieves the states that have occurred so far in the game.
+     * The last state in the list is the current state of the game.
+     * @return The states that have occurred so far in the game.
+     */
+    public List<GameState<P, S, R>> getStates() {
+        return Collections.unmodifiableList(states);
     }
 
     /**
@@ -271,7 +281,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The number of actions that were made by both agents combined. Includes rolls of the dice and moves.
      */
     public int playAutonomously(@Nonnull Agent<P, S, R> light, @Nonnull Agent<P, S, R> dark) {
-        int moves = 0;
+        int actions = 0;
         while (!isFinished()) {
             if (!isPlayable()) {
                 throw new IllegalStateException(
@@ -280,7 +290,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
                 );
             }
 
-            moves += 1;
+            actions += 1;
             S turnPlayer = getTurnPlayer();
             switch (turnPlayer.player) {
                 case LIGHT:
@@ -293,7 +303,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
                     throw new IllegalStateException("Unknown player " + turnPlayer.player);
             }
         }
-        return moves;
+        return actions;
     }
 
     /**

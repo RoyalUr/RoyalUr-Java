@@ -8,7 +8,12 @@ import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.simple.SimplePiece;
+import net.royalur.stats.GameStats;
+import net.royalur.stats.GameStatsSummary;
+import net.royalur.stats.GameStatsTarget;
+import net.royalur.stats.SummaryStat;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -18,11 +23,15 @@ import java.util.function.Supplier;
  */
 public class RGUStatistics {
 
-    private static int testRandomAgentActions(Supplier<Game<SimplePiece, PlayerState, Roll>> gameGenerator) {
+    private static @Nonnull GameStats testRandomAgentActions(
+            @Nonnull Supplier<Game<SimplePiece, PlayerState, Roll>> gameGenerator
+    ) {
+
         Game<SimplePiece, PlayerState, Roll> game = gameGenerator.get();
         RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>();
-        return game.playAutonomously(light, dark);
+        game.playAutonomously(light, dark);
+        return GameStats.gather(game);
     }
 
     public static void testRandomAgentActions() {
@@ -38,23 +47,18 @@ public class RGUStatistics {
             Game<SimplePiece, PlayerState, Roll> sample = gameGenerator.get();
             String desc = sample.getCurrentState().board.shape.name + ", " + sample.rules.paths.name;
 
-            int[] results = new int[tests];
-            int cumulativeSum = 0;
+            GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {
-                int result = testRandomAgentActions(gameGenerator);
-                results[test] = result;
-                cumulativeSum += result;
+                stats[test] = testRandomAgentActions(gameGenerator);
             }
+            GameStatsSummary summary = GameStats.summarise(stats);
 
-            double mean = (double) cumulativeSum / tests;
-            double variance = 0;
-            for (int index = 0; index < tests; ++index) {
-                double diff = results[index] - mean;
-                variance += diff * diff;
+            System.out.println(desc + ":");
+            for (GameStatsTarget target : GameStatsTarget.values()) {
+                double movesMean = summary.getMovesStatistic(target, SummaryStat.MEAN);
+                double movesStd = summary.getMovesStatistic(target, SummaryStat.STD_DEV);
+                System.out.println("- " + target.name + ": " + ((int) movesMean) + " ± " + ((int) movesStd));
             }
-            double stdDev = Math.sqrt(variance / tests);
-
-            System.out.println(desc + ": " + ((int) mean) + " ± " + ((int) stdDev));
             System.out.println();
         }
     }
