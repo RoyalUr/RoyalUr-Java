@@ -20,9 +20,9 @@ import java.util.List;
 public class MastersPathPair extends PathPair {
 
     /**
-     * The name given to Masters' paths.
+     * The identifier given to Masters' paths.
      */
-    public static final String NAME = "Masters";
+    public static final String ID = "Masters";
 
     /**
      * A path proposed by Masters.
@@ -38,7 +38,7 @@ public class MastersPathPair extends PathPair {
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(NAME, player, tiles, startTile, endTile);
+            super(player, tiles, startTile, endTile);
         }
     }
 
@@ -115,6 +115,11 @@ public class MastersPathPair extends PathPair {
     }
 
     public MastersPathPair() {
-        super(NAME, new MastersLightPath(), new MastersDarkPath());
+        super(new MastersLightPath(), new MastersDarkPath());
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

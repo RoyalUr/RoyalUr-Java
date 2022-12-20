@@ -106,7 +106,7 @@ public class RuleSetTest {
         for (int test = 0; test < 10_000; ++test) {
             Roll roll = rules.rollDice();
             assertNotNull(roll);
-            assertTrue(roll.value <= rules.dice.getMaxRoll());
+            assertTrue(roll.value <= rules.dice.maxRoll);
         }
     }
 
@@ -122,8 +122,8 @@ public class RuleSetTest {
 
         int availableLight = 0;
         int availableDark = 0;
-        List<Move<P>>[] lightMovesByRoll = (List<Move<P>>[]) new List[rules.dice.getMaxRoll() + 1];
-        List<Move<P>>[] darkMovesByRoll = (List<Move<P>>[]) new List[rules.dice.getMaxRoll() + 1];
+        List<Move<P>>[] lightMovesByRoll = (List<Move<P>>[]) new List[rules.dice.maxRoll + 1];
+        List<Move<P>>[] darkMovesByRoll = (List<Move<P>>[]) new List[rules.dice.maxRoll + 1];
         for (int test = 0; test < 10_000; ++test) {
             R roll = rules.rollDice();
 

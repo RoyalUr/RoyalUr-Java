@@ -33,29 +33,28 @@ public class BoardShapeTest {
     public void testNewNoRosettes() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("test", Collections.emptySet(), Collections.emptySet())
+                () -> new BoardShape(Collections.emptySet(), Collections.emptySet())
         );
 
-        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)), Collections.emptySet());
+        BoardShape singleTile = new BoardShape(Set.of(new Tile(0, 0)), Collections.emptySet());
         assertEquals(1, singleTile.width);
         assertEquals(1, singleTile.height);
         assertEquals(1, singleTile.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(0, 1)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(0, 1)), Collections.emptySet())
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(1, 0)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(1, 0)), Collections.emptySet())
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(1, 1)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(1, 1)), Collections.emptySet())
         );
 
-        BoardShape noZeroZero = new BoardShape(
-                "noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Collections.emptySet());
+        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Collections.emptySet());
         assertEquals(2, noZeroZero.width);
         assertEquals(2, noZeroZero.height);
         assertEquals(2, noZeroZero.area);
@@ -65,49 +64,47 @@ public class BoardShapeTest {
     public void testNewWithRosettes() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("test", Collections.emptySet(), Set.of(new Tile(0, 0)))
+                () -> new BoardShape(Collections.emptySet(), Set.of(new Tile(0, 0)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("test", Set.of(new Tile(0, 0)), Set.of(new Tile(1, 1)))
+                () -> new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(1, 1)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("test", Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0), new Tile(1, 0)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(
-                        "test", Set.of(new Tile(0, 0), new Tile(0, 1)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(0, 0), new Tile(0, 1)), Set.of(new Tile(0, 0), new Tile(1, 0)))
         );
 
-        BoardShape singleTile = new BoardShape("singleTile", Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0)));
+        BoardShape singleTile = new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0)));
         assertEquals(1, singleTile.width);
         assertEquals(1, singleTile.height);
         assertEquals(1, singleTile.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(0, 1)), Set.of(new Tile(0, 1)))
+                () -> new BoardShape(Set.of(new Tile(0, 1)), Set.of(new Tile(0, 1)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(1, 0)), Set.of(new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(1, 0)), Set.of(new Tile(1, 0)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)))
+                () -> new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)))
         );
 
-        BoardShape noZeroZero = new BoardShape(
-                "noZeroZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 1)));
+        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 1)));
         assertEquals(2, noZeroZero.width);
         assertEquals(2, noZeroZero.height);
         assertEquals(2, noZeroZero.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape("notZero", Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 0)))
+                () -> new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 0)))
         );
     }
 
@@ -152,7 +149,7 @@ public class BoardShapeTest {
     @ArgumentsSource(BoardShapeProvider.class)
     public void testContainsWithCopy(BoardShape shape) {
         // Create an untyped copy of the board shape, to ensure it acts the same for contains.
-        BoardShape copy = new BoardShape(shape.name, shape.tiles, shape.rosetteTiles);
+        BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
 
         // Deliberately includes out-of-bounds coordinates.
         for (int x = -1; x <= shape.width; ++x) {
@@ -199,7 +196,7 @@ public class BoardShapeTest {
     @ArgumentsSource(BoardShapeProvider.class)
     public void testIsRosetteWithCopy(BoardShape shape) {
         // Create an untyped copy of the board shape, to ensure it acts the same for contains.
-        BoardShape copy = new BoardShape(shape.name, shape.tiles, shape.rosetteTiles);
+        BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
 
         // Deliberately includes out-of-bounds coordinates.
         for (int x = -1; x <= shape.width; ++x) {
@@ -311,6 +308,6 @@ public class BoardShapeTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeProvider.class)
     public void testToString(BoardShape shape) {
-        assertEquals(shape.name, shape.toString());
+        assertEquals(shape.getIdentifier() + " Board Shape", shape.toString());
     }
 }

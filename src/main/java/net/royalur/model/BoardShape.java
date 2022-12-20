@@ -10,11 +10,6 @@ import java.util.*;
 public class BoardShape {
 
     /**
-     * The name of this shape of board.
-     */
-    public final @Nonnull String name;
-
-    /**
      * The set of tiles that fall within the bounds of this board shape.
      */
     public final @Nonnull Set<Tile> tiles;
@@ -52,15 +47,13 @@ public class BoardShape {
     private @Nullable List<Tile> tilesByColumn = null;
 
     /**
-     * @param name         A name for this shape of board.
      * @param tiles        The set of tiles that fall within the bounds of this board shape.
      * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
      */
-    public BoardShape(@Nonnull String name, @Nonnull Set<Tile> tiles, @Nonnull Set<Tile> rosetteTiles) {
+    public BoardShape(@Nonnull Set<Tile> tiles, @Nonnull Set<Tile> rosetteTiles) {
         if (tiles.size() == 0)
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
-        this.name = name;
         this.tiles = tiles;
         this.rosetteTiles = rosetteTiles;
 
@@ -95,6 +88,14 @@ public class BoardShape {
                 );
             }
         }
+    }
+
+    /**
+     * Gets an identifier that can be used to uniquely identify this board shape.
+     * @return An identifier that can be used to uniquely identify this board shape.
+     */
+    public @Nonnull String getIdentifier() {
+        throw new UnsupportedOperationException("This board shape does not have an identifier (" + getClass() + ")");
     }
 
     /**
@@ -196,7 +197,7 @@ public class BoardShape {
 
     @Override
     public int hashCode() {
-        return name.hashCode() ^ (31 * tiles.hashCode()) ^ (97 * rosetteTiles.hashCode());
+        return tiles.hashCode() ^ (97 * rosetteTiles.hashCode());
     }
 
     @Override
@@ -205,11 +206,15 @@ public class BoardShape {
             return false;
 
         BoardShape other = (BoardShape) obj;
-        return name.equals(other.name) && tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
+        return tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
     }
 
     @Override
     public @Nonnull String toString() {
-        return name;
+        try {
+            return getIdentifier() + " Board Shape";
+        } catch (UnsupportedOperationException e) {
+            return "Unknown Board Shape";
+        }
     }
 }

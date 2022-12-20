@@ -9,7 +9,12 @@ import java.util.Random;
  * Follows the standard probability distribution for dice
  * of the Royal Game of Ur, which consist of four D2 die.
  */
-public class StandardDice implements Dice<Roll> {
+public class StandardDice extends Dice<Roll> {
+
+    /**
+     * The identifier given to the simple rules.
+     */
+    public static final String ID = "Standard";
 
     /**
      * The source of randomness used to generate dice rolls.
@@ -20,6 +25,7 @@ public class StandardDice implements Dice<Roll> {
      * @param random The source of randomness used to generate dice rolls.
      */
     public StandardDice(Random random) {
+        super(4);
         this.random = random;
     }
 
@@ -28,13 +34,13 @@ public class StandardDice implements Dice<Roll> {
     }
 
     @Override
-    public @Nonnull Roll roll() {
-        // Each generated bit represents a roll of a D2 dice.
-        return Roll.of(Integer.bitCount(random.nextInt(16)));
+    public @Nonnull String getIdentifier() {
+        return "standard";
     }
 
     @Override
-    public int getMaxRoll() {
-        return 4;
+    public @Nonnull Roll roll() {
+        // Each generated bit represents a roll of a D2 dice.
+        return Roll.of(Integer.bitCount(random.nextInt(16)));
     }
 }

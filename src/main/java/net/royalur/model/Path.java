@@ -13,11 +13,6 @@ import java.util.List;
 public class Path implements Iterable<Tile> {
 
     /**
-     * The name of this path.
-     */
-    public final @Nonnull String name;
-
-    /**
      * The player that this path is intended for.
      */
     public final @Nonnull Player player;
@@ -48,26 +43,18 @@ public class Path implements Iterable<Tile> {
     public final int length;
 
     /**
-     * @param name      The name of this path.
      * @param player    The player that this path is intended for.
      * @param tiles     The ordered list of tiles that pieces must progress through on the board.
      * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.
      * @param endTile   The tile that pieces should be moved to so that they can be moved off the board.
      */
-    public Path(
-            @Nonnull String name,
-            @Nonnull Player player,
-            @Nonnull List<Tile> tiles,
-            @Nonnull Tile startTile,
-            @Nonnull Tile endTile
-    ) {
+    public Path(@Nonnull Player player, @Nonnull List<Tile> tiles, @Nonnull Tile startTile, @Nonnull Tile endTile) {
 
         this.startTile = startTile;
         this.endTile = endTile;
         if (tiles.isEmpty())
             throw new IllegalArgumentException("Paths must have at least one tile");
 
-        this.name = name;
         this.player = player;
         this.tiles = Collections.unmodifiableList(new ArrayList<>(tiles));
         this.length = tiles.size();
@@ -91,8 +78,7 @@ public class Path implements Iterable<Tile> {
 
     @Override
     public int hashCode() {
-        return name.hashCode() ^ (37 * player.hashCode()) ^
-                (97 * tiles.hashCode()) ^ (227 * startTile.hashCode()) ^ (283 * endTile.hashCode());
+        return player.hashCode() ^ (37 * tiles.hashCode()) ^ (97 * startTile.hashCode()) ^ (283 * endTile.hashCode());
     }
 
     /**
@@ -113,19 +99,13 @@ public class Path implements Iterable<Tile> {
             return false;
 
         Path other = (Path) obj;
-        return name.equals(other.name) && player == other.player && isEquivalent(other) &&
+        return player == other.player && isEquivalent(other) &&
                 startTile.equals(other.startTile) && endTile.equals(other.endTile);
     }
 
     @Override
     public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
-        if (!name.isEmpty()) {
-            builder.append(name).append(" (").append(player.name).append(")");
-        } else {
-            builder.append(player.name);
-        }
-        builder.append(": ");
         for (int index = 0; index < tiles.size(); ++index) {
             if (index > 0) {
                 builder.append(", ");

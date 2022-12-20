@@ -25,6 +25,20 @@ public class PathPairTest {
     private static final Tile T20 = new Tile(2, 0);
     private static final Tile T21 = new Tile(2, 1);
 
+    private static class IdentifiedPathPair extends PathPair {
+        private final @Nonnull String identifier;
+
+        public IdentifiedPathPair(@Nonnull String identifier, @Nonnull Path lightPath, @Nonnull Path darkPath) {
+            super(lightPath, darkPath);
+            this.identifier = identifier;
+        }
+
+        @Override
+        public @Nonnull String getIdentifier() {
+            return identifier;
+        }
+    }
+
     public static class PathPairConstructors {
         public final @Nonnull String name;
         public final @Nonnull Supplier<PathPair> pair;
@@ -71,17 +85,16 @@ public class PathPairTest {
 
     @Test
     public void testNew() {
-        Path lightPath = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path darkPath = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
+        Path lightPath = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path darkPath = new Path(Player.DARK, List.of(T20), T21, T10);
 
-        PathPair pair = new PathPair("pathPair", lightPath, darkPath);
-        assertEquals("pathPair", pair.name);
+        PathPair pair = new PathPair(lightPath, darkPath);
         assertEquals(lightPath, pair.lightPath);
         assertEquals(darkPath, pair.darkPath);
 
-        assertThrows(IllegalArgumentException.class, () -> new PathPair("pathPair", darkPath, lightPath));
-        assertThrows(IllegalArgumentException.class, () -> new PathPair("pathPair", lightPath, lightPath));
-        assertThrows(IllegalArgumentException.class, () -> new PathPair("pathPair", darkPath, darkPath));
+        assertThrows(IllegalArgumentException.class, () -> new PathPair(darkPath, lightPath));
+        assertThrows(IllegalArgumentException.class, () -> new PathPair(lightPath, lightPath));
+        assertThrows(IllegalArgumentException.class, () -> new PathPair(darkPath, darkPath));
     }
 
     @ParameterizedTest
@@ -101,18 +114,18 @@ public class PathPairTest {
 
     @Test
     public void testHashcode() {
-        Path lightPath1 = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path darkPath1 = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
+        Path lightPath1 = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path darkPath1 = new Path(Player.DARK, List.of(T20), T21, T10);
 
-        PathPair pair1 = new PathPair("pathPair", lightPath1, darkPath1);
-        PathPair pair2 = new PathPair("pathPair", lightPath1, darkPath1);
+        PathPair pair1 = new PathPair(lightPath1, darkPath1);
+        PathPair pair2 = new PathPair(lightPath1, darkPath1);
         assertEquals(pair1.hashCode(), pair2.hashCode());
 
-        Path lightPath2 = new Path("light-path", Player.LIGHT, List.of(T00, T10), T01, T11);
-        Path darkPath2 = new Path("dark-path", Player.DARK, List.of(T20, T10), T21, T11);
+        Path lightPath2 = new Path(Player.LIGHT, List.of(T00, T10), T01, T11);
+        Path darkPath2 = new Path(Player.DARK, List.of(T20, T10), T21, T11);
 
-        PathPair pair3 = new PathPair("path-pair", lightPath2, darkPath2);
-        PathPair pair4 = new PathPair("path-pair", lightPath2, darkPath2);
+        PathPair pair3 = new PathPair(lightPath2, darkPath2);
+        PathPair pair4 = new PathPair(lightPath2, darkPath2);
         assertEquals(pair3.hashCode(), pair4.hashCode());
     }
 
@@ -120,34 +133,34 @@ public class PathPairTest {
     @ArgumentsSource(PathPairConstructorsProvider.class)
     public void testHashcode(PathPairConstructors constructors) {
         PathPair pair1 = constructors.pair.get();
-        PathPair pair2 = new PathPair(pair1.name, constructors.light.get(), constructors.dark.get());
+        PathPair pair2 = new PathPair(constructors.light.get(), constructors.dark.get());
         assertEquals(pair1.hashCode(), pair2.hashCode());
     }
 
     @Test
     public void testEquals() {
-        Path lightPath1 = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path darkPath1 = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
-        Path lightPath2 = new Path("light-path", Player.LIGHT, List.of(T00, T10), T01, T11);
-        Path darkPath2 = new Path("dark-path", Player.DARK, List.of(T20, T10), T21, T11);
+        Path lightPath1 = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path darkPath1 = new Path(Player.DARK, List.of(T20), T21, T10);
+        Path lightPath2 = new Path(Player.LIGHT, List.of(T00, T10), T01, T11);
+        Path darkPath2 = new Path(Player.DARK, List.of(T20, T10), T21, T11);
 
-        PathPair pair1 = new PathPair("pathPair", lightPath1, darkPath1);
-        PathPair pair2 = new PathPair("pathPair", lightPath1, darkPath1);
+        PathPair pair1 = new PathPair(lightPath1, darkPath1);
+        PathPair pair2 = new PathPair(lightPath1, darkPath1);
         assertEquals(pair1, pair2);
-        assertNotEquals(pair1, new PathPair("path-pair", lightPath1, darkPath1));
-        assertNotEquals(pair1, new PathPair("pathPair", lightPath2, darkPath1));
-        assertNotEquals(pair1, new PathPair("pathPair", lightPath1, darkPath2));
-        assertNotEquals(pair1, new PathPair("pathPair", lightPath2, darkPath2));
+        assertNotEquals(pair1, new IdentifiedPathPair("abc", lightPath1, darkPath1));
+        assertNotEquals(pair1, new PathPair(lightPath2, darkPath1));
+        assertNotEquals(pair1, new PathPair(lightPath1, darkPath2));
+        assertNotEquals(pair1, new PathPair(lightPath2, darkPath2));
 
-        PathPair pair3 = new PathPair("path-pair", lightPath2, darkPath2);
-        PathPair pair4 = new PathPair("path-pair", lightPath2, darkPath2);
+        PathPair pair3 = new PathPair(lightPath2, darkPath2);
+        PathPair pair4 = new PathPair(lightPath2, darkPath2);
         assertEquals(pair3, pair4);
         assertNotEquals(pair1, pair3);
         assertNotEquals(pair3, pair1);
-        assertNotEquals(pair3, new PathPair("pathPair", lightPath2, darkPath2));
-        assertNotEquals(pair3, new PathPair("path-pair", lightPath2, darkPath1));
-        assertNotEquals(pair3, new PathPair("path-pair", lightPath1, darkPath2));
-        assertNotEquals(pair3, new PathPair("path-pair", lightPath1, darkPath1));
+        assertNotEquals(pair3, new IdentifiedPathPair("def", lightPath2, darkPath2));
+        assertNotEquals(pair3, new PathPair(lightPath2, darkPath1));
+        assertNotEquals(pair3, new PathPair(lightPath1, darkPath2));
+        assertNotEquals(pair3, new PathPair(lightPath1, darkPath1));
 
         Object notPathPair = new Object();
         assertNotEquals(pair1, notPathPair);
@@ -158,15 +171,17 @@ public class PathPairTest {
     @ParameterizedTest
     @ArgumentsSource(PathPairConstructorsProvider.class)
     public void testEquals(PathPairConstructors constructors) {
-        Path genericLightPath = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path genericDarkPath = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
-        PathPair generic = new PathPair("pathPair", genericLightPath, genericDarkPath);
+        Path genericLightPath = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path genericDarkPath = new Path(Player.DARK, List.of(T20), T21, T10);
+        PathPair generic = new PathPair(genericLightPath, genericDarkPath);
 
         PathPair pair1 = constructors.pair.get();
-        PathPair pair2 = new PathPair(pair1.name, constructors.light.get(), constructors.dark.get());
+        PathPair pair2 = new PathPair(constructors.light.get(), constructors.dark.get());
+        PathPair pair3 = new IdentifiedPathPair(constructors.name, constructors.light.get(), constructors.dark.get());
         assertNotEquals(pair1, pair2);
         assertNotEquals(pair1, generic);
         assertNotEquals(generic, pair2);
+        assertNotEquals(pair2, pair3);
 
         Object notPathPair = new Object();
         assertNotEquals(pair1, notPathPair);
@@ -175,31 +190,31 @@ public class PathPairTest {
 
     @Test
     public void testIsEquivalent() {
-        Path lightPath1 = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path darkPath1 = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
-        Path lightPath2 = new Path("light-path", Player.LIGHT, List.of(T00, T10), T01, T11);
-        Path darkPath2 = new Path("dark-path", Player.DARK, List.of(T20, T10), T21, T11);
+        Path lightPath1 = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path darkPath1 = new Path(Player.DARK, List.of(T20), T21, T10);
+        Path lightPath2 = new Path(Player.LIGHT, List.of(T00, T10), T01, T11);
+        Path darkPath2 = new Path(Player.DARK, List.of(T20, T10), T21, T11);
 
-        PathPair pair1 = new PathPair("pathPair", lightPath1, darkPath1);
-        PathPair pair2 = new PathPair("pathPair", lightPath1, darkPath1);
+        PathPair pair1 = new PathPair(lightPath1, darkPath1);
+        PathPair pair2 = new IdentifiedPathPair("2", lightPath1, darkPath1);
         assertTrue(pair1.isEquivalent(pair2));
-        assertTrue(pair1.isEquivalent(new PathPair("path-pair", lightPath1, darkPath1)));
-        assertFalse(pair1.isEquivalent(new PathPair("pathPair", lightPath2, darkPath1)));
-        assertFalse(pair1.isEquivalent(new PathPair("pathPair", lightPath1, darkPath2)));
-        assertFalse(pair1.isEquivalent(new PathPair("pathPair", lightPath2, darkPath2)));
+        assertTrue(pair1.isEquivalent(new PathPair(lightPath1, darkPath1)));
+        assertFalse(pair1.isEquivalent(new PathPair(lightPath2, darkPath1)));
+        assertFalse(pair1.isEquivalent(new IdentifiedPathPair("12", lightPath1, darkPath2)));
+        assertFalse(pair1.isEquivalent(new IdentifiedPathPair("22", lightPath2, darkPath2)));
 
-        PathPair pair3 = new PathPair("path-pair", lightPath2, darkPath2);
-        PathPair pair4 = new PathPair("path-pair", lightPath2, darkPath2);
+        PathPair pair3 = new PathPair(lightPath2, darkPath2);
+        PathPair pair4 = new PathPair(lightPath2, darkPath2);
         assertTrue(pair3.isEquivalent(pair4));
         assertFalse(pair1.isEquivalent(pair3));
         assertFalse(pair3.isEquivalent(pair1));
-        assertTrue(pair3.isEquivalent(new PathPair("pathPair", lightPath2, darkPath2)));
-        assertFalse(pair3.isEquivalent(new PathPair("path-pair", lightPath2, darkPath1)));
-        assertFalse(pair3.isEquivalent(new PathPair("path-pair", lightPath1, darkPath2)));
-        assertFalse(pair3.isEquivalent(new PathPair("path-pair", lightPath1, darkPath1)));
+        assertTrue(pair3.isEquivalent(new PathPair(lightPath2, darkPath2)));
+        assertFalse(pair3.isEquivalent(new PathPair(lightPath2, darkPath1)));
+        assertFalse(pair3.isEquivalent(new IdentifiedPathPair("12", lightPath1, darkPath2)));
+        assertFalse(pair3.isEquivalent(new IdentifiedPathPair("11", lightPath1, darkPath1)));
 
         PathPair aseb1 = new AsebPathPair();
-        PathPair aseb2 = new PathPair("Aseb", new AsebPathPair.AsebLightPath(), new AsebPathPair.AsebDarkPath());
+        PathPair aseb2 = new PathPair(new AsebPathPair.AsebLightPath(), new AsebPathPair.AsebDarkPath());
         assertTrue(aseb1.isEquivalent(aseb2));
         assertTrue(aseb2.isEquivalent(aseb1));
         assertFalse(aseb1.isEquivalent(pair1));
@@ -208,94 +223,93 @@ public class PathPairTest {
         assertFalse(pair3.isEquivalent(aseb1));
 
         Path asebLightPath = new Path(
-                "lightPath", Player.LIGHT,
+                Player.LIGHT,
                 AsebPathPair.AsebLightPath.TILES,
                 AsebPathPair.AsebLightPath.START_TILE,
                 AsebPathPair.AsebLightPath.END_TILE
         );
         Path asebDarkPath = new Path(
-                "darkPath",
                 Player.DARK,
                 AsebPathPair.AsebDarkPath.TILES,
                 AsebPathPair.AsebDarkPath.START_TILE,
                 AsebPathPair.AsebDarkPath.END_TILE
         );
-        PathPair aseb3 = new PathPair("pathPair", asebLightPath, asebDarkPath);
+        PathPair aseb3 = new PathPair(asebLightPath, asebDarkPath);
         assertTrue(aseb1.isEquivalent(aseb3));
     }
 
     @ParameterizedTest
     @ArgumentsSource(PathPairConstructorsProvider.class)
     public void testIsEquivalent(PathPairConstructors constructors) {
-        Path genericLightPath = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path genericDarkPath = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
-        PathPair generic = new PathPair("pathPair", genericLightPath, genericDarkPath);
+        Path genericLightPath = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path genericDarkPath = new Path(Player.DARK, List.of(T20), T21, T10);
+        PathPair generic = new PathPair(genericLightPath, genericDarkPath);
 
         PathPair pair1 = constructors.pair.get();
-        PathPair pair2 = new PathPair(pair1.name, constructors.light.get(), constructors.dark.get());
+        PathPair pair2 = new PathPair(constructors.light.get(), constructors.dark.get());
         assertTrue(pair1.isEquivalent(pair2));
         assertTrue(pair2.isEquivalent(pair1));
         assertFalse(pair1.isEquivalent(generic));
         assertFalse(generic.isEquivalent(pair1));
 
         Path lightPath = new Path(
-                "lightPath", Player.LIGHT,
+                Player.LIGHT,
                 pair2.lightPath.tiles,
                 pair2.lightPath.startTile,
                 pair2.lightPath.endTile
         );
         Path darkPath = new Path(
-                "darkPath", Player.DARK,
+                Player.DARK,
                 pair2.darkPath.tiles,
                 pair2.lightPath.startTile,
                 pair2.lightPath.endTile
         );
-        PathPair pair3 = new PathPair("pathPair", lightPath, darkPath);
+        PathPair pair3 = new PathPair(lightPath, darkPath);
         assertTrue(pair3.isEquivalent(pair1));
     }
 
     @Test
     public void testToString() {
-        Path lightPath1 = new Path("lightPath", Player.LIGHT, List.of(T00), T01, T10);
-        Path darkPath1 = new Path("darkPath", Player.DARK, List.of(T20), T21, T10);
-        Path lightPath2 = new Path("light-path", Player.LIGHT, List.of(T00, T10), T01, T11);
-        Path darkPath2 = new Path("dark-path", Player.DARK, List.of(T20, T10), T21, T11);
+        Path lightPath1 = new Path(Player.LIGHT, List.of(T00), T01, T10);
+        Path darkPath1 = new Path(Player.DARK, List.of(T20), T21, T10);
+        Path lightPath2 = new Path(Player.LIGHT, List.of(T00, T10), T01, T11);
+        Path darkPath2 = new Path(Player.DARK, List.of(T20, T10), T21, T11);
 
-        PathPair pair1 = new PathPair("pathPair", lightPath1, darkPath1);
-        PathPair pair2 = new PathPair("pathPair", lightPath1, darkPath1);
-        assertEquals("pathPair (Light: lightPath path, Dark: darkPath path)", pair1.toString());
-        assertEquals("pathPair (Light: lightPath path, Dark: darkPath path)", pair2.toString());
+        PathPair pair1 = new PathPair(lightPath1, darkPath1);
+        PathPair pair2 = new IdentifiedPathPair("Pair2", lightPath1, darkPath1);
+        assertEquals("Unknown Path", pair1.toString());
+        assertEquals("Pair2 Path", pair2.toString());
 
-        PathPair pair3 = new PathPair("path-pair", lightPath2, darkPath2);
-        PathPair pair4 = new PathPair("path-pair", lightPath2, darkPath2);
-        assertEquals("path-pair (Light: light-path path, Dark: dark-path path)", pair3.toString());
-        assertEquals("path-pair (Light: light-path path, Dark: dark-path path)", pair4.toString());
+        PathPair pair3 = new PathPair(lightPath2, darkPath2);
+        PathPair pair4 = new IdentifiedPathPair("Four", lightPath2, darkPath2);
+        assertEquals("Unknown Path", pair3.toString());
+        assertEquals("Four Path", pair4.toString());
     }
 
     @ParameterizedTest
     @ArgumentsSource(PathPairConstructorsProvider.class)
     public void testToString(PathPairConstructors constructors) {
         PathPair pair1 = constructors.pair.get();
-        PathPair pair2 = new PathPair(pair1.name, constructors.light.get(), constructors.dark.get());
-        assertEquals(pair1.name, pair1.toString());
-        assertEquals(pair1.name, pair2.toString());
+        PathPair pair2 = new PathPair(constructors.light.get(), constructors.dark.get());
+        assertEquals(constructors.name + " Path", pair1.toString());
+        assertEquals("Unknown Path", pair2.toString());
 
         Path lightPath = new Path(
-                "lightPath", Player.LIGHT,
+                Player.LIGHT,
                 pair2.lightPath.tiles,
                 pair2.lightPath.startTile,
                 pair2.lightPath.endTile
         );
         Path darkPath = new Path(
-                "darkPath", Player.DARK,
+                Player.DARK,
                 pair2.darkPath.tiles,
                 pair2.darkPath.startTile,
                 pair2.darkPath.endTile
         );
-        PathPair pair3 = new PathPair("pathPair", lightPath, darkPath);
-        assertEquals("pathPair (Light: lightPath path, Dark: darkPath path)", pair3.toString());
+        PathPair pair3 = new IdentifiedPathPair("Path Pair", lightPath, darkPath);
+        assertEquals("Path Pair Path", pair3.toString());
 
-        PathPair pair4 = new PathPair("test", constructors.light.get(), constructors.dark.get());
-        assertEquals("test (of " + pair1.name + " paths)", pair4.toString());
+        PathPair pair4 = new IdentifiedPathPair("Test", constructors.light.get(), constructors.dark.get());
+        assertEquals("Test Path", pair4.toString());
     }
 }

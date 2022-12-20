@@ -19,6 +19,11 @@ import java.util.Set;
 public class AsebBoardShape extends BoardShape {
 
     /**
+     * The identifier given to the Aseb board shape.
+     */
+    public static final String ID = "Aseb";
+
+    /**
      * The set of all tiles that exist on the Aseb board.
      * Any tile that exists in this set is on the Aseb board,
      * and any tiles that don't do not fall on the Aseb board.
@@ -62,6 +67,11 @@ public class AsebBoardShape extends BoardShape {
     );
 
     public AsebBoardShape() {
-        super("Aseb", BOARD_TILES, ROSETTE_TILES);
+        super(BOARD_TILES, ROSETTE_TILES);
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

@@ -17,9 +17,9 @@ import java.util.List;
 public class MurrayPathPair extends PathPair {
 
     /**
-     * The name given to Murray's paths.
+     * The identifier given to Murray's paths.
      */
-    public static final String NAME = "Murray";
+    public static final String ID = "Murray";
 
     /**
      * A path proposed by Murray.
@@ -35,7 +35,7 @@ public class MurrayPathPair extends PathPair {
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(NAME, player, tiles, startTile, endTile);
+            super(player, tiles, startTile, endTile);
         }
     }
 
@@ -134,6 +134,11 @@ public class MurrayPathPair extends PathPair {
     }
 
     public MurrayPathPair() {
-        super(NAME, new MurrayLightPath(), new MurrayDarkPath());
+        super(new MurrayLightPath(), new MurrayDarkPath());
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

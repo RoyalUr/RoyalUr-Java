@@ -24,6 +24,11 @@ public abstract class SimpleRuleSet<
 > extends RuleSet<P, S, R> {
 
     /**
+     * The identifier given to the simple rules.
+     */
+    public static final String ID = "Simple";
+
+    /**
      * The number of pieces that each player starts with.
      */
     public final int startingPieceCount;
@@ -40,12 +45,17 @@ public abstract class SimpleRuleSet<
             @Nonnull Dice<R> dice,
             int startingPieceCount
     ) {
-        super("Simple", boardShape, paths, dice);
+        super(boardShape, paths, dice);
 
         if (startingPieceCount <= 0)
             throw new IllegalArgumentException("startingPieces must be at least 1, not " + startingPieceCount);
 
         this.startingPieceCount = startingPieceCount;
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 
     /**

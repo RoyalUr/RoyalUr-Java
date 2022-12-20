@@ -18,9 +18,9 @@ import java.util.List;
 public class AsebPathPair extends PathPair {
 
     /**
-     * The name given to the Aseb paths.
+     * The identifier given to the Aseb paths.
      */
-    public static final String NAME = "Aseb";
+    public static final String ID = "Aseb";
 
     /**
      * A standard path used for Aseb.
@@ -38,7 +38,7 @@ public class AsebPathPair extends PathPair {
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(NAME, player, tiles, startTile, endTile);
+            super(player, tiles, startTile, endTile);
         }
     }
 
@@ -115,6 +115,11 @@ public class AsebPathPair extends PathPair {
     }
 
     public AsebPathPair() {
-        super(NAME, new AsebLightPath(), new AsebDarkPath());
+        super(new AsebLightPath(), new AsebDarkPath());
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

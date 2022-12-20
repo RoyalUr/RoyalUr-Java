@@ -19,9 +19,9 @@ import java.util.List;
 public class SkiriukPathPair extends PathPair {
 
     /**
-     * The name given to Skiriuk's paths.
+     * The identifier given to Skiriuk's paths.
      */
-    public static final String NAME = "Skiriuk";
+    public static final String ID = "Skiriuk";
 
     /**
      * A path proposed by Skiriuk.
@@ -37,7 +37,7 @@ public class SkiriukPathPair extends PathPair {
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(NAME, player, tiles, startTile, endTile);
+            super(player, tiles, startTile, endTile);
         }
     }
 
@@ -128,6 +128,11 @@ public class SkiriukPathPair extends PathPair {
     }
 
     public SkiriukPathPair() {
-        super(NAME, new SkiriukLightPath(), new SkiriukDarkPath());
+        super(new SkiriukLightPath(), new SkiriukDarkPath());
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

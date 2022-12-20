@@ -17,9 +17,9 @@ import java.util.List;
 public class BellPathPair extends PathPair {
 
     /**
-     * The name given to Bell's paths.
+     * The identifier given to Bell's paths.
      */
-    public static final String NAME = "Bell";
+    public static final String ID = "Bell";
 
     /**
      * A path proposed by Bell.
@@ -35,7 +35,7 @@ public class BellPathPair extends PathPair {
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(NAME, player, tiles, startTile, endTile);
+            super(player, tiles, startTile, endTile);
         }
     }
 
@@ -108,6 +108,11 @@ public class BellPathPair extends PathPair {
     }
 
     public BellPathPair() {
-        super(NAME, new BellLightPath(), new BellDarkPath());
+        super(new BellLightPath(), new BellDarkPath());
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 }

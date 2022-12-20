@@ -9,11 +9,6 @@ import javax.annotation.Nullable;
 public class PathPair {
 
     /**
-     * The name of this pair of paths.
-     */
-    public final @Nonnull String name;
-
-    /**
      * The path that the light player's pieces must take.
      */
     public final @Nonnull Path lightPath;
@@ -27,7 +22,7 @@ public class PathPair {
      * @param lightPath The path that the light player's pieces must take.
      * @param darkPath The path that the dark player's pieces must take.
      */
-    public PathPair(@Nonnull String name, @Nonnull Path lightPath, @Nonnull Path darkPath) {
+    public PathPair(@Nonnull Path lightPath, @Nonnull Path darkPath) {
         if (lightPath.player != Player.LIGHT) {
             throw new IllegalArgumentException(
                     "The lightPath is not intended for the " + Player.LIGHT.name + " player. " +
@@ -42,9 +37,16 @@ public class PathPair {
                     " as the intended player."
             );
         }
-        this.name = name;
         this.lightPath = lightPath;
         this.darkPath = darkPath;
+    }
+
+    /**
+     * Gets an identifier that can be used to uniquely identify these paths.
+     * @return An identifier that can be used to uniquely identify these paths.
+     */
+    public @Nonnull String getIdentifier() {
+        throw new UnsupportedOperationException("This path pair does not have an identifier (" + getClass() + ")");
     }
 
     /**
@@ -63,7 +65,7 @@ public class PathPair {
 
     @Override
     public int hashCode() {
-        return name.hashCode() ^ (37 * lightPath.hashCode()) ^ (91 * darkPath.hashCode());
+        return lightPath.hashCode() ^ (91 * darkPath.hashCode());
     }
 
     /**
@@ -84,19 +86,15 @@ public class PathPair {
             return false;
 
         PathPair other = (PathPair) obj;
-        return name.equals(other.name) && lightPath.equals(other.lightPath) && darkPath.equals(other.darkPath);
+        return lightPath.equals(other.lightPath) && darkPath.equals(other.darkPath);
     }
 
     @Override
     public @Nonnull String toString() {
-        if (lightPath.name.equals(darkPath.name)) {
-            if (lightPath.name.equals(name))
-                return name;
-
-            return name + " (of " + lightPath.name + " paths)";
+        try {
+            return getIdentifier() + " Path";
+        } catch (UnsupportedOperationException e) {
+            return "Unknown Path";
         }
-        return name + " (" +
-                Player.LIGHT.name + ": " + lightPath.name + " path, " +
-                Player.DARK.name + ": " + darkPath.name + " path)";
     }
 }

@@ -1,10 +1,14 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
+import net.royalur.model.path.BellPathPair;
+import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
+import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,11 +19,6 @@ import java.util.List;
  * @param <R> The type of rolls that may be made.
  */
 public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends Roll> {
-
-    /**
-     * The name of this rule set.
-     */
-    public final @Nonnull String name;
 
     /**
      * The shape of the game board.
@@ -37,26 +36,63 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     public final @Nonnull Dice<R> dice;
 
     /**
-     * @param name       The name of this rule set.
      * @param boardShape The shape of the game board.
      * @param paths      The paths that the players must take around the board.
      * @param dice       The dice that are used to generate dice rolls.
      */
     protected RuleSet(
-            @Nonnull String name,
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
             @Nonnull Dice<R> dice
     ) {
         if (!boardShape.isCompatible(paths.lightPath)) {
             throw new IllegalArgumentException(
-                    "The " + paths.name + " paths are not compatible with the " + boardShape.name + " board shape"
+                    "The " + paths.getIdentifier() + " paths are not compatible with the " +
+                            boardShape.getIdentifier() + " board shape"
             );
         }
-        this.name = name;
         this.boardShape = boardShape;
         this.paths = paths;
         this.dice = dice;
+    }
+
+    /**
+     * Generates an identifier to identify this set of rules.
+     * This does not include identifying the board shape, path, or dice used.
+     * @return An identifier to identify this set of rules.
+     */
+    public @Nonnull String getIdentifier() {
+        throw new UnsupportedOperationException("This rule set does not have an identifier (" + getClass() + ")");
+    }
+
+    /**
+     * Gets a descriptor that can be used to uniquely identify these rules,
+     * the board shape, the path, and the dice used.
+     * @return A descriptor to describe these rules, the board shape, the path,
+     *         and the dice used.
+     */
+    public @Nonnull String getDescriptor() {
+        // Get the identifiers of the rules, board shape, paths, and dice.
+        String rulesId = getIdentifier();
+        String shapeId = boardShape.getIdentifier();
+        String pathsId = paths.getIdentifier();
+        String diceId = dice.getIdentifier();
+
+        // Conditionally exclude IDs if they are the most common 'default'.
+        List<String> components = new ArrayList<>();
+        components.add(pathsId);
+        if (!SimpleRuleSet.ID.equals(rulesId)) {
+            components.add(rulesId + " Rules");
+        }
+        if (!shapeId.equals(pathsId) && !StandardBoardShape.ID.equals(shapeId)) {
+            components.add(shapeId + " Board Shape");
+        }
+        if (!StandardDice.ID.equals(diceId)) {
+            components.add(diceId + " Dice");
+        }
+
+        // Add it all together.
+        return String.join(", ", components);
     }
 
     /**
@@ -136,4 +172,13 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      */
     public abstract @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state, @Nonnull Move<P> move);
+
+    @Override
+    public @Nonnull String toString() {
+        try {
+            return getIdentifier() + " Rules";
+        } catch (UnsupportedOperationException e) {
+            return "Unknown Rules";
+        }
+    }
 }

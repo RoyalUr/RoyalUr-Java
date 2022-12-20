@@ -19,6 +19,11 @@ import java.util.Set;
 public class StandardBoardShape extends BoardShape {
 
     /**
+     * The identifier given to the standard board shape.
+     */
+    public static final String ID = "Standard";
+
+    /**
      * The set of all tiles that exist on the standard board.
      * Any tile that exists in this set is on the standard board,
      * and any tiles that don't do not fall on the standard board.
@@ -62,7 +67,12 @@ public class StandardBoardShape extends BoardShape {
     );
 
     public StandardBoardShape() {
-        super("Standard", BOARD_TILES, ROSETTE_TILES);
+        super(BOARD_TILES, ROSETTE_TILES);
+    }
+
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 
     @Override

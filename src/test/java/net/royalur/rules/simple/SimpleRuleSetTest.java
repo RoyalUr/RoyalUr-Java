@@ -79,7 +79,7 @@ public class SimpleRuleSetTest {
         PlayerState light = rules.generateNewPlayerState(Player.LIGHT);
         PlayerState dark = rules.generateNewPlayerState(Player.DARK);
 
-        for (int roll = 1; roll < rules.dice.getMaxRoll(); ++roll) {
+        for (int roll = 1; roll < rules.dice.maxRoll; ++roll) {
             for (PlayerState playerState : new PlayerState[] {light, dark}) {
                 Player player = playerState.player;
                 assertEquals(
