@@ -7,9 +7,8 @@ import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * A game is modelled as metadata about the players,
@@ -26,6 +25,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     public final @Nonnull RuleSet<P, S, R> rules;
 
     /**
+     * Arbitrary metadata about this game.
+     */
+    private final @Nonnull Map<String, String> metadata;
+
+    /**
      * The states that have occurred so far in the game.
      * The last state in the list is the current state of the game.
      */
@@ -40,8 +44,49 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
             throw new IllegalArgumentException("Games must have at least one state to play from");
 
         this.rules = rules;
+        this.metadata = new LinkedHashMap<>();
         this.states = new ArrayList<>();
+
         addStates(states);
+
+        GameState<P, S, R> state = getCurrentState();
+        metadata.put("Rules", rules.getDescriptor());
+        metadata.put("Light", state.lightPlayer.name);
+        metadata.put("Dark", state.darkPlayer.name);
+        metadata.put("Date", Instant.now().toString());
+    }
+
+    /**
+     * Sets the value of the metadata associated with the key {@param key} to {@param value}.
+     * @param key   The key of the metadata item to be updated.
+     * @param value The new value to be associated with the given metadata key.
+     */
+    public void putMetadata(@Nonnull String key, @Nonnull String value) {
+        metadata.put(key, value);
+    }
+
+    /**
+     * Retrieves the metadata associated with the key {@param key}.
+     * @param key The key of the metadata item to be retrieved.
+     * @return The metadata associated with the key {@param key}.
+     * @throws IllegalStateException If there is no metadata associated with the key {@param key}.
+     */
+    public @Nonnull String getMetadata(@Nonnull String key) {
+        String value = metadata.get(key);
+        if (value != null)
+            return value;
+
+        throw new IllegalStateException(
+                "This game does not contain any metadata associated with the key '" + key + "'"
+        );
+    }
+
+    /**
+     * Retrieves all metadata about this game.
+     * @return The metadata about this game.
+     */
+    public @Nonnull Map<String, String> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
     }
 
     /**
@@ -49,7 +94,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * The last state in the list is the current state of the game.
      * @return The states that have occurred so far in the game.
      */
-    public List<GameState<P, S, R>> getStates() {
+    public @Nonnull List<GameState<P, S, R>> getStates() {
         return Collections.unmodifiableList(states);
     }
 
@@ -60,7 +105,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The states that represent the actions that have been
      *         made so far in the game.
      */
-    public List<ActionGameState<P, S, R>> getActionStates() {
+    public @Nonnull List<ActionGameState<P, S, R>> getActionStates() {
         List<ActionGameState<P, S, R>> actionStates = new ArrayList<>();
         for (GameState<P, S, R> state : states) {
             if (state instanceof ActionGameState) {
@@ -202,6 +247,14 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
             return (WinGameState<P, S, R>) state;
 
         throw new IllegalStateException("This game has not ended");
+    }
+
+    /**
+     * Retrieves the state of the board in the current state of the game.
+     * @return The state of the board in the current state of the game.
+     */
+    public @Nonnull Board<P> getBoard() {
+        return getCurrentState().board;
     }
 
     /**
