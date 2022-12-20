@@ -6,6 +6,7 @@ import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
+import net.royalur.notation.RGNNotation;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -27,6 +28,8 @@ public class GameTest {
         int loseMinActions = (2 /* zeroes rolled per piece scored */) * (7 /* pieces */);
         assertTrue(actions >= winMinActions + loseMinActions);
         assertEquals(actions, game.getActionStates().size());
+
+        System.out.println(new RGNNotation<>(game.rules).encode(game));
     }
 
     @RepeatedTest(3)

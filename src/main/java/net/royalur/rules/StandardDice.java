@@ -35,7 +35,7 @@ public class StandardDice extends Dice<Roll> {
 
     @Override
     public @Nonnull String getIdentifier() {
-        return "standard";
+        return ID;
     }
 
     @Override
