@@ -89,6 +89,14 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Removes any metadata associated with the key {@param key}.
+     * @param key   The key of the metadata item to be removed.
+     */
+    public void removeMetadata(@Nonnull String key) {
+        metadata.remove(key);
+    }
+
+    /**
      * Retrieves the metadata associated with the key {@param key}.
      * @param key The key of the metadata item to be retrieved.
      * @return The metadata associated with the key {@param key}.
