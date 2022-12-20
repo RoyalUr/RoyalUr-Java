@@ -9,6 +9,11 @@ import javax.annotation.Nullable;
 public class PlayerState {
 
     /**
+     * The default name to use for players that do not provide a name.
+     */
+    public static final @Nonnull String ANONYMOUS_NAME = "Anonymous";
+
+    /**
      * The player that this state represents.
      */
     public final @Nonnull Player player;
@@ -53,7 +58,7 @@ public class PlayerState {
      * @param score The number of pieces that the player has taken off the board.
      */
     public PlayerState(@Nonnull Player player, int pieceCount, int score) {
-        this(player, player.name, pieceCount, score);
+        this(player, ANONYMOUS_NAME, pieceCount, score);
     }
 
     /**

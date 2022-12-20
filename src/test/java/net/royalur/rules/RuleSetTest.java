@@ -80,12 +80,12 @@ public class RuleSetTest {
         PlayerState light = rules.generateNewPlayerState(Player.LIGHT);
         assertNotNull(light);
         assertEquals(Player.LIGHT, light.player);
-        assertEquals(Player.LIGHT.name, light.name);
+        assertEquals(PlayerState.ANONYMOUS_NAME, light.name);
 
         PlayerState dark = rules.generateNewPlayerState(Player.DARK);
         assertNotNull(dark);
         assertEquals(Player.DARK, dark.player);
-        assertEquals(Player.DARK.name, dark.name);
+        assertEquals(PlayerState.ANONYMOUS_NAME, dark.name);
 
         PlayerState namedLight = rules.generateNewPlayerState(Player.LIGHT, "Alice");
         assertNotNull(namedLight);
@@ -136,7 +136,7 @@ public class RuleSetTest {
             List<Move<P>> lightMoves = rules.findAvailableMoves(board, light, roll);
             assertNotNull(lightMoves);
 
-            List<Move<P>> darkMoves = rules.findAvailableMoves(board, light, roll);
+            List<Move<P>> darkMoves = rules.findAvailableMoves(board, dark, roll);
             assertNotNull(darkMoves);
 
             if (lightMoves.size() > 0) {

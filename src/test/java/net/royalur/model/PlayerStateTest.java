@@ -10,13 +10,13 @@ public class PlayerStateTest {
     public void testNew() {
         PlayerState player = new PlayerState(Player.LIGHT, 1, 1);
         assertEquals(Player.LIGHT, player.player);
-        assertEquals(Player.LIGHT.name, player.name);
+        assertEquals(PlayerState.ANONYMOUS_NAME, player.name);
         assertEquals(1, player.getPieceCount());
         assertEquals(1, player.getScore());
 
         player = new PlayerState(Player.DARK, 2, 3);
         assertEquals(Player.DARK, player.player);
-        assertEquals(Player.DARK.name, player.name);
+        assertEquals(PlayerState.ANONYMOUS_NAME, player.name);
         assertEquals(2, player.getPieceCount());
         assertEquals(3, player.getScore());
 
@@ -104,13 +104,13 @@ public class PlayerStateTest {
         PlayerState four = new PlayerState(Player.DARK, "Bob", 9, 9);
 
         assertEquals(
-                "Player: Light\n" +
+                "Player: Anonymous (Light)\n" +
                 "Pieces: 2\n" +
                 "Score: 3",
                 one.toString()
         );
         assertEquals(
-                "Player: Dark\n" +
+                "Player: Anonymous (Dark)\n" +
                 "Pieces: 3\n" +
                 "Score: 2",
                 two.toString()

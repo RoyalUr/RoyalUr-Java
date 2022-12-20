@@ -109,7 +109,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      * @return A player state for the player {@param player}.
      */
     public @Nonnull S generateNewPlayerState(@Nonnull Player player) {
-        return generateNewPlayerState(player, player.name);
+        return generateNewPlayerState(player, PlayerState.ANONYMOUS_NAME);
     }
 
     /**
