@@ -8,6 +8,10 @@ import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -18,6 +22,21 @@ import java.util.*;
  * @param <R> The type of rolls that may be made.
  */
 public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
+
+    /**
+     * The standard format to use for Date metadata values.
+     */
+    public static final @Nonnull String DATE_PATTERN = "yyyy.MM.dd";
+
+    /**
+     * The standard format to use for Time metadata values.
+     */
+    public static final @Nonnull String TIME_PATTERN = "HH:mm:ss";
+
+    /**
+     * The standard format to use for TimeZone metadata values.
+     */
+    public static final @Nonnull String TIMEZONE_PATTERN = "OOOO";
 
     /**
      * The set of rules that are being used for this game.
@@ -53,7 +72,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
         metadata.put("Rules", rules.getDescriptor());
         metadata.put("Light", state.lightPlayer.name);
         metadata.put("Dark", state.darkPlayer.name);
-        metadata.put("Date", Instant.now().toString());
+
+        ZonedDateTime now = ZonedDateTime.now();
+        metadata.put("Date", DateTimeFormatter.ofPattern(DATE_PATTERN).format(now));
+        metadata.put("Time", DateTimeFormatter.ofPattern(TIME_PATTERN).format(now));
+        metadata.put("TimeZone", DateTimeFormatter.ofPattern(TIMEZONE_PATTERN).format(now));
     }
 
     /**
