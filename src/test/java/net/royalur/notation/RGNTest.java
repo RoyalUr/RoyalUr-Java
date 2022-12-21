@@ -1,6 +1,7 @@
 package net.royalur.notation;
 
 import net.royalur.Game;
+import net.royalur.model.*;
 import net.royalur.model.path.BellPathPair;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
@@ -80,6 +81,47 @@ public class RGNTest {
     }
 
     public static class GameProvider implements ArgumentsProvider {
+
+        /**
+         * Light always rolls 1, dark always rolls 0.
+         */
+        private static <P extends Piece, S extends PlayerState, R extends Roll> void
+        playRiggedGame(@Nonnull Game<P, S, R> game) {
+
+            while (!game.isFinished()) {
+                Player player = game.getTurnPlayer().player;
+                switch (player) {
+                    case LIGHT:
+                        if (game.isWaitingForRoll()) {
+                            game.rollDice(1);
+
+                            try {
+                                // Try to detect a deadlock where pieces can block themselves on a path.
+                                // This can happen on paths that loop back on themselves.
+                                assert game.findAvailableMoves().size() > 0;
+                            } catch (Exception e) {
+                                System.err.println("Failed due to deadlock in the following state:");
+                                System.err.println("* Rules: " + game.rules.getDescriptor());
+                                System.err.println("* Board:\n" + game.getBoard());
+                                throw e;
+                            }
+                        } else {
+                            List<Move<P>> moves = game.findAvailableMoves();
+                            // Moving the last piece helps to avoid deadlocks, although
+                            // this does assume that the available moves list is ordered.
+                            Move<P> move = moves.get(moves.size() - 1);
+                            game.makeMove(move);
+                        }
+                        break;
+                    case DARK:
+                        game.rollDice(0);
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected player " + player);
+                }
+            }
+        }
+
         public static @Nonnull List<ProvidedGame> get() {
             List<ProvidedGame> games = new ArrayList<>();
 
@@ -124,6 +166,13 @@ public class RGNTest {
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 games.add(new ProvidedGame("Two Moves", game));
+            }
+
+            // Game where light always rolls 1, and dark always rolls 0.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new Game<>(rules.rules);
+                playRiggedGame(game);
+                games.add(new ProvidedGame("Rigged", game));
             }
             return games;
         }
