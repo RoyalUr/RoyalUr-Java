@@ -99,7 +99,19 @@ public class RGNTest {
     }
 
     private void testMetadata(@Nonnull String encoded, @Nonnull RuleSet<?, ?, ?> rules) {
-        List<String> lines = Arrays.asList(encoded.split("\\R"));
+        // Get a list of all the metadata lines, ignoring lines containing moves.
+        String[] allLines = encoded.split("\\R");
+        List<String> lines = new ArrayList<>();
+        for (String line : allLines) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty())
+                break;
+
+            assertTrue(line.startsWith("["), line);
+            assertTrue(line.endsWith("]"), line);
+            lines.add(line);
+        }
+
         assertTrue(lines.contains("[Rules " + RGN.escape(rules.getDescriptor()) + "]"));
         assertTrue(lines.contains("[Light \"Anonymous\"]"));
         assertTrue(lines.contains("[Dark \"Anonymous\"]"));
