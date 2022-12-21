@@ -92,7 +92,7 @@ public abstract class SimpleRuleSet<
             Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
             if (scorePiece != null && scorePiece.owner == player.player && scorePiece.pathIndex == scorePathIndex) {
-                moves.add(new Move<>(scoreTile, scorePiece, null, null, null));
+                moves.add(new Move<>(player.player, scoreTile, scorePiece, null, null, null));
             }
         }
 
@@ -138,7 +138,7 @@ public abstract class SimpleRuleSet<
             } else {
                 movedPiece = createNewPiece(player.player, destPathIndex);
             }
-            moves.add(new Move<>(tile, piece, dest, movedPiece, destPiece));
+            moves.add(new Move<>(player.player, tile, piece, dest, movedPiece, destPiece));
         }
         return moves;
     }

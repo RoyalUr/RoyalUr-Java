@@ -57,14 +57,29 @@ public class Tile {
     }
 
     /**
+     * Encodes the x-coordinate as a letter.
+     * @return The x-coordinate of this tile encoded as a letter.
+     */
+    public @Nonnull String getEncodedX() {
+        return Character.toString((char) ('A' + x));
+    }
+
+    /**
+     * Encodes the y-coordinate as a number string.
+     * @return The y-coordinate of this tile encoded as a number string.
+     */
+    public @Nonnull String getEncodedY() {
+        return Integer.toString(y);
+    }
+
+    /**
      * Converts the location of this tile into a text representation of the
      * format "[letter][number]".
-     *
      * @return A text representation of the location of this tile.
      */
     @Override
     public @Nonnull String toString() {
-        return Character.toString((char) ('A' + x)) + y;
+        return getEncodedX() + getEncodedY();
     }
 
     /**

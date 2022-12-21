@@ -84,6 +84,7 @@ public class SimpleRuleSetTest {
                 Player player = playerState.player;
                 assertEquals(
                         List.of(new Move<>(
+                                player,
                                 null, null,
                                 rules.paths.get(player).get(roll - 1),
                                 new SimplePiece(player, roll - 1),

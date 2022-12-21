@@ -31,7 +31,8 @@ public abstract class Notation {
      * @param game The game to be encoded.
      * @return Text that represents {@param game} in this notation.
      */
-    public abstract @Nonnull String encodeGame(@Nonnull Game<?, ?, ?> game);
+    public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String
+    encodeGame(@Nonnull Game<P, S, R> game);
 
     /**
      * Decodes the game from the text {@param encoded}, based upon the rules {@param rules}.

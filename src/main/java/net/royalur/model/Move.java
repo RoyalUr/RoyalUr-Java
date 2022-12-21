@@ -10,6 +10,11 @@ import java.util.Objects;
 public class Move<P extends Piece> {
 
     /**
+     * The instigator of this move.
+     */
+    public final @Nonnull Player player;
+
+    /**
      * The origin of the move. If this is {@code null}, it represents
      * moving a new piece onto the board.
      */
@@ -45,6 +50,7 @@ public class Move<P extends Piece> {
      * the board. If {@param to} is {@code null}, it represents moving a piece
      * off of the board.
      *
+     * @param player    The player that is the instigator of this move.
      * @param from      The origin of the move. If this is {@code null}, it represents
      *                  moving a new piece onto the board.
      * @param fromPiece The piece on the board to be moved, or {@code null} if a new
@@ -57,6 +63,7 @@ public class Move<P extends Piece> {
      *                       if no piece would be captured by this move.
      */
     public Move(
+            @Nonnull Player player,
             @Nullable Tile from, @Nullable P fromPiece,
             @Nullable Tile to, @Nullable P toPiece,
             @Nullable P capturedPiece
@@ -68,6 +75,7 @@ public class Move<P extends Piece> {
         if ((to == null) ^ (toPiece == null))
             throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
 
+        this.player = player;
         this.from = from;
         this.to = to;
         this.fromPiece = fromPiece;
