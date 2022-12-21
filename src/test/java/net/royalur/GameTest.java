@@ -6,7 +6,6 @@ import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.notation.RGNNotation;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
 

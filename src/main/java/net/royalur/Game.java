@@ -4,19 +4,16 @@ import net.royalur.agent.Agent;
 import net.royalur.model.*;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.simple.SimpleGame;
 import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- * A game is modelled as metadata about the players,
- * and a list of GameStates.
+ * A game of the Royal Game of Ur.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
@@ -77,6 +74,22 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
         metadata.put("Date", DateTimeFormatter.ofPattern(DATE_PATTERN).format(now));
         metadata.put("Time", DateTimeFormatter.ofPattern(TIME_PATTERN).format(now));
         metadata.put("TimeZone", DateTimeFormatter.ofPattern(TIMEZONE_PATTERN).format(now));
+    }
+
+    /**
+     * Creates a game that starts from scratch.
+     * @param rules The rules of the game.
+     */
+    public Game(@Nonnull RuleSet<P, S, R> rules) {
+        this(
+                rules,
+                List.of(new WaitingForRollGameState<>(
+                        rules.generateEmptyBoard(),
+                        rules.generateNewPlayerState(Player.LIGHT),
+                        rules.generateNewPlayerState(Player.DARK),
+                        Player.LIGHT
+                ))
+        );
     }
 
     /**
@@ -346,13 +359,22 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Rolls the dice, with a known value of {@param roll}, and updates the
+     * state of the game accordingly.
+     * @param roll The value of the dice that is to be rolled.
+     */
+    public void rollDice(@Nonnull R roll) {
+        WaitingForRollGameState<P, S, R> state = getCurrentWaitingForRollState();
+        addStates(rules.applyRoll(state, roll));
+    }
+
+    /**
      * Rolls the dice, and updates the state of the game accordingly.
      * @return The value of the dice that were rolled.
      */
     public @Nonnull R rollDice() {
-        WaitingForRollGameState<P, S, R> state = getCurrentWaitingForRollState();
         R roll = rules.rollDice();
-        addStates(rules.applyRoll(state, roll));
+        rollDice(roll);
         return roll;
     }
 
@@ -373,6 +395,33 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     public void makeMove(@Nonnull Move<P> move) {
         WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
         addStates(rules.applyMove(state, move));
+    }
+
+    /**
+     * Moves the piece {@param piece}, and updates the state of the game.
+     * @param piece The piece to be moved.
+     */
+    public void makeMove(@Nonnull P piece) {
+        for (Move<P> move : findAvailableMoves()) {
+            if (!move.getSourcePiece().equals(piece))
+                continue;
+
+            makeMove(move);
+            return;
+        }
+        throw new IllegalStateException("The piece cannot be moved, " + piece);
+    }
+
+    /**
+     * Moves the piece on tile {@param tile}, and updates the state of the game.
+     * @param tile The tile where the piece to be moved resides.
+     */
+    public void makeMove(@Nonnull Tile tile) {
+        P piece = getCurrentState().board.get(tile);
+        if (piece == null)
+            throw new IllegalStateException("There is no piece on tile " + tile);
+
+        makeMove(piece);
     }
 
     /**
@@ -421,7 +470,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * and seven starting pieces per player.
      * @return A standard game.
      */
-    public static @Nonnull Game<SimplePiece, PlayerState, Roll> createStandard() {
+    public static @Nonnull SimpleGame createStandard() {
         return builder().standard().build();
     }
 
@@ -430,7 +479,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * the Aseb paths, the standard dice, and five starting pieces per player.
      * @return A game of Aseb.
      */
-    public static @Nonnull Game<SimplePiece, PlayerState, Roll> createAseb() {
+    public static @Nonnull SimpleGame createAseb() {
         return builder().aseb().build();
     }
 }
