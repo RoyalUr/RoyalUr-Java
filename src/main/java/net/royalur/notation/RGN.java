@@ -13,23 +13,17 @@ import java.util.Map;
  * RGN stands for Royal Game Notation. This is a textual format
  * that is intended to be readable by both humans and machines.
  * This notation is inspired by Chess' PGN (Portable Game Notation).
- * @param <P> The type of pieces that are stored on the board.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be made.
  */
-public class RGNNotation<P extends Piece, S extends PlayerState, R extends Roll> extends Notation<P, S, R> {
+public class RGN extends Notation {
 
     /**
-     * The rules to use to generate the game. This is important,
-     * as some implicit information may only be available by
-     * playing through all the recorded moves. For example,
-     * the index of a piece on its path.
+     * The identifier given to the RGN notation.
      */
-    public final @Nonnull RuleSet<P, S, R> rules;
+    public static final String ID = "RGN";
 
-    public RGNNotation(@Nonnull RuleSet<P, S, R> rules) {
-        super("RGN");
-        this.rules = rules;
+    @Override
+    public @Nonnull String getIdentifier() {
+        return ID;
     }
 
     /**
@@ -52,7 +46,7 @@ public class RGNNotation<P extends Piece, S extends PlayerState, R extends Roll>
     }
 
     @Override
-    public @Nonnull String encode(@Nonnull Game<P, S, R> game) {
+    public @Nonnull String encodeGame(@Nonnull Game<?, ?, ?> game) {
         StringBuilder builder = new StringBuilder();
 
         // Encode the metadata.
@@ -70,7 +64,9 @@ public class RGNNotation<P extends Piece, S extends PlayerState, R extends Roll>
     }
 
     @Override
-    public @Nonnull Game<P, S, R> decode(@Nonnull String encoded) {
+    public <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull Game<P, S, R>
+    decodeGame(@Nonnull RuleSet<P, S, R> rules, @Nonnull String encoded) {
+
         throw new UnsupportedOperationException("TODO");
     }
 }

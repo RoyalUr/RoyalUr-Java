@@ -4,6 +4,7 @@ import net.royalur.Game;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
+import net.royalur.rules.RuleSet;
 
 import javax.annotation.Nonnull;
 
@@ -14,19 +15,15 @@ import javax.annotation.Nonnull;
  * guaranteed to be lossless in their conversion. Therefore, you
  * should check the specific notation you are considering to
  * determine the information that it is able to save.
- * @param <P> The type of pieces that are stored on the board.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be made.
  */
-public abstract class Notation<P extends Piece, S extends PlayerState, R extends Roll> {
+public abstract class Notation {
 
     /**
-     * The name of this notation.
+     * Gets an identifier that can be used to uniquely identify these paths.
+     * @return An identifier that can be used to uniquely identify these paths.
      */
-    public final @Nonnull String name;
-
-    public Notation(@Nonnull String name) {
-        this.name = name;
+    public @Nonnull String getIdentifier() {
+        throw new UnsupportedOperationException("This notation does not have an identifier (" + getClass() + ")");
     }
 
     /**
@@ -34,12 +31,17 @@ public abstract class Notation<P extends Piece, S extends PlayerState, R extends
      * @param game The game to be encoded.
      * @return Text that represents {@param game} in this notation.
      */
-    public abstract @Nonnull String encode(@Nonnull Game<P, S, R> game);
+    public abstract @Nonnull String encodeGame(@Nonnull Game<?, ?, ?> game);
 
     /**
-     * Decodes the game from the text {@param encoded}.
+     * Decodes the game from the text {@param encoded}, based upon the rules {@param rules}.
+     * @param rules The rules used to simulate the game as it is decoded.
      * @param encoded The text to decode into a game.
      * @return The decoded game.
+     * @param <P> The type of pieces that are stored on the board.
+     * @param <S> The type of state that is stored for each player.
+     * @param <R> The type of rolls that may be made.
      */
-    public abstract @Nonnull Game<P, S, R> decode(@Nonnull String encoded);
+    public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull Game<P, S, R>
+    decodeGame(@Nonnull RuleSet<P, S, R> rules, @Nonnull String encoded);
 }
