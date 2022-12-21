@@ -121,11 +121,20 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     public abstract @Nonnull S generateNewPlayerState(@Nonnull Player player, @Nonnull String name);
 
     /**
-     * Generates a die roll using the dice of this rule set.
-     * @return A dice roll.
+     * Generates a random dice roll using the dice of this rule set.
+     * @return A random dice roll.
      */
     public @Nonnull R rollDice() {
         return dice.roll();
+    }
+
+    /**
+     * Generates a roll of the dice of value {@param value} using the dice of this rule set.
+     * @param value The value of the dice to roll.
+     * @return A roll of the dice of value {@param value}.
+     */
+    public @Nonnull R rollDice(int value) {
+        return dice.roll(value);
     }
 
     /**

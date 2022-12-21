@@ -77,6 +77,24 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Creates a game that starts from scratch, with player names.
+     * @param rules The rules of the game.
+     * @param lightPlayerName The name of the light player.
+     * @param darkPlayerName The name of the dark player.
+     */
+    public Game(@Nonnull RuleSet<P, S, R> rules, @Nonnull String lightPlayerName, @Nonnull String darkPlayerName) {
+        this(
+                rules,
+                List.of(new WaitingForRollGameState<>(
+                        rules.generateEmptyBoard(),
+                        rules.generateNewPlayerState(Player.LIGHT, lightPlayerName),
+                        rules.generateNewPlayerState(Player.DARK, darkPlayerName),
+                        Player.LIGHT
+                ))
+        );
+    }
+
+    /**
      * Creates a game that starts from scratch.
      * @param rules The rules of the game.
      */
@@ -379,6 +397,17 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Rolls the dice with a known value of {@param value}, and updates the state of the game accordingly.
+     * @param value The value of the dice to be rolled.
+     * @return The value of the dice that were rolled.
+     */
+    public @Nonnull R rollDice(int value) {
+        R roll = rules.rollDice(value);
+        rollDice(roll);
+        return roll;
+    }
+
+    /**
      * Finds all available moves that can be made from the current state of the game.
      * @return All available moves that can be made from the current state of the game.
      */
@@ -413,10 +442,33 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Moves a new piece onto the board.
+     */
+    public void makeMoveIntroducingPiece() {
+        for (Move<P> move : findAvailableMoves()) {
+            if (!move.isIntroducingPiece())
+                continue;
+
+            makeMove(move);
+            return;
+        }
+        throw new IllegalStateException("There is no available move to introduce a piece to the board");
+    }
+
+    /**
      * Moves the piece on tile {@param tile}, and updates the state of the game.
      * @param tile The tile where the piece to be moved resides.
      */
     public void makeMove(@Nonnull Tile tile) {
+        PlayableGameState<P, S, R> state = getCurrentPlayableState();
+        if (!state.board.contains(tile)) {
+            if (tile.equals(rules.paths.get(state.turn).startTile)) {
+                makeMoveIntroducingPiece();
+                return;
+            }
+            throw new IllegalStateException("The tile does not exist on the board, " + tile);
+        }
+
         P piece = getCurrentState().board.get(tile);
         if (piece == null)
             throw new IllegalStateException("There is no piece on tile " + tile);

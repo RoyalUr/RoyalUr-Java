@@ -43,4 +43,9 @@ public class StandardDice extends Dice<Roll> {
         // Each generated bit represents a roll of a D2 dice.
         return Roll.of(Integer.bitCount(random.nextInt(16)));
     }
+
+    @Override
+    public @Nonnull Roll roll(int value) {
+        return Roll.of(value);
+    }
 }

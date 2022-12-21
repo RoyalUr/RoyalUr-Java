@@ -6,7 +6,6 @@ import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.simple.SimpleGame;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -89,6 +87,44 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 games.add(new ProvidedGame("Empty", new Game<>(rules.rules)));
             }
+
+            // Empty games with player names.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                games.add(new ProvidedGame("Empty", new Game<>(rules.rules, "Bob", "Jeff")));
+            }
+
+            // One roll by light.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new Game<>(rules.rules);
+                game.rollDice(1);
+                games.add(new ProvidedGame("One Roll", game));
+            }
+
+            // One move by light.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new Game<>(rules.rules);
+                game.rollDice(1);
+                game.makeMoveIntroducingPiece();
+                games.add(new ProvidedGame("One Move", game));
+            }
+
+            // One move by light, and one roll.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new Game<>(rules.rules);
+                game.rollDice(1);
+                game.makeMoveIntroducingPiece();
+                games.add(new ProvidedGame("One Move, One Roll", game));
+            }
+
+            // One move by light, and one move by dark.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new Game<>(rules.rules);
+                game.rollDice(1);
+                game.makeMoveIntroducingPiece();
+                game.rollDice(1);
+                game.makeMoveIntroducingPiece();
+                games.add(new ProvidedGame("Two Moves", game));
+            }
             return games;
         }
 
@@ -98,7 +134,7 @@ public class RGNTest {
         }
     }
 
-    private void testMetadata(@Nonnull String encoded, @Nonnull RuleSet<?, ?, ?> rules) {
+    private void testMetadata(@Nonnull String encoded, @Nonnull Game<?, ?, ?> game) {
         // Get a list of all the metadata lines, ignoring lines containing moves.
         String[] allLines = encoded.split("\\R");
         List<String> lines = new ArrayList<>();
@@ -112,20 +148,20 @@ public class RGNTest {
             lines.add(line);
         }
 
-        assertTrue(lines.contains("[Rules " + RGN.escape(rules.getDescriptor()) + "]"));
-        assertTrue(lines.contains("[Light \"Anonymous\"]"));
-        assertTrue(lines.contains("[Dark \"Anonymous\"]"));
+        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
+        assertTrue(lines.contains("[Light " + RGN.escape(game.getLightPlayer().name) + "]"));
+        assertTrue(lines.contains("[Dark " + RGN.escape(game.getDarkPlayer().name) + "]"));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Date \"") && line.endsWith("\"]")));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Time \"") && line.endsWith("\"]")));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[TimeZone \"") && line.endsWith("\"]")));
-
     }
 
     @ParameterizedTest
     @ArgumentsSource(GameProvider.class)
-    public void testMetadata(ProvidedGame game) {
+    public void testMetadata(ProvidedGame providedGame) {
+        Game<?, ?, ?> game = providedGame.game;
         RGN rgn = new RGN();
-        String encoded = rgn.encodeGame(game.game);
-        testMetadata(encoded, game.game.rules);
+        String encoded = rgn.encodeGame(game);
+        testMetadata(encoded, game);
     }
 }
