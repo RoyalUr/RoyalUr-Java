@@ -9,37 +9,66 @@ import javax.annotation.Nullable;
 public class Tile {
 
     /**
-     * The x-coordinate of the tile. This coordinate is 0-based.
+     * The x-coordinate of the tile. This coordinate is 1-based.
      */
     public final int x;
 
     /**
-     * The y-coordinate of the tile. This coordinate is 0-based.
+     * The x-index of the tile. This coordinate is 0-based.
+     */
+    public final int ix;
+
+    /**
+     * The y-coordinate of the tile. This coordinate is 1-based.
      */
     public final int y;
 
     /**
-     * @param x The x-coordinate of the tile. This coordinate is 0-based.
-     * @param y The y-coordinate of the tile. This coordinate is 0-based.
+     * The y-index of the tile. This coordinate is 0-based.
+     */
+    public final int iy;
+
+    /**
+     * @param x The x-coordinate of the tile. This coordinate is 1-based.
+     * @param y The y-coordinate of the tile. This coordinate is 1-based.
      */
     public Tile(int x, int y) {
-        if (x < 0 || x >= 26)
-            throw new IllegalArgumentException("x must fall within the range [0, 25]. Invalid value: " + x);
+        if (x < 1 || x > 26)
+            throw new IllegalArgumentException("x must fall within the range [1, 26]. Invalid value: " + x);
+        if (y < 0)
+            throw new IllegalArgumentException("y must not be negative. Invalid value: " + y);
 
         this.x = x;
         this.y = y;
+
+        this.ix = x - 1;
+        this.iy = y - 1;
     }
 
     /**
-     * Determines whether the coordinates ({@param x}, {@param y}) could
-     * possibly represent a tile on a board.
-     *
-     * @param x The x-coordinate of the tile.
-     * @param y The y-coordinate of the tile.
-     * @return Whether the tile at the given coordinates could possibly represent a tile on a board.
+     * Creates a new tile representing the tile at the
+     * indices ({@param ix}, {@param iy}), 0-based.
+     * @param ix The x-index of the tile. This coordinate is 0-based.
+     * @param iy The y-index of the tile. This coordinate is 0-based.
+     * @return A tile representing the tile at indices ({@param ix}, {@param iy}).
      */
-    public static boolean isValid(int x, int y) {
-        return x >= 0 && x < 26 && y >= 0;
+    public static @Nonnull Tile fromIndices(int ix, int iy) {
+        return new Tile(ix + 1, iy + 1);
+    }
+
+    /**
+     * Determines whether the indices ({@param ix}, {@param iy}),
+     * 0-based, could possibly represent a tile on a board. This
+     * does not know the shape of the board, so it should only be
+     * used as a quick common-sense check.
+     *
+     * @param ix The x-index of the tile. This coordinate is 0-based.
+     * @param iy The y-index of the tile. This coordinate is 0-based.
+     * @return Whether the tile at the given indices could possibly
+     *         represent a tile on a board.
+     */
+    public static boolean isValidIndices(int ix, int iy) {
+        return ix >= 0 && ix < 26 && iy >= 0;
     }
 
     @Override
@@ -57,19 +86,27 @@ public class Tile {
     }
 
     /**
-     * Encodes the x-coordinate as a letter.
-     * @return The x-coordinate of this tile encoded as a letter.
+     * Encodes the x-coordinate as an upper-case letter, and appends it to {@param builder}.
+     * @param builder The builder to place the encoded x-coordinate into.
      */
-    public @Nonnull String getEncodedX() {
-        return Character.toString((char) ('A' + x));
+    public void encodeX(@Nonnull StringBuilder builder) {
+        builder.append((char) ('A' + (x - 1)));
     }
 
     /**
-     * Encodes the y-coordinate as a number string.
-     * @return The y-coordinate of this tile encoded as a number string.
+     * Encodes the x-coordinate as a lower-case letter, and appends it to {@param builder}.
+     * @param builder The builder to place the encoded x-coordinate into.
      */
-    public @Nonnull String getEncodedY() {
-        return Integer.toString(y);
+    public void encodeXLowerCase(@Nonnull StringBuilder builder) {
+        builder.append((char) ('a' + (x - 1)));
+    }
+
+    /**
+     * Encodes the y-coordinate as a number, and appends it to {@param builder}.
+     * @param builder The builder to place the encoded y-coordinate into.
+     */
+    public void encodeY(@Nonnull StringBuilder builder) {
+        builder.append(y);
     }
 
     /**
@@ -79,16 +116,19 @@ public class Tile {
      */
     @Override
     public @Nonnull String toString() {
-        return getEncodedX() + getEncodedY();
+        StringBuilder builder = new StringBuilder();
+        encodeX(builder);
+        encodeY(builder);
+        return builder.toString();
     }
 
     /**
      * Converts text representations of the tile of the format "[letter][number]".
      * For example:
-     *  - A0 represents (0, 0)
-     *  - C2 represents (2, 2)
-     *  - B7 represents (1, 7)
-     *  - B-1 represents (1, -1)
+     *  - A1 represents (1, 1)
+     *  - C3 represents (3, 3)
+     *  - B8 represents (2, 8)
+     *  - B0 represents (2, 0)
      *
      * @param tile The text representation of the tile's location.
      * @return The tile that the given text is representing.
@@ -100,9 +140,9 @@ public class Tile {
         char letter = tile.charAt(0);
         int x;
         if (letter >= 'a' && letter <= 'z') {
-            x = letter - 'a';
+            x = letter - 'a' + 1;
         } else if (letter >= 'A' && letter <= 'Z') {
-            x = letter - 'A';
+            x = letter - 'A' + 1;
         } else {
             throw new IllegalArgumentException("Illegal letter representing the x-coordinate: " + letter);
         }

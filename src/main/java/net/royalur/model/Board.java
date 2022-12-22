@@ -50,8 +50,8 @@ public class Board<P extends Piece> {
      */
     protected Board(@Nonnull Board<P> template) {
         this(template.shape);
-        for (int x = 0; x < shape.width; ++x) {
-            System.arraycopy(template.pieces[x], 0, pieces[x], 0, shape.height);
+        for (int ix = 0; ix < shape.width; ++ix) {
+            System.arraycopy(template.pieces[ix], 0, pieces[ix], 0, shape.height);
         }
     }
 
@@ -74,15 +74,15 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Determines whether the tile at the coordinates ({@param x}, {@param y})
-     * falls within the bounds of this board.
+     * Determines whether the tile at the indices ({@param ix}, {@param iy}),
+     * 0-based, falls within the bounds of this board.
      *
-     * @param x The x-coordinate of the tile to be bounds-checked.
-     * @param y The y-coordinate of the tile to be bounds-checked.
+     * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
+     * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
      * @return Whether the given tile falls within the bounds of this board.
      */
-    public boolean contains(int x, int y) {
-        return shape.contains(x, y);
+    public boolean contains(int ix, int iy) {
+        return shape.contains(ix, iy);
     }
 
     /**
@@ -92,23 +92,23 @@ public class Board<P extends Piece> {
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
     public @Nullable P get(@Nonnull Tile tile) {
-        return get(tile.x, tile.y);
+        return get(tile.ix, tile.iy);
     }
 
     /**
-     * Retrieves the piece on the tile at the coordinates ({@param x}, {@param y}).
+     * Retrieves the piece on the tile at the indices ({@param ix}, {@param iy}), 0-based.
      * Returns {@code null} if there is no piece on the tile.
      *
-     * @param x The x-coordinate of the tile to find the piece on.
-     * @param y The y-coordinate of the tile to find the piece on.
+     * @param ix The x-index of the tile to find the piece on. This coordinate is 0-based.
+     * @param iy The y-index of the tile to find the piece on. This coordinate is 0-based.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
     @SuppressWarnings("unchecked")
-    public @Nullable P get(int x, int y) {
-        if (!contains(x, y))
-            throw new IllegalArgumentException("There is no tile at (" + x + ", " + y + ")");
+    public @Nullable P get(int ix, int iy) {
+        if (!contains(ix, iy))
+            throw new IllegalArgumentException("There is no tile at the 0-based indices (" + ix + ", " + iy + ")");
 
-        return (P) pieces[x][y];
+        return (P) pieces[ix][iy];
     }
 
     /**
@@ -122,27 +122,27 @@ public class Board<P extends Piece> {
      * @return The previous piece on the given tile if there was one, or else {@code null}.
      */
     public @Nullable P set(@Nonnull Tile tile, @Nullable P piece) {
-        return set(tile.x, tile.y, piece);
+        return set(tile.ix, tile.iy, piece);
     }
 
     /**
-     * Sets the piece on the tile at the coordinates ({@param x}, {@param y})
+     * Sets the piece on the tile at the indices ({@param ix}, {@param iy}), 0-based,
      * to the piece {@param piece}. If {@param piece} is {@code null}, it
      * removes any piece on the tile. Returns the piece that was previously
      * on the tile, or {@code null} if there was no piece on the tile.
      *
-     * @param x The x-coordinate of the tile to place the piece on.
-     * @param y The y-coordinate of the tile to place the piece on.
+     * @param ix The x-index of the tile to place the piece on. This coordinate is 0-based.
+     * @param iy The y-index of the tile to place the piece on. This coordinate is 0-based.
      * @param piece The piece that should be placed on the tile.
      * @return The previous piece on the given tile if there was one, or else {@code null}.
      */
     @SuppressWarnings("unchecked")
-    public @Nullable P set(int x, int y, @Nullable P piece) {
-        if (!contains(x, y))
-            throw new IllegalArgumentException("There is no tile at (" + x + ", " + y + ")");
+    public @Nullable P set(int ix, int iy, @Nullable P piece) {
+        if (!contains(ix, iy))
+            throw new IllegalArgumentException("There is no tile at the 0-based indices (" + ix + ", " + iy + ")");
 
-        P previous = (P) pieces[x][y];
-        pieces[x][y] = piece;
+        P previous = (P) pieces[ix][iy];
+        pieces[ix][iy] = piece;
         return previous;
     }
 
@@ -155,12 +155,12 @@ public class Board<P extends Piece> {
         if (width != other.width || height != other.height || !shape.equals(other.shape))
             return false;
 
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                if (!contains(x, y))
+        for (int ix = 0; ix < width; ++ix) {
+            for (int iy = 0; iy < height; ++iy) {
+                if (!contains(ix, iy))
                     continue;
 
-                if (!Objects.equals(get(x, y), other.get(x, y)))
+                if (!Objects.equals(get(ix, iy), other.get(ix, iy)))
                     return false;
             }
         }
@@ -170,13 +170,13 @@ public class Board<P extends Piece> {
     @Override
     public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
-        for (int x = 0; x < shape.width; ++x) {
-            if (x > 0) {
+        for (int ix = 0; ix < shape.width; ++ix) {
+            if (ix > 0) {
                 builder.append("\n");
             }
 
-            for (int y = 0; y < shape.height; ++y) {
-                builder.append(contains(x, y) ? Piece.toChar(get(x, y)) : ' ');
+            for (int iy = 0; iy < shape.height; ++iy) {
+                builder.append(contains(ix, iy) ? Piece.toChar(get(ix, iy)) : ' ');
             }
         }
         return builder.toString();

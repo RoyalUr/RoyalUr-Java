@@ -67,17 +67,17 @@ public class BoardShape {
             maxX = Math.max(maxX, tile.x);
             maxY = Math.max(maxY, tile.y);
         }
-        if (minX != 0 || minY != 0) {
+        if (minX != 1 || minY != 1) {
             // This is done in an attempt to standardise board shapes.
             throw new IllegalArgumentException(
                     "The board shape must be translated such that it has tiles " +
-                    "at an x-coordinate of 0, and at a y-coordinate of 0. " +
+                    "at an x-coordinate of 1, and at a y-coordinate of 1. " +
                     "Minimum X = " + minX + ", Minimum Y = " + minY
             );
         }
 
-        this.width = maxX + 1;
-        this.height = maxY + 1;
+        this.width = maxX;
+        this.height = maxY;
         this.area = tiles.size();
 
         for (Tile tile : rosetteTiles) {
@@ -105,9 +105,9 @@ public class BoardShape {
     public final @Nonnull List<Tile> getTilesByRow() {
         if (this.tilesByRow == null) {
             List<Tile> tilesByRow = new ArrayList<>();
-            for (int y = 0; y < height; ++y) {
-                for (int x = 0; x < width; ++x) {
-                    Tile tile = new Tile(x, y);
+            for (int iy = 0; iy < height; ++iy) {
+                for (int ix = 0; ix < width; ++ix) {
+                    Tile tile = Tile.fromIndices(ix, iy);
                     if (contains(tile)) {
                         tilesByRow.add(tile);
                     }
@@ -125,9 +125,9 @@ public class BoardShape {
     public final @Nonnull List<Tile> getTilesByColumn() {
         if (this.tilesByColumn == null) {
             List<Tile> tilesByColumn = new ArrayList<>();
-            for (int x = 0; x < width; ++x) {
-                for (int y = 0; y < height; ++y) {
-                    Tile tile = new Tile(x, y);
+            for (int ix = 0; ix < width; ++ix) {
+                for (int iy = 0; iy < height; ++iy) {
+                    Tile tile = Tile.fromIndices(ix, iy);
                     if (contains(tile)) {
                         tilesByColumn.add(tile);
                     }
@@ -148,16 +148,16 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether the tile at the coordinates ({@param x}, {@param y})
-     * falls within the bounds of this shape of board.
-     * @param x The x-coordinate of the tile to be bounds-checked.
-     * @param y The y-coordinate of the tile to be bounds-checked.
+     * Determines whether the tile at the indices ({@param x}, {@param y}),
+     * 0-based, falls within the bounds of this shape of board.
+     * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
+     * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
      * @return Whether the given tile falls within the bounds of this shape of board.
      */
-    public boolean contains(int x, int y) {
-        if (!Tile.isValid(x, y))
+    public boolean contains(int ix, int iy) {
+        if (!Tile.isValidIndices(ix, iy))
             return false;
-        return contains(new Tile(x, y));
+        return contains(Tile.fromIndices(ix, iy));
     }
 
     /**
@@ -170,16 +170,18 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether the tile at the coordinates ({@param x}, {@param y})
-     * is a rosette tile on this board.
-     * @param x The x-coordinate of the tile to be checked for being a rosette.
-     * @param y The y-coordinate of the tile to be checked for being a rosette.
+     * Determines whether the tile at the indices ({@param ix}, {@param iy}),
+     * 0-based, is a rosette tile on this board.
+     * @param ix The x-index of the tile to be checked for being a rosette.
+     *           This coordinate is 0-based.
+     * @param iy The y-index of the tile to be checked for being a rosette.
+     *           This coordinate is 0-based.
      * @return Whether the given tile is a rosette tile on this board.
      */
-    public boolean isRosette(int x, int y) {
-        if (!Tile.isValid(x, y))
+    public boolean isRosette(int ix, int iy) {
+        if (!Tile.isValidIndices(ix, iy))
             return false;
-        return isRosette(new Tile(x, y));
+        return isRosette(Tile.fromIndices(ix, iy));
     }
 
     /**

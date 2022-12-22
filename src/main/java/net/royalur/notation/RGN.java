@@ -100,12 +100,11 @@ public class RGN extends Notation {
         }
 
         // Include the source coordinate.
-        if (from.x == to.x) {
-            builder.append(from.getEncodedY().toLowerCase());
-        } else if (from.y == to.y) {
-            builder.append(from.getEncodedX().toLowerCase());
-        } else {
-            builder.append(from.toString().toLowerCase());
+        if (from.x != to.x) {
+            from.encodeXLowerCase(builder);
+        }
+        if (from.y != to.y) {
+            from.encodeY(builder);
         }
 
         // Record that a piece was captured.
@@ -114,7 +113,8 @@ public class RGN extends Notation {
         }
 
         // Include the destination coordinates.
-        builder.append(to.toString().toLowerCase());
+        to.encodeXLowerCase(builder);
+        to.encodeY(builder);
 
         // Mark if a rosette was reached.
         if (move.isLandingOnRosette(rules.boardShape)) {

@@ -29,41 +29,41 @@ public class StandardBoardShape extends BoardShape {
      * and any tiles that don't do not fall on the standard board.
      */
     public static final @Nonnull Set<Tile> BOARD_TILES = Set.of(
-            new Tile(0, 3),
-            new Tile(0, 2),
-            new Tile(0, 1),
-            new Tile(0, 0),
-
-            new Tile(2, 3),
-            new Tile(2, 2),
-            new Tile(2, 1),
-            new Tile(2, 0),
-
-            new Tile(1, 0),
-            new Tile(1, 1),
-            new Tile(1, 2),
-            new Tile(1, 3),
             new Tile(1, 4),
-            new Tile(1, 5),
-            new Tile(1, 6),
+            new Tile(1, 3),
+            new Tile(1, 2),
+            new Tile(1, 1),
+
+            new Tile(3, 4),
+            new Tile(3, 3),
+            new Tile(3, 2),
+            new Tile(3, 1),
+
+            new Tile(2, 1),
+            new Tile(2, 2),
+            new Tile(2, 3),
+            new Tile(2, 4),
+            new Tile(2, 5),
+            new Tile(2, 6),
+            new Tile(2, 7),
+            new Tile(2, 8),
+
+            new Tile(1, 8),
             new Tile(1, 7),
 
-            new Tile(0, 7),
-            new Tile(0, 6),
-
-            new Tile(2, 7),
-            new Tile(2, 6)
+            new Tile(3, 8),
+            new Tile(3, 7)
     );
 
     /**
      * The set of rosette tiles that exist on the standard board.
      */
     public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
-            new Tile(0, 0),
-            new Tile(2, 0),
-            new Tile(1, 3),
-            new Tile(0, 6),
-            new Tile(2, 6)
+            new Tile(1, 1),
+            new Tile(3, 1),
+            new Tile(2, 4),
+            new Tile(1, 7),
+            new Tile(3, 7)
     );
 
     public StandardBoardShape() {
@@ -77,25 +77,25 @@ public class StandardBoardShape extends BoardShape {
 
     @Override
     public boolean contains(@Nonnull Tile tile) {
-        return contains(tile.x, tile.y);
+        return contains(tile.ix, tile.iy);
     }
 
     @Override
-    public boolean contains(int x, int y) {
-        return x >= 0 && x < 3 && y >= 0 && y < 8 && (x == 1 || (y < 4 || y >= 6));
+    public boolean contains(int ix, int iy) {
+        return ix >= 0 && ix < 3 && iy >= 0 && iy < 8 && (ix == 1 || (iy < 4 || iy >= 6));
     }
 
     @Override
     public boolean isRosette(@Nonnull Tile tile) {
-        return isRosette(tile.x, tile.y);
+        return isRosette(tile.ix, tile.iy);
     }
 
     @Override
-    public boolean isRosette(int x, int y) {
-        if (x == 1) {
-            return y == 3;
+    public boolean isRosette(int ix, int iy) {
+        if (ix == 1) {
+            return iy == 3;
         } else {
-            return (x >= 0 && x < 3) && (y == 0 || y == 6);
+            return (ix >= 0 && ix < 3) && (iy == 0 || iy == 6);
         }
     }
 }

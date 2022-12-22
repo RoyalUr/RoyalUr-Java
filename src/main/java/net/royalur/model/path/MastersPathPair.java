@@ -52,26 +52,26 @@ public class MastersPathPair extends PathPair {
          * on the standard board for the light player.
          */
         public static final @Nonnull List<Tile> TILES = List.of(
-                new Tile(0, 3),
-                new Tile(0, 2),
-                new Tile(0, 1),
-                new Tile(0, 0),
-                new Tile(1, 0),
-                new Tile(1, 1),
-                new Tile(1, 2),
-                new Tile(1, 3),
                 new Tile(1, 4),
-                new Tile(1, 5),
-                new Tile(1, 6),
+                new Tile(1, 3),
+                new Tile(1, 2),
+                new Tile(1, 1),
+                new Tile(2, 1),
+                new Tile(2, 2),
+                new Tile(2, 3),
+                new Tile(2, 4),
+                new Tile(2, 5),
                 new Tile(2, 6),
                 new Tile(2, 7),
-                new Tile(1, 7),
-                new Tile(0, 7),
-                new Tile(0, 6)
+                new Tile(3, 7),
+                new Tile(3, 8),
+                new Tile(2, 8),
+                new Tile(1, 8),
+                new Tile(1, 7)
         );
 
-        public static final @Nonnull Tile START_TILE = new Tile(0, 4);
-        public static final @Nonnull Tile END_TILE = new Tile(0, 5);
+        public static final @Nonnull Tile START_TILE = new Tile(1, 5);
+        public static final @Nonnull Tile END_TILE = new Tile(1, 6);
 
         public MastersLightPath() {
             super(Player.LIGHT, TILES, START_TILE, END_TILE);
@@ -88,26 +88,26 @@ public class MastersPathPair extends PathPair {
          * on the standard board for the dark player.
          */
         public static final @Nonnull List<Tile> TILES = List.of(
-                new Tile(2, 3),
-                new Tile(2, 2),
+                new Tile(3, 4),
+                new Tile(3, 3),
+                new Tile(3, 2),
+                new Tile(3, 1),
                 new Tile(2, 1),
-                new Tile(2, 0),
-                new Tile(1, 0),
-                new Tile(1, 1),
-                new Tile(1, 2),
-                new Tile(1, 3),
-                new Tile(1, 4),
-                new Tile(1, 5),
-                new Tile(1, 6),
-                new Tile(0, 6),
-                new Tile(0, 7),
-                new Tile(1, 7),
+                new Tile(2, 2),
+                new Tile(2, 3),
+                new Tile(2, 4),
+                new Tile(2, 5),
+                new Tile(2, 6),
                 new Tile(2, 7),
-                new Tile(2, 6)
+                new Tile(1, 7),
+                new Tile(1, 8),
+                new Tile(2, 8),
+                new Tile(3, 8),
+                new Tile(3, 7)
         );
 
-        public static final @Nonnull Tile START_TILE = new Tile(2, 4);
-        public static final @Nonnull Tile END_TILE = new Tile(2, 5);
+        public static final @Nonnull Tile START_TILE = new Tile(3, 5);
+        public static final @Nonnull Tile END_TILE = new Tile(3, 6);
 
         public MastersDarkPath() {
             super(Player.DARK, TILES, START_TILE, END_TILE);

@@ -61,15 +61,15 @@ public class BoardTest {
 
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
-        for (int x = -1; x <= board.width; ++x) {
-            for (int y = -1; y <= board.height; ++y) {
-                if (x < 0 || y < 0 || x >= board.width || y >= board.height) {
-                    assertFalse(board.contains(x, y));
+        for (int ix = -1; ix <= board.width; ++ix) {
+            for (int iy = -1; iy <= board.height; ++iy) {
+                if (ix < 0 || iy < 0 || ix >= board.width || iy >= board.height) {
+                    assertFalse(board.contains(ix, iy));
                     continue;
                 }
 
-                Tile tile = new Tile(x, y);
-                assertEquals(board.contains(tile), board.contains(x, y));
+                Tile tile = Tile.fromIndices(ix, iy);
+                assertEquals(board.contains(tile), board.contains(ix, iy));
                 if (board.contains(tile)) {
                     area += 1;
                 }
@@ -87,26 +87,26 @@ public class BoardTest {
         Board<Piece> board2 = new Board<>(shape);
 
         for (Tile tile : shape.getTilesByColumn()) {
-            assertNull(board2.get(tile.x, tile.y));
+            assertNull(board2.get(tile.ix, tile.iy));
             assertNull(board1.get(tile));
         }
 
         for (Player player : Player.values()) {
             Piece piece = Piece.of(player);
             // Deliberately includes out-of-bounds coordinates.
-            for (int x = -1; x <= shape.width; ++x) {
-                for (int y = -1; y <= shape.height; ++y) {
+            for (int ix = -1; ix <= shape.width; ++ix) {
+                for (int iy = -1; iy <= shape.height; ++iy) {
                     // Copies to be used in Lambda expressions.
-                    int tileX = x, tileY = y;
+                    int tileX = ix, tileY = iy;
 
-                    if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
+                    if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, piece));
                         continue;
                     }
 
-                    Tile tile = new Tile(x, y);
+                    Tile tile = Tile.fromIndices(ix, iy);
                     if (shape.contains(tile)) {
                         board1.set(tileX, tileY, piece);
                         board2.set(tile, piece);
@@ -122,7 +122,7 @@ public class BoardTest {
             }
 
             for (Tile tile : shape.getTilesByColumn()) {
-                assertEquals(piece, board2.get(tile.x, tile.y));
+                assertEquals(piece, board2.get(tile.ix, tile.iy));
                 assertEquals(piece, board1.get(tile));
             }
         }

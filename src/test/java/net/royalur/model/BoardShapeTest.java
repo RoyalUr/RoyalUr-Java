@@ -36,25 +36,25 @@ public class BoardShapeTest {
                 () -> new BoardShape(Collections.emptySet(), Collections.emptySet())
         );
 
-        BoardShape singleTile = new BoardShape(Set.of(new Tile(0, 0)), Collections.emptySet());
+        BoardShape singleTile = new BoardShape(Set.of(new Tile(1, 1)), Collections.emptySet());
         assertEquals(1, singleTile.width);
         assertEquals(1, singleTile.height);
         assertEquals(1, singleTile.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 1)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(1, 2)), Collections.emptySet())
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(1, 0)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(2, 1)), Collections.emptySet())
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(1, 1)), Collections.emptySet())
+                () -> new BoardShape(Set.of(new Tile(2, 2)), Collections.emptySet())
         );
 
-        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Collections.emptySet());
+        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(1, 2), new Tile(2, 1)), Collections.emptySet());
         assertEquals(2, noZeroZero.width);
         assertEquals(2, noZeroZero.height);
         assertEquals(2, noZeroZero.area);
@@ -64,47 +64,47 @@ public class BoardShapeTest {
     public void testNewWithRosettes() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Collections.emptySet(), Set.of(new Tile(0, 0)))
+                    () -> new BoardShape(Collections.emptySet(), Set.of(new Tile(1, 1)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(1, 1)))
+                () -> new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(2, 2)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1), new Tile(2, 1)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 0), new Tile(0, 1)), Set.of(new Tile(0, 0), new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(1, 1), new Tile(1, 2)), Set.of(new Tile(1, 1), new Tile(2, 1)))
         );
 
-        BoardShape singleTile = new BoardShape(Set.of(new Tile(0, 0)), Set.of(new Tile(0, 0)));
+        BoardShape singleTile = new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)));
         assertEquals(1, singleTile.width);
         assertEquals(1, singleTile.height);
         assertEquals(1, singleTile.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 1)), Set.of(new Tile(0, 1)))
+                () -> new BoardShape(Set.of(new Tile(1, 2)), Set.of(new Tile(1, 2)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(1, 0)), Set.of(new Tile(1, 0)))
+                () -> new BoardShape(Set.of(new Tile(2, 1)), Set.of(new Tile(2, 1)))
         );
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)))
+                () -> new BoardShape(Set.of(new Tile(2, 2)), Set.of(new Tile(2, 2)))
         );
 
-        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 1)));
+        BoardShape noZeroZero = new BoardShape(Set.of(new Tile(1, 2), new Tile(2, 1)), Set.of(new Tile(1, 2)));
         assertEquals(2, noZeroZero.width);
         assertEquals(2, noZeroZero.height);
         assertEquals(2, noZeroZero.area);
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new BoardShape(Set.of(new Tile(0, 1), new Tile(1, 0)), Set.of(new Tile(0, 0)))
+                () -> new BoardShape(Set.of(new Tile(1, 2), new Tile(2, 1)), Set.of(new Tile(1, 1)))
         );
     }
 
@@ -126,15 +126,15 @@ public class BoardShapeTest {
     public void testContains(BoardShape shape) {
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
-        for (int x = -1; x <= shape.width; ++x) {
-            for (int y = -1; y <= shape.height; ++y) {
-                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
-                    assertFalse(shape.contains(x, y));
+        for (int ix = -1; ix <= shape.width; ++ix) {
+            for (int iy = -1; iy <= shape.height; ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+                    assertFalse(shape.contains(ix, iy));
                     continue;
                 }
 
-                Tile tile = new Tile(x, y);
-                assertEquals(shape.contains(tile), shape.contains(x, y));
+                Tile tile = Tile.fromIndices(ix, iy);
+                assertEquals(shape.contains(tile), shape.contains(ix, iy));
                 if (shape.contains(tile)) {
                     area += 1;
                 }
@@ -152,18 +152,18 @@ public class BoardShapeTest {
         BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
 
         // Deliberately includes out-of-bounds coordinates.
-        for (int x = -1; x <= shape.width; ++x) {
-            for (int y = -1; y <= shape.height; ++y) {
-                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
-                    assertFalse(shape.contains(x, y));
-                    assertFalse(copy.contains(x, y));
+        for (int ix = -1; ix <= shape.width; ++ix) {
+            for (int iy = -1; iy <= shape.height; ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+                    assertFalse(shape.contains(ix, iy));
+                    assertFalse(copy.contains(ix, iy));
                     continue;
                 }
 
-                Tile tile = new Tile(x, y);
-                assertEquals(shape.contains(tile), shape.contains(x, y));
+                Tile tile = Tile.fromIndices(ix, iy);
+                assertEquals(shape.contains(tile), shape.contains(ix, iy));
                 assertEquals(shape.contains(tile), copy.contains(tile));
-                assertEquals(shape.contains(x, y), copy.contains(x, y));
+                assertEquals(shape.contains(ix, iy), copy.contains(ix, iy));
             }
         }
     }
@@ -173,15 +173,15 @@ public class BoardShapeTest {
     public void testIsRosette(BoardShape shape) {
         // Deliberately includes out-of-bounds coordinates.
         int rosetteCount = 0;
-        for (int x = -1; x <= shape.width; ++x) {
-            for (int y = -1; y <= shape.height; ++y) {
-                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
-                    assertFalse(shape.isRosette(x, y));
+        for (int ix = -1; ix <= shape.width; ++ix) {
+            for (int iy = -1; iy <= shape.height; ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+                    assertFalse(shape.isRosette(ix, iy));
                     continue;
                 }
 
-                Tile tile = new Tile(x, y);
-                assertEquals(shape.isRosette(tile), shape.isRosette(x, y));
+                Tile tile = Tile.fromIndices(ix, iy);
+                assertEquals(shape.isRosette(tile), shape.isRosette(ix, iy));
                 if (shape.isRosette(tile)) {
                     rosetteCount += 1;
                 }
@@ -199,18 +199,18 @@ public class BoardShapeTest {
         BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
 
         // Deliberately includes out-of-bounds coordinates.
-        for (int x = -1; x <= shape.width; ++x) {
-            for (int y = -1; y <= shape.height; ++y) {
-                if (x < 0 || y < 0 || x >= shape.width || y >= shape.height) {
-                    assertFalse(shape.isRosette(x, y));
-                    assertFalse(copy.isRosette(x, y));
+        for (int ix = -1; ix <= shape.width; ++ix) {
+            for (int iy = -1; iy <= shape.height; ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+                    assertFalse(shape.isRosette(ix, iy));
+                    assertFalse(copy.isRosette(ix, iy));
                     continue;
                 }
 
-                Tile tile = new Tile(x, y);
-                assertEquals(shape.isRosette(tile), shape.isRosette(x, y));
+                Tile tile = Tile.fromIndices(ix, iy);
+                assertEquals(shape.isRosette(tile), shape.isRosette(ix, iy));
                 assertEquals(shape.isRosette(tile), copy.isRosette(tile));
-                assertEquals(shape.isRosette(x, y), copy.isRosette(x, y));
+                assertEquals(shape.isRosette(ix, iy), copy.isRosette(ix, iy));
             }
         }
     }
