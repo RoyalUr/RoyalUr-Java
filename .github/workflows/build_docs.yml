@@ -22,7 +22,7 @@ jobs:
       - name: Build the JavaDocs
         run: mvn org.apache.maven.plugins:maven-javadoc-plugin:javadoc -Prelease
 
-      - name: Transfer docs to tychelibrary.github.io
+      - name: Transfer JavaDocs to royalur.github.io
         uses: cpina/github-action-push-to-another-repository@v1.5
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
