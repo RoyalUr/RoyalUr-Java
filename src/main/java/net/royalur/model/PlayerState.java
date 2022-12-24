@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 /**
  * A player state represents the state of a single player at a point in the game.
+ * This includes the player's score and number of pieces left to play.
  */
 public class PlayerState {
 
@@ -34,6 +35,7 @@ public class PlayerState {
     private int score;
 
     /**
+     * Instantiates a state for a player in a game.
      * @param player The player that this state represents.
      * @param name The name of the player that this state represents.
      * @param pieceCount The number of pieces that the player has yet to play.
@@ -52,7 +54,7 @@ public class PlayerState {
     }
 
     /**
-     * This constructor uses the default name from {@param player}.
+     * Instantiates a state for an anonymous player in a game.
      * @param player The player that this state represents.
      * @param pieceCount The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
@@ -62,6 +64,7 @@ public class PlayerState {
     }
 
     /**
+     * Instantiates a state that is a copy of {@param template}.
      * @param template Another player state to use as a template to copy from.
      */
     protected PlayerState(@Nonnull PlayerState template) {

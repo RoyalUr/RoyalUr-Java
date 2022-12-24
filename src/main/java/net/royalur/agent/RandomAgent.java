@@ -11,7 +11,7 @@ import java.util.Random;
  * An agent that makes random moves in games. This is not thread-safe.
  * @param <P> The type of pieces that this agent can interact with.
  * @param <S> The type of player state that this agent can interact with.
- * @param <R> The type of rolls that may be made by this agent or their opponent.
+ * @param <R> The type of rolls that may be made by this agent.
  */
 public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll> extends Agent<P, S, R> {
 
@@ -21,14 +21,21 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
     public static final @Nonnull String ID = "Random";
 
     /**
-     * The source of randomness to use for deciding moves.
+     * The source of randomness to use to decide the moves to make.
      */
     private final Random random;
 
+    /**
+     * Instantiates a random agent that uses {@param random} as its source of randomness.
+     * @param random The source of randomness to use to decide the moves to make.
+     */
     public RandomAgent(@Nonnull Random random) {
         this.random = random;
     }
 
+    /**
+     * Instantiates a random agent using a default source of randomness.
+     */
     public RandomAgent() {
         this(new Random());
     }

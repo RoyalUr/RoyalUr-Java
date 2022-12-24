@@ -19,6 +19,11 @@ import javax.annotation.Nonnull;
 public abstract class Notation {
 
     /**
+     * Instantiates a notation.
+     */
+    public Notation() {}
+
+    /**
      * Gets an identifier that can be used to uniquely identify these paths.
      * @return An identifier that can be used to uniquely identify these paths.
      */
@@ -29,6 +34,9 @@ public abstract class Notation {
     /**
      * Encodes the given game, {@param game}, into text.
      * @param game The game to be encoded.
+     * @param <P> The type of pieces that are stored on the board.
+     * @param <S> The type of state that is stored for each player.
+     * @param <R> The type of rolls that may be made.
      * @return Text that represents {@param game} in this notation.
      */
     public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String

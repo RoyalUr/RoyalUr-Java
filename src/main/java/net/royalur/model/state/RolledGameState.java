@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState that represents a roll that was made.
+ * A game state that represents a roll that was made in a game.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of roll that was made in this game state.
@@ -20,6 +20,7 @@ public class RolledGameState<
     public final @Nonnull R roll;
 
     /**
+     * Instantiates a game state that represents a roll that was made in a game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.

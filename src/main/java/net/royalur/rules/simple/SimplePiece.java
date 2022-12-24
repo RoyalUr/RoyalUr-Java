@@ -7,9 +7,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A piece used by the simple rule set, which includes its
- * position in its path as well as its owner. This is required
- * when paths overlap themselves.
+ * A piece used by the simple rule set, which includes its position in its
+ * path as well as its owner. This is required when paths overlap themselves.
  */
 public class SimplePiece extends Piece {
 
@@ -19,7 +18,9 @@ public class SimplePiece extends Piece {
     public final int pathIndex;
 
     /**
+     * Instantiates a piece used in a game using the simple rules.
      * @param owner The player that owns the piece.
+     * @param pathIndex The index of this piece on its owner's path around the board.
      */
     public SimplePiece(@Nonnull Player owner, int pathIndex) {
         super(owner);

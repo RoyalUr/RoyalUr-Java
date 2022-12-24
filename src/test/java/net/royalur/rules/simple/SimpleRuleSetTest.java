@@ -6,7 +6,7 @@ import net.royalur.model.path.BellPathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.rules.Dice;
-import net.royalur.rules.StandardDice;
+import net.royalur.rules.dice.StandardDice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -79,7 +79,7 @@ public class SimpleRuleSetTest {
         PlayerState light = rules.generateNewPlayerState(Player.LIGHT);
         PlayerState dark = rules.generateNewPlayerState(Player.DARK);
 
-        for (int roll = 1; roll < rules.dice.maxRoll; ++roll) {
+        for (int roll = 1; roll < rules.dice.maxRollValue; ++roll) {
             for (PlayerState playerState : new PlayerState[] {light, dark}) {
                 Player player = playerState.player;
                 assertEquals(

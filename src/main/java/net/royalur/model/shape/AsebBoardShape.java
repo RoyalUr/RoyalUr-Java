@@ -66,6 +66,9 @@ public class AsebBoardShape extends BoardShape {
             new Tile(2, 12)
     );
 
+    /**
+     * Instantiates the board shape used for Aseb.
+     */
     public AsebBoardShape() {
         super(BOARD_TILES, ROSETTE_TILES);
     }

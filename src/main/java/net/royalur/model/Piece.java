@@ -24,6 +24,7 @@ public class Piece {
     public final @Nonnull Player owner;
 
     /**
+     * Instantiates a piece that can be placed on a board.
      * @param owner The player that owns the piece.
      */
     public Piece(@Nonnull Player owner) {

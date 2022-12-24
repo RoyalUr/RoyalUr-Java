@@ -13,7 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- * A game of the Royal Game of Ur.
+ * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
+ * and methods to support the retrieval of history about the moves that were made
+ * in games that have been played.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
@@ -52,6 +54,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     private final @Nonnull List<GameState<P, S, R>> states;
 
     /**
+     * Instantiates a game of the Royal Game of Ur.
      * @param rules The set of rules that are being used for this game.
      * @param states The states that have occurred so far in the game.
      */
@@ -77,7 +80,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Creates a game that starts from scratch, with player names.
+     * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
      * @param rules The rules of the game.
      * @param lightPlayerName The name of the light player.
      * @param darkPlayerName The name of the dark player.
@@ -95,7 +98,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Creates a game that starts from scratch.
+     * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
      * @param rules The rules of the game.
      */
     public Game(@Nonnull RuleSet<P, S, R> rules) {

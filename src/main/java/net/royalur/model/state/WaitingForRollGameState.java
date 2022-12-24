@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState where we are waiting for a player to roll the dice.
+ * A game state where the game is waiting for a player to roll the dice.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of roll that will be made from this game state.
@@ -15,6 +15,7 @@ public class WaitingForRollGameState<
 > extends PlayableGameState<P, S, R> {
 
     /**
+     * Instantiates a game state where the game is waiting for a player to roll the dice.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.

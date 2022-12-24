@@ -24,20 +24,31 @@ public class RGN extends Notation {
     public static final String ID = "RGN";
 
     /**
+     * The default maximum length for lines in RGN that
+     * encode the actions taken in a game.
+     */
+    public static final int DEFAULT_MAX_ACTION_LINE_LENGTH = 40;
+
+    /**
      * The maximum length of the lines that contain moves.
      * This does not apply to the metadata lines.
      */
-    public final int maxActionsLineLength;
+    public final int maxActionLineLength;
 
     /**
-     * @param maxActionsLineLength The maximum length of the lines that contain moves.
+     * Instantiates the RGN notation to encode and decode games.
+     * @param maxActionLineLength The maximum length of the lines that contain moves.
      */
-    public RGN(int maxActionsLineLength) {
-        this.maxActionsLineLength = maxActionsLineLength;
+    public RGN(int maxActionLineLength) {
+        this.maxActionLineLength = maxActionLineLength;
     }
 
+    /**
+     * Instantiates the RGN notation to encode and decode games,
+     * using the default maximum length of action lines.
+     */
     public RGN() {
-        this(40);
+        this(DEFAULT_MAX_ACTION_LINE_LENGTH);
     }
 
     @Override
@@ -68,6 +79,15 @@ public class RGN extends Notation {
         return builder.append('"').toString();
     }
 
+    /**
+     * Encodes the dice roll from {@param rolledState} into {@param builder}.
+     * @param rules The rules of the game in which the dice are being encoded.
+     * @param builder The builder into which to append the encoded dice roll.
+     * @param rolledState The state of the game that contains the dice roll to encode.
+     * @param <P> The type of pieces that exist on the board in the given state.
+     * @param <S> The type of the player state that is stored in the given state.
+     * @param <R> The type of the dice rolls that was made in the given state.
+     */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void appendDiceRoll(
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull StringBuilder builder,
@@ -77,6 +97,15 @@ public class RGN extends Notation {
         builder.append("r").append(roll.value);
     }
 
+    /**
+     * Encodes the move from {@param movedState} into {@param builder}.
+     * @param rules The rules of the game in which the dice are being encoded.
+     * @param builder The builder into which to append the encoded move.
+     * @param movedState The state of the game that contains the move to encode.
+     * @param <P> The type of pieces that exist on the board in the given state.
+     * @param <S> The type of the player state that is stored in the given state.
+     * @param <R> The type of the dice rolls that was used in the given state.
+     */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void appendMove(
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull StringBuilder builder,
@@ -203,7 +232,7 @@ public class RGN extends Notation {
             lineLength += actionLength;
 
             if (!first) {
-                if (lineLength + 1 < maxActionsLineLength) {
+                if (lineLength + 1 < maxActionLineLength) {
                     builder.append(" ");
                     lineLength += 1;
                 } else {

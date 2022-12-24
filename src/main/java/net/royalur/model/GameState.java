@@ -32,6 +32,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
     public final @Nonnull S darkPlayer;
 
     /**
+     * Instantiates the baseline state of a game state.
      * @param type The type of this game state, representing its purpose.
      * @param board The state of the pieces on the board.
      * @param lightPlayer The state of the light player.

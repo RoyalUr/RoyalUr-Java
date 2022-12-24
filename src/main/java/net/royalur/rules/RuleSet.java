@@ -1,10 +1,10 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
-import net.royalur.model.path.BellPathPair;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
+import net.royalur.rules.dice.StandardDice;
 import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;
@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A set of rules that govern the play of
- * a variant of the Royal Game of Ur.
+ * A set of rules that govern the play of a game of the Royal Game of Ur.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
@@ -36,6 +35,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     public final @Nonnull Dice<R> dice;
 
     /**
+     * Instantiates a set of rules to be used by a game of the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths      The paths that the players must take around the board.
      * @param dice       The dice that are used to generate dice rolls.

@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState that represents a roll that resulted in no available moves due to a roll with a value of zero.
+ * A game state that represents a roll that resulted in no available moves due to a roll with a value of zero.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of the roll that had the value of zero.
@@ -25,10 +25,13 @@ public class MovedGameState<
     public final @Nonnull Move<P> move;
 
     /**
+     * Instantiates a game state representing a move that was made in a game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
-     * @param turn        The player who can roll the dice.
+     * @param turn        The player who made the move.
+     * @param roll        The roll of the dice that was used to move the piece.
+     * @param move        The move that was made on the board.
      */
     public MovedGameState(
             @Nonnull Board<P> board,

@@ -66,6 +66,9 @@ public class StandardBoardShape extends BoardShape {
             new Tile(3, 7)
     );
 
+    /**
+     * Instantiates the standard board shape used for the Royal Game of Ur.
+     */
     public StandardBoardShape() {
         super(BOARD_TILES, ROSETTE_TILES);
     }

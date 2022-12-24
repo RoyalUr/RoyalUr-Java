@@ -34,6 +34,7 @@ public abstract class SimpleRuleSet<
     public final int startingPieceCount;
 
     /**
+     * Instantiates a simple rule set for the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
      * @param dice The dice that are used to generate dice rolls.
@@ -143,6 +144,7 @@ public abstract class SimpleRuleSet<
         return moves;
     }
 
+    @Override
     public @Nonnull List<GameState<P, S, R>> applyRoll(
             @Nonnull WaitingForRollGameState<P, S, R> state,
             @Nonnull R roll
@@ -176,6 +178,7 @@ public abstract class SimpleRuleSet<
         ));
     }
 
+    @Override
     public @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state,
             @Nonnull Move<P> move

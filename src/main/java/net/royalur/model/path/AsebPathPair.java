@@ -26,11 +26,13 @@ public class AsebPathPair extends PathPair {
      * A standard path used for Aseb.
      */
     public static abstract class AsebPath extends Path {
+
         /**
+         * Instantiates a standard path used for Aseb.
          * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
-         * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.
-         * @param endTile   The tile that pieces should be moved to so that they can be moved off the board.
+         * @param startTile The tile where a piece can be moved from to get on to the board.
+         * @param endTile   The tile where a piece can be moved onto to get off of the board.
          */
         protected AsebPath(
                 @Nonnull Player player,
@@ -43,7 +45,7 @@ public class AsebPathPair extends PathPair {
     }
 
     /**
-     * The Aseb path for the light player.
+     * The standard Aseb path for the light player.
      */
     public static class AsebLightPath extends AsebPath {
 
@@ -70,16 +72,28 @@ public class AsebPathPair extends PathPair {
                 new Tile(2, 12)
         );
 
+        /**
+         * The tile where a light piece can be moved from to get on to the board.
+         * This tile does not exist on the Aseb board.
+         */
         public static final @Nonnull Tile START_TILE = new Tile(1, 5);
+
+        /**
+         * The tile where a light piece can be moved onto to get off of the board.
+         * This tile does not exist on the Aseb board.
+         */
         public static final @Nonnull Tile END_TILE = new Tile(2, 13);
 
+        /**
+         * Instantiates the standard path for the light player in Aseb.
+         */
         public AsebLightPath() {
             super(Player.LIGHT, TILES, START_TILE, END_TILE);
         }
     }
 
     /**
-     * The Aseb path for the dark player.
+     * The standard Aseb path for the dark player.
      */
     public static class AsebDarkPath extends AsebPath {
 
@@ -106,14 +120,29 @@ public class AsebPathPair extends PathPair {
                 new Tile(2, 12)
         );
 
+        /**
+         * The tile where a dark piece can be moved from to get on to the board.
+         * This tile does not exist on the Aseb board.
+         */
         public static final @Nonnull Tile START_TILE = new Tile(3, 5);
+
+        /**
+         * The tile where a dark piece can be moved onto to get off of the board.
+         * This tile does not exist on the Aseb board.
+         */
         public static final @Nonnull Tile END_TILE = new Tile(2, 13);
 
+        /**
+         * Instantiates the standard path for the dark player in Aseb.
+         */
         public AsebDarkPath() {
             super(Player.DARK, TILES, START_TILE, END_TILE);
         }
     }
 
+    /**
+     * Instantiates the standard paths for the light and dark player in Aseb.
+     */
     public AsebPathPair() {
         super(new AsebLightPath(), new AsebDarkPath());
     }

@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState that is included while the game is still ongoing.
+ * A game state that is included while the game is still ongoing.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be stored in this game state.
@@ -20,6 +20,7 @@ public abstract class OngoingGameState<
     public final @Nonnull Player turn;
 
     /**
+     * Instantiates a game state that is included while the game is still ongoing.
      * @param type The type of this game state, representing its purpose.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * The target for the accumulation of statistics for games of the Royal Game of Ur.
+ * A target for the accumulation of statistics for games of the Royal Game of Ur.
  */
 public enum GameStatsTarget {
     /**
@@ -25,7 +25,7 @@ public enum GameStatsTarget {
     DARK("Dark Player", Player.DARK);
 
     /**
-     * A human-readable name representing this target.
+     * A human-readable name representing this target, in English.
      */
     public final @Nonnull String name;
 
@@ -35,6 +35,12 @@ public enum GameStatsTarget {
      */
     public final @Nullable Player player;
 
+    /**
+     * Instantiates a target for statistics about a game.
+     * @param name A human-readable name representing this target, in English.
+     * @param player The player associated with this target, if this target is
+     *               associated with a player, or else {@code null}.
+     */
     GameStatsTarget(@Nonnull String name, @Nullable Player player) {
         this.name = name;
         this.player = player;

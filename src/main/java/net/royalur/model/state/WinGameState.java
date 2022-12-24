@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState where a player has won.
+ * A game state where a player has won the game.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be stored in this game state.
@@ -25,6 +25,7 @@ public class WinGameState<
     public final @Nonnull Player loser;
 
     /**
+     * Instantiates a game state where a player has won the game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.

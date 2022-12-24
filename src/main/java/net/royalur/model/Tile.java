@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A tile represents a location on a Royal Game of Ur board.
+ * A tile represents location on a Royal Game of Ur board.
  */
 public class Tile {
 
@@ -29,8 +29,9 @@ public class Tile {
     public final int iy;
 
     /**
-     * @param x The x-coordinate of the tile. This coordinate is 1-based.
-     * @param y The y-coordinate of the tile. This coordinate is 1-based.
+     * Instantiates a tile location.
+     * @param x The x-coordinate of the tile. This coordinate starts at 1.
+     * @param y The y-coordinate of the tile. This coordinate starts at 1.
      */
     public Tile(int x, int y) {
         if (x < 1 || x > 26)

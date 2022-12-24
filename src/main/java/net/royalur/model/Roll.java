@@ -38,6 +38,10 @@ public class Roll {
      */
     public final int value;
 
+    /**
+     * Instantiates a dice roll.
+     * @param value The value of the roll.
+     */
     public Roll(int value) {
         if (value < 0)
             throw new IllegalArgumentException("Rolls cannot be negative. Initialised with roll of " + value);

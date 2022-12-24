@@ -43,6 +43,7 @@ public class Path implements Iterable<Tile> {
     public final int length;
 
     /**
+     * Instantiates a path for a player's pieces to take around the board.
      * @param player    The player that this path is intended for.
      * @param tiles     The ordered list of tiles that pieces must progress through on the board.
      * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.

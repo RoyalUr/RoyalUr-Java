@@ -4,7 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represents a pair of paths for the light and dark players.
+ * Represents a pair of paths for the light and dark players to
+ * move their pieces along in a game of the Royal Game of Ur.
  */
 public class PathPair {
 
@@ -19,6 +20,7 @@ public class PathPair {
     public final @Nonnull Path darkPath;
 
     /**
+     * Instantiates a pair of paths for the light and dark players in a game.
      * @param lightPath The path that the light player's pieces must take.
      * @param darkPath The path that the dark player's pieces must take.
      */

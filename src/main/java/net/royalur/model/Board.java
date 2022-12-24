@@ -6,6 +6,7 @@ import java.util.Objects;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.
+ * @param <P> The type of pieces that may be placed on this board.
  */
 public class Board<P extends Piece> {
 
@@ -35,6 +36,7 @@ public class Board<P extends Piece> {
     private final @Nonnull Piece[][] pieces;
 
     /**
+     * Instantiates an empty board with the shape {@param shape}.
      * @param shape The shape of this board.
      */
     public Board(@Nonnull BoardShape shape) {
@@ -46,6 +48,7 @@ public class Board<P extends Piece> {
     }
 
     /**
+     * Instantiates a board with the same shape and pieces as {@param template}.
      * @param template Another board to use as a template to copy from.
      */
     protected Board(@Nonnull Board<P> template) {

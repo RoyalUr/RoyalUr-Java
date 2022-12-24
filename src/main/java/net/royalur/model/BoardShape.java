@@ -47,6 +47,7 @@ public class BoardShape {
     private @Nullable List<Tile> tilesByColumn = null;
 
     /**
+     * Instantiates a board shape with {@param tiles} representing the tiles on the board.
      * @param tiles        The set of tiles that fall within the bounds of this board shape.
      * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
      */
@@ -99,8 +100,10 @@ public class BoardShape {
     }
 
     /**
-     * The tiles that fall within the bounds of this board shape,
-     * ordered by ascending row number and then ascending column number.
+     * Returns the tiles that fall within the bounds of this board shape,
+     * ordered by ascending row number, and then ascending column number.
+     * @return The tiles of this board ordered by ascending row, and then
+     *         ascending column number.
      */
     public final @Nonnull List<Tile> getTilesByRow() {
         if (this.tilesByRow == null) {
@@ -120,7 +123,9 @@ public class BoardShape {
 
     /**
      * The tiles that fall within the bounds of this board shape,
-     * ordered into columns with ascending row number.
+     * ordered by ascending column number, and then ascending row number.
+     * @return The tiles of this board ordered by ascending column, and then
+     *         ascending row.
      */
     public final @Nonnull List<Tile> getTilesByColumn() {
         if (this.tilesByColumn == null) {

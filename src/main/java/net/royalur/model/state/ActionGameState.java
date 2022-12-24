@@ -5,7 +5,7 @@ import net.royalur.model.*;
 import javax.annotation.Nonnull;
 
 /**
- * A GameState that is included in the middle of a game to record an action that
+ * A game state that is included in the middle of a game to record an action that
  * was taken, but that is not a valid state to be in.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
@@ -16,6 +16,7 @@ public abstract class ActionGameState<
 > extends OngoingGameState<P, S, R> {
 
     /**
+     * Instantiates a game state that represents an action that was taken.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
@@ -27,7 +28,7 @@ public abstract class ActionGameState<
             @Nonnull S darkPlayer,
             @Nonnull Player turn) {
 
-        super(GameStateType.INFO, board, lightPlayer, darkPlayer, turn);
+        super(GameStateType.ACTION, board, lightPlayer, darkPlayer, turn);
     }
 
     @Override

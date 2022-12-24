@@ -7,12 +7,13 @@ import javax.annotation.Nonnull;
 
 
 /**
- * A concrete rule set that is based upon the simple rule set.
+ * A concrete implementation of the simple rule set, {@link SimpleRuleSet}.
  * @param <R> The type of rolls that are made by the dice.
  */
 public class ConcreteSimpleRuleSet<R extends Roll> extends SimpleRuleSet<SimplePiece, PlayerState, R> {
 
     /**
+     * Instantiate a simple rule set.
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
      * @param dice The dice that are used to generate dice rolls.

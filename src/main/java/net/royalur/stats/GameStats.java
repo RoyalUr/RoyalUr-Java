@@ -7,21 +7,42 @@ import net.royalur.model.state.*;
 import javax.annotation.Nonnull;
 
 /**
- * A container of statistics about a game of the Royal Game of Ur.
+ * Statistics about a game of the Royal Game of Ur.
  */
 public class GameStats {
 
     /**
-     * The number of rolls performed in the game.
+     * The number of rolls performed in the game, indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
     public final @Nonnull int[] rolls;
 
     /**
-     * The number of moves made in the game.
+     * The number of moves made in the game, indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
     public final @Nonnull int[] moves;
 
+    /**
+     * Instantiates statistics about a game of the Royal Game of Ur.
+     * @param rolls The number of rolls performed in the game,
+     *              indexed by the ordinal of an element of {@link GameStatsTarget}.
+     * @param moves The number of moves made in the game,
+     *              indexed by the ordinal of an element of {@link GameStatsTarget}.
+     */
     protected GameStats(@Nonnull int[] rolls, @Nonnull int[] moves) {
+        int targetCount = GameStatsTarget.values().length;
+        if (rolls.length != targetCount) {
+            throw new IllegalArgumentException(
+                    "The rolls array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
+                            "but instead it contained " + rolls.length + " elements"
+            );
+        }
+        if (moves.length != targetCount) {
+            throw new IllegalArgumentException(
+                    "The moves array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
+                            "but instead it contained " + rolls.length + " elements"
+            );
+        }
+
         this.rolls = rolls;
         this.moves = moves;
     }

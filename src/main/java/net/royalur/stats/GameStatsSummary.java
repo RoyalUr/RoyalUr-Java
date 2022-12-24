@@ -3,20 +3,35 @@ package net.royalur.stats;
 import javax.annotation.Nonnull;
 
 /**
- * Combined sets of statistics from many games.
+ * Combined set of statistics from many games.
  */
 public class GameStatsSummary {
 
     /**
-     * Statistics about the number of rolls performed by each player in the game.
+     * Statistics about the number of rolls performed in the summarised games.
+     * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
+     * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
     private final @Nonnull double[][] rolls;
 
     /**
-     * Statistics about the number of moves made by each player in the game.
+     * Statistics about the number of moves made in the summarised games.
+     * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
+     * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
     private final @Nonnull double[][] moves;
 
+    /**
+     * Instantiates a summary of the statistics from several games.
+     * @param rolls Statistics about the number of rolls performed in the summarised games.
+     *              The first dimension of this array is indexed by the ordinal of an element of
+     *              {@link GameStatsTarget}, and the second dimension is indexed by the ordinal of
+     *              an element of {@link SummaryStat}.
+     * @param moves Statistics about the number of moves made in the summarised games.
+     *              The first dimension of this array is indexed by the ordinal of an element of
+     *              {@link GameStatsTarget}, and the second dimension is indexed by the ordinal of
+     *              an element of {@link SummaryStat}.
+     */
     protected GameStatsSummary(@Nonnull double[][] rolls, @Nonnull double[][] moves) {
         this.rolls = rolls;
         this.moves = moves;

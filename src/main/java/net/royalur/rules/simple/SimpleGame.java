@@ -10,11 +10,12 @@ import java.util.List;
 
 /**
  * A game of the Royal Game of Ur that uses a simple rule set.
- * This class mainly exists to reduce the need to use as many generics.
+ * This class exists to reduce the need to use as many generics.
  */
 public class SimpleGame extends Game<SimplePiece, PlayerState, Roll> {
 
     /**
+     * Instantiates a simple game of the Royal Game of Ur.
      * @param rules      The set of rules that are being used for this game.
      * @param gameStates The states that have occurred so far in the game.
      */

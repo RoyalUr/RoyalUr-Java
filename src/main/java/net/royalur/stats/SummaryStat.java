@@ -28,6 +28,11 @@ public enum SummaryStat {
     STD_DEV;
 
     /**
+     * Instantiate a statistic that can be used to summarise a set of measurements.
+     */
+    SummaryStat() {}
+
+    /**
      * Computes all summary statistics for the measurements in {@param measurements}.
      * The indices into the returned array represent the ordinal of the SummaryStat
      * enum entries.

@@ -1,6 +1,7 @@
-package net.royalur.rules;
+package net.royalur.rules.dice;
 
 import net.royalur.model.Roll;
+import net.royalur.rules.Dice;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -8,6 +9,7 @@ import java.util.Random;
 /**
  * Follows the standard probability distribution for dice
  * of the Royal Game of Ur, which consist of four D2 die.
+ * Dice are not thread safe.
  */
 public class StandardDice extends Dice<Roll> {
 
@@ -22,6 +24,8 @@ public class StandardDice extends Dice<Roll> {
     private final Random random;
 
     /**
+     * Instantiates the standard dice with {@param random} as the source
+     * of randomness to generate rolls.
      * @param random The source of randomness used to generate dice rolls.
      */
     public StandardDice(Random random) {
@@ -29,6 +33,9 @@ public class StandardDice extends Dice<Roll> {
         this.random = random;
     }
 
+    /**
+     * Instantiates the standard dice with a default random number generator.
+     */
     public StandardDice() {
         this(new Random());
     }

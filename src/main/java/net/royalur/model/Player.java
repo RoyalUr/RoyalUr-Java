@@ -33,6 +33,12 @@ public enum Player {
      */
     public final char character;
 
+    /**
+     * Instantiates a type of player.
+     * @param id A fixed numerical identifier to represent this player.
+     * @param name An English name for this player.
+     * @param character A fixed character to represent this player.
+     */
     Player(int id, String name, char character) {
         this.id = id;
         this.name = name;

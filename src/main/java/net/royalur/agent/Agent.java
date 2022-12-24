@@ -17,6 +17,11 @@ import java.util.List;
 public abstract class Agent<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
+     * Instantiates an agent to autonomously play the Royal Game of Ur.
+     */
+    public Agent() {}
+
+    /**
      * Gets an identifier that can be used to uniquely identify this type of agent.
      * @return An identifier that can be used to uniquely identify this type of agent.
      */
@@ -56,7 +61,12 @@ public abstract class Agent<P extends Piece, S extends PlayerState, R extends Ro
 
     /**
      * Determines the move to be executed from the current state of the game.
+     * @param state The current state of the game.
+     * @param moves The list of available moves to be chosen from.
+     * @return The move that the agent chose to play.
      */
     public abstract @Nonnull Move<P> decideMove(
-            @Nonnull WaitingForMoveGameState<P, S, R> state, @Nonnull List<Move<P>> moves);
+            @Nonnull WaitingForMoveGameState<P, S, R> state,
+            @Nonnull List<Move<P>> moves
+    );
 }

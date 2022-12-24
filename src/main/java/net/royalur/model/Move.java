@@ -6,6 +6,7 @@ import java.util.Objects;
 
 /**
  * A move that can be made on a board.
+ * @param <P> The type of piece that is being moved and that may be captured.
  */
 public class Move<P extends Piece> {
 

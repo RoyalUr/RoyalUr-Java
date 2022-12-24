@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoyalGameOfUrTest {
+public class RoyalUrAPITest {
 
     private static final Pattern SEMVER_PATTERN = Pattern.compile(
             "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)" +
@@ -22,7 +22,7 @@ public class RoyalGameOfUrTest {
      * See: <a href="https://semver.org/">https://semver.org</a>
      */
     @ParameterizedTest
-    @ValueSource(strings = RoyalGameOfUr.VERSION)
+    @ValueSource(strings = RoyalUrAPI.VERSION)
     public void testVersion(String version) {
         assertTrue(SEMVER_PATTERN.matcher(version).matches());
     }
