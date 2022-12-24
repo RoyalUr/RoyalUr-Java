@@ -15,6 +15,11 @@ import java.util.Map;
  * RGN stands for Royal Game Notation. This is a textual format
  * that is intended to be readable by both humans and machines.
  * This notation is inspired by Chess' PGN (Portable Game Notation).
+ * <p>
+ * Additional thanks to the following contributors from the Royal
+ * Game of Ur Discord server for their help in discussing the
+ * merits of different features for the notation: Monomino,
+ * Sachertorte, and Diego Raposo.
  */
 public class RGN extends Notation {
 
