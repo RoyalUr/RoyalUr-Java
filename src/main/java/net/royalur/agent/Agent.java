@@ -17,12 +17,11 @@ import java.util.List;
 public abstract class Agent<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
-     * The name of this type of agent.
+     * Gets an identifier that can be used to uniquely identify this type of agent.
+     * @return An identifier that can be used to uniquely identify this type of agent.
      */
-    public final @Nonnull String name;
-
-    protected Agent(@Nonnull String name) {
-        this.name = name;
+    public @Nonnull String getIdentifier() {
+        throw new UnsupportedOperationException("This agent does not have an identifier (" + getClass() + ")");
     }
 
     /**
