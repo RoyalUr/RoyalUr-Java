@@ -193,6 +193,9 @@ public class RGN extends Notation {
             if (moveState != null) {
                 appendMove(game.rules, actionBuilder, moveState);
             }
+            if (index == states.size() - 1 && game.isFinished()) {
+                actionBuilder.append("#");
+            }
 
             // Add the action to the encoded string. We wrap to a new
             // line if required to maintain the maximum line length.
