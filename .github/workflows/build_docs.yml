@@ -1,4 +1,4 @@
-name: Build Sphinx Documentation for GitHub Pages
+name: Build Documentation for GitHub Pages
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build the JavaDocs
-        run: mvn javadoc:javadoc -Prelease
+        run: mvn org.apache.maven.plugins:maven-javadoc-plugin:javadoc -Prelease
 
       - name: Transfer docs to tychelibrary.github.io
         uses: cpina/github-action-push-to-another-repository@v1.5
