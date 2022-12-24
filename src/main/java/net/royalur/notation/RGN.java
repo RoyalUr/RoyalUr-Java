@@ -62,9 +62,9 @@ public class RGN extends Notation {
     }
 
     /**
-     * Escapes {@param value} so that it can be included as a metadata value.
+     * Escapes {@code value} so that it can be included as a metadata value.
      * @param value The value to be escaped.
-     * @return The escaped version of {@param value}.
+     * @return The escaped version of {@code value}.
      */
     public static @Nonnull String escape(@Nonnull String value) {
         StringBuilder builder = new StringBuilder("\"");
@@ -85,7 +85,7 @@ public class RGN extends Notation {
     }
 
     /**
-     * Encodes the dice roll from {@param rolledState} into {@param builder}.
+     * Encodes the dice roll from {@code rolledState} into {@code builder}.
      * @param rules The rules of the game in which the dice are being encoded.
      * @param builder The builder into which to append the encoded dice roll.
      * @param rolledState The state of the game that contains the dice roll to encode.
@@ -103,7 +103,7 @@ public class RGN extends Notation {
     }
 
     /**
-     * Encodes the move from {@param movedState} into {@param builder}.
+     * Encodes the move from {@code movedState} into {@code builder}.
      * @param rules The rules of the game in which the dice are being encoded.
      * @param builder The builder into which to append the encoded move.
      * @param movedState The state of the game that contains the move to encode.

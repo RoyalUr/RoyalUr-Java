@@ -36,7 +36,7 @@ public class Board<P extends Piece> {
     private final @Nonnull Piece[][] pieces;
 
     /**
-     * Instantiates an empty board with the shape {@param shape}.
+     * Instantiates an empty board with the shape {@code shape}.
      * @param shape The shape of this board.
      */
     public Board(@Nonnull BoardShape shape) {
@@ -48,7 +48,7 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Instantiates a board with the same shape and pieces as {@param template}.
+     * Instantiates a board with the same shape and pieces as {@code template}.
      * @param template Another board to use as a template to copy from.
      */
     protected Board(@Nonnull Board<P> template) {
@@ -67,7 +67,7 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Determines whether {@param tile} falls within the bounds of this board.
+     * Determines whether {@code tile} falls within the bounds of this board.
      *
      * @param tile The tile to be bounds-checked.
      * @return Whether the given tile falls within the bounds of this board.
@@ -77,7 +77,7 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Determines whether the tile at the indices ({@param ix}, {@param iy}),
+     * Determines whether the tile at the indices ({@code ix}, {@code iy}),
      * 0-based, falls within the bounds of this board.
      *
      * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
@@ -89,7 +89,7 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Retrieves the piece on {@param tile}. Returns {@code null} if there is no piece on the tile.
+     * Retrieves the piece on {@code tile}. Returns {@code null} if there is no piece on the tile.
      *
      * @param tile The tile to find the piece on.
      * @return The piece on the given tile if one exists, or else {@code null}.
@@ -99,7 +99,7 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Retrieves the piece on the tile at the indices ({@param ix}, {@param iy}), 0-based.
+     * Retrieves the piece on the tile at the indices ({@code ix}, {@code iy}), 0-based.
      * Returns {@code null} if there is no piece on the tile.
      *
      * @param ix The x-index of the tile to find the piece on. This coordinate is 0-based.
@@ -115,8 +115,8 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Sets the piece on {@param tile} to {@param piece}. If
-     * {@param piece} is {@code null}, it removes any piece on the tile.
+     * Sets the piece on {@code tile} to {@code piece}. If
+     * {@code piece} is {@code null}, it removes any piece on the tile.
      * Returns the piece that was previously on the tile, or
      * {@code null} if there was no piece on the tile.
      *
@@ -129,8 +129,8 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Sets the piece on the tile at the indices ({@param ix}, {@param iy}), 0-based,
-     * to the piece {@param piece}. If {@param piece} is {@code null}, it
+     * Sets the piece on the tile at the indices ({@code ix}, {@code iy}), 0-based,
+     * to the piece {@code piece}. If {@code piece} is {@code null}, it
      * removes any piece on the tile. Returns the piece that was previously
      * on the tile, or {@code null} if there was no piece on the tile.
      *

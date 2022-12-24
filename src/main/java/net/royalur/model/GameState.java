@@ -70,9 +70,9 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
     public abstract boolean isPlayable();
 
     /**
-     * Retrieves the state of the player {@param player}.
+     * Retrieves the state of the player {@code player}.
      * @param player The player to retrieve the state of.
-     * @return The state of the player {@param player}.
+     * @return The state of the player {@code player}.
      */
     public @Nonnull S getPlayer(@Nonnull Player player) {
         switch (player) {

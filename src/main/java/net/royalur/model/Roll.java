@@ -50,9 +50,9 @@ public class Roll {
     }
 
     /**
-     * Generates a roll representing a roll of the value {@param value}.
+     * Generates a roll representing a roll of the value {@code value}.
      * @param value The value that was rolled on the dice.
-     * @return A roll representing a roll of the value {@param value}.
+     * @return A roll representing a roll of the value {@code value}.
      */
     public static @Nonnull Roll of(int value) {
         switch (value) {

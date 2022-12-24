@@ -46,9 +46,9 @@ public class Move<P extends Piece> {
     protected final @Nullable P capturedPiece;
 
     /**
-     * Creates a new move with origin {@param from} and destination {@param to}.
-     * If {@param from} is {@code null}, it represents moving a new piece onto
-     * the board. If {@param to} is {@code null}, it represents moving a piece
+     * Creates a new move with origin {@code from} and destination {@code to}.
+     * If {@code from} is {@code null}, it represents moving a new piece onto
+     * the board. If {@code to} is {@code null}, it represents moving a piece
      * off of the board.
      *
      * @param player    The player that is the instigator of this move.
@@ -179,7 +179,7 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Apply this move to update the board {@param board}.
+     * Apply this move to update the board {@code board}.
      * @param board The board to update by applying this move.
      */
     public void apply(@Nonnull Board<P> board) {

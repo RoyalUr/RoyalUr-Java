@@ -52,7 +52,7 @@ public class PathPair {
     }
 
     /**
-     * Retrieves the path for the player {@param player}.
+     * Retrieves the path for the player {@code player}.
      * @param player The player to get the path for.
      * @return The path for the given player.
      */
@@ -73,10 +73,10 @@ public class PathPair {
     /**
      * Determines whether the paths that the light player's pieces must take,
      * and the paths that the dark player's pieces must take, are equivalent
-     * between this path pair and {@param other}.
+     * between this path pair and {@code other}.
      * @param other The other pair of paths to check for equivalency.
      * @return Whether the paths that the light and dark player's pieces must take
-     *         around the board are equivalent for this path pair and {@param other}.
+     *         around the board are equivalent for this path pair and {@code other}.
      */
     public boolean isEquivalent(@Nonnull PathPair other) {
         return lightPath.isEquivalent(other.lightPath) && darkPath.isEquivalent(other.darkPath);

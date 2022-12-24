@@ -33,11 +33,11 @@ public enum SummaryStat {
     SummaryStat() {}
 
     /**
-     * Computes all summary statistics for the measurements in {@param measurements}.
+     * Computes all summary statistics for the measurements in {@code measurements}.
      * The indices into the returned array represent the ordinal of the SummaryStat
      * enum entries.
      * @param measurements The measurements to summarise.
-     * @return The summary statistics for the measurements in {@param measurements}.
+     * @return The summary statistics for the measurements in {@code measurements}.
      */
     public static @Nonnull double[] compute(@Nonnull int[] measurements) {
         // Calculate the sum and mean.

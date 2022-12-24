@@ -24,7 +24,7 @@ public class StandardDice extends Dice<Roll> {
     private final Random random;
 
     /**
-     * Instantiates the standard dice with {@param random} as the source
+     * Instantiates the standard dice with {@code random} as the source
      * of randomness to generate rolls.
      * @param random The source of randomness used to generate dice rolls.
      */

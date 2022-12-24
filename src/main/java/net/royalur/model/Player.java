@@ -59,11 +59,11 @@ public enum Player {
     }
 
     /**
-     * Converts {@param player} to a single character that can be used
+     * Converts {@code player} to a single character that can be used
      * to textually represent a piece.
      *
      * @param player The player or {@code null} to convert to a character.
-     * @return The character representing {@param player}.
+     * @return The character representing {@code player}.
      */
     public static char toChar(@Nullable Player player) {
         if (player == null)

@@ -47,9 +47,9 @@ public enum GameStatsTarget {
     }
 
     /**
-     * Retrieves the target associated with {@param player}.
+     * Retrieves the target associated with {@code player}.
      * @param player The player to retrieve the statistics for.
-     * @return The target associated with {@param player}.
+     * @return The target associated with {@code player}.
      */
     public static @Nonnull GameStatsTarget get(@Nonnull Player player) {
         switch (player) {

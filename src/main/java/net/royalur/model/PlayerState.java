@@ -64,7 +64,7 @@ public class PlayerState {
     }
 
     /**
-     * Instantiates a state that is a copy of {@param template}.
+     * Instantiates a state that is a copy of {@code template}.
      * @param template Another player state to use as a template to copy from.
      */
     protected PlayerState(@Nonnull PlayerState template) {
@@ -80,12 +80,12 @@ public class PlayerState {
     }
 
     /**
-     * Produces a copy of the player state {@param state}, and guarantees
-     * that the copy is of the same type as {@param state}. This is used
+     * Produces a copy of the player state {@code state}, and guarantees
+     * that the copy is of the same type as {@code state}. This is used
      * to allow custom PlayerState subclasses to be created that can be
      * copied to be modified by rule sets.
      * @param state The player state to copy.
-     * @return A copy of the player state {@param state}.
+     * @return A copy of the player state {@code state}.
      * @param <S> The type of the player state that is being copied.
      */
     @SuppressWarnings("unchecked")

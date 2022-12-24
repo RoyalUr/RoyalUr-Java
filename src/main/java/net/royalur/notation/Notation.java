@@ -32,18 +32,18 @@ public abstract class Notation {
     }
 
     /**
-     * Encodes the given game, {@param game}, into text.
+     * Encodes the given game, {@code game}, into text.
      * @param game The game to be encoded.
      * @param <P> The type of pieces that are stored on the board.
      * @param <S> The type of state that is stored for each player.
      * @param <R> The type of rolls that may be made.
-     * @return Text that represents {@param game} in this notation.
+     * @return Text that represents {@code game} in this notation.
      */
     public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String
     encodeGame(@Nonnull Game<P, S, R> game);
 
     /**
-     * Decodes the game from the text {@param encoded}, based upon the rules {@param rules}.
+     * Decodes the game from the text {@code encoded}, based upon the rules {@code rules}.
      * @param rules The rules used to simulate the game as it is decoded.
      * @param encoded The text to decode into a game.
      * @return The decoded game.

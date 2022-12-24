@@ -47,7 +47,7 @@ public class BoardShape {
     private @Nullable List<Tile> tilesByColumn = null;
 
     /**
-     * Instantiates a board shape with {@param tiles} representing the tiles on the board.
+     * Instantiates a board shape with {@code tiles} representing the tiles on the board.
      * @param tiles        The set of tiles that fall within the bounds of this board shape.
      * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
      */
@@ -144,7 +144,7 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether {@param tile} falls within the bounds of this shape of board.
+     * Determines whether {@code tile} falls within the bounds of this shape of board.
      * @param tile The tile to be bounds-checked.
      * @return Whether the given tile falls within the bounds of this board.
      */
@@ -153,7 +153,7 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether the tile at the indices ({@param x}, {@param y}),
+     * Determines whether the tile at the indices ({@code x}, {@code y}),
      * 0-based, falls within the bounds of this shape of board.
      * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
      * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
@@ -166,7 +166,7 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether {@param tile} is a rosette tile on this board.
+     * Determines whether {@code tile} is a rosette tile on this board.
      * @param tile The tile to check if it is a rosette.
      * @return Whether the given tile is a rosette tile on this board.
      */
@@ -175,7 +175,7 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether the tile at the indices ({@param ix}, {@param iy}),
+     * Determines whether the tile at the indices ({@code ix}, {@code iy}),
      * 0-based, is a rosette tile on this board.
      * @param ix The x-index of the tile to be checked for being a rosette.
      *           This coordinate is 0-based.
@@ -190,9 +190,9 @@ public class BoardShape {
     }
 
     /**
-     * Determines whether {@param path} could be traversed on this shape of board.
+     * Determines whether {@code path} could be traversed on this shape of board.
      * @param path The path to check for compatibility.
-     * @return Whether {@param path} could be traversed on this shape of board.
+     * @return Whether {@code path} could be traversed on this shape of board.
      */
     public boolean isCompatible(@Nonnull Path path) {
         for (Tile tile : path.tiles) {

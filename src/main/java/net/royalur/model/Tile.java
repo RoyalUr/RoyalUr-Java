@@ -48,17 +48,17 @@ public class Tile {
 
     /**
      * Creates a new tile representing the tile at the
-     * indices ({@param ix}, {@param iy}), 0-based.
+     * indices ({@code ix}, {@code iy}), 0-based.
      * @param ix The x-index of the tile. This coordinate is 0-based.
      * @param iy The y-index of the tile. This coordinate is 0-based.
-     * @return A tile representing the tile at indices ({@param ix}, {@param iy}).
+     * @return A tile representing the tile at indices ({@code ix}, {@code iy}).
      */
     public static @Nonnull Tile fromIndices(int ix, int iy) {
         return new Tile(ix + 1, iy + 1);
     }
 
     /**
-     * Determines whether the indices ({@param ix}, {@param iy}),
+     * Determines whether the indices ({@code ix}, {@code iy}),
      * 0-based, could possibly represent a tile on a board. This
      * does not know the shape of the board, so it should only be
      * used as a quick common-sense check.
@@ -87,7 +87,7 @@ public class Tile {
     }
 
     /**
-     * Encodes the x-coordinate as an upper-case letter, and appends it to {@param builder}.
+     * Encodes the x-coordinate as an upper-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */
     public void encodeX(@Nonnull StringBuilder builder) {
@@ -95,7 +95,7 @@ public class Tile {
     }
 
     /**
-     * Encodes the x-coordinate as a lower-case letter, and appends it to {@param builder}.
+     * Encodes the x-coordinate as a lower-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */
     public void encodeXLowerCase(@Nonnull StringBuilder builder) {
@@ -103,7 +103,7 @@ public class Tile {
     }
 
     /**
-     * Encodes the y-coordinate as a number, and appends it to {@param builder}.
+     * Encodes the y-coordinate as a number, and appends it to {@code builder}.
      * @param builder The builder to place the encoded y-coordinate into.
      */
     public void encodeY(@Nonnull StringBuilder builder) {

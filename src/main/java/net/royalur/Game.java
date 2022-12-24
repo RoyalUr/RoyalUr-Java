@@ -114,7 +114,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Sets the value of the metadata associated with the key {@param key} to {@param value}.
+     * Sets the value of the metadata associated with the key {@code key} to {@code value}.
      * @param key   The key of the metadata item to be updated.
      * @param value The new value to be associated with the given metadata key.
      */
@@ -123,7 +123,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Removes any metadata associated with the key {@param key}.
+     * Removes any metadata associated with the key {@code key}.
      * @param key   The key of the metadata item to be removed.
      */
     public void removeMetadata(@Nonnull String key) {
@@ -131,10 +131,10 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Retrieves the metadata associated with the key {@param key}.
+     * Retrieves the metadata associated with the key {@code key}.
      * @param key The key of the metadata item to be retrieved.
-     * @return The metadata associated with the key {@param key}.
-     * @throws IllegalStateException If there is no metadata associated with the key {@param key}.
+     * @return The metadata associated with the key {@code key}.
+     * @throws IllegalStateException If there is no metadata associated with the key {@code key}.
      */
     public @Nonnull String getMetadata(@Nonnull String key) {
         String value = metadata.get(key);
@@ -181,7 +181,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Adds all states from {@param states} to this game.
+     * Adds all states from {@code states} to this game.
      * @param states The states to add to this game.
      */
     private void addStates(@Nonnull Iterable<GameState<P, S, R>> states) {
@@ -198,7 +198,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Adds the state {@param state} to this game.
+     * Adds the state {@code state} to this game.
      * @param state The state to add to this game.
      */
     private void addState(@Nonnull GameState<P, S, R> state) {
@@ -380,7 +380,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Rolls the dice, with a known value of {@param roll}, and updates the
+     * Rolls the dice, with a known value of {@code roll}, and updates the
      * state of the game accordingly.
      * @param roll The value of the dice that is to be rolled.
      */
@@ -400,7 +400,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Rolls the dice with a known value of {@param value}, and updates the state of the game accordingly.
+     * Rolls the dice with a known value of {@code value}, and updates the state of the game accordingly.
      * @param value The value of the dice to be rolled.
      * @return The value of the dice that were rolled.
      */
@@ -420,7 +420,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Applies the move {@param move} to update the state of the game.
+     * Applies the move {@code move} to update the state of the game.
      * This does not check whether the move is valid.
      * @param move The move to make from the current state of the game.
      */
@@ -430,7 +430,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Moves the piece {@param piece}, and updates the state of the game.
+     * Moves the piece {@code piece}, and updates the state of the game.
      * @param piece The piece to be moved.
      */
     public void makeMove(@Nonnull P piece) {
@@ -459,7 +459,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Moves the piece on tile {@param tile}, and updates the state of the game.
+     * Moves the piece on tile {@code tile}, and updates the state of the game.
      * @param tile The tile where the piece to be moved resides.
      */
     public void makeMove(@Nonnull Tile tile) {

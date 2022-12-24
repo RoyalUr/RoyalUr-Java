@@ -48,36 +48,36 @@ public class GameStats {
     }
 
     /**
-     * Retrieves the number of rolls counted for the target {@param target}.
+     * Retrieves the number of rolls counted for the target {@code target}.
      * @param target The target to retrieve the statistic about.
-     * @return The number of rolls counted for the target {@param target}.
+     * @return The number of rolls counted for the target {@code target}.
      */
     public int getRolls(@Nonnull GameStatsTarget target) {
         return rolls[target.ordinal()];
     }
 
     /**
-     * Retrieves the number of rolls performed by {@param player}.
+     * Retrieves the number of rolls performed by {@code player}.
      * @param player The player to retrieve the statistic about.
-     * @return The number of rolls performed by {@param player}.
+     * @return The number of rolls performed by {@code player}.
      */
     public int getRolls(@Nonnull Player player) {
         return getRolls(GameStatsTarget.get(player));
     }
 
     /**
-     * Retrieves the number of moves counted for the target {@param target}.
+     * Retrieves the number of moves counted for the target {@code target}.
      * @param target The target to retrieve the statistic about.
-     * @return The number of moves counted for the target {@param target}.
+     * @return The number of moves counted for the target {@code target}.
      */
     public int getMoves(@Nonnull GameStatsTarget target) {
         return moves[target.ordinal()];
     }
 
     /**
-     * Retrieves the number of moves made by {@param player}.
+     * Retrieves the number of moves made by {@code player}.
      * @param player The player to retrieve the statistic about.
-     * @return The number of moves made by {@param player}.
+     * @return The number of moves made by {@code player}.
      */
     public int getMoves(@Nonnull Player player) {
         return getMoves(GameStatsTarget.get(player));
@@ -100,7 +100,7 @@ public class GameStats {
     }
 
     /**
-     * Gathers statistics about the game {@param game}.
+     * Gathers statistics about the game {@code game}.
      * @param game The game to gather statistics about.
      * @return The statistics gathered about the game.
      */
@@ -130,11 +130,11 @@ public class GameStats {
     }
 
     /**
-     * Summarises the statistics of all the given game statistics from {@param stats}.
+     * Summarises the statistics of all the given game statistics from {@code stats}.
      * This includes the generation of statistics such as sum, mean, variance, and
      * standard deviation.
      * @param stats The statistics to summarise.
-     * @return The summarised statistics of all the statistics in {@param stats}.
+     * @return The summarised statistics of all the statistics in {@code stats}.
      */
     public static @Nonnull GameStatsSummary summarise(GameStats... stats) {
         return GameStatsSummary.summarise(stats);

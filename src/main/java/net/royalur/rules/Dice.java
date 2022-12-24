@@ -36,9 +36,9 @@ public abstract class Dice<R extends Roll> {
     public abstract @Nonnull R roll();
 
     /**
-     * Generates a roll with value {@param value} using this dice.
+     * Generates a roll with value {@code value} using this dice.
      * @param value The value of the dice to be rolled.
-     * @return A roll with value {@param value} of this dice.
+     * @return A roll with value {@code value} of this dice.
      */
     public abstract @Nonnull R roll(int value);
 }

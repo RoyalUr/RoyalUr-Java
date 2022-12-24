@@ -104,19 +104,19 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     }
 
     /**
-     * Generates the starting state for the {@param player} player.
+     * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
-     * @return A player state for the player {@param player}.
+     * @return A player state for the player {@code player}.
      */
     public @Nonnull S generateNewPlayerState(@Nonnull Player player) {
         return generateNewPlayerState(player, PlayerState.ANONYMOUS_NAME);
     }
 
     /**
-     * Generates the starting state for the {@param player} player.
+     * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
      * @param name   The name of the player to create the state for.
-     * @return A player state for the player {@param player} with name {@param name}.
+     * @return A player state for the player {@code player} with name {@code name}.
      */
     public abstract @Nonnull S generateNewPlayerState(@Nonnull Player player, @Nonnull String name);
 
@@ -129,9 +129,9 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     }
 
     /**
-     * Generates a roll of the dice of value {@param value} using the dice of this rule set.
+     * Generates a roll of the dice of value {@code value} using the dice of this rule set.
      * @param value The value of the dice to roll.
-     * @return A roll of the dice of value {@param value}.
+     * @return A roll of the dice of value {@code value}.
      */
     public @Nonnull R rollDice(int value) {
         return dice.roll(value);
@@ -149,7 +149,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
             @Nonnull Board<P> board, @Nonnull S player, @Nonnull R roll);
 
     /**
-     * Applies the roll {@param roll} to the state {@param state} to generate
+     * Applies the roll {@code roll} to the state {@code state} to generate
      * the new state of the game. Multiple game states may be returned to
      * include information game states for maintaining history. However, the
      * latest or highest-index game state will represent the state of the game
@@ -164,7 +164,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
             @Nonnull WaitingForRollGameState<P, S, R> state, @Nonnull R roll);
 
     /**
-     * Applies the move {@param move} to the state {@param state} to generate
+     * Applies the move {@code move} to the state {@code state} to generate
      * the new state of the game. Multiple game states may be returned to
      * include information game states for maintaining history. However, the
      * latest or highest-index game state will represent the state of the game

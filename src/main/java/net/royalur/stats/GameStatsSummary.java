@@ -38,20 +38,20 @@ public class GameStatsSummary {
     }
 
     /**
-     * Retrieves the value of the summary statistic {@param statistic} about rolls for target {@param target}.
+     * Retrieves the value of the summary statistic {@code statistic} about rolls for target {@code target}.
      * @param target The target to retrieve the summary statistic about.
      * @param statistic The summary statistic to retrieve.
-     * @return The value of the summary statistic {@param statistic} about rolls for target {@param target}.
+     * @return The value of the summary statistic {@code statistic} about rolls for target {@code target}.
      */
     public double getRollsStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
         return rolls[target.ordinal()][statistic.ordinal()];
     }
 
     /**
-     * Retrieves the value of the summary statistic {@param statistic} about moves for target {@param target}.
+     * Retrieves the value of the summary statistic {@code statistic} about moves for target {@code target}.
      * @param target The target to retrieve the summary statistic about.
      * @param statistic The summary statistic to retrieve.
-     * @return The value of the summary statistic {@param statistic} about moves for target {@param target}.
+     * @return The value of the summary statistic {@code statistic} about moves for target {@code target}.
      */
     public double getMovesStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
         return moves[target.ordinal()][statistic.ordinal()];

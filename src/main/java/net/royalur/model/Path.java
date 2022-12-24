@@ -62,7 +62,7 @@ public class Path implements Iterable<Tile> {
     }
 
     /**
-     * Retrieves the tile at the index {@param index} in this path. The index
+     * Retrieves the tile at the index {@code index} in this path. The index
      * is treated as a 0-based index into the tiles of this path.
      * @param index The index of the tile in this path.
      * @return The tile at the given index in this path.
@@ -84,11 +84,11 @@ public class Path implements Iterable<Tile> {
 
     /**
      * Determines whether the path the tiles must take around the board is
-     * equivalent between this path and {@param other}. This ignores the name
+     * equivalent between this path and {@code other}. This ignores the name
      * and intended player of the paths, and the start and end tiles.
      * @param other The path to check for equivalency.
      * @return Whether the path the tiles must take around the board is equivalent
-     *         between this path and {@param other}.
+     *         between this path and {@code other}.
      */
     public boolean isEquivalent(@Nonnull Path other) {
         return tiles.equals(other.tiles);

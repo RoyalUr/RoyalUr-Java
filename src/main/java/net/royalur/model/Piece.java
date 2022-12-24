@@ -32,7 +32,7 @@ public class Piece {
     }
 
     /**
-     * Returns a piece with {@param player} as its owner.
+     * Returns a piece with {@code player} as its owner.
      * @param player The player to retrieve a piece of.
      * @return The piece of the given player.
      */
@@ -46,11 +46,11 @@ public class Piece {
     }
 
     /**
-     * Converts {@param piece} to a single character that can be used
+     * Converts {@code piece} to a single character that can be used
      * to textually represent the owner of a piece.
      *
      * @param piece The piece or {@code null} to convert to a character.
-     * @return The character representing {@param piece}.
+     * @return The character representing {@code piece}.
      */
     public static char toChar(@Nullable Piece piece) {
         return Player.toChar(piece != null ? piece.owner : null);

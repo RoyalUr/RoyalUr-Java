@@ -26,7 +26,7 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
     private final Random random;
 
     /**
-     * Instantiates a random agent that uses {@param random} as its source of randomness.
+     * Instantiates a random agent that uses {@code random} as its source of randomness.
      * @param random The source of randomness to use to decide the moves to make.
      */
     public RandomAgent(@Nonnull Random random) {
