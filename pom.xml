@@ -5,7 +5,7 @@
 
   <groupId>net.royalur</groupId>
   <artifactId>royalur</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>RoyalUr</name>
@@ -38,7 +38,7 @@
     <connection>scm:git:git://github.com/RoyalUr/RoyalUr-Java.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/RoyalUr/RoyalUr-Java.git</developerConnection>
     <url>https://github.com/RoyalUr/RoyalUr-Java</url>
-    <tag>royalur-1.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
