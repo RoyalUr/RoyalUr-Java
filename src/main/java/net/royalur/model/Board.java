@@ -170,18 +170,32 @@ public class Board<P extends Piece> {
         return true;
     }
 
-    @Override
-    public @Nonnull String toString() {
+    /**
+     * Writes the contents of this board into a String, where each column is placed on new line.
+     * @param columnDelimiter The delimiter to use to distinguish columns of the board.
+     * @param includeOffBoardTiles Whether to include tiles that don't fall on the board as spaces.
+     * @return A String representing the contents of this board.
+     */
+    public @Nonnull String toString(char columnDelimiter, boolean includeOffBoardTiles) {
         StringBuilder builder = new StringBuilder();
         for (int ix = 0; ix < shape.width; ++ix) {
             if (ix > 0) {
-                builder.append("\n");
+                builder.append(columnDelimiter);
             }
 
             for (int iy = 0; iy < shape.height; ++iy) {
-                builder.append(contains(ix, iy) ? Piece.toChar(get(ix, iy)) : ' ');
+                if (contains(ix, iy)) {
+                    builder.append(Piece.toChar(get(ix, iy)));
+                } else if (includeOffBoardTiles) {
+                    builder.append(' ');
+                }
             }
         }
         return builder.toString();
+    }
+
+    @Override
+    public @Nonnull String toString() {
+        return toString('\n', true);
     }
 }

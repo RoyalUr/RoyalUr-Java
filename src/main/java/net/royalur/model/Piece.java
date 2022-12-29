@@ -56,6 +56,22 @@ public class Piece {
         return Player.toChar(piece != null ? piece.owner : null);
     }
 
+    /**
+     * Returns whether this piece has a stored path index.
+     * @return Whether this piece has a stored path index.
+     */
+    public boolean hasPathIndex() {
+        return false;
+    }
+
+    /**
+     * Retrieves the path index of this piece.
+     * @return The path index of this piece.
+     */
+    public int getPathIndex() {
+        throw new UnsupportedOperationException("This piece does not have a path index");
+    }
+
     @Override
     public int hashCode() {
         return owner.hashCode();

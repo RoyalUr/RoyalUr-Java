@@ -181,6 +181,32 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Retrieves the states that represent the actions that have been
+     * made so far in the game. The last state in the list represents
+     * the last action that was taken in this game.
+     * @return The states that represent the actions that have been
+     *         made so far in the game.
+     */
+    public @Nonnull List<GameState<P, S, R>> getLandmarkStates() {
+        List<GameState<P, S, R>> landmarkStates = new ArrayList<>();
+        for (int index = 0; index < states.size(); ++index) {
+            GameState<P, S, R> state = states.get(index);
+
+            // Always include the last state.
+            if (index == states.size() - 1) {
+                landmarkStates.add(state);
+                continue;
+            }
+
+            // There will only be one move game state per turn.
+            if (state instanceof MovedGameState) {
+                landmarkStates.add(state);
+            }
+        }
+        return Collections.unmodifiableList(landmarkStates);
+    }
+
+    /**
      * Adds all states from {@code states} to this game.
      * @param states The states to add to this game.
      */

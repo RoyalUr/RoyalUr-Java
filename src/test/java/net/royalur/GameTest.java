@@ -6,6 +6,7 @@ import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
+import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -21,6 +22,8 @@ public class GameTest {
         RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = game.playAutonomously(light, dark);
         assertTrue(game.isFinished());
+
+        System.out.println(new JsonNotation().encodeGame(game));
 
         // The shortest possible game requires 72 actions.
         int winMinActions = (2 /* roll + move */) * (4 /* min. moves per piece */) * (7 /* pieces */);

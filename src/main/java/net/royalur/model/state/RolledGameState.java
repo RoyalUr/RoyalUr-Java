@@ -35,7 +35,7 @@ public class RolledGameState<
             @Nonnull Player turn,
             @Nonnull R roll) {
 
-        super(board, lightPlayer, darkPlayer, turn);
+        super(ActionType.ROLL, board, lightPlayer, darkPlayer, turn);
 
         this.roll = roll;
     }

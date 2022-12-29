@@ -24,7 +24,21 @@ public class SimplePiece extends Piece {
      */
     public SimplePiece(@Nonnull Player owner, int pathIndex) {
         super(owner);
+
+        if (pathIndex < 0)
+            throw new IllegalArgumentException("The path index cannot be negative. Invalid value: " + pathIndex);
+
         this.pathIndex = pathIndex;
+    }
+
+    @Override
+    public boolean hasPathIndex() {
+        return true;
+    }
+
+    @Override
+    public int getPathIndex() {
+        return pathIndex;
     }
 
     @Override

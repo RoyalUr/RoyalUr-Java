@@ -65,6 +65,11 @@
       <artifactId>jsr305</artifactId>
       <version>3.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.14.1</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
@@ -132,6 +137,7 @@
             <serverId>ossrh</serverId>
             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            <altStagingDirectory>target</altStagingDirectory>
           </configuration>
         </plugin>
 

@@ -41,7 +41,7 @@ public class MovedGameState<
             @Nonnull R roll,
             @Nonnull Move<P> move) {
 
-        super(board, lightPlayer, darkPlayer, turn);
+        super(ActionType.MOVE, board, lightPlayer, darkPlayer, turn);
 
         this.roll = roll;
         this.move = move;
