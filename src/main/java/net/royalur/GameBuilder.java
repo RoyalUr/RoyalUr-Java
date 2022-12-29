@@ -45,35 +45,19 @@ public class GameBuilder {
         protected final int startingPieceCount;
 
         /**
-         * The name of the light player.
-         */
-        protected final @Nullable String lightPlayerName;
-
-        /**
-         * The name of the dark player.
-         */
-        protected final @Nullable String darkPlayerName;
-
-        /**
          * Instantiates a builder to build games following a simple rule set.
          * @param boardShape The shape of the board.
          * @param paths The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
-         * @param lightPlayerName The name of the light player.
-         * @param darkPlayerName The name of the dark player.
          */
         public BaseSimpleGameBuilder(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
             this.boardShape = boardShape;
             this.paths = paths;
             this.startingPieceCount = startingPieceCount;
-            this.lightPlayerName = lightPlayerName;
-            this.darkPlayerName = darkPlayerName;
         }
 
         /**
@@ -81,16 +65,12 @@ public class GameBuilder {
          * @param boardShape The shape of the board.
          * @param paths The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
-         * @param lightPlayerName The name of the light player.
-         * @param darkPlayerName The name of the dark player.
          * @return A copy of this game builder with updated settings.
          */
         protected abstract @Nonnull SELF copy(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         );
 
         /**
@@ -99,7 +79,7 @@ public class GameBuilder {
          * @return A copy of this game builder with the shape of the board set to {@code boardShape}.
          */
         public @Nonnull SELF boardShape(@Nonnull BoardShape boardShape) {
-            return copy(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -108,7 +88,7 @@ public class GameBuilder {
          * @return A copy of this game builder with the paths taken by each player set to {@code paths}.
          */
         public @Nonnull SELF paths(@Nonnull PathPair paths) {
-            return copy(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -127,41 +107,7 @@ public class GameBuilder {
          *         set to {@code startingPieceCount}.
          */
         public @Nonnull SELF startingPieceCount(int startingPieceCount) {
-            return copy(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
-        }
-
-        /**
-         * Copies this game builder with the name of the light player set to {@code lightPlayerName}.
-         * @param lightPlayerName The name of the light player.
-         * @return A copy of this game builder with the name of the light player set to {@code lightPlayerName}.
-         */
-        public @Nonnull SELF lightPlayerName(@Nullable String lightPlayerName) {
-            return copy(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
-        }
-
-        /**
-         * Copies this game builder with an anonymous light player.
-         * @return A copy of this game builder with an anonymous light player.
-         */
-        public @Nonnull SELF anonymousLightPlayer() {
-            return lightPlayerName(null);
-        }
-
-        /**
-         * Copies this game builder with the name of the dark player set to {@code darkPlayerName}.
-         * @param darkPlayerName The name of the dark player.
-         * @return A copy of this game builder with the name of the dark player set to {@code darkPlayerName}.
-         */
-        public @Nonnull SELF darkPlayerName(@Nullable String darkPlayerName) {
-            return copy(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
-        }
-
-        /**
-         * Copies this game builder with an anonymous dark player.
-         * @return A copy of this game builder with an anonymous dark player.
-         */
-        public @Nonnull SELF anonymousDarkPlayer() {
-            return darkPlayerName(null);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -170,25 +116,6 @@ public class GameBuilder {
          * @return A simple rule set to match the settings in this builder.
          */
         public abstract @Nonnull SimpleRuleSet<SimplePiece, PlayerState, R> buildRules();
-
-        /**
-         * Generates a player state using {@code rules} for {@code player} that may or may not have a name,
-         * depending on whether {@code name} is {@code null}.
-         * @param rules The rules to use to generate the player state.
-         * @param player The player that the state should represent.
-         * @param name The name of the player, or {@code null}.
-         * @return A player state representing {@code player}, that may be named.
-         */
-        protected @Nonnull PlayerState buildPlayerState(
-                @Nonnull SimpleRuleSet<SimplePiece, PlayerState, R> rules,
-                @Nonnull Player player,
-                @Nullable String name
-        ) {
-            if (name != null)
-                return rules.generateNewPlayerState(player, name);
-            else
-                return rules.generateNewPlayerState(player);
-        }
 
         /**
          * Builds a new game using the rules set in this builder.
@@ -208,36 +135,28 @@ public class GameBuilder {
          * @param boardShape         The shape of the board.
          * @param paths              The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
-         * @param lightPlayerName    The name of the light player.
-         * @param darkPlayerName     The name of the dark player.
          */
         public SimpleGameBuilder(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
-            super(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
+            super(boardShape, paths, startingPieceCount);
         }
 
         @Override
         protected @Nonnull SimpleGameBuilder copy(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
-            return new SimpleGameBuilder(
-                    boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName
-            );
+            return new SimpleGameBuilder(boardShape, paths, startingPieceCount);
         }
 
         @Override
         public <R extends Roll> @Nonnull SimpleWithDiceGameBuilder<R> dice(@Nonnull Dice<R> dice) {
             return new SimpleWithDiceGameBuilder<>(
-                    boardShape, paths, dice, startingPieceCount, lightPlayerName, darkPlayerName
+                    boardShape, paths, dice, startingPieceCount
             );
         }
 
@@ -252,8 +171,8 @@ public class GameBuilder {
             return new SimpleGame(rules, List.of(
                     new WaitingForRollGameState<>(
                             rules.generateEmptyBoard(),
-                            buildPlayerState(rules, Player.LIGHT, lightPlayerName),
-                            buildPlayerState(rules, Player.DARK, darkPlayerName),
+                            rules.generateNewPlayerState(Player.LIGHT),
+                            rules.generateNewPlayerState(Player.DARK),
                             Player.LIGHT
                     )
             ));
@@ -279,18 +198,14 @@ public class GameBuilder {
          * @param paths              The paths that each player must take around the board.
          * @param dice               The dice that is used to generate rolls.
          * @param startingPieceCount The number of pieces that each player starts with.
-         * @param lightPlayerName    The name of the light player.
-         * @param darkPlayerName     The name of the dark player.
          */
         public SimpleWithDiceGameBuilder(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 @Nonnull Dice<R> dice,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
-            super(boardShape, paths, startingPieceCount, lightPlayerName, darkPlayerName);
+            super(boardShape, paths, startingPieceCount);
             this.dice = dice;
         }
 
@@ -300,8 +215,6 @@ public class GameBuilder {
          * @param paths The paths that each player must take around the board.
          * @param dice The dice that is used to generate rolls.
          * @param startingPieceCount The number of pieces that each player starts with.
-         * @param lightPlayerName The name of the light player.
-         * @param darkPlayerName The name of the dark player.
          * @param <NR> The type of the dice rolls generated by {@code dice}.
          * @return A copy of this game builder with updated settings.
          */
@@ -309,12 +222,10 @@ public class GameBuilder {
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 @Nonnull Dice<NR> dice,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
             return new SimpleWithDiceGameBuilder<>(
-                    boardShape, paths, dice, startingPieceCount, lightPlayerName, darkPlayerName
+                    boardShape, paths, dice, startingPieceCount
             );
         }
 
@@ -322,16 +233,14 @@ public class GameBuilder {
         protected @Nonnull SimpleWithDiceGameBuilder<R> copy(
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
-                int startingPieceCount,
-                @Nullable String lightPlayerName,
-                @Nullable String darkPlayerName
+                int startingPieceCount
         ) {
-            return copy(boardShape, paths, dice, startingPieceCount, lightPlayerName, darkPlayerName);
+            return copy(boardShape, paths, dice, startingPieceCount);
         }
 
         @Override
         public <NR extends Roll> @Nonnull SimpleWithDiceGameBuilder<NR> dice(@Nonnull Dice<NR> dice) {
-            return copy(boardShape, paths, dice, startingPieceCount, lightPlayerName, darkPlayerName);
+            return copy(boardShape, paths, dice, startingPieceCount);
         }
 
         @Override
@@ -345,8 +254,8 @@ public class GameBuilder {
             return new Game<>(rules, List.of(
                     new WaitingForRollGameState<>(
                             rules.generateEmptyBoard(),
-                            buildPlayerState(rules, Player.LIGHT, lightPlayerName),
-                            buildPlayerState(rules, Player.DARK, darkPlayerName),
+                            rules.generateNewPlayerState(Player.LIGHT),
+                            rules.generateNewPlayerState(Player.DARK),
                             Player.LIGHT
                     )
             ));
@@ -367,8 +276,7 @@ public class GameBuilder {
         return new SimpleGameBuilder(
                 new StandardBoardShape(),
                 new BellPathPair(),
-                7,
-                null, null
+                7
         );
     }
 
@@ -388,8 +296,7 @@ public class GameBuilder {
         return new SimpleGameBuilder(
                 new AsebBoardShape(),
                 new AsebPathPair(),
-                5,
-                null, null
+                5
         );
     }
 }

@@ -49,7 +49,7 @@ public class MovedGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "The player " + getTurnPlayer().name + " rolled " + roll + ", " +
+        return "The " + turn.lowerName + " player rolled " + roll + ", " +
                 "and moved their " + move.getSource() + " piece to " + move.getDestination() + ".";
     }
 }

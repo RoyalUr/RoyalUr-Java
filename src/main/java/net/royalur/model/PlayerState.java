@@ -2,6 +2,7 @@ package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /**
  * A player state represents the state of a single player at a point in the game.
@@ -10,142 +11,104 @@ import javax.annotation.Nullable;
 public class PlayerState {
 
     /**
-     * The default name to use for players that do not provide a name.
-     */
-    public static final @Nonnull String ANONYMOUS_NAME = "Anonymous";
-
-    /**
      * The player that this state represents.
      */
     public final @Nonnull Player player;
 
     /**
-     * The name of the player that this state represents.
-     */
-    public final @Nonnull String name;
-
-    /**
      * The number of pieces that the player has yet to play.
      */
-    private int pieceCount;
+    public final int pieceCount;
 
     /**
      * The number of pieces that the player has taken off the board.
      */
-    private int score;
+    public final int score;
 
     /**
      * Instantiates a state for a player in a game.
      * @param player The player that this state represents.
-     * @param name The name of the player that this state represents.
      * @param pieceCount The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
      */
-    public PlayerState(@Nonnull Player player, @Nonnull String name, int pieceCount, int score) {
+    public PlayerState(@Nonnull Player player, int pieceCount, int score) {
         if (pieceCount < 0)
             throw new IllegalArgumentException("pieceCount must be at least 0. Not: " + pieceCount);
         if (score < 0)
             throw new IllegalArgumentException("score must be at least 0. Not: " + score);
 
         this.player = player;
-        this.name = name;
         this.pieceCount = pieceCount;
         this.score = score;
     }
 
     /**
-     * Instantiates a state for an anonymous player in a game.
-     * @param player The player that this state represents.
-     * @param pieceCount The number of pieces that the player has yet to play.
-     * @param score The number of pieces that the player has taken off the board.
+     * Creates a copy of this player state with a new piece count and score.
+     * @param newPieceCount The new piece count for the copied player state.
+     * @param newScore The new score for the copied player state.
+     * @return A copy of this player state with updated piece count and score.
      */
-    public PlayerState(@Nonnull Player player, int pieceCount, int score) {
-        this(player, ANONYMOUS_NAME, pieceCount, score);
+    public @Nonnull PlayerState copy(int newPieceCount, int newScore) {
+        return new PlayerState(player, newPieceCount, newScore);
     }
 
     /**
-     * Instantiates a state that is a copy of {@code template}.
-     * @param template Another player state to use as a template to copy from.
-     */
-    protected PlayerState(@Nonnull PlayerState template) {
-        this(template.player, template.name, template.pieceCount, template.score);
-    }
-
-    /**
-     * Creates an exact copy of this player state.
-     * @return An exact copy of this player state.
-     */
-    public @Nonnull PlayerState copy() {
-        return new PlayerState(this);
-    }
-
-    /**
-     * Produces a copy of the player state {@code state}, and guarantees
-     * that the copy is of the same type as {@code state}. This is used
-     * to allow custom PlayerState subclasses to be created that can be
-     * copied to be modified by rule sets.
-     * @param state The player state to copy.
+     * Copies the player state {@code original} using the provided copy function,
+     * and verifies that the copied player state is of the same type as the original.
+     * This is used to increase type safety when custom PlayerState
+     * subclasses are created.
+     * @param original The player state that has been copied.
+     * @param copyFn A function to copy the original player state.
      * @return A copy of the player state {@code state}.
-     * @param <S> The type of the player state that is being copied.
+     * @param <S> The type of the player state that has been copied.
      */
     @SuppressWarnings("unchecked")
-    public static <S extends PlayerState> @Nonnull S safeCopy(@Nonnull S state) {
-        PlayerState copy = state.copy();
-        if (!copy.getClass().equals(state.getClass())) {
+    public static <S extends PlayerState> @Nonnull S safeCopy(
+            @Nonnull S original,
+            @Nonnull Function<S, PlayerState> copyFn
+    ) {
+        PlayerState copy = copyFn.apply(original);
+        if (!copy.getClass().equals(original.getClass())) {
             throw new RuntimeException(
-                    "The copy() method of " + state.getClass() + " produced a different type of player state, " +
+                    "The copy() method of " + original.getClass() + " produced a different type of player state, " +
                     copy.getClass() + ". The class is likely missing on override for the copy method."
             );
         }
 
-        // Same class, so safe to cast.
+        // Same class, so probably safe to cast (generics of subclasses could be incorrect).
         return (S) copy;
     }
 
     /**
-     * Retrieves the number of pieces that this player has yet to play.
-     * @return The number of pieces that this player has yet to play.
+     * Generates a copy of this player state with a single piece subtracted from this player.
+     * @return A copy of this player state with a single piece subtracted from this player.
      */
-    public int getPieceCount() {
-        return pieceCount;
-    }
-
-    /**
-     * Retrieves the score of this player.
-     * @return The score of this player.
-     */
-    public int getScore() {
-        return score;
-    }
-
-    /**
-     * Subtract a single piece from this player.
-     */
-    public void subtractPiece() {
+    public @Nonnull PlayerState subtractPiece() {
         if (pieceCount <= 0)
             throw new IllegalStateException("This player has no pieces");
 
-        pieceCount -= 1;
+        return copy(pieceCount - 1, score);
     }
 
     /**
-     * Add a single piece to this player.
+     * Generates a copy of this player state with a single piece added to this player.
+     * @return A copy of this player state with a single piece added to this player.
      */
-    public void addPiece() {
-        pieceCount += 1;
+    public @Nonnull PlayerState addPiece() {
+        return copy(pieceCount + 1, score);
     }
 
     /**
-     * Add a single piece scored to this player.
+     * Generates a copy of this player state with a single piece added to the score of this player.
+     * @return A copy of this player state with a single piece added to the score of this player.
      */
-    public void scorePiece() {
-        score += 1;
+    public @Nonnull PlayerState scorePiece() {
+        return copy(pieceCount, score + 1);
     }
 
     @Override
     public int hashCode() {
-        return player.hashCode() ^ (37 * name.hashCode())
-                ^ (97 * Integer.hashCode(pieceCount)) ^ (137 * Integer.hashCode(score));
+        return player.hashCode() ^ (97 * Integer.hashCode(pieceCount)) ^ (137 * Integer.hashCode(score));
     }
 
     @Override
@@ -154,23 +117,20 @@ public class PlayerState {
             return false;
 
         PlayerState other = (PlayerState) obj;
-        return player == other.player && name.equals(other.name) &&
-                pieceCount == other.pieceCount && score == other.score;
+        return player == other.player && pieceCount == other.pieceCount && score == other.score;
     }
 
     @Override
     public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append(player.name).append(": ");
 
-        // Player name, with colour in brackets if necessary.
-        builder.append("Player: ").append(name);
-        if (!name.equals(player.name)) {
-            builder.append(" (").append(player.name).append(")");
+        builder.append(pieceCount).append(" Piece");
+        if (pieceCount != 1) {
+            builder.append("s");
         }
-        builder.append("\n");
 
-        builder.append("Pieces: ").append(pieceCount).append("\n");
-        builder.append("Score: ").append(score);
+        builder.append(", ").append(score).append(" Score");
         return builder.toString();
     }
 }

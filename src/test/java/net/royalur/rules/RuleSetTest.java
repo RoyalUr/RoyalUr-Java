@@ -81,22 +81,10 @@ public class RuleSetTest {
         PlayerState light = rules.generateNewPlayerState(Player.LIGHT);
         assertNotNull(light);
         assertEquals(Player.LIGHT, light.player);
-        assertEquals(PlayerState.ANONYMOUS_NAME, light.name);
 
         PlayerState dark = rules.generateNewPlayerState(Player.DARK);
         assertNotNull(dark);
         assertEquals(Player.DARK, dark.player);
-        assertEquals(PlayerState.ANONYMOUS_NAME, dark.name);
-
-        PlayerState namedLight = rules.generateNewPlayerState(Player.LIGHT, "Alice");
-        assertNotNull(namedLight);
-        assertEquals(Player.LIGHT, namedLight.player);
-        assertEquals("Alice", namedLight.name);
-
-        PlayerState namedDark = rules.generateNewPlayerState(Player.DARK, "Bob");
-        assertNotNull(namedDark);
-        assertEquals(Player.DARK, namedDark.player);
-        assertEquals("Bob", namedDark.name);
     }
 
     @ParameterizedTest

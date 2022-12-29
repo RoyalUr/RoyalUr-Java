@@ -185,8 +185,8 @@ public class JsonNotation extends Notation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(PLAYER_PIECES_KEY, playerState.getPieceCount());
-        generator.writeNumberField(PLAYER_SCORE_KEY, playerState.getScore());
+        generator.writeNumberField(PLAYER_PIECES_KEY, playerState.pieceCount);
+        generator.writeNumberField(PLAYER_SCORE_KEY, playerState.score);
     }
 
     /**

@@ -109,7 +109,7 @@ public abstract class SimpleRuleSet<
                 if (piece == null || piece.owner != player.player || piece.pathIndex != index)
                     continue;
 
-            } else if (player.getPieceCount() > 0) {
+            } else if (player.pieceCount > 0) {
                 // Introduce a piece to the board.
                 tile = null;
                 piece = null;
@@ -196,19 +196,18 @@ public abstract class SimpleRuleSet<
         // Apply the move to the player that made the move.
         S turnPlayer = state.getTurnPlayer();
         if (move.isIntroducingPiece() || move.isScoringPiece()) {
-            turnPlayer = PlayerState.safeCopy(turnPlayer);
             if (move.isIntroducingPiece()) {
-                turnPlayer.subtractPiece();
+                turnPlayer = PlayerState.safeCopy(turnPlayer, PlayerState::subtractPiece);
             }
             if (move.isScoringPiece()) {
-                turnPlayer.scorePiece();
+                turnPlayer = PlayerState.safeCopy(turnPlayer, PlayerState::scorePiece);
             }
         }
 
         // Apply the effects of the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
         if (move.capturesPiece()) {
-            otherPlayer.addPiece();
+            otherPlayer = PlayerState.safeCopy(otherPlayer, PlayerState::addPiece);
         }
 
         // Determine which player is which.
@@ -216,7 +215,7 @@ public abstract class SimpleRuleSet<
         S darkPlayer = (turnPlayer.player == Player.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
-        if (move.isScoringPiece() && turnPlayer.getScore() >= startingPieceCount)
+        if (move.isScoringPiece() && turnPlayer.score >= startingPieceCount)
             return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.turn));
 
         // Determine who's turn it will be in the next state.

@@ -65,6 +65,6 @@ public class WinGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "The player " + getWinner().name + " has won!";
+        return "The " + winner.lowerName + " player has won!";
     }
 }

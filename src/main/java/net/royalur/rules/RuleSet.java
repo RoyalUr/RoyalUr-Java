@@ -106,19 +106,9 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
     /**
      * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
-     * @return A player state for the player {@code player}.
-     */
-    public @Nonnull S generateNewPlayerState(@Nonnull Player player) {
-        return generateNewPlayerState(player, PlayerState.ANONYMOUS_NAME);
-    }
-
-    /**
-     * Generates the starting state for the {@code player} player.
-     * @param player The player to create the starting state for.
-     * @param name   The name of the player to create the state for.
      * @return A player state for the player {@code player} with name {@code name}.
      */
-    public abstract @Nonnull S generateNewPlayerState(@Nonnull Player player, @Nonnull String name);
+    public abstract @Nonnull S generateNewPlayerState(@Nonnull Player player);
 
     /**
      * Generates a random dice roll using the dice of this rule set.

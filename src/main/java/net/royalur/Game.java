@@ -70,31 +70,13 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
         GameState<P, S, R> state = getCurrentState();
         metadata.put("Rules", rules.getDescriptor());
-        metadata.put("Light", state.lightPlayer.name);
-        metadata.put("Dark", state.darkPlayer.name);
+//        metadata.put("Light", state.lightPlayer.name);
+//        metadata.put("Dark", state.darkPlayer.name);
 
         ZonedDateTime now = ZonedDateTime.now();
         metadata.put("Date", DateTimeFormatter.ofPattern(DATE_PATTERN).format(now));
         metadata.put("Time", DateTimeFormatter.ofPattern(TIME_PATTERN).format(now));
         metadata.put("TimeZone", DateTimeFormatter.ofPattern(TIMEZONE_PATTERN).format(now));
-    }
-
-    /**
-     * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
-     * @param rules The rules of the game.
-     * @param lightPlayerName The name of the light player.
-     * @param darkPlayerName The name of the dark player.
-     */
-    public Game(@Nonnull RuleSet<P, S, R> rules, @Nonnull String lightPlayerName, @Nonnull String darkPlayerName) {
-        this(
-                rules,
-                List.of(new WaitingForRollGameState<>(
-                        rules.generateEmptyBoard(),
-                        rules.generateNewPlayerState(Player.LIGHT, lightPlayerName),
-                        rules.generateNewPlayerState(Player.DARK, darkPlayerName),
-                        Player.LIGHT
-                ))
-        );
     }
 
     /**

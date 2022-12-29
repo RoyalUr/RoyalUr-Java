@@ -39,7 +39,7 @@ public class ConcreteSimpleRuleSet<R extends Roll> extends SimpleRuleSet<SimpleP
     }
 
     @Override
-    public @Nonnull PlayerState generateNewPlayerState(@Nonnull Player player, @Nonnull String name) {
-        return new PlayerState(player, name, startingPieceCount, 0);
+    public @Nonnull PlayerState generateNewPlayerState(@Nonnull Player player) {
+        return new PlayerState(player, startingPieceCount, 0);
     }
 }

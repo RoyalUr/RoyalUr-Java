@@ -32,6 +32,6 @@ public class WaitingForRollGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "Waiting for the player " + getTurnPlayer().name + " to roll the dice.";
+        return "Waiting for the " + turn.lowerName + " player to roll the dice.";
     }
 }

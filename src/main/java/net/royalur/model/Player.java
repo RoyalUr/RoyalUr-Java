@@ -23,9 +23,14 @@ public enum Player {
     public final int id;
 
     /**
-     * An English name for this player.
+     * An English name for this player, capitalised.
      */
     public final String name;
+
+    /**
+     * An English name for this player, in lower case.
+     */
+    public final String lowerName;
 
     /**
      * A constant character representing the player.
@@ -42,6 +47,7 @@ public enum Player {
     Player(int id, String name, char character) {
         this.id = id;
         this.name = name;
+        this.lowerName = name.toLowerCase();
         this.character = character;
     }
 
