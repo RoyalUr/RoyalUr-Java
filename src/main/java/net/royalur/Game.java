@@ -2,6 +2,7 @@ package net.royalur;
 
 import net.royalur.agent.Agent;
 import net.royalur.model.*;
+import net.royalur.model.identity.AnonymousPlayer;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleGame;
@@ -48,6 +49,16 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     private final @Nonnull Map<String, String> metadata;
 
     /**
+     * The identity of the light player.
+     */
+    public final @Nonnull PlayerIdentity lightIdentity;
+
+    /**
+     * The identity of the dark player.
+     */
+    public final @Nonnull PlayerIdentity darkIdentity;
+
+    /**
      * The states that have occurred so far in the game.
      * The last state in the list is the current state of the game.
      */
@@ -56,22 +67,30 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     /**
      * Instantiates a game of the Royal Game of Ur.
      * @param rules The set of rules that are being used for this game.
+     * @param lightIdentity The identity of the light player.
+     * @param darkIdentity The identity of the dark player.
      * @param states The states that have occurred so far in the game.
      */
-    public Game(@Nonnull RuleSet<P, S, R> rules, @Nonnull List<GameState<P, S, R>> states) {
+    public Game(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull PlayerIdentity lightIdentity,
+            @Nonnull PlayerIdentity darkIdentity,
+            @Nonnull List<GameState<P, S, R>> states
+    ) {
         if (states.isEmpty())
             throw new IllegalArgumentException("Games must have at least one state to play from");
 
         this.rules = rules;
         this.metadata = new LinkedHashMap<>();
+        this.lightIdentity = lightIdentity;
+        this.darkIdentity = darkIdentity;
         this.states = new ArrayList<>();
 
         addStates(states);
 
-        GameState<P, S, R> state = getCurrentState();
         metadata.put("Rules", rules.getDescriptor());
-//        metadata.put("Light", state.lightPlayer.name);
-//        metadata.put("Dark", state.darkPlayer.name);
+        metadata.put("Light", lightIdentity.getDisplayName());
+        metadata.put("Dark", darkIdentity.getDisplayName());
 
         ZonedDateTime now = ZonedDateTime.now();
         metadata.put("Date", DateTimeFormatter.ofPattern(DATE_PATTERN).format(now));
@@ -82,10 +101,16 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     /**
      * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
      * @param rules The rules of the game.
+     * @param lightIdentity The identity of the light player.
+     * @param darkIdentity The identity of the dark player.
      */
-    public Game(@Nonnull RuleSet<P, S, R> rules) {
+    public Game(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull PlayerIdentity lightIdentity,
+            @Nonnull PlayerIdentity darkIdentity
+    ) {
         this(
-                rules,
+                rules, lightIdentity, darkIdentity,
                 List.of(new WaitingForRollGameState<>(
                         rules.generateEmptyBoard(),
                         rules.generateNewPlayerState(Player.LIGHT),
@@ -93,6 +118,15 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
                         Player.LIGHT
                 ))
         );
+    }
+
+    /**
+     * Instantiates a game of the Royal Game of Ur that has not yet had any moves played,
+     * and that is played by anonymous players.
+     * @param rules The rules of the game.
+     */
+    public Game(@Nonnull RuleSet<P, S, R> rules) {
+        this(rules, new AnonymousPlayer(), new AnonymousPlayer());
     }
 
     /**

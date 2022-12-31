@@ -47,6 +47,21 @@ public class JsonNotation extends Notation {
     public static final @Nonnull String METADATA_KEY = "metadata";
 
     /**
+     * The key in the JSON for the identities of the player in the game.
+     */
+    public static final @Nonnull String PLAYER_IDENTITIES_KEY = "players";
+
+    /**
+     * The key in the JSON for whether an identity is anonymous.
+     */
+    public static final @Nonnull String IDENTITY_ANONYMOUS_KEY = "is_anonymous";
+
+    /**
+     * The key in the JSON for the name of an identity.
+     */
+    public static final @Nonnull String IDENTITY_NAME_KEY = "name";
+
+    /**
      * The key in the JSON for the list of actions played in the game.
      */
     public static final @Nonnull String ACTIONS_KEY = "actions";
@@ -453,6 +468,25 @@ public class JsonNotation extends Notation {
     }
 
     /**
+     * Writes the identity of a player to the JSON generator.
+     * @param identity The identity to write.
+     * @param <P> The type of pieces in the game.
+     * @param <S> The type of player state stored in the game.
+     * @param <R> The type of roll made in the game.
+     * @throws IOException If there is an error writing the JSON.
+     */
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writePlayerIdentity(
+            @Nonnull PlayerIdentity identity,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        generator.writeBooleanField(IDENTITY_ANONYMOUS_KEY, identity.isAnonymous());
+        if (identity.hasName()) {
+            generator.writeStringField(IDENTITY_NAME_KEY, identity.getName());
+        }
+    }
+
+    /**
      * Writes the game to the JSON generator.
      * @param game The game to write.
      * @param <P> The type of pieces in the game.
@@ -472,6 +506,26 @@ public class JsonNotation extends Notation {
         generator.writeObjectFieldStart(METADATA_KEY);
         try {
             writeMetadata(game, generator);
+        } finally {
+            generator.writeEndObject();
+        }
+
+        // Write the identities of the players in the game.
+        generator.writeObjectFieldStart(PLAYER_IDENTITIES_KEY);
+        try {
+            generator.writeObjectFieldStart(Player.LIGHT.name());
+            try {
+                writePlayerIdentity(game.lightIdentity, generator);
+            } finally {
+                generator.writeEndObject();
+            }
+
+            generator.writeObjectFieldStart(Player.DARK.name());
+            try {
+                writePlayerIdentity(game.darkIdentity, generator);
+            } finally {
+                generator.writeEndObject();
+            }
         } finally {
             generator.writeEndObject();
         }
