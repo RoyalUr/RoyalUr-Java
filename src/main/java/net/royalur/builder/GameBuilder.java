@@ -1,5 +1,6 @@
-package net.royalur;
+package net.royalur.builder;
 
+import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.identity.AnonymousPlayer;
 import net.royalur.model.path.AsebPathPair;
@@ -94,12 +95,30 @@ public class GameBuilder {
         );
 
         /**
+         * Copies this game builder with the shape of the board set to {@code boardType}.
+         * @param boardType The type of board shape to use for generated games.
+         * @return A copy of this game builder with the shape of the board set to {@code boardType}.
+         */
+        public @Nonnull SELF boardShape(@Nonnull BoardType boardType) {
+            return boardShape(boardType.create());
+        }
+
+        /**
          * Copies this game builder with the shape of the board set to {@code boardShape}.
          * @param boardShape The shape of the board to use for generated games.
          * @return A copy of this game builder with the shape of the board set to {@code boardShape}.
          */
         public @Nonnull SELF boardShape(@Nonnull BoardShape boardShape) {
             return copy(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+        }
+
+        /**
+         * Copies this game builder with the paths taken by each player set to {@code pathType}.
+         * @param pathType The type of paths to be taken by each player.
+         * @return A copy of this game builder with the paths taken by each player set to {@code pathType}.
+         */
+        public @Nonnull SELF paths(@Nonnull PathType pathType) {
+            return paths(pathType.create());
         }
 
         /**

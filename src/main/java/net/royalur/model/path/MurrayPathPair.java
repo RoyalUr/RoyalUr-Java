@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * The pair of paths proposed by Murray for the Royal Game of Ur.
+ * The paths proposed by Murray for the Royal Game of Ur.
  * <p>
  * Citation: H.J.R. Murray, A History of Board-games Other Than Chess,
  * Oxford University Press, Oxford, 1952.

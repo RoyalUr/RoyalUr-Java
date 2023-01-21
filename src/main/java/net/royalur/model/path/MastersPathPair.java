@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * The pair of paths proposed by Masters for the Royal Game of Ur.
+ * The paths proposed by Masters for the Royal Game of Ur.
  * <p>
  * Citation: J. Masters, The Royal Game of Ur &amp; The Game of 20 Squares (2021).
  * Available at

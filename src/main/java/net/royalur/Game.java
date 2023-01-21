@@ -1,12 +1,12 @@
 package net.royalur;
 
 import net.royalur.agent.Agent;
+import net.royalur.builder.GameBuilder;
 import net.royalur.model.*;
 import net.royalur.model.identity.AnonymousPlayer;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleGame;
-import net.royalur.rules.simple.SimplePiece;
 
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;

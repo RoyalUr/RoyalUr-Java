@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * The pair of paths proposed by Skiriuk for the Royal Game of Ur.
+ * The paths proposed by Skiriuk for the Royal Game of Ur.
  * <p>
  * Citation: D. Skiriuk, The rules of royal game of ur (2021). Available at
  * <a href="https://skyruk.livejournal.com/231444.html">
