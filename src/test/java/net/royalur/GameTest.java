@@ -23,8 +23,6 @@ public class GameTest {
         int actions = game.playAutonomously(light, dark);
         assertTrue(game.isFinished());
 
-        System.out.println(new JsonNotation().encodeGame(game));
-
         // The shortest possible game requires 72 actions.
         int winMinActions = (2 /* roll + move */) * (4 /* min. moves per piece */) * (7 /* pieces */);
         int loseMinActions = (2 /* zeroes rolled per piece scored */) * (7 /* pieces */);
