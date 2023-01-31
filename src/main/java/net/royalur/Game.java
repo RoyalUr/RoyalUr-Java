@@ -140,8 +140,8 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Generates a shallow copy of this game.
-     * @return A shallow copy of {@code this}.
+     * Generates a copy of this game.
+     * @return A copy of {@code this}.
      */
     public @Nonnull Game<P, S, R> copy() {
         return new Game<>(this);
