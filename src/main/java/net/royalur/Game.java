@@ -130,6 +130,24 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Instantiates a game of the Royal Game of Ur that is a copy of {@code game}.
+     * @param game The rules of the game.
+     */
+    private Game(@Nonnull Game<P, S, R> game) {
+        this(game.rules, game.lightIdentity, game.darkIdentity, game.states);
+        metadata.clear();
+        metadata.putAll(game.metadata);
+    }
+
+    /**
+     * Generates a shallow copy of this game.
+     * @return A shallow copy of {@code this}.
+     */
+    public @Nonnull Game<P, S, R> copy() {
+        return new Game<>(this);
+    }
+
+    /**
      * Sets the value of the metadata associated with the key {@code key} to {@code value}.
      * @param key   The key of the metadata item to be updated.
      * @param value The new value to be associated with the given metadata key.

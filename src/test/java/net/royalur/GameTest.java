@@ -1,19 +1,75 @@
 package net.royalur;
 
+import net.royalur.agent.DeterministicAgent;
 import net.royalur.agent.RandomAgent;
+import net.royalur.model.Player;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.notation.JsonNotation;
+import net.royalur.rules.simple.SimpleGame;
 import net.royalur.rules.simple.SimplePiece;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
+
+    @Test
+    public void testCopy() {
+        SimpleGame game = Game.createStandard();
+        assertNotNull(game);
+
+        Game<SimplePiece, PlayerState, Roll> copy = game.copy();
+        assertNotNull(copy);
+        assertNotSame(game, copy);
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertEquals(game.getMetadata(), copy.getMetadata());
+        assertEquals(game.getStates(), copy.getStates());
+
+        DeterministicAgent<SimplePiece, PlayerState, Roll> agent = new DeterministicAgent<>();
+
+        game.rollDice(2);
+        agent.playTurn(game, Player.LIGHT);
+
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertEquals(game.getMetadata(), copy.getMetadata());
+        assertNotEquals(game.getStates(), copy.getStates());
+
+        copy = game.copy();
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertEquals(game.getMetadata(), copy.getMetadata());
+        assertEquals(game.getStates(), copy.getStates());
+
+        copy.rollDice(2);
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertEquals(game.getMetadata(), copy.getMetadata());
+        assertNotEquals(game.getStates(), copy.getStates());
+
+        copy = game.copy();
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertEquals(game.getMetadata(), copy.getMetadata());
+        assertEquals(game.getStates(), copy.getStates());
+
+        copy.putMetadata("TEST", "Some data");
+        assertEquals(game.rules, copy.rules);
+        assertEquals(game.lightIdentity, copy.lightIdentity);
+        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertNotEquals(game.getMetadata(), copy.getMetadata());
+        assertEquals(game.getStates(), copy.getStates());
+    }
 
     @RepeatedTest(3)
     public void testStandardBellGameRandom() {
