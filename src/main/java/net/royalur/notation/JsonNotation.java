@@ -2,14 +2,11 @@ package net.royalur.notation;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.core.StreamWriteFeature;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.standard.StandardPiece;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -114,7 +111,7 @@ public class JsonNotation extends Notation {
     /**
      * The key in the JSON for the index of a piece on its path.
      * This is only used for pieces that have an index stored with
-     * them, such as {@link net.royalur.rules.simple.SimplePiece}.
+     * them, such as {@link StandardPiece}.
      */
     public static final @Nonnull String PIECE_INDEX_KEY = "index";
 
@@ -313,7 +310,7 @@ public class JsonNotation extends Notation {
     ) throws IOException {
 
         // Metadata that may be useful for querying or analytics.
-        generator.writeBooleanField(MOVE_LANDS_ON_ROSETTE_KEY, move.isLandingOnRosette(rules.boardShape));
+        generator.writeBooleanField(MOVE_LANDS_ON_ROSETTE_KEY, move.isLandingOnRosette(rules.getBoardShape()));
 
         // Write the source piece being moved.
         if (!move.isIntroducingPiece()) {

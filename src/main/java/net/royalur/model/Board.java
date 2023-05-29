@@ -149,6 +149,27 @@ public class Board<P extends Piece> {
         return previous;
     }
 
+    /**
+     * Counts the number of pieces that are on the board for {@code player}.
+     * @param player The player to count the pieces of.
+     * @return The number of pieces on the board for the given player.
+     */
+    public int countPieces(@Nonnull Player player) {
+        int totalPieces = 0;
+        for (int ix = 0; ix < width; ++ix) {
+            for (int iy = 0; iy < height; ++iy) {
+                if (!contains(ix, iy))
+                    continue;
+
+                Piece piece = get(ix, iy);
+                if (piece != null && piece.owner == player) {
+                    totalPieces += 1;
+                }
+            }
+        }
+        return totalPieces;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == null || !obj.getClass().equals(getClass()))

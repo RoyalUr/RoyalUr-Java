@@ -1,4 +1,4 @@
-package net.royalur.rules.simple;
+package net.royalur.rules.standard;
 
 import net.royalur.model.*;
 import net.royalur.model.path.AsebPathPair;
@@ -6,7 +6,6 @@ import net.royalur.model.path.BellPathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.rules.Dice;
-import net.royalur.rules.StandardDice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,13 +20,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SimpleRuleSetTest {
+public class StandardRuleSetTest {
 
     public static class NamedSimpleRuleSet {
         public final @Nonnull String name;
-        public final @Nonnull SimpleRuleSet<SimplePiece, PlayerState, Roll> rules;
+        public final @Nonnull StandardRuleSet<StandardPiece, PlayerState, Roll> rules;
 
-        public NamedSimpleRuleSet(@Nonnull String name, @Nonnull SimpleRuleSet<SimplePiece, PlayerState, Roll> rules) {
+        public NamedSimpleRuleSet(@Nonnull String name, @Nonnull StandardRuleSet<StandardPiece, PlayerState, Roll> rules) {
             this.name = name;
             this.rules = rules;
         }
@@ -42,52 +41,58 @@ public class SimpleRuleSetTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(new NamedSimpleRuleSet("Standard-Bell", new ConcreteSimpleRuleSet<>(
+                    Arguments.of(new NamedSimpleRuleSet("Standard-Bell", new StandardRuleSet<>(
                             new StandardBoardShape(),
                             new BellPathPair(),
                             new StandardDice(),
-                            7
+                            new StandardPieceProvider(),
+                            new StandardPlayerStateProvider(7)
                     ))),
-                    Arguments.of(new NamedSimpleRuleSet("Standard-Aseb", new ConcreteSimpleRuleSet<>(
+                    Arguments.of(new NamedSimpleRuleSet("Standard-Aseb", new StandardRuleSet<>(
                             new AsebBoardShape(),
                             new AsebPathPair(),
                             new StandardDice(),
-                            5
+                            new StandardPieceProvider(),
+                            new StandardPlayerStateProvider(5)
                     )))
             );
         }
     }
 
     @Test
-    public void testNew() {
+    public void testIncompatibleBoardShapeAndPaths() {
         Dice<Roll> dice = new StandardDice();
-        int startingPieceCount = 7;
+        StandardPieceProvider pieceProvider = new StandardPieceProvider();
+        StandardPlayerStateProvider playerStateProvider = new StandardPlayerStateProvider(7);
 
-        assertThrows(IllegalArgumentException.class, () -> new ConcreteSimpleRuleSet<>(
-                new AsebBoardShape(), new BellPathPair(), dice, startingPieceCount
+        assertThrows(IllegalArgumentException.class, () -> new StandardRuleSet<>(
+                new AsebBoardShape(), new BellPathPair(), dice, pieceProvider, playerStateProvider
         ));
-        assertThrows(IllegalArgumentException.class, () -> new ConcreteSimpleRuleSet<>(
-                new StandardBoardShape(), new AsebPathPair(), dice, startingPieceCount
+        assertThrows(IllegalArgumentException.class, () -> new StandardRuleSet<>(
+                new StandardBoardShape(), new AsebPathPair(), dice, pieceProvider, playerStateProvider
         ));
     }
 
     @ParameterizedTest
     @ArgumentsSource(SimpleRuleSetProvider.class)
     public void testFindAvailableMoves_IntroducingPieces(NamedSimpleRuleSet nrs) {
-        SimpleRuleSet<SimplePiece, PlayerState, Roll> rules = nrs.rules;
-        Board<SimplePiece> board = rules.generateEmptyBoard();
-        PlayerState light = rules.generateNewPlayerState(Player.LIGHT);
-        PlayerState dark = rules.generateNewPlayerState(Player.DARK);
+        StandardRuleSet<StandardPiece, PlayerState, Roll> rules = nrs.rules;
+        GameState<StandardPiece, PlayerState, Roll> initialState = rules.generateInitialGameState();
+        Board<StandardPiece> board = initialState.board;
+        PlayerState light = initialState.lightPlayer;
+        PlayerState dark = initialState.darkPlayer;
 
-        for (int roll = 1; roll < rules.dice.getMaxRollValue(); ++roll) {
+        int maxRoll = rules.getDice().getMaxRollValue();
+        PathPair paths = rules.getPaths();
+        for (int roll = 1; roll < maxRoll; ++roll) {
             for (PlayerState playerState : new PlayerState[] {light, dark}) {
                 Player player = playerState.player;
                 assertEquals(
                         List.of(new Move<>(
                                 player,
                                 null, null,
-                                rules.paths.get(player).get(roll - 1),
-                                new SimplePiece(player, roll - 1),
+                                paths.get(player).get(roll - 1),
+                                new StandardPiece(player, roll - 1),
                                 null
                         )),
                         rules.findAvailableMoves(board, playerState, Roll.of(roll))

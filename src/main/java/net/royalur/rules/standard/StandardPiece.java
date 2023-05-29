@@ -1,4 +1,4 @@
-package net.royalur.rules.simple;
+package net.royalur.rules.standard;
 
 import net.royalur.model.Piece;
 import net.royalur.model.Player;
@@ -7,10 +7,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A piece used by the simple rule set, which includes its position in its
- * path as well as its owner. This is required when paths overlap themselves.
+ * A piece that does not store unique information, and which does not support
+ * stacking. Stores the position of the piece on its path and its owner.
  */
-public class SimplePiece extends Piece {
+public class StandardPiece extends Piece {
 
     /**
      * The index of the piece on its owner player's path.
@@ -22,7 +22,7 @@ public class SimplePiece extends Piece {
      * @param owner The player that owns the piece.
      * @param pathIndex The index of this piece on its owner's path around the board.
      */
-    public SimplePiece(@Nonnull Player owner, int pathIndex) {
+    public StandardPiece(@Nonnull Player owner, int pathIndex) {
         super(owner);
 
         if (pathIndex < 0)
@@ -51,7 +51,7 @@ public class SimplePiece extends Piece {
         if (obj == null || !obj.getClass().equals(getClass()))
             return false;
 
-        SimplePiece other = (SimplePiece) obj;
+        StandardPiece other = (StandardPiece) obj;
         return owner == other.owner && pathIndex == other.pathIndex;
     }
 

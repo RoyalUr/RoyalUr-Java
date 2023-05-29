@@ -6,7 +6,7 @@ import net.royalur.model.*;
 import net.royalur.model.identity.AnonymousPlayer;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.simple.SimpleGame;
+import net.royalur.rules.standard.StandardGame;
 
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
@@ -88,7 +88,9 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
         addStates(states);
 
-        metadata.put("Rules", rules.getDescriptor());
+        // TODO : Replacement for this with new ID system.
+//        metadata.put("Rules", rules.getDescriptor());
+
         metadata.put("Light", lightIdentity.getDisplayName());
         metadata.put("Dark", darkIdentity.getDisplayName());
 
@@ -111,12 +113,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     ) {
         this(
                 rules, lightIdentity, darkIdentity,
-                List.of(new WaitingForRollGameState<>(
-                        rules.generateEmptyBoard(),
-                        rules.generateNewPlayerState(Player.LIGHT),
-                        rules.generateNewPlayerState(Player.DARK),
-                        Player.LIGHT
-                ))
+                List.of(rules.generateInitialGameState())
         );
     }
 
@@ -454,7 +451,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The value of the dice that were rolled.
      */
     public @Nonnull R rollDice() {
-        R roll = rules.rollDice();
+        R roll = rules.getDice().roll();
         rollDice(roll);
         return roll;
     }
@@ -465,7 +462,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The value of the dice that were rolled.
      */
     public @Nonnull R rollDice(int value) {
-        R roll = rules.rollDice(value);
+        R roll = rules.getDice().roll(value);
         rollDice(roll);
         return roll;
     }
@@ -525,7 +522,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     public void makeMove(@Nonnull Tile tile) {
         PlayableGameState<P, S, R> state = getCurrentPlayableState();
         if (!state.board.contains(tile)) {
-            if (tile.equals(rules.paths.get(state.turn).startTile)) {
+            if (tile.equals(rules.getPaths().get(state.turn).startTile)) {
                 makeMoveIntroducingPiece();
                 return;
             }
@@ -558,14 +555,9 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
             actions += 1;
             S turnPlayer = getTurnPlayer();
             switch (turnPlayer.player) {
-                case LIGHT:
-                    light.playTurn(this, Player.LIGHT);
-                    break;
-                case DARK:
-                    dark.playTurn(this, Player.DARK);
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown player " + turnPlayer.player);
+                case LIGHT -> light.playTurn(this, Player.LIGHT);
+                case DARK -> dark.playTurn(this, Player.DARK);
+                default -> throw new IllegalStateException("Unknown player " + turnPlayer.player);
             }
         }
         return actions;
@@ -585,7 +577,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * and seven starting pieces per player.
      * @return A standard game.
      */
-    public static @Nonnull SimpleGame createStandard() {
+    public static @Nonnull StandardGame createStandard() {
         return builder().standard().build();
     }
 
@@ -594,7 +586,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * the Aseb paths, the standard dice, and five starting pieces per player.
      * @return A game of Aseb.
      */
-    public static @Nonnull SimpleGame createAseb() {
+    public static @Nonnull StandardGame createAseb() {
         return builder().aseb().build();
     }
 }

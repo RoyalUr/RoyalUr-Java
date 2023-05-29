@@ -122,14 +122,14 @@ public class RGN extends Notation {
 
         // Get the origin tile.
         if (move.isIntroducingPiece()) {
-            from = rules.paths.get(move.player).startTile;
+            from = rules.getPaths().get(move.player).startTile;
         } else {
             from = move.getSource();
         }
 
         // Get the destination tile.
         if (move.isScoringPiece()) {
-            to = rules.paths.get(move.player).endTile;
+            to = rules.getPaths().get(move.player).endTile;
         } else {
             to = move.getDestination();
         }
@@ -152,7 +152,7 @@ public class RGN extends Notation {
         to.encodeY(builder);
 
         // Mark if a rosette was reached.
-        if (move.isLandingOnRosette(rules.boardShape)) {
+        if (move.isLandingOnRosette(rules.getBoardShape())) {
             builder.append("+");
         }
     }

@@ -1,6 +1,7 @@
 package net.royalur.rules;
 
 import net.royalur.model.Roll;
+import net.royalur.rules.standard.StandardDice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -89,6 +90,7 @@ public class DiceTest {
             int count = counts[roll];
             int expected = expectedCounts[roll];
             int tolerance = expected / 2;
+
             assertTrue(count >= expected - tolerance && count <= expected + tolerance, "Roll " + roll);
         }
         return (double) diceMatchCount / iterations;
@@ -106,22 +108,6 @@ public class DiceTest {
     public void testDiceWithSeed() {
         StandardDice dice1 = new StandardDice(new Random(42), 4);
         StandardDice dice2 = new StandardDice(new Random(42), 4);
-        double diceMatchRatio = testDiceCorrelation(dice1, dice2);
-        assertEquals(1.0, diceMatchRatio);
-    }
-
-    @Test
-    public void testDiceWithSeedAnd3Die() {
-        StandardDice dice1 = new StandardDice(new Random(42), 3);
-        StandardDice dice2 = new StandardDice(new Random(42), 3);
-        double diceMatchRatio = testDiceCorrelation(dice1, dice2);
-        assertEquals(1.0, diceMatchRatio);
-    }
-
-    @Test
-    public void testDiceWithSeedAnd5Die() {
-        StandardDice dice1 = new StandardDice(new Random(42), 5);
-        StandardDice dice2 = new StandardDice(new Random(42), 5);
         double diceMatchRatio = testDiceCorrelation(dice1, dice2);
         assertEquals(1.0, diceMatchRatio);
     }

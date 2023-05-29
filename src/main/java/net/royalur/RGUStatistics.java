@@ -7,7 +7,7 @@ import net.royalur.model.path.BellPathPair;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.rules.simple.SimplePiece;
+import net.royalur.rules.standard.StandardPiece;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -35,12 +35,12 @@ public class RGUStatistics {
      * @return Statistics about the game that was played between two random agents.
      */
     private @Nonnull GameStats testRandomAgentActions(
-            @Nonnull Supplier<Game<SimplePiece, PlayerState, Roll>> gameGenerator
+            @Nonnull Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator
     ) {
 
-        Game<SimplePiece, PlayerState, Roll> game = gameGenerator.get();
-        RandomAgent<SimplePiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<SimplePiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<StandardPiece, PlayerState, Roll> game = gameGenerator.get();
+        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
         game.playAutonomously(light, dark);
         return GameStats.gather(game);
     }
@@ -50,16 +50,16 @@ public class RGUStatistics {
      */
     public void testRandomAgentActions() {
         int tests = 10_000;
-        List<Supplier<Game<SimplePiece, PlayerState, Roll>>> generators = List.of(
+        List<Supplier<Game<StandardPiece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().standard().paths(new BellPathPair()).build(),
                 () -> Game.builder().standard().paths(new MastersPathPair()).build(),
                 () -> Game.builder().standard().paths(new SkiriukPathPair()).build(),
                 () -> Game.builder().standard().paths(new MurrayPathPair()).build(),
                 () -> Game.builder().aseb().build()
         );
-        for (Supplier<Game<SimplePiece, PlayerState, Roll>> gameGenerator : generators) {
-            Game<SimplePiece, PlayerState, Roll> sample = gameGenerator.get();
-            String desc = sample.getBoard().shape.getIdentifier() + ", " + sample.rules.paths.getIdentifier();
+        for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
+            Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
+            String desc = sample.getBoard().shape.getIdentifier() + ", " + sample.rules.getPaths().getIdentifier();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {

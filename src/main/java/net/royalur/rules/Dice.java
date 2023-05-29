@@ -17,12 +17,6 @@ public interface Dice<R extends Roll> {
     int getMaxRollValue();
 
     /**
-     * Gets an identifier that can be used to uniquely identify this type of dice.
-     * @return An identifier that can be used to uniquely identify this type of dice.
-     */
-    @Nonnull String getIdentifier();
-
-    /**
      * Generates a random roll using this dice.
      * @return A random roll of this dice.
      */

@@ -1,6 +1,7 @@
-package net.royalur.rules;
+package net.royalur.rules.standard;
 
 import net.royalur.model.Roll;
+import net.royalur.rules.Dice;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -11,11 +12,6 @@ import java.util.Random;
  * Dice are not thread safe.
  */
 public class StandardDice implements Dice<Roll> {
-
-    /**
-     * The identifier given to the standard dice to differentiate it from other dice.
-     */
-    public static final String ID = "Standard";
 
     /**
      * The source of randomness used to generate dice rolls.
@@ -53,11 +49,6 @@ public class StandardDice implements Dice<Roll> {
     @Override
     public int getMaxRollValue() {
         return numDie;
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
     }
 
     @Override

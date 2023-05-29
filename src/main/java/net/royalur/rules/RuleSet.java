@@ -1,13 +1,10 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
-import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
-import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,115 +13,43 @@ import java.util.List;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends Roll> {
+public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
-     * The shape of the game board.
+     * Gets the shape of the board used in this rule set.
+     * @return The shape of the game board.
      */
-    public final @Nonnull BoardShape boardShape;
+    @Nonnull BoardShape getBoardShape();
 
     /**
-     * The paths that the players must take around the board.
+     * Gets the paths that the players must take around the board.
+     * @return The paths that players must take around the board.
      */
-    public final @Nonnull PathPair paths;
+    @Nonnull PathPair getPaths();
 
     /**
-     * The dice that are used to generate dice rolls.
+     * Gets the dice that are used to generate dice rolls.
+     * @return The dice that are used to generate dice rolls.
      */
-    public final @Nonnull Dice<R> dice;
+    @Nonnull Dice<R> getDice();
 
     /**
-     * Instantiates a set of rules to be used by a game of the Royal Game of Ur.
-     * @param boardShape The shape of the game board.
-     * @param paths      The paths that the players must take around the board.
-     * @param dice       The dice that are used to generate dice rolls.
+     * Gets the provider of piece manipulations.
+     * @return The provider of making piece changes.
      */
-    protected RuleSet(
-            @Nonnull BoardShape boardShape,
-            @Nonnull PathPair paths,
-            @Nonnull Dice<R> dice
-    ) {
-        if (!boardShape.isCompatible(paths.lightPath)) {
-            throw new IllegalArgumentException(
-                    "The " + paths.getIdentifier() + " paths are not compatible with the " +
-                            boardShape.getIdentifier() + " board shape"
-            );
-        }
-        this.boardShape = boardShape;
-        this.paths = paths;
-        this.dice = dice;
-    }
+    @Nonnull PieceProvider<P> getPieceProvider();
 
     /**
-     * Generates an identifier to identify this set of rules.
-     * This does not include identifying the board shape, path, or dice used.
-     * @return An identifier to identify this set of rules.
+     * Gets the provider of player state manipulations.
+     * @return The provider of making player state changes.
      */
-    public @Nonnull String getIdentifier() {
-        throw new UnsupportedOperationException("This rule set does not have an identifier (" + getClass() + ")");
-    }
+    @Nonnull PlayerStateProvider<S> getPlayerStateProvider();
 
     /**
-     * Gets a descriptor that can be used to uniquely identify these rules,
-     * the board shape, the path, and the dice used.
-     * @return A descriptor to describe these rules, the board shape, the path,
-     *         and the dice used.
+     * Generates the initial state for a game.
+     * @return The initial state for a game.
      */
-    public @Nonnull String getDescriptor() {
-        // Get the identifiers of the rules, board shape, paths, and dice.
-        String rulesId = getIdentifier();
-        String shapeId = boardShape.getIdentifier();
-        String pathsId = paths.getIdentifier();
-        String diceId = dice.getIdentifier();
-
-        // Conditionally exclude IDs if they are the most common 'default'.
-        List<String> components = new ArrayList<>();
-        components.add(pathsId);
-        if (!SimpleRuleSet.ID.equals(rulesId)) {
-            components.add(rulesId + " Rules");
-        }
-        if (!shapeId.equals(pathsId) && !StandardBoardShape.ID.equals(shapeId)) {
-            components.add(shapeId + " Board Shape");
-        }
-        if (!StandardDice.ID.equals(diceId)) {
-            components.add(diceId + " Dice");
-        }
-
-        // Add it all together.
-        return String.join(", ", components);
-    }
-
-    /**
-     * Generates an empty board of the right shape to use to play a game using this rule set.
-     * @return An empty board to use to play a game using this rule set.
-     */
-    public @Nonnull Board<P> generateEmptyBoard() {
-        return new Board<>(boardShape);
-    }
-
-    /**
-     * Generates the starting state for the {@code player} player.
-     * @param player The player to create the starting state for.
-     * @return A player state for the player {@code player} with name {@code name}.
-     */
-    public abstract @Nonnull S generateNewPlayerState(@Nonnull Player player);
-
-    /**
-     * Generates a random dice roll using the dice of this rule set.
-     * @return A random dice roll.
-     */
-    public @Nonnull R rollDice() {
-        return dice.roll();
-    }
-
-    /**
-     * Generates a roll of the dice of value {@code value} using the dice of this rule set.
-     * @param value The value of the dice to roll.
-     * @return A roll of the dice of value {@code value}.
-     */
-    public @Nonnull R rollDice(int value) {
-        return dice.roll(value);
-    }
+    @Nonnull GameState<P, S, R> generateInitialGameState();
 
     /**
      * Finds all available moves from the current state of the board and the player,
@@ -134,7 +59,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      * @param roll The roll that was made. Must be non-zero.
      * @return A list of all the available moves from the position.
      */
-    public abstract @Nonnull List<Move<P>> findAvailableMoves(
+    @Nonnull List<Move<P>> findAvailableMoves(
             @Nonnull Board<P> board, @Nonnull S player, @Nonnull R roll);
 
     /**
@@ -149,7 +74,7 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> applyRoll(
+    @Nonnull List<GameState<P, S, R>> applyRoll(
             @Nonnull WaitingForRollGameState<P, S, R> state, @Nonnull R roll);
 
     /**
@@ -168,15 +93,6 @@ public abstract class RuleSet<P extends Piece, S extends PlayerState, R extends 
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> applyMove(
+    @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state, @Nonnull Move<P> move);
-
-    @Override
-    public @Nonnull String toString() {
-        try {
-            return getIdentifier() + " Rules";
-        } catch (UnsupportedOperationException e) {
-            return "Unknown Rules";
-        }
-    }
 }

@@ -1,8 +1,10 @@
-package net.royalur.rules.simple;
+package net.royalur.rules.standard;
 
 import net.royalur.model.*;
 import net.royalur.model.state.*;
 import net.royalur.rules.Dice;
+import net.royalur.rules.PieceProvider;
+import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
 
 import javax.annotation.Nonnull;
@@ -17,63 +19,104 @@ import java.util.List;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public abstract class SimpleRuleSet<
-        P extends SimplePiece,
+public class StandardRuleSet<
+        P extends StandardPiece,
         S extends PlayerState,
         R extends Roll
-> extends RuleSet<P, S, R> {
+> implements RuleSet<P, S, R> {
 
     /**
-     * The identifier given to the simple rules.
+     * The shape of the game board.
      */
-    public static final String ID = "Simple";
+    private final @Nonnull BoardShape boardShape;
 
     /**
-     * The number of pieces that each player starts with.
+     * The paths that each player must take around the board.
      */
-    public final int startingPieceCount;
+    private final @Nonnull PathPair paths;
+
+    /**
+     * The dice that are used to generate dice rolls.
+     */
+    private final @Nonnull Dice<R> dice;
+
+    /**
+     * Provides the manipulation of piece values.
+     */
+    private final @Nonnull PieceProvider<P> pieceProvider;
+
+    /**
+     * Provides the manipulation of player state values.
+     */
+    private final @Nonnull PlayerStateProvider<S> playerStateProvider;
 
     /**
      * Instantiates a simple rule set for the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
      * @param dice The dice that are used to generate dice rolls.
-     * @param startingPieceCount The number of pieces that each player starts with.
+     * @param pieceProvider Provides the manipulation of piece values.
+     * @param playerStateProvider Provides the manipulation of player states.
      */
-    public SimpleRuleSet(
+    public StandardRuleSet(
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
             @Nonnull Dice<R> dice,
-            int startingPieceCount
+            @Nonnull PieceProvider<P> pieceProvider,
+            @Nonnull PlayerStateProvider<S> playerStateProvider
     ) {
-        super(boardShape, paths, dice);
+        if (!boardShape.isCompatible(paths.lightPath)) {
+            throw new IllegalArgumentException(
+                    "The " + paths.getIdentifier() + " paths are not compatible with the " +
+                            boardShape.getIdentifier() + " board shape"
+            );
+        }
 
-        if (startingPieceCount <= 0)
-            throw new IllegalArgumentException("startingPieces must be at least 1, not " + startingPieceCount);
-
-        this.startingPieceCount = startingPieceCount;
+        this.boardShape = boardShape;
+        this.paths = paths;
+        this.dice = dice;
+        this.pieceProvider = pieceProvider;
+        this.playerStateProvider = playerStateProvider;
     }
 
     @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
+    public @Nonnull BoardShape getBoardShape() {
+        return boardShape;
+    }
+
+    @Override
+    public @Nonnull PathPair getPaths() {
+        return paths;
+    }
+
+    @Override
+    public @Nonnull Dice<R> getDice() {
+        return dice;
+    }
+
+    @Override
+    public @Nonnull PieceProvider<P> getPieceProvider() {
+        return pieceProvider;
+    }
+
+    @Override
+    public @Nonnull PlayerStateProvider<S> getPlayerStateProvider() {
+        return playerStateProvider;
     }
 
     /**
-     * Generates a new piece to be introduced to the board.
-     * @param owner The owner of the new piece.
-     * @param newPathIndex The destination index of the piece in the player's path.
-     * @return The new piece that may be introduced to the board.
+     * Generates the initial state for a game.
+     * @return The initial state for a game.
      */
-    public abstract @Nonnull P createNewPiece(@Nonnull Player owner, int newPathIndex);
-
-    /**
-     * Generates a piece that has been moved from another tile on the board.
-     * @param fromPiece The piece that will be moved.
-     * @param newPathIndex The destination index of the piece in the player's path.
-     * @return The new piece to be placed on the board.
-     */
-    public abstract @Nonnull P createMovedPiece(@Nonnull P fromPiece, int newPathIndex);
+    @Override
+    public @Nonnull GameState<P, S, R> generateInitialGameState() {
+        return new WaitingForRollGameState<>(
+                new Board<>(boardShape),
+                playerStateProvider.create(Player.LIGHT),
+                playerStateProvider.create(Player.DARK),
+                Player.LIGHT
+        );
+    }
 
     @Override
     public @Nonnull List<Move<P>> findAvailableMoves(
@@ -135,9 +178,9 @@ public abstract class SimpleRuleSet<
             // Generate the move.
             P movedPiece;
             if (index >= 0) {
-                movedPiece = createMovedPiece(piece, destPathIndex);
+                movedPiece = pieceProvider.createMoved(piece, destPathIndex);
             } else {
-                movedPiece = createNewPiece(player.player, destPathIndex);
+                movedPiece = pieceProvider.createIntroduced(player.player, destPathIndex);
             }
             moves.add(new Move<>(player.player, tile, piece, dest, movedPiece, destPiece));
         }
@@ -197,17 +240,17 @@ public abstract class SimpleRuleSet<
         S turnPlayer = state.getTurnPlayer();
         if (move.isIntroducingPiece() || move.isScoringPiece()) {
             if (move.isIntroducingPiece()) {
-                turnPlayer = PlayerState.safeCopy(turnPlayer, PlayerState::subtractPiece);
+                turnPlayer = playerStateProvider.applyPiecesChange(turnPlayer, -1);
             }
             if (move.isScoringPiece()) {
-                turnPlayer = PlayerState.safeCopy(turnPlayer, PlayerState::scorePiece);
+                turnPlayer = playerStateProvider.applyScoreChange(turnPlayer, 1);
             }
         }
 
         // Apply the effects of the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
         if (move.capturesPiece()) {
-            otherPlayer = PlayerState.safeCopy(otherPlayer, PlayerState::addPiece);
+            otherPlayer = playerStateProvider.applyPiecesChange(otherPlayer, 1);
         }
 
         // Determine which player is which.
@@ -215,7 +258,7 @@ public abstract class SimpleRuleSet<
         S darkPlayer = (turnPlayer.player == Player.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
-        if (move.isScoringPiece() && turnPlayer.score >= startingPieceCount)
+        if (move.isScoringPiece() && turnPlayer.pieceCount <= 0 && board.countPieces(turnPlayer.player) <= 0)
             return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.turn));
 
         // Determine who's turn it will be in the next state.

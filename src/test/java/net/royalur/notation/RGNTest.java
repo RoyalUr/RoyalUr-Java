@@ -24,15 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RGNTest {
 
     public static class ProvidedRules implements Arguments {
+        public final @Nonnull String name;
         public final @Nonnull RuleSet<?, ?, ?> rules;
 
-        public ProvidedRules(@Nonnull RuleSet<?, ?, ?> rules) {
+        public ProvidedRules(@Nonnull String name, @Nonnull RuleSet<?, ?, ?> rules) {
+            this.name = name;
             this.rules = rules;
         }
 
         @Override
         public @Nonnull String toString() {
-            return rules.getDescriptor();
+            return name;
         }
 
         @Override
@@ -43,15 +45,26 @@ public class RGNTest {
 
     public static class RulesProvider implements ArgumentsProvider {
         public static @Nonnull List<ProvidedRules> get() {
-            List<RuleSet<?, ?, ?>> rules = new ArrayList<>();
-            rules.add(Game.builder().simpleRules().buildRules());
-            rules.add(Game.builder().standard().buildRules());
-            rules.add(Game.builder().standard().paths(new BellPathPair()).buildRules());
-            rules.add(Game.builder().standard().paths(new MastersPathPair()).buildRules());
-            rules.add(Game.builder().standard().paths(new MurrayPathPair()).buildRules());
-            rules.add(Game.builder().standard().paths(new SkiriukPathPair()).buildRules());
-            rules.add(Game.builder().aseb().buildRules());
-            return rules.stream().map(ProvidedRules::new).collect(Collectors.toList());
+            List<ProvidedRules> rules = new ArrayList<>();
+            rules.add(new ProvidedRules(
+                    "Standard", Game.builder().standard().buildRules()
+            ));
+            rules.add(new ProvidedRules(
+                    "Bell", Game.builder().standard().paths(new BellPathPair()).buildRules()
+            ));
+            rules.add(new ProvidedRules(
+                    "Masters", Game.builder().standard().paths(new MastersPathPair()).buildRules()
+            ));
+            rules.add(new ProvidedRules(
+                    "Murray", Game.builder().standard().paths(new MurrayPathPair()).buildRules()
+            ));
+            rules.add(new ProvidedRules(
+                    "Skiriuk", Game.builder().standard().paths(new SkiriukPathPair()).buildRules()
+            ));
+            rules.add(new ProvidedRules(
+                    "Aseb", Game.builder().aseb().buildRules()
+            ));
+            return rules;
         }
 
         @Override
@@ -71,7 +84,7 @@ public class RGNTest {
 
         @Override
         public @Nonnull String toString() {
-            return name + " (" + game.rules.getDescriptor() + ")";
+            return name;
         }
 
         @Override
@@ -86,12 +99,12 @@ public class RGNTest {
          * Light always rolls 1, dark always rolls 0.
          */
         private static <P extends Piece, S extends PlayerState, R extends Roll> void
-        playRiggedGame(@Nonnull Game<P, S, R> game) {
+        playRiggedGame(@Nonnull String name, @Nonnull Game<P, S, R> game) {
 
             while (!game.isFinished()) {
                 Player player = game.getTurnPlayer().player;
                 switch (player) {
-                    case LIGHT:
+                    case LIGHT -> {
                         if (game.isWaitingForRoll()) {
                             game.rollDice(1);
 
@@ -101,7 +114,7 @@ public class RGNTest {
                                 assert game.findAvailableMoves().size() > 0;
                             } catch (Exception e) {
                                 System.err.println("Failed due to deadlock in the following state:");
-                                System.err.println("* Rules: " + game.rules.getDescriptor());
+                                System.err.println("* Name: " + name);
                                 System.err.println("* Board:\n" + game.getBoard());
                                 throw e;
                             }
@@ -112,12 +125,9 @@ public class RGNTest {
                             Move<P> move = moves.get(moves.size() - 1);
                             game.makeMove(move);
                         }
-                        break;
-                    case DARK:
-                        game.rollDice(0);
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected player " + player);
+                    }
+                    case DARK -> game.rollDice(0);
+                    default -> throw new IllegalStateException("Unexpected player " + player);
                 }
             }
         }
@@ -171,7 +181,7 @@ public class RGNTest {
             // Game where light always rolls 1, and dark always rolls 0.
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game<?, ?, ?> game = new Game<>(rules.rules);
-                playRiggedGame(game);
+                playRiggedGame(rules.name, game);
                 games.add(new ProvidedGame("Rigged", game));
             }
             return games;
@@ -197,7 +207,7 @@ public class RGNTest {
             lines.add(line);
         }
 
-        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
+//        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
 //        assertTrue(lines.contains("[Light " + RGN.escape(game.getLightPlayer().name) + "]"));
 //        assertTrue(lines.contains("[Dark " + RGN.escape(game.getDarkPlayer().name) + "]"));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Date \"") && line.endsWith("\"]")));
