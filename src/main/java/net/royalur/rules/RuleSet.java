@@ -4,7 +4,6 @@ import net.royalur.model.*;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
-import net.royalur.rules.dice.StandardDice;
 import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;

@@ -9,7 +9,7 @@ import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.model.state.WaitingForRollGameState;
 import net.royalur.rules.Dice;
-import net.royalur.rules.dice.StandardDice;
+import net.royalur.rules.StandardDice;
 import net.royalur.rules.simple.ConcreteSimpleRuleSet;
 import net.royalur.rules.simple.SimpleGame;
 import net.royalur.rules.simple.SimplePiece;

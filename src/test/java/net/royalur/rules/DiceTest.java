@@ -1,7 +1,6 @@
 package net.royalur.rules;
 
 import net.royalur.model.Roll;
-import net.royalur.rules.dice.StandardDice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +27,9 @@ public class DiceTest {
     @ParameterizedTest
     @ArgumentsSource(DiceProvider.class)
     public void testDistribution(Dice<?> dice) {
+        if (dice.getMaxRollValue() != 4)
+            throw new IllegalArgumentException("This test only suppports dice with a max roll of 4");
+
         int samples = 160_000;
         int[] counts = new int[5];
         for (int i=0; i < samples; ++i) {
@@ -102,8 +104,24 @@ public class DiceTest {
 
     @Test
     public void testDiceWithSeed() {
-        StandardDice dice1 = new StandardDice(new Random(42));
-        StandardDice dice2 = new StandardDice(new Random(42));
+        StandardDice dice1 = new StandardDice(new Random(42), 4);
+        StandardDice dice2 = new StandardDice(new Random(42), 4);
+        double diceMatchRatio = testDiceCorrelation(dice1, dice2);
+        assertEquals(1.0, diceMatchRatio);
+    }
+
+    @Test
+    public void testDiceWithSeedAnd3Die() {
+        StandardDice dice1 = new StandardDice(new Random(42), 3);
+        StandardDice dice2 = new StandardDice(new Random(42), 3);
+        double diceMatchRatio = testDiceCorrelation(dice1, dice2);
+        assertEquals(1.0, diceMatchRatio);
+    }
+
+    @Test
+    public void testDiceWithSeedAnd5Die() {
+        StandardDice dice1 = new StandardDice(new Random(42), 5);
+        StandardDice dice2 = new StandardDice(new Random(42), 5);
         double diceMatchRatio = testDiceCorrelation(dice1, dice2);
         assertEquals(1.0, diceMatchRatio);
     }

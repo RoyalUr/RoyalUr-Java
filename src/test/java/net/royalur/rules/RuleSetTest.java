@@ -5,7 +5,6 @@ import net.royalur.model.path.AsebPathPair;
 import net.royalur.model.path.BellPathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
-import net.royalur.rules.dice.StandardDice;
 import net.royalur.rules.simple.ConcreteSimpleRuleSet;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -95,7 +94,7 @@ public class RuleSetTest {
         for (int test = 0; test < 10_000; ++test) {
             Roll roll = rules.rollDice();
             assertNotNull(roll);
-            assertTrue(roll.value <= rules.dice.maxRollValue);
+            assertTrue(roll.value <= rules.dice.getMaxRollValue());
         }
     }
 
@@ -111,8 +110,8 @@ public class RuleSetTest {
 
         int availableLight = 0;
         int availableDark = 0;
-        List<Move<P>>[] lightMovesByRoll = (List<Move<P>>[]) new List[rules.dice.maxRollValue + 1];
-        List<Move<P>>[] darkMovesByRoll = (List<Move<P>>[]) new List[rules.dice.maxRollValue + 1];
+        List<Move<P>>[] lightMovesByRoll = (List<Move<P>>[]) new List[rules.dice.getMaxRollValue() + 1];
+        List<Move<P>>[] darkMovesByRoll = (List<Move<P>>[]) new List[rules.dice.getMaxRollValue() + 1];
         for (int test = 0; test < 10_000; ++test) {
             R roll = rules.rollDice();
 
