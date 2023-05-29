@@ -1,9 +1,6 @@
 package net.royalur.model.path;
 
-import net.royalur.model.Path;
-import net.royalur.model.PathPair;
-import net.royalur.model.Player;
-import net.royalur.model.Tile;
+import net.royalur.model.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -15,12 +12,19 @@ import java.util.List;
  * Ancient Egyptians at Play: Board Games Across Borders,
  * Bloomsbury Egyptology, Bloomsbury Academic, London, 2016.
  */
-public class AsebPathPair extends PathPair {
+public class AsebPathPair extends ConcreteNamedPathPair {
 
     /**
-     * The identifier given to the Aseb paths.
+     * The name given to the Aseb paths.
      */
-    public static final String ID = "Aseb";
+    public static final String NAME = "Aseb";
+
+    /**
+     * Instantiates the standard paths for the light and dark player in Aseb.
+     */
+    public AsebPathPair() {
+        super(NAME, new AsebLightPath(), new AsebDarkPath());
+    }
 
     /**
      * A standard path used for Aseb.
@@ -29,18 +33,16 @@ public class AsebPathPair extends PathPair {
 
         /**
          * Instantiates a standard path used for Aseb.
-         * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
          * @param startTile The tile where a piece can be moved from to get on to the board.
          * @param endTile   The tile where a piece can be moved onto to get off of the board.
          */
         protected AsebPath(
-                @Nonnull Player player,
                 @Nonnull List<Tile> tiles,
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(player, tiles, startTile, endTile);
+            super(tiles, startTile, endTile);
         }
     }
 
@@ -88,7 +90,7 @@ public class AsebPathPair extends PathPair {
          * Instantiates the standard path for the light player in Aseb.
          */
         public AsebLightPath() {
-            super(Player.LIGHT, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
     }
 
@@ -136,19 +138,7 @@ public class AsebPathPair extends PathPair {
          * Instantiates the standard path for the dark player in Aseb.
          */
         public AsebDarkPath() {
-            super(Player.DARK, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
-    }
-
-    /**
-     * Instantiates the standard paths for the light and dark player in Aseb.
-     */
-    public AsebPathPair() {
-        super(new AsebLightPath(), new AsebDarkPath());
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
     }
 }

@@ -1,4 +1,6 @@
-package net.royalur.model;
+package net.royalur.model.path;
+
+import net.royalur.model.Tile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,11 +13,6 @@ import java.util.List;
  * The path that a player's pieces must take around the board.
  */
 public class Path implements Iterable<Tile> {
-
-    /**
-     * The player that this path is intended for.
-     */
-    public final @Nonnull Player player;
 
     /**
      * The ordered list of tiles that pieces must progress through on the board.
@@ -44,19 +41,16 @@ public class Path implements Iterable<Tile> {
 
     /**
      * Instantiates a path for a player's pieces to take around the board.
-     * @param player    The player that this path is intended for.
      * @param tiles     The ordered list of tiles that pieces must progress through on the board.
      * @param startTile The tile that pieces should be moved from so that they can be moved on to the board.
      * @param endTile   The tile that pieces should be moved to so that they can be moved off the board.
      */
-    public Path(@Nonnull Player player, @Nonnull List<Tile> tiles, @Nonnull Tile startTile, @Nonnull Tile endTile) {
-
+    public Path(@Nonnull List<Tile> tiles, @Nonnull Tile startTile, @Nonnull Tile endTile) {
         this.startTile = startTile;
         this.endTile = endTile;
         if (tiles.isEmpty())
             throw new IllegalArgumentException("Paths must have at least one tile");
 
-        this.player = player;
         this.tiles = Collections.unmodifiableList(new ArrayList<>(tiles));
         this.length = tiles.size();
     }
@@ -79,7 +73,7 @@ public class Path implements Iterable<Tile> {
 
     @Override
     public int hashCode() {
-        return player.hashCode() ^ (37 * tiles.hashCode()) ^ (97 * startTile.hashCode()) ^ (283 * endTile.hashCode());
+        return tiles.hashCode() ^ (97 * startTile.hashCode()) ^ (283 * endTile.hashCode());
     }
 
     /**
@@ -100,8 +94,9 @@ public class Path implements Iterable<Tile> {
             return false;
 
         Path other = (Path) obj;
-        return player == other.player && isEquivalent(other) &&
-                startTile.equals(other.startTile) && endTile.equals(other.endTile);
+        return isEquivalent(other) &&
+                startTile.equals(other.startTile) &&
+                endTile.equals(other.endTile);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package net.royalur.rules.standard;
 
 import net.royalur.model.*;
+import net.royalur.model.path.Path;
+import net.royalur.model.path.PathPair;
 import net.royalur.model.state.*;
 import net.royalur.rules.Dice;
 import net.royalur.rules.PieceProvider;
@@ -65,9 +67,9 @@ public class StandardRuleSet<
             @Nonnull PieceProvider<P> pieceProvider,
             @Nonnull PlayerStateProvider<S> playerStateProvider
     ) {
-        if (!boardShape.isCompatible(paths.lightPath)) {
+        if (!boardShape.isCompatible(paths.getLight()) || !boardShape.isCompatible(paths.getDark())) {
             throw new IllegalArgumentException(
-                    "The " + paths.getIdentifier() + " paths are not compatible with the " +
+                    "The " + paths.getDebugName() + " paths are not compatible with the " +
                             boardShape.getIdentifier() + " board shape"
             );
         }

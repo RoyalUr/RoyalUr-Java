@@ -1,6 +1,7 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
+import net.royalur.model.path.PathPair;
 import net.royalur.model.state.WaitingForMoveGameState;
 import net.royalur.model.state.WaitingForRollGameState;
 
@@ -25,7 +26,8 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
      * Gets the paths that the players must take around the board.
      * @return The paths that players must take around the board.
      */
-    @Nonnull PathPair getPaths();
+    @Nonnull
+    PathPair getPaths();
 
     /**
      * Gets the dice that are used to generate dice rolls.

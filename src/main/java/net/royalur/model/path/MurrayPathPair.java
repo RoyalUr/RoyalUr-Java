@@ -1,8 +1,5 @@
 package net.royalur.model.path;
 
-import net.royalur.model.Path;
-import net.royalur.model.PathPair;
-import net.royalur.model.Player;
 import net.royalur.model.Tile;
 
 import javax.annotation.Nonnull;
@@ -14,12 +11,19 @@ import java.util.List;
  * Citation: H.J.R. Murray, A History of Board-games Other Than Chess,
  * Oxford University Press, Oxford, 1952.
  */
-public class MurrayPathPair extends PathPair {
+public class MurrayPathPair extends ConcreteNamedPathPair {
 
     /**
-     * The identifier given to Murray's paths.
+     * The name given to Murray's paths.
      */
-    public static final String ID = "Murray";
+    public static final String NAME = "Murray";
+
+    /**
+     * Instantiates Murray's paths for the light and dark player.
+     */
+    public MurrayPathPair() {
+        super(NAME, new MurrayLightPath(), new MurrayDarkPath());
+    }
 
     /**
      * A path proposed by Murray.
@@ -28,18 +32,16 @@ public class MurrayPathPair extends PathPair {
 
         /**
          * Instantiates Murray's path for a specific player.
-         * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
          * @param startTile The tile where a piece can be moved from to get on to the board.
          * @param endTile   The tile where a piece can be moved onto to get off of the board.
          */
         protected MurrayPath(
-                @Nonnull Player player,
                 @Nonnull List<Tile> tiles,
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(player, tiles, startTile, endTile);
+            super(tiles, startTile, endTile);
         }
     }
 
@@ -98,7 +100,7 @@ public class MurrayPathPair extends PathPair {
          * Instantiates Murray's path for the light player.
          */
         public MurrayLightPath() {
-            super(Player.LIGHT, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
     }
 
@@ -157,19 +159,7 @@ public class MurrayPathPair extends PathPair {
          * Instantiates Murray's path for the dark player.
          */
         public MurrayDarkPath() {
-            super(Player.DARK, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
-    }
-
-    /**
-     * Instantiates Murray's paths for the light and dark player.
-     */
-    public MurrayPathPair() {
-        super(new MurrayLightPath(), new MurrayDarkPath());
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
     }
 }

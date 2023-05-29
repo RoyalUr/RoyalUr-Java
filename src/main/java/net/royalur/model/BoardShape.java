@@ -1,5 +1,7 @@
 package net.royalur.model;
 
+import net.royalur.model.path.Path;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;

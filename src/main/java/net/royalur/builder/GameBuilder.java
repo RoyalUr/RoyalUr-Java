@@ -5,6 +5,7 @@ import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.AsebPathPair;
 import net.royalur.model.path.BellPathPair;
+import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.rules.Dice;

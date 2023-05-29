@@ -1,8 +1,5 @@
 package net.royalur.model.path;
 
-import net.royalur.model.Path;
-import net.royalur.model.PathPair;
-import net.royalur.model.Player;
 import net.royalur.model.Tile;
 
 import javax.annotation.Nonnull;
@@ -14,12 +11,19 @@ import java.util.List;
  * Citation: R.C. Bell, Board and Table Games From Many Civilizations,
  * revised ed., Vol. 1 and 2, Dover Publications, Inc., New York, 1979.
  */
-public class BellPathPair extends PathPair {
+public class BellPathPair extends ConcreteNamedPathPair {
 
     /**
-     * The identifier given to Bell's paths.
+     * The name given to Bell's paths.
      */
-    public static final String ID = "Bell";
+    public static final String NAME = "Bell";
+
+    /**
+     * Instantiates Bell's paths for the light and dark player.
+     */
+    public BellPathPair() {
+        super(NAME, new BellLightPath(), new BellDarkPath());
+    }
 
     /**
      * A path proposed by Bell.
@@ -28,18 +32,16 @@ public class BellPathPair extends PathPair {
 
         /**
          * Instantiates Bell's path for a specific player.
-         * @param player    The player that this path is intended for.
          * @param tiles     The ordered list of tiles that pieces must progress through on the board.
          * @param startTile The tile where a piece can be moved from to get on to the board.
          * @param endTile   The tile where a piece can be moved onto to get off of the board.
          */
         protected BellPath(
-                @Nonnull Player player,
                 @Nonnull List<Tile> tiles,
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(player, tiles, startTile, endTile);
+            super(tiles, startTile, endTile);
         }
     }
 
@@ -85,7 +87,7 @@ public class BellPathPair extends PathPair {
          * Instantiates Bell's path for the light player.
          */
         public BellLightPath() {
-            super(Player.LIGHT, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
     }
 
@@ -131,19 +133,7 @@ public class BellPathPair extends PathPair {
          * Instantiates Bell's path for the dark player.
          */
         public BellDarkPath() {
-            super(Player.DARK, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
-    }
-
-    /**
-     * Instantiates Bell's paths for the light and dark player.
-     */
-    public BellPathPair() {
-        super(new BellLightPath(), new BellDarkPath());
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
     }
 }

@@ -1,6 +1,6 @@
 package net.royalur.builder;
 
-import net.royalur.model.PathPair;
+import net.royalur.model.path.PathPair;
 import net.royalur.model.path.*;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ public enum PathType {
     /**
      * The standard path used for Aseb.
      */
-    ASEB(AsebPathPair.ID, AsebPathPair.class) {
+    ASEB(AsebPathPair.NAME, AsebPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new AsebPathPair();
@@ -23,7 +23,7 @@ public enum PathType {
     /**
      * The path proposed by Bell for the Royal Game of Ur.
      */
-    BELL(BellPathPair.ID, BellPathPair.class) {
+    BELL(BellPathPair.NAME, BellPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new BellPathPair();
@@ -33,7 +33,7 @@ public enum PathType {
     /**
      * The path proposed by Masters for the Royal Game of Ur.
      */
-    MASTERS(MastersPathPair.ID, MastersPathPair.class) {
+    MASTERS(MastersPathPair.NAME, MastersPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new MastersPathPair();
@@ -43,7 +43,7 @@ public enum PathType {
     /**
      * The path proposed by Murray for the Royal Game of Ur.
      */
-    MURRAY(MurrayPathPair.ID, MurrayPathPair.class) {
+    MURRAY(MurrayPathPair.NAME, MurrayPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new MurrayPathPair();
@@ -53,7 +53,7 @@ public enum PathType {
     /**
      * The path proposed by Skiriuk for the Royal Game of Ur.
      */
-    SKIRIUK(SkiriukPathPair.ID, SkiriukPathPair.class) {
+    SKIRIUK(SkiriukPathPair.NAME, SkiriukPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new SkiriukPathPair();
@@ -61,9 +61,9 @@ public enum PathType {
     };
 
     /**
-     * The ID of this path.
+     * The name given to this path.
      */
-    public final @Nonnull String id;
+    public final @Nonnull String name;
 
     /**
      * The class representing this path.
@@ -71,11 +71,11 @@ public enum PathType {
     public final @Nonnull Class<? extends PathPair> pathClass;
 
     /**
-     * @param id        The ID of this board shape.
+     * @param name      The name given to this path.
      * @param pathClass The class representing this path.
      */
-    PathType(@Nonnull String id, @Nonnull Class<? extends PathPair> pathClass) {
-        this.id = id;
+    PathType(@Nonnull String name, @Nonnull Class<? extends PathPair> pathClass) {
+        this.name = name;
         this.pathClass = pathClass;
     }
 

@@ -1,8 +1,5 @@
 package net.royalur.model.path;
 
-import net.royalur.model.Path;
-import net.royalur.model.PathPair;
-import net.royalur.model.Player;
 import net.royalur.model.Tile;
 
 import javax.annotation.Nonnull;
@@ -17,12 +14,19 @@ import java.util.List;
  *     https://www.tradgames.org.uk/games/Royal-Game-Ur.htm
  * </a>.
  */
-public class MastersPathPair extends PathPair {
+public class MastersPathPair extends ConcreteNamedPathPair {
 
     /**
-     * The identifier given to Masters' paths.
+     * The name given to Masters' paths.
      */
-    public static final String ID = "Masters";
+    public static final String NAME = "Masters";
+
+    /**
+     * Instantiates Masters' paths for the light and dark player.
+     */
+    public MastersPathPair() {
+        super(NAME, new MastersLightPath(), new MastersDarkPath());
+    }
 
     /**
      * A path proposed by Masters.
@@ -31,18 +35,16 @@ public class MastersPathPair extends PathPair {
 
         /**
          * Instantiates Masters' path for a specific player.
-         * @param player The player that this path is intended for.
          * @param tiles  The ordered list of tiles that pieces must progress through on the board.
          * @param startTile The tile where a piece can be moved from to get on to the board.
          * @param endTile   The tile where a piece can be moved onto to get off of the board.
          */
         protected MastersPath(
-                @Nonnull Player player,
                 @Nonnull List<Tile> tiles,
                 @Nonnull Tile startTile,
                 @Nonnull Tile endTile
         ) {
-            super(player, tiles, startTile, endTile);
+            super(tiles, startTile, endTile);
         }
     }
 
@@ -90,7 +92,7 @@ public class MastersPathPair extends PathPair {
          * Instantiates Masters' path for the light player.
          */
         public MastersLightPath() {
-            super(Player.LIGHT, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
     }
 
@@ -138,19 +140,7 @@ public class MastersPathPair extends PathPair {
          * Instantiates Masters' path for the dark player.
          */
         public MastersDarkPath() {
-            super(Player.DARK, TILES, START_TILE, END_TILE);
+            super(TILES, START_TILE, END_TILE);
         }
-    }
-
-    /**
-     * Instantiates Masters' paths for the light and dark player.
-     */
-    public MastersPathPair() {
-        super(new MastersLightPath(), new MastersDarkPath());
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
     }
 }
