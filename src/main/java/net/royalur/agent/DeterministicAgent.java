@@ -12,17 +12,7 @@ import java.util.List;
  * @param <S> The type of player state that this agent can interact with.
  * @param <R> The type of rolls that may be made by this agent.
  */
-public class DeterministicAgent<P extends Piece, S extends PlayerState, R extends Roll> extends Agent<P, S, R> {
-
-    /**
-     * The unique identifier of the first move agent.
-     */
-    public static final @Nonnull String ID = "Deterministic";
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
-    }
+public class DeterministicAgent<P extends Piece, S extends PlayerState, R extends Roll> extends BaseAgent<P, S, R> {
 
     @Override
     public @Nonnull Move<P> decideMove(

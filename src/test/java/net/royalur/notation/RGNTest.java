@@ -1,6 +1,6 @@
 package net.royalur.notation;
 
-import net.royalur.BaseGame;
+import net.royalur.StandardGame;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.BellPathPair;
@@ -137,24 +137,24 @@ public class RGNTest {
 
             // Empty games.
             for (ProvidedRules rules : RulesProvider.get()) {
-                games.add(new ProvidedGame("Empty", new BaseGame<>(rules.rules)));
+                games.add(new ProvidedGame("Empty", new StandardGame<>(rules.rules)));
             }
 
             // Empty games with player names.
             for (ProvidedRules rules : RulesProvider.get()) {
-                games.add(new ProvidedGame("Empty", new BaseGame<>(rules.rules)));
+                games.add(new ProvidedGame("Empty", new StandardGame<>(rules.rules)));
             }
 
             // One roll by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BaseGame<>(rules.rules);
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 games.add(new ProvidedGame("One Roll", game));
             }
 
             // One move by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BaseGame<>(rules.rules);
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 games.add(new ProvidedGame("One Move", game));
@@ -162,7 +162,7 @@ public class RGNTest {
 
             // One move by light, and one roll.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BaseGame<>(rules.rules);
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 games.add(new ProvidedGame("One Move, One Roll", game));
@@ -170,7 +170,7 @@ public class RGNTest {
 
             // One move by light, and one move by dark.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BaseGame<>(rules.rules);
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 game.rollDice(1);
@@ -180,7 +180,7 @@ public class RGNTest {
 
             // Game where light always rolls 1, and dark always rolls 0.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BaseGame<>(rules.rules);
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 playRiggedGame(rules.name, game);
                 games.add(new ProvidedGame("Rigged", game));
             }

@@ -1,6 +1,5 @@
 package net.royalur;
 
-import net.royalur.agent.Agent;
 import net.royalur.model.*;
 import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
@@ -18,7 +17,7 @@ import java.util.*;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public class BaseGame<
+public class StandardGame<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
@@ -60,7 +59,7 @@ public class BaseGame<
      * @param rules The set of rules that are being used for this game.
      * @param states The states that have occurred so far in the game.
      */
-    public BaseGame(
+    public StandardGame(
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull List<GameState<P, S, R>> states
     ) {
@@ -86,7 +85,7 @@ public class BaseGame<
      * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
      * @param rules The rules of the game.
      */
-    public BaseGame(@Nonnull RuleSet<P, S, R> rules) {
+    public StandardGame(@Nonnull RuleSet<P, S, R> rules) {
         this(rules, List.of(rules.generateInitialGameState()));
     }
 
@@ -94,7 +93,7 @@ public class BaseGame<
      * Instantiates a game of the Royal Game of Ur that is a copy of {@code game}.
      * @param game The rules of the game.
      */
-    private BaseGame(@Nonnull BaseGame<P, S, R> game) {
+    private StandardGame(@Nonnull StandardGame<P, S, R> game) {
         this(game.rules, game.states);
         metadata.clear();
         metadata.putAll(game.metadata);
@@ -107,8 +106,8 @@ public class BaseGame<
     }
 
     @Override
-    public @Nonnull BaseGame<P, S, R> copy() {
-        return new BaseGame<>(this);
+    public @Nonnull StandardGame<P, S, R> copy() {
+        return new StandardGame<>(this);
     }
 
     @Override

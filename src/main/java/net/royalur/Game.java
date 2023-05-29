@@ -1,6 +1,5 @@
 package net.royalur;
 
-import net.royalur.agent.Agent;
 import net.royalur.builder.GameBuilder;
 import net.royalur.model.*;
 import net.royalur.model.state.*;
@@ -13,8 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
- * and methods to support the retrieval of history about the moves that were made
- * in games that have been played.
+ * and methods to support the retrieval of history about the moves that were made.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.

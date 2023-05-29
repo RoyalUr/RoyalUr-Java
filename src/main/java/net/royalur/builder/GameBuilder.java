@@ -1,6 +1,6 @@
 package net.royalur.builder;
 
-import net.royalur.BaseGame;
+import net.royalur.StandardGame;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.AsebPathPair;
@@ -136,7 +136,7 @@ public class GameBuilder {
          * @return A new game using the rules set in this builder.
          */
         public @Nonnull Game<StandardPiece, PlayerState, R> build() {
-            return new BaseGame<>(buildRules());
+            return new StandardGame<>(buildRules());
         }
     }
 
