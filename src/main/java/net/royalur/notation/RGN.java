@@ -220,13 +220,13 @@ public class RGN extends Notation {
 
             // Add in the rolls and moves that were made.
             if (rollState != null) {
-                appendDiceRoll(game.rules, actionBuilder, rollState);
+                appendDiceRoll(game.getRules(), actionBuilder, rollState);
             }
             if (rollState != null && moveState != null) {
                 actionBuilder.append(".");
             }
             if (moveState != null) {
-                appendMove(game.rules, actionBuilder, moveState);
+                appendMove(game.getRules(), actionBuilder, moveState);
             }
             if (index == states.size() - 1 && game.isFinished()) {
                 actionBuilder.append("#");

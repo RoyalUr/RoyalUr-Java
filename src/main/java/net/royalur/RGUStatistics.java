@@ -1,5 +1,6 @@
 package net.royalur;
 
+import net.royalur.agent.Agent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
@@ -41,7 +42,7 @@ public class RGUStatistics {
         Game<StandardPiece, PlayerState, Roll> game = gameGenerator.get();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        game.playAutonomously(light, dark);
+        Agent.playAutonomously(game, light, dark);
         return GameStats.gather(game);
     }
 
@@ -59,7 +60,7 @@ public class RGUStatistics {
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
-            String desc = sample.getBoard().shape.getIdentifier() + ", " + sample.rules.getPaths().getIdentifier();
+            String desc = sample.getBoard().shape.getIdentifier() + ", " + sample.getRules().getPaths().getIdentifier();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {

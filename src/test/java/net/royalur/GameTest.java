@@ -1,5 +1,6 @@
 package net.royalur;
 
+import net.royalur.agent.Agent;
 import net.royalur.agent.DeterministicAgent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.Player;
@@ -8,7 +9,6 @@ import net.royalur.model.Roll;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.rules.standard.StandardGame;
 import net.royalur.rules.standard.StandardPiece;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -19,15 +19,13 @@ public class GameTest {
 
     @Test
     public void testCopy() {
-        StandardGame game = Game.createStandard();
+        Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
         assertNotNull(game);
 
         Game<StandardPiece, PlayerState, Roll> copy = game.copy();
         assertNotNull(copy);
         assertNotSame(game, copy);
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
 
@@ -36,37 +34,27 @@ public class GameTest {
         game.rollDice(2);
         agent.playTurn(game, Player.LIGHT);
 
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertNotEquals(game.getStates(), copy.getStates());
 
         copy = game.copy();
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
 
         copy.rollDice(2);
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertNotEquals(game.getStates(), copy.getStates());
 
         copy = game.copy();
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
 
         copy.putMetadata("TEST", "Some data");
-        assertEquals(game.rules, copy.rules);
-        assertEquals(game.lightIdentity, copy.lightIdentity);
-        assertEquals(game.darkIdentity, copy.darkIdentity);
+        assertSame(game.getRules(), copy.getRules());
         assertNotEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
     }
@@ -76,7 +64,7 @@ public class GameTest {
         Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        int actions = game.playAutonomously(light, dark);
+        int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 72 actions.
@@ -91,7 +79,7 @@ public class GameTest {
         Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new MastersPathPair()).build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        int actions = game.playAutonomously(light, dark);
+        int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 77 actions.
@@ -106,7 +94,7 @@ public class GameTest {
         Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new SkiriukPathPair()).build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        int actions = game.playAutonomously(light, dark);
+        int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 91 actions.
@@ -121,7 +109,7 @@ public class GameTest {
         Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new MurrayPathPair()).build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        int actions = game.playAutonomously(light, dark);
+        int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 105 actions.
@@ -136,7 +124,7 @@ public class GameTest {
         Game<StandardPiece, PlayerState, Roll> game = Game.createAseb();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
-        int actions = game.playAutonomously(light, dark);
+        int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
         // The shortest possible game requires 77 actions.

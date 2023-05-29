@@ -218,11 +218,9 @@ public class JsonNotation extends Notation {
 
         generator.writeBooleanField(STATE_WON_KEY, state instanceof WinGameState);
 
-        if (state instanceof OngoingGameState) {
-            OngoingGameState<P, S, R> ongoingState = (OngoingGameState<P, S, R>) state;
+        if (state instanceof OngoingGameState<P, S, R> ongoingState) {
             generator.writeStringField(STATE_TURN_KEY, ongoingState.turn.name());
-        } else if (state instanceof WinGameState) {
-            WinGameState<P, S, R> winState = (WinGameState<P, S, R>) state;
+        } else if (state instanceof WinGameState<P, S, R> winState) {
             generator.writeStringField(STATE_WINNER_KEY, winState.winner.name());
             generator.writeStringField(STATE_LOSER_KEY, winState.loser.name());
         }
@@ -416,7 +414,7 @@ public class JsonNotation extends Notation {
         for (ActionGameState<P, S, R> state : game.getActionStates()) {
             generator.writeStartObject();
             try {
-                writeAction(state, game.rules, generator);
+                writeAction(state, game.getRules(), generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -439,7 +437,7 @@ public class JsonNotation extends Notation {
         for (GameState<P, S, R> state : game.getLandmarkStates()) {
             generator.writeStartObject();
             try {
-                writeState(state, game.rules, generator);
+                writeState(state, game.getRules(), generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -465,25 +463,6 @@ public class JsonNotation extends Notation {
     }
 
     /**
-     * Writes the identity of a player to the JSON generator.
-     * @param identity The identity to write.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writePlayerIdentity(
-            @Nonnull PlayerIdentity identity,
-            @Nonnull JsonGenerator generator
-    ) throws IOException {
-
-        generator.writeBooleanField(IDENTITY_ANONYMOUS_KEY, identity.isAnonymous());
-        if (identity.hasName()) {
-            generator.writeStringField(IDENTITY_NAME_KEY, identity.getName());
-        }
-    }
-
-    /**
      * Writes the game to the JSON generator.
      * @param game The game to write.
      * @param <P> The type of pieces in the game.
@@ -503,26 +482,6 @@ public class JsonNotation extends Notation {
         generator.writeObjectFieldStart(METADATA_KEY);
         try {
             writeMetadata(game, generator);
-        } finally {
-            generator.writeEndObject();
-        }
-
-        // Write the identities of the players in the game.
-        generator.writeObjectFieldStart(PLAYER_IDENTITIES_KEY);
-        try {
-            generator.writeObjectFieldStart(Player.LIGHT.name());
-            try {
-                writePlayerIdentity(game.lightIdentity, generator);
-            } finally {
-                generator.writeEndObject();
-            }
-
-            generator.writeObjectFieldStart(Player.DARK.name());
-            try {
-                writePlayerIdentity(game.darkIdentity, generator);
-            } finally {
-                generator.writeEndObject();
-            }
         } finally {
             generator.writeEndObject();
         }
@@ -577,6 +536,6 @@ public class JsonNotation extends Notation {
             @Nonnull String encoded
     ) {
 
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

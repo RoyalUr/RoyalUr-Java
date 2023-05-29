@@ -1,17 +1,17 @@
 package net.royalur.builder;
 
+import net.royalur.BaseGame;
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.identity.AnonymousPlayer;
 import net.royalur.model.path.AsebPathPair;
 import net.royalur.model.path.BellPathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.rules.Dice;
+import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.*;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * A builder to help in the creation of custom games of the Royal Game of Ur.
@@ -24,16 +24,6 @@ public class GameBuilder {
      * @param <SELF> The type of the subclass of this builder.
      */
     public static abstract class BaseStandardGameBuilder<R extends Roll, SELF extends BaseStandardGameBuilder<R, SELF>> {
-
-        /**
-         * The identity of the light player.
-         */
-        protected final @Nonnull PlayerIdentity lightIdentity;
-
-        /**
-         * The identity of the dark player.
-         */
-        protected final @Nonnull PlayerIdentity darkIdentity;
 
         /**
          * The shape of the board.
@@ -52,21 +42,15 @@ public class GameBuilder {
 
         /**
          * Instantiates a builder to build games following a standard rule set.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
          * @param boardShape The shape of the board.
          * @param paths The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
          */
         public BaseStandardGameBuilder(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 int startingPieceCount
         ) {
-            this.lightIdentity = lightIdentity;
-            this.darkIdentity = darkIdentity;
             this.boardShape = boardShape;
             this.paths = paths;
             this.startingPieceCount = startingPieceCount;
@@ -74,16 +58,12 @@ public class GameBuilder {
 
         /**
          * Copies this game builder with new settings.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
          * @param boardShape The shape of the board.
          * @param paths The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
          * @return A copy of this game builder with updated settings.
          */
         protected abstract @Nonnull SELF copy(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 int startingPieceCount
@@ -104,7 +84,7 @@ public class GameBuilder {
          * @return A copy of this game builder with the shape of the board set to {@code boardShape}.
          */
         public @Nonnull SELF boardShape(@Nonnull BoardShape boardShape) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -122,18 +102,7 @@ public class GameBuilder {
          * @return A copy of this game builder with the paths taken by each player set to {@code paths}.
          */
         public @Nonnull SELF paths(@Nonnull PathPair paths) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
-        }
-
-        /**
-         * Copies this game builder with the player identities set to {@code lightIdentity} and {@code darkIdentity}.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
-         * @return A copy of this game builder with the player identities
-         *         set to {@code lightIdentity} and {@code darkIdentity}.
-         */
-        public @Nonnull SELF players(@Nonnull PlayerIdentity lightIdentity, @Nonnull PlayerIdentity darkIdentity) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -152,7 +121,7 @@ public class GameBuilder {
          *         set to {@code startingPieceCount}.
          */
         public @Nonnull SELF startingPieceCount(int startingPieceCount) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            return copy(boardShape, paths, startingPieceCount);
         }
 
         /**
@@ -160,13 +129,15 @@ public class GameBuilder {
          * The rules do not contain any player identification information set in this builder.
          * @return A standard rule set to match the settings in this builder.
          */
-        public abstract @Nonnull StandardRuleSet<StandardPiece, PlayerState, R> buildRules();
+        public abstract @Nonnull RuleSet<StandardPiece, PlayerState, R> buildRules();
 
         /**
          * Builds a new game using the rules set in this builder.
          * @return A new game using the rules set in this builder.
          */
-        public abstract @Nonnull Game<StandardPiece, PlayerState, R> build();
+        public @Nonnull Game<StandardPiece, PlayerState, R> build() {
+            return new BaseGame<>(buildRules());
+        }
     }
 
     /**
@@ -177,57 +148,42 @@ public class GameBuilder {
 
         /**
          * Instantiates a builder to build games following a standard rule set.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
          * @param boardShape         The shape of the board.
          * @param paths              The paths that each player must take around the board.
          * @param startingPieceCount The number of pieces that each player starts with.
          */
         public StandardGameBuilder(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 int startingPieceCount
         ) {
-            super(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            super(boardShape, paths, startingPieceCount);
         }
 
         @Override
         protected @Nonnull StandardGameBuilder copy(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 int startingPieceCount
         ) {
-            return new StandardGameBuilder(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            return new StandardGameBuilder(boardShape, paths, startingPieceCount);
         }
 
         @Override
         public <R extends Roll> @Nonnull StandardWithDiceGameBuilder<R> dice(@Nonnull Dice<R> dice) {
             return new StandardWithDiceGameBuilder<>(
-                    lightIdentity, darkIdentity, boardShape, paths, dice, startingPieceCount
+                    boardShape, paths, dice, startingPieceCount
             );
         }
 
         @Override
-        public @Nonnull StandardRuleSet<StandardPiece, PlayerState, Roll> buildRules() {
+        public @Nonnull RuleSet<StandardPiece, PlayerState, Roll> buildRules() {
             return new StandardRuleSet<>(
                     boardShape,
                     paths,
                     new StandardDice(),
                     new StandardPieceProvider(),
                     new StandardPlayerStateProvider(startingPieceCount)
-            );
-        }
-
-        @Override
-        public @Nonnull StandardGame build() {
-            StandardRuleSet<StandardPiece, PlayerState, Roll> rules = buildRules();
-            return new StandardGame(
-                    rules, lightIdentity, darkIdentity,
-                    List.of(rules.generateInitialGameState())
             );
         }
     }
@@ -247,29 +203,23 @@ public class GameBuilder {
 
         /**
          * Instantiates a builder to build games following a standard rule set.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
          * @param boardShape         The shape of the board.
          * @param paths              The paths that each player must take around the board.
          * @param dice               The dice that is used to generate rolls.
          * @param startingPieceCount The number of pieces that each player starts with.
          */
         public StandardWithDiceGameBuilder(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 @Nonnull Dice<R> dice,
                 int startingPieceCount
         ) {
-            super(lightIdentity, darkIdentity, boardShape, paths, startingPieceCount);
+            super(boardShape, paths, startingPieceCount);
             this.dice = dice;
         }
 
         /**
          * Copies this game builder with new settings.
-         * @param lightIdentity The identity of the light player.
-         * @param darkIdentity The identity of the dark player.
          * @param boardShape The shape of the board.
          * @param paths The paths that each player must take around the board.
          * @param dice The dice that is used to generate rolls.
@@ -278,51 +228,38 @@ public class GameBuilder {
          * @return A copy of this game builder with updated settings.
          */
         protected <NR extends Roll> @Nonnull StandardWithDiceGameBuilder<NR> copy(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 @Nonnull Dice<NR> dice,
                 int startingPieceCount
         ) {
             return new StandardWithDiceGameBuilder<>(
-                    lightIdentity, darkIdentity, boardShape, paths, dice, startingPieceCount
+                    boardShape, paths, dice, startingPieceCount
             );
         }
 
         @Override
         protected @Nonnull StandardWithDiceGameBuilder<R> copy(
-                @Nonnull PlayerIdentity lightIdentity,
-                @Nonnull PlayerIdentity darkIdentity,
                 @Nonnull BoardShape boardShape,
                 @Nonnull PathPair paths,
                 int startingPieceCount
         ) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, dice, startingPieceCount);
+            return copy(boardShape, paths, dice, startingPieceCount);
         }
 
         @Override
         public <NR extends Roll> @Nonnull StandardWithDiceGameBuilder<NR> dice(@Nonnull Dice<NR> dice) {
-            return copy(lightIdentity, darkIdentity, boardShape, paths, dice, startingPieceCount);
+            return copy(boardShape, paths, dice, startingPieceCount);
         }
 
         @Override
-        public @Nonnull StandardRuleSet<StandardPiece, PlayerState, R> buildRules() {
+        public @Nonnull RuleSet<StandardPiece, PlayerState, R> buildRules() {
             return new StandardRuleSet<>(
                     boardShape,
                     paths,
                     dice,
                     new StandardPieceProvider(),
                     new StandardPlayerStateProvider(startingPieceCount)
-            );
-        }
-
-        @Override
-        public @Nonnull Game<StandardPiece, PlayerState, R> build() {
-            StandardRuleSet<StandardPiece, PlayerState, R> rules = buildRules();
-            return new Game<>(
-                    rules, lightIdentity, darkIdentity,
-                    List.of(rules.generateInitialGameState())
             );
         }
     }
@@ -339,8 +276,6 @@ public class GameBuilder {
      */
     public @Nonnull StandardGameBuilder standard() {
         return new StandardGameBuilder(
-                new AnonymousPlayer(),
-                new AnonymousPlayer(),
                 new StandardBoardShape(),
                 new BellPathPair(),
                 7
@@ -353,8 +288,6 @@ public class GameBuilder {
      */
     public @Nonnull StandardGameBuilder aseb() {
         return new StandardGameBuilder(
-                new AnonymousPlayer(),
-                new AnonymousPlayer(),
                 new AsebBoardShape(),
                 new AsebPathPair(),
                 5
