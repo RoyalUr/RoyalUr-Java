@@ -13,18 +13,13 @@ import java.util.List;
  *     https://skyruk.livejournal.com/231444.html
  * </a>.
  */
-public class SkiriukPathPair extends ConcreteNamedPathPair {
-
-    /**
-     * The name given to Skiriuk's paths.
-     */
-    public static final String NAME = "Skiriuk";
+public class SkiriukPathPair extends NamedPathPair<PathType> {
 
     /**
      * Instantiates Skiriuk's paths for the light and dark player.
      */
     public SkiriukPathPair() {
-        super(NAME, new SkiriukLightPath(), new SkiriukDarkPath());
+        super(PathType.SKIRIUK, new SkiriukLightPath(), new SkiriukDarkPath());
     }
 
     /**

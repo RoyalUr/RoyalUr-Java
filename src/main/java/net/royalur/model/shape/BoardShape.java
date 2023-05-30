@@ -1,5 +1,6 @@
-package net.royalur.model;
+package net.royalur.model.shape;
 
+import net.royalur.model.Tile;
 import net.royalur.model.path.Path;
 
 import javax.annotation.Nonnull;

@@ -1,8 +1,10 @@
 package net.royalur;
 
 import net.royalur.model.*;
-import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.state.PlayableGameState;
+import net.royalur.rules.state.WaitingForMoveGameState;
+import net.royalur.rules.state.WaitingForRollGameState;
 
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;

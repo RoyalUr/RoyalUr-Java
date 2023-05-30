@@ -11,18 +11,13 @@ import java.util.List;
  * Citation: H.J.R. Murray, A History of Board-games Other Than Chess,
  * Oxford University Press, Oxford, 1952.
  */
-public class MurrayPathPair extends ConcreteNamedPathPair {
-
-    /**
-     * The name given to Murray's paths.
-     */
-    public static final String NAME = "Murray";
+public class MurrayPathPair extends NamedPathPair<PathType> {
 
     /**
      * Instantiates Murray's paths for the light and dark player.
      */
     public MurrayPathPair() {
-        super(NAME, new MurrayLightPath(), new MurrayDarkPath());
+        super(PathType.MURRAY, new MurrayLightPath(), new MurrayDarkPath());
     }
 
     /**

@@ -11,18 +11,13 @@ import java.util.List;
  * Citation: R.C. Bell, Board and Table Games From Many Civilizations,
  * revised ed., Vol. 1 and 2, Dover Publications, Inc., New York, 1979.
  */
-public class BellPathPair extends ConcreteNamedPathPair {
-
-    /**
-     * The name given to Bell's paths.
-     */
-    public static final String NAME = "Bell";
+public class BellPathPair extends NamedPathPair<PathType> {
 
     /**
      * Instantiates Bell's paths for the light and dark player.
      */
     public BellPathPair() {
-        super(NAME, new BellLightPath(), new BellDarkPath());
+        super(PathType.BELL, new BellLightPath(), new BellDarkPath());
     }
 
     /**

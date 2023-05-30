@@ -1,4 +1,4 @@
-package net.royalur.model.state;
+package net.royalur.rules.state;
 
 import net.royalur.model.*;
 

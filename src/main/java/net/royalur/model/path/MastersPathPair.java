@@ -14,18 +14,13 @@ import java.util.List;
  *     https://www.tradgames.org.uk/games/Royal-Game-Ur.htm
  * </a>.
  */
-public class MastersPathPair extends ConcreteNamedPathPair {
-
-    /**
-     * The name given to Masters' paths.
-     */
-    public static final String NAME = "Masters";
+public class MastersPathPair extends NamedPathPair<PathType> {
 
     /**
      * Instantiates Masters' paths for the light and dark player.
      */
     public MastersPathPair() {
-        super(NAME, new MastersLightPath(), new MastersDarkPath());
+        super(PathType.MASTERS, new MastersLightPath(), new MastersDarkPath());
     }
 
     /**

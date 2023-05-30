@@ -2,7 +2,9 @@ package net.royalur.stats;
 
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.state.*;
+import net.royalur.rules.state.ActionGameState;
+import net.royalur.rules.state.MovedGameState;
+import net.royalur.rules.state.RolledGameState;
 
 import javax.annotation.Nonnull;
 

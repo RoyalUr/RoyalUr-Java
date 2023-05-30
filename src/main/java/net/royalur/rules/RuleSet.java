@@ -2,8 +2,9 @@ package net.royalur.rules;
 
 import net.royalur.model.*;
 import net.royalur.model.path.PathPair;
-import net.royalur.model.state.WaitingForMoveGameState;
-import net.royalur.model.state.WaitingForRollGameState;
+import net.royalur.model.shape.BoardShape;
+import net.royalur.rules.state.WaitingForMoveGameState;
+import net.royalur.rules.state.WaitingForRollGameState;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,7 +21,8 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
      * Gets the shape of the board used in this rule set.
      * @return The shape of the game board.
      */
-    @Nonnull BoardShape getBoardShape();
+    @Nonnull
+    BoardShape getBoardShape();
 
     /**
      * Gets the paths that the players must take around the board.

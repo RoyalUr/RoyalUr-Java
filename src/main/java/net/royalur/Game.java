@@ -2,9 +2,9 @@ package net.royalur;
 
 import net.royalur.builder.GameBuilder;
 import net.royalur.model.*;
-import net.royalur.model.state.*;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
 import java.util.*;

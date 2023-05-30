@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.state.*;
+import net.royalur.model.path.PathPairFactory;
+import net.royalur.model.path.PathType;
+import net.royalur.notation.name.Name;
+import net.royalur.notation.name.NameMap;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -19,12 +23,7 @@ import java.util.Map;
  * Game of Ur into JSON for serialisation. This notation
  * has been created to be read by machines, not humans.
  */
-public class JsonNotation extends Notation {
-
-    /**
-     * The identifier given to the JSON notation.
-     */
-    public static final @Nonnull String ID = "JSON";
+public class JsonNotation implements RGUNotation {
 
     /**
      * The latest version of the JSON notation. If any breaking changes
@@ -171,15 +170,24 @@ public class JsonNotation extends Notation {
     private final @Nonnull JsonFactory jsonFactory;
 
     /**
-     * Instantiates the JSON notation to encode and decode games.
+     * A map of factories for identifying path pairs for parsing RGN.
      */
-    public JsonNotation() {
+    private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
+
+    /**
+     * Instantiates the JSON notation to encode and decode games.
+     * @param pathPairs The paths that can be parsed in this notation.
+     */
+    public JsonNotation(@Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs) {
+        this.pathPairs = pathPairs;
         this.jsonFactory = JsonFactory.builder().build();
     }
 
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
+    /**
+     * Instantiates the JSON notation to encode and decode games.
+     */
+    public JsonNotation() {
+        this(PathType.FACTORIES);
     }
 
     /**

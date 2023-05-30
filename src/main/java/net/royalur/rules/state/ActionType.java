@@ -1,9 +1,6 @@
-package net.royalur.model.state;
+package net.royalur.rules.state;
 
 import net.royalur.model.GameState;
-import net.royalur.model.state.ActionGameState;
-import net.royalur.model.state.MovedGameState;
-import net.royalur.model.state.RolledGameState;
 
 import javax.annotation.Nonnull;
 

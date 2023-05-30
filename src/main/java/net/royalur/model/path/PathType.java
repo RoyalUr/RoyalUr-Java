@@ -1,19 +1,19 @@
-package net.royalur.builder;
+package net.royalur.model.path;
 
-import net.royalur.model.path.PathPair;
-import net.royalur.model.path.*;
+import net.royalur.notation.name.Name;
+import net.royalur.notation.name.NameMap;
 
 import javax.annotation.Nonnull;
 
 /**
  * The type of path to use in a game.
  */
-public enum PathType {
+public enum PathType implements Name, PathPairFactory {
 
     /**
      * The standard path used for Aseb.
      */
-    ASEB(AsebPathPair.NAME, AsebPathPair.class) {
+    ASEB("Aseb", AsebPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new AsebPathPair();
@@ -23,7 +23,7 @@ public enum PathType {
     /**
      * The path proposed by Bell for the Royal Game of Ur.
      */
-    BELL(BellPathPair.NAME, BellPathPair.class) {
+    BELL("Bell", BellPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new BellPathPair();
@@ -33,7 +33,7 @@ public enum PathType {
     /**
      * The path proposed by Masters for the Royal Game of Ur.
      */
-    MASTERS(MastersPathPair.NAME, MastersPathPair.class) {
+    MASTERS("Masters", MastersPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new MastersPathPair();
@@ -43,7 +43,7 @@ public enum PathType {
     /**
      * The path proposed by Murray for the Royal Game of Ur.
      */
-    MURRAY(MurrayPathPair.NAME, MurrayPathPair.class) {
+    MURRAY("Murray", MurrayPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new MurrayPathPair();
@@ -53,12 +53,24 @@ public enum PathType {
     /**
      * The path proposed by Skiriuk for the Royal Game of Ur.
      */
-    SKIRIUK(SkiriukPathPair.NAME, SkiriukPathPair.class) {
+    SKIRIUK("Skiriuk", SkiriukPathPair.class) {
         @Override
         public @Nonnull PathPair create() {
             return new SkiriukPathPair();
         }
     };
+
+    /**
+     * A store to be used to parse path pairs.
+     */
+    public static final @Nonnull NameMap<PathType, PathPairFactory> FACTORIES;
+    static {
+        NameMap<PathType, PathPairFactory> factories = NameMap.create();
+        for (PathType type : values()) {
+            factories.put(type, type);
+        }
+        FACTORIES = factories.unmodifiableCopy();
+    }
 
     /**
      * The name given to this path.
@@ -79,9 +91,14 @@ public enum PathType {
         this.pathClass = pathClass;
     }
 
+    @Override
+    public @Nonnull String getTextName() {
+        return name;
+    }
+
     /**
-     * Create an instance of the path.
-     * @return The instance of the path.
+     * Create an instance of the paths.
+     * @return The instance of the paths.
      */
     public abstract @Nonnull PathPair create();
 }

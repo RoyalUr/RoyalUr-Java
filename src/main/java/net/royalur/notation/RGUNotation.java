@@ -16,20 +16,7 @@ import javax.annotation.Nonnull;
  * should check the specific notation you are considering to
  * determine the information that it is able to save.
  */
-public abstract class Notation {
-
-    /**
-     * Instantiates a notation.
-     */
-    public Notation() {}
-
-    /**
-     * Gets an identifier that can be used to uniquely identify these paths.
-     * @return An identifier that can be used to uniquely identify these paths.
-     */
-    public @Nonnull String getIdentifier() {
-        throw new UnsupportedOperationException("This notation does not have an identifier (" + getClass() + ")");
-    }
+public interface RGUNotation {
 
     /**
      * Encodes the given game, {@code game}, into text.
@@ -39,7 +26,7 @@ public abstract class Notation {
      * @param <R> The type of rolls that may be made.
      * @return Text that represents {@code game} in this notation.
      */
-    public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String
+    <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String
     encodeGame(@Nonnull Game<P, S, R> game);
 
     /**
@@ -51,6 +38,6 @@ public abstract class Notation {
      * @param <S> The type of state that is stored for each player.
      * @param <R> The type of rolls that may be made.
      */
-    public abstract <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull Game<P, S, R>
+    <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull Game<P, S, R>
     decodeGame(@Nonnull RuleSet<P, S, R> rules, @Nonnull String encoded);
 }

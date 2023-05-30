@@ -2,9 +2,13 @@ package net.royalur.notation;
 
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.state.ActionGameState;
-import net.royalur.model.state.MovedGameState;
-import net.royalur.model.state.RolledGameState;
+import net.royalur.model.path.PathPairFactory;
+import net.royalur.model.path.PathType;
+import net.royalur.notation.name.Name;
+import net.royalur.notation.name.NameMap;
+import net.royalur.rules.state.ActionGameState;
+import net.royalur.rules.state.MovedGameState;
+import net.royalur.rules.state.RolledGameState;
 import net.royalur.rules.RuleSet;
 
 import javax.annotation.Nonnull;
@@ -17,23 +21,22 @@ import java.util.Map;
  * by both humans and machines. This notation is inspired by Chess'
  * PGN (Portable Game Notation).
  * <p>
- * Additional thanks to the following contributors from the Royal
- * Game of Ur Discord server for their help in discussing the
- * merits of different features for the notation: Monomino,
- * Sachertorte, and Diego Raposo.
+ * RGN was developed by Padraig Lamont with help from several
+ * contributors from the Royal Game of Ur Discord server:
+ * Monomino, Sachertorte, and Diego Raposo.
  */
-public class RGN extends Notation {
-
-    /**
-     * The identifier given to the RGN notation.
-     */
-    public static final @Nonnull String ID = "RGN";
+public class RGN implements RGUNotation {
 
     /**
      * The default maximum length for lines in RGN that
      * encode the actions taken in a game.
      */
     public static final int DEFAULT_MAX_ACTION_LINE_LENGTH = 40;
+
+    /**
+     * A map of factories for identifying path pairs for parsing RGN.
+     */
+    private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
 
     /**
      * The maximum length of the lines that contain moves.
@@ -43,23 +46,22 @@ public class RGN extends Notation {
 
     /**
      * Instantiates the RGN notation to encode and decode games.
+     * @param pathPairs The paths that can be parsed in this notation.
      * @param maxActionLineLength The maximum length of the lines that contain moves.
      */
-    public RGN(int maxActionLineLength) {
+    public RGN(
+            @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs,
+            int maxActionLineLength
+    ) {
+        this.pathPairs = pathPairs;
         this.maxActionLineLength = maxActionLineLength;
     }
 
     /**
-     * Instantiates the RGN notation to encode and decode games,
-     * using the default maximum length of action lines.
+     * Instantiates the RGN notation to encode and decode games.
      */
     public RGN() {
-        this(DEFAULT_MAX_ACTION_LINE_LENGTH);
-    }
-
-    @Override
-    public @Nonnull String getIdentifier() {
-        return ID;
+        this(PathType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH);
     }
 
     /**

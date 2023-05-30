@@ -12,18 +12,13 @@ import java.util.List;
  * Ancient Egyptians at Play: Board Games Across Borders,
  * Bloomsbury Egyptology, Bloomsbury Academic, London, 2016.
  */
-public class AsebPathPair extends ConcreteNamedPathPair {
-
-    /**
-     * The name given to the Aseb paths.
-     */
-    public static final String NAME = "Aseb";
+public class AsebPathPair extends NamedPathPair<PathType> {
 
     /**
      * Instantiates the standard paths for the light and dark player in Aseb.
      */
     public AsebPathPair() {
-        super(NAME, new AsebLightPath(), new AsebDarkPath());
+        super(PathType.ASEB, new AsebLightPath(), new AsebDarkPath());
     }
 
     /**

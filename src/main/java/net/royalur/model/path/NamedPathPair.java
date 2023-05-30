@@ -1,15 +1,36 @@
 package net.royalur.model.path;
 
+import net.royalur.notation.name.Name;
+import net.royalur.notation.name.Named;
+
 import javax.annotation.Nonnull;
 
 /**
- * A path pair that is named.
+ * A path pair that has an associated name.
+ * @param <N> The type of the name of the path pair.
  */
-public interface NamedPathPair extends PathPair {
+public class NamedPathPair<N extends Name> extends PathPair implements Named<N> {
+
+    private final @Nonnull N name;
 
     /**
-     * Gets the name given to this path pair.
-     * @return The name given to this path pair.
+     * Instantiates a pair of paths.
+     * @param name  The name of this path.
+     * @param light The path that light players take around the board.
+     * @param dark  The path that dark players take around the board.
      */
-    public @Nonnull String getName();
+    public NamedPathPair(@Nonnull N name, @Nonnull Path light, @Nonnull Path dark) {
+        super(light, dark);
+        this.name = name;
+    }
+
+    @Override
+    public @Nonnull N getName() {
+        return name;
+    }
+
+    @Override
+    public @Nonnull String getDebugName() {
+        return name.getTextName();
+    }
 }

@@ -1,6 +1,6 @@
-package net.royalur.builder;
+package net.royalur.model.shape;
 
-import net.royalur.model.BoardShape;
+import net.royalur.model.shape.BoardShape;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 

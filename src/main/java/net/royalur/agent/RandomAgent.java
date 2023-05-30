@@ -1,7 +1,7 @@
 package net.royalur.agent;
 
 import net.royalur.model.*;
-import net.royalur.model.state.WaitingForMoveGameState;
+import net.royalur.rules.state.WaitingForMoveGameState;
 
 import javax.annotation.Nonnull;
 import java.util.List;

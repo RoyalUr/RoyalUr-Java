@@ -3,11 +3,12 @@ package net.royalur.rules.standard;
 import net.royalur.model.*;
 import net.royalur.model.path.Path;
 import net.royalur.model.path.PathPair;
-import net.royalur.model.state.*;
+import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.Dice;
 import net.royalur.rules.PieceProvider;
 import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

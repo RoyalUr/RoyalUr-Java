@@ -2,10 +2,8 @@ package net.royalur.agent;
 
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.state.WaitingForMoveGameState;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * An agent that can autonomously play the Royal Game of Ur. Agents are designed to be used
