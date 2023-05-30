@@ -2,6 +2,7 @@ package net.royalur;
 
 import net.royalur.model.*;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.PlayableGameState;
 import net.royalur.rules.state.WaitingForMoveGameState;
 import net.royalur.rules.state.WaitingForRollGameState;

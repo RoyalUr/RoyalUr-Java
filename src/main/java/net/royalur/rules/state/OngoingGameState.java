@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class OngoingGameState<
         P extends Piece, S extends PlayerState, R extends Roll
-> extends GameState<P, S, R> {
+> extends AbstractGameState<P, S, R> {
 
     /**
      * The player who can make the next interaction with the game.

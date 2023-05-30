@@ -7,6 +7,7 @@ import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.StandardBoardShape;
 import net.royalur.rules.Dice;
+import net.royalur.rules.state.GameState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;

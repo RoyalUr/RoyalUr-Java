@@ -1,9 +1,4 @@
-package net.royalur.model;
-
-import net.royalur.rules.state.ActionGameState;
-import net.royalur.rules.state.WaitingForMoveGameState;
-import net.royalur.rules.state.WaitingForRollGameState;
-import net.royalur.rules.state.WinGameState;
+package net.royalur.rules.state;
 
 import javax.annotation.Nonnull;
 

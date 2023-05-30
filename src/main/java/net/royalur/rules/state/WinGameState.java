@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public class WinGameState<
         P extends Piece, S extends PlayerState, R extends Roll
-> extends GameState<P, S, R> {
+> extends AbstractGameState<P, S, R> {
 
     /**
      * The player that won the game.

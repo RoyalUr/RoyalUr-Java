@@ -1,7 +1,5 @@
 package net.royalur.rules.state;
 
-import net.royalur.model.GameState;
-
 import javax.annotation.Nonnull;
 
 public enum ActionType {

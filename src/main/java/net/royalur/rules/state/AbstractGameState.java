@@ -1,35 +1,40 @@
-package net.royalur.model;
+package net.royalur.rules.state;
+
+import net.royalur.model.*;
 
 import javax.annotation.Nonnull;
 
 /**
  * A game state represents a single point within a game.
- * This class is immutable.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class GameState<P extends Piece, S extends PlayerState, R extends Roll> {
+public abstract class AbstractGameState<
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> implements GameState<P, S, R> {
 
     /**
      * The type of this game state, representing its purpose.
      */
-    public final @Nonnull GameStateType type;
+    private final @Nonnull GameStateType type;
 
     /**
      * The state of the pieces on the board.
      */
-    public final @Nonnull Board<P> board;
+    private final @Nonnull Board<P> board;
 
     /**
      * The state of the light player.
      */
-    public final @Nonnull S lightPlayer;
+    private final @Nonnull S lightPlayer;
 
     /**
      * The state of the dark player.
      */
-    public final @Nonnull S darkPlayer;
+    private final @Nonnull S darkPlayer;
 
     /**
      * Instantiates the baseline state of a game state.
@@ -38,7 +43,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * @param lightPlayer The state of the light player.
      * @param darkPlayer The state of the dark player.
      */
-    public GameState(
+    public AbstractGameState(
             @Nonnull GameStateType type,
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
@@ -53,7 +58,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
         if (!type.baseClass.isInstance(this)) {
             throw new IllegalArgumentException(
                     "This state's type is " + type + ", but the state is not a subclass of " + type.baseClass + ". " +
-                    "This state is of type " + getClass() + " instead"
+                            "This state is of type " + getClass() + " instead"
             );
         }
 
@@ -63,29 +68,23 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
         this.darkPlayer = darkPlayer;
     }
 
-    /**
-     * Returns whether this state is a valid state to be played from.
-     * @return Whether this state is a valid state to be played from.
-     */
-    public abstract boolean isPlayable();
-
-    /**
-     * Retrieves the state of the player {@code player}.
-     * @param player The player to retrieve the state of.
-     * @return The state of the player {@code player}.
-     */
-    public @Nonnull S getPlayer(@Nonnull Player player) {
-        switch (player) {
-            case LIGHT: return lightPlayer;
-            case DARK: return darkPlayer;
-            default:
-                throw new IllegalArgumentException("Unknown Player " + player);
-        }
+    @Override
+    public @Nonnull GameStateType getType() {
+        return type;
     }
 
-    /**
-     * Generates an English text description of the state of the game.
-     * @return An English text description of the state of the game.
-     */
-    public abstract @Nonnull String describe();
+    @Override
+    public @Nonnull Board<P> getBoard() {
+        return board;
+    }
+
+    @Override
+    public @Nonnull S getLightPlayer() {
+        return lightPlayer;
+    }
+
+    @Override
+    public @Nonnull S getDarkPlayer() {
+        return darkPlayer;
+    }
 }

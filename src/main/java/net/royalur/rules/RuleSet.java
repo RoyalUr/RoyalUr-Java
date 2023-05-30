@@ -3,6 +3,7 @@ package net.royalur.rules;
 import net.royalur.model.*;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
+import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.WaitingForMoveGameState;
 import net.royalur.rules.state.WaitingForRollGameState;
 
@@ -53,7 +54,8 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
      * Generates the initial state for a game.
      * @return The initial state for a game.
      */
-    @Nonnull GameState<P, S, R> generateInitialGameState();
+    @Nonnull
+    GameState<P, S, R> generateInitialGameState();
 
     /**
      * Finds all available moves from the current state of the board and the player,
