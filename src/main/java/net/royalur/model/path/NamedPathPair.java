@@ -11,6 +11,9 @@ import javax.annotation.Nonnull;
  */
 public class NamedPathPair<N extends Name> extends PathPair implements Named<N> {
 
+    /**
+     * The name of this path pair.
+     */
     private final @Nonnull N name;
 
     /**

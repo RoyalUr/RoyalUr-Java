@@ -95,11 +95,11 @@ public class BoardShape {
     }
 
     /**
-     * Gets an identifier that can be used to uniquely identify this board shape.
-     * @return An identifier that can be used to uniquely identify this board shape.
+     * Gets a name to be used for identifying this board shape in debugging.
+     * @return A name to be used for identifying this board shape in debugging.
      */
-    public @Nonnull String getIdentifier() {
-        throw new UnsupportedOperationException("This board shape does not have an identifier (" + getClass() + ")");
+    public @Nonnull String getDebugName() {
+        return getClass().getName();
     }
 
     /**
@@ -205,26 +205,13 @@ public class BoardShape {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        return tiles.hashCode() ^ (97 * rosetteTiles.hashCode());
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof BoardShape))
-            return false;
-
-        BoardShape other = (BoardShape) obj;
+    /**
+     * Determines whether this board shape covers the same tiles,
+     * and has the same rosettes, as {@code other}.
+     * @param other The board shape to compare with for equivalence.
+     * @return Whether this board shape is equivalent to {@param other}.
+     */
+    public boolean isEquivalent(@Nonnull BoardShape other) {
         return tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
-    }
-
-    @Override
-    public @Nonnull String toString() {
-        try {
-            return getIdentifier() + " Board Shape";
-        } catch (UnsupportedOperationException e) {
-            return "Unknown Board Shape";
-        }
     }
 }

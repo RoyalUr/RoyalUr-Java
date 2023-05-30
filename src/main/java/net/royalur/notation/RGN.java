@@ -4,6 +4,8 @@ import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
+import net.royalur.model.shape.BoardShapeFactory;
+import net.royalur.model.shape.BoardType;
 import net.royalur.notation.name.Name;
 import net.royalur.notation.name.NameMap;
 import net.royalur.rules.state.ActionGameState;
@@ -34,9 +36,14 @@ public class RGN implements RGUNotation {
     public static final int DEFAULT_MAX_ACTION_LINE_LENGTH = 40;
 
     /**
-     * A map of factories for identifying path pairs for parsing RGN.
+     * A map of factories for identifying path pairs for parsing.
      */
     private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
+
+    /**
+     * A map of factories for identifying board shapes for parsing.
+     */
+    private final @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes;
 
     /**
      * The maximum length of the lines that contain moves.
@@ -47,13 +54,16 @@ public class RGN implements RGUNotation {
     /**
      * Instantiates the RGN notation to encode and decode games.
      * @param pathPairs The paths that can be parsed in this notation.
+     * @param boardShapes The board shapes that can be parsed in this notation.
      * @param maxActionLineLength The maximum length of the lines that contain moves.
      */
     public RGN(
             @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs,
+            @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes,
             int maxActionLineLength
     ) {
         this.pathPairs = pathPairs;
+        this.boardShapes = boardShapes;
         this.maxActionLineLength = maxActionLineLength;
     }
 
@@ -61,7 +71,7 @@ public class RGN implements RGUNotation {
      * Instantiates the RGN notation to encode and decode games.
      */
     public RGN() {
-        this(PathType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH);
+        this(PathType.FACTORIES, BoardType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH);
     }
 
     /**

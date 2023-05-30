@@ -6,6 +6,8 @@ import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
+import net.royalur.model.shape.BoardShapeFactory;
+import net.royalur.model.shape.BoardType;
 import net.royalur.notation.name.Name;
 import net.royalur.notation.name.NameMap;
 import net.royalur.rules.RuleSet;
@@ -170,16 +172,26 @@ public class JsonNotation implements RGUNotation {
     private final @Nonnull JsonFactory jsonFactory;
 
     /**
-     * A map of factories for identifying path pairs for parsing RGN.
+     * A map of factories for identifying path pairs for parsing.
      */
     private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
 
     /**
+     * A map of factories for identifying board shapes for parsing.
+     */
+    private final @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes;
+
+    /**
      * Instantiates the JSON notation to encode and decode games.
      * @param pathPairs The paths that can be parsed in this notation.
+     * @param boardShapes The board shapes that can be parsed in this notation.
      */
-    public JsonNotation(@Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs) {
+    public JsonNotation(
+            @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs,
+            @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes
+    ) {
         this.pathPairs = pathPairs;
+        this.boardShapes = boardShapes;
         this.jsonFactory = JsonFactory.builder().build();
     }
 
@@ -187,7 +199,7 @@ public class JsonNotation implements RGUNotation {
      * Instantiates the JSON notation to encode and decode games.
      */
     public JsonNotation() {
-        this(PathType.FACTORIES);
+        this(PathType.FACTORIES, BoardType.FACTORIES);
     }
 
     /**
