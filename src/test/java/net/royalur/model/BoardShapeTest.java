@@ -259,56 +259,25 @@ public class BoardShapeTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testIsEquivalent() {
         BoardShape standard1 = new StandardBoardShape();
         BoardShape standard2 = new StandardBoardShape();
         BoardShape aseb1 = new AsebBoardShape();
         BoardShape aseb2 = new AsebBoardShape();
 
-        assertEquals(standard1.hashCode(), standard1.hashCode());
-        assertEquals(standard1.hashCode(), standard2.hashCode());
-        assertEquals(standard2.hashCode(), standard1.hashCode());
-        assertEquals(standard2.hashCode(), standard2.hashCode());
+        assertTrue(standard1.isEquivalent(standard1));
+        assertTrue(standard1.isEquivalent(standard2));
+        assertTrue(standard2.isEquivalent(standard1));
+        assertTrue(standard2.isEquivalent(standard2));
 
-        assertEquals(aseb1.hashCode(), aseb1.hashCode());
-        assertEquals(aseb1.hashCode(), aseb2.hashCode());
-        assertEquals(aseb2.hashCode(), aseb1.hashCode());
-        assertEquals(aseb2.hashCode(), aseb2.hashCode());
-    }
+        assertTrue(aseb1.isEquivalent(aseb1));
+        assertTrue(aseb1.isEquivalent(aseb2));
+        assertTrue(aseb2.isEquivalent(aseb1));
+        assertTrue(aseb2.isEquivalent(aseb2));
 
-    @Test
-    public void testEquals() {
-        BoardShape standard1 = new StandardBoardShape();
-        BoardShape standard2 = new StandardBoardShape();
-        BoardShape aseb1 = new AsebBoardShape();
-        BoardShape aseb2 = new AsebBoardShape();
-
-        assertEquals(standard1, standard1);
-        assertEquals(standard1, standard2);
-        assertEquals(standard2, standard1);
-        assertEquals(standard2, standard2);
-
-        assertEquals(aseb1, aseb2);
-        assertEquals(aseb1, aseb2);
-        assertEquals(aseb2, aseb1);
-        assertEquals(aseb2, aseb2);
-
-        assertNotEquals(standard1, aseb1);
-        assertNotEquals(standard1, aseb2);
-        assertNotEquals(standard2, aseb1);
-        assertNotEquals(standard2, aseb2);
-
-        Object notShape = new Object();
-        assertNotEquals(standard1, notShape);
-        assertNotEquals(standard2, notShape);
-        assertNotEquals(aseb1, notShape);
-        assertNotEquals(aseb2, notShape);
-        assertNotEquals(standard1, null);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(BoardShapeProvider.class)
-    public void testToString(BoardShape shape) {
-        assertEquals(shape.getIdentifier() + " Board Shape", shape.toString());
+        assertFalse(standard1.isEquivalent(aseb1));
+        assertFalse(standard1.isEquivalent(aseb2));
+        assertFalse(standard2.isEquivalent(aseb1));
+        assertFalse(standard2.isEquivalent(aseb2));
     }
 }

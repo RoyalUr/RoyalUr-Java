@@ -71,7 +71,7 @@ public class StandardRuleSet<
         if (!boardShape.isCompatible(paths.getLight()) || !boardShape.isCompatible(paths.getDark())) {
             throw new IllegalArgumentException(
                     "The " + paths.getDebugName() + " paths are not compatible with the " +
-                            boardShape.getIdentifier() + " board shape"
+                            boardShape.getDebugName() + " board shape"
             );
         }
 

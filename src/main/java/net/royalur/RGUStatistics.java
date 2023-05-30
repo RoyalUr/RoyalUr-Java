@@ -60,7 +60,7 @@ public class RGUStatistics {
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
-            String desc = sample.getBoard().shape.getIdentifier() + ", " + sample.getRules().getPaths().getDebugName();
+            String desc = sample.getBoard().shape.getDebugName() + ", " + sample.getRules().getPaths().getDebugName();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {
