@@ -46,6 +46,6 @@ public class WaitingForMoveGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "Waiting for the " + turn.lowerName + "player to make a move with their roll of " + roll + ".";
+        return "Waiting for the " + turn.lowerName + " player to make a move with their roll of " + roll + ".";
     }
 }
