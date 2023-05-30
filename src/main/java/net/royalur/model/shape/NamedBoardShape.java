@@ -1,10 +1,8 @@
 package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
-import net.royalur.model.path.Path;
-import net.royalur.model.path.PathPair;
-import net.royalur.notation.name.Name;
-import net.royalur.notation.name.Named;
+import net.royalur.name.Name;
+import net.royalur.name.Named;
 
 import javax.annotation.Nonnull;
 import java.util.Set;

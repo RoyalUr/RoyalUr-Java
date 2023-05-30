@@ -1,4 +1,4 @@
-package net.royalur.notation.name;
+package net.royalur.name;
 
 import javax.annotation.Nonnull;
 import java.util.*;

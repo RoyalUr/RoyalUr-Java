@@ -1,7 +1,7 @@
 package net.royalur.model.path;
 
 import net.royalur.model.Player;
-import net.royalur.notation.name.TextName;
+import net.royalur.name.TextName;
 
 import javax.annotation.Nonnull;
 

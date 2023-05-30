@@ -1,7 +1,7 @@
 package net.royalur.model.path;
 
-import net.royalur.notation.name.Name;
-import net.royalur.notation.name.NameMap;
+import net.royalur.name.Name;
+import net.royalur.name.NameMap;
 
 import javax.annotation.Nonnull;
 
