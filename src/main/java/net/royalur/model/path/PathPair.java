@@ -4,6 +4,7 @@ import net.royalur.model.Player;
 import net.royalur.name.TextName;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a pair of paths for the light and dark players to
@@ -68,6 +69,15 @@ public class PathPair {
      */
     public boolean isEquivalent(@Nonnull PathPair other) {
         return getLight().isEquivalent(other.getLight()) && getDark().isEquivalent(other.getDark());
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !getClass().equals(obj.getClass()))
+            return false;
+
+        PathPair other = (PathPair) obj;
+        return isEquivalent(other);
     }
 
     /**

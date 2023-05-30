@@ -2,6 +2,7 @@ package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
 import net.royalur.model.path.Path;
+import net.royalur.model.path.PathPair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -213,5 +214,14 @@ public class BoardShape {
      */
     public boolean isEquivalent(@Nonnull BoardShape other) {
         return tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !getClass().equals(obj.getClass()))
+            return false;
+
+        BoardShape other = (BoardShape) obj;
+        return isEquivalent(other);
     }
 }
