@@ -1,6 +1,7 @@
 package net.royalur;
 
 import net.royalur.model.*;
+import net.royalur.name.Name;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.PlayableGameState;
@@ -198,7 +199,7 @@ public class StandardGame<
     @Override
     public @Nonnull List<Move<P>> findAvailableMoves() {
         WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
-        return rules.findAvailableMoves(state.board, state.getTurnPlayer(), state.roll);
+        return rules.findAvailableMoves(state.getBoard(), state.getTurnPlayer(), state.getRoll());
     }
 
     @Override
@@ -233,16 +234,16 @@ public class StandardGame<
 
     @Override
     public void makeMove(@Nonnull Tile tile) {
-        PlayableGameState<P, S, R> state = getCurrentPlayableState();
-        if (!state.board.contains(tile)) {
-            if (tile.equals(rules.getPaths().get(state.turn).startTile)) {
+        PlayableGameState<P, S, R, ?> state = getCurrentPlayableState();
+        if (!state.getBoard().contains(tile)) {
+            if (tile.equals(rules.getPaths().get(state.getTurn()).startTile)) {
                 makeMoveIntroducingPiece();
                 return;
             }
             throw new IllegalStateException("The tile does not exist on the board, " + tile);
         }
 
-        P piece = getCurrentState().board.get(tile);
+        P piece = getCurrentState().getBoard().get(tile);
         if (piece == null)
             throw new IllegalStateException("There is no piece on tile " + tile);
 

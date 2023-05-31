@@ -11,8 +11,10 @@ import javax.annotation.Nonnull;
  * @param <R> The type of roll that will be made from this game state.
  */
 public class WaitingForRollGameState<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends PlayableGameState<P, S, R> {
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> extends AbstractOngoingGameState<P, S, R> implements PlayableGameState<P, S, R, ActionType> {
 
     /**
      * Instantiates a game state where the game is waiting for a player to roll the dice.
@@ -25,13 +27,18 @@ public class WaitingForRollGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player turn) {
+            @Nonnull Player turn
+    ) {
+        super(board, lightPlayer, darkPlayer, turn);
+    }
 
-        super(GameStateType.WAITING_FOR_ROLL, board, lightPlayer, darkPlayer, turn);
+    @Override
+    public @Nonnull ActionType getExpectedActionType() {
+        return ActionType.ROLL;
     }
 
     @Override
     public @Nonnull String describe() {
-        return "Waiting for the " + turn.lowerName + " player to roll the dice.";
+        return "Waiting for the " + getTurn().lowerName + " player to roll the dice.";
     }
 }

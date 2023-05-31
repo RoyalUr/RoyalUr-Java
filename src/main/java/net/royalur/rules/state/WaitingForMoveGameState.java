@@ -11,13 +11,15 @@ import javax.annotation.Nonnull;
  * @param <R> The type of the roll that was made to get into this game state.
  */
 public class WaitingForMoveGameState<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends PlayableGameState<P, S, R> {
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> extends AbstractOngoingGameState<P, S, R> implements PlayableGameState<P, S, R, ActionType> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    public final @Nonnull R roll;
+    private final @Nonnull R roll;
 
     /**
      * Instantiates a game state where the game is waiting for a player to make a move.
@@ -33,19 +35,30 @@ public class WaitingForMoveGameState<
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
             @Nonnull Player turn,
-            @Nonnull R roll) {
+            @Nonnull R roll
+    ) {
+        super(board, lightPlayer, darkPlayer, turn);
+        if (roll.value <= 0)
+            throw new IllegalArgumentException("Roll must have a value of at least 1, not " + roll.value);
 
-        super(GameStateType.WAITING_FOR_MOVE, board, lightPlayer, darkPlayer, turn);
-        if (roll.value <= 0) {
-            throw new IllegalArgumentException(
-                    "The waiting for move game state must have a roll of at least 1, not " + roll.value
-            );
-        }
         this.roll = roll;
     }
 
     @Override
+    public @Nonnull ActionType getExpectedActionType() {
+        return ActionType.MOVE;
+    }
+
+    /**
+     * Gets the roll that the player made.
+     * @return The roll that the player made.
+     */
+    public @Nonnull R getRoll() {
+        return roll;
+    }
+
+    @Override
     public @Nonnull String describe() {
-        return "Waiting for the " + turn.lowerName + " player to make a move with their roll of " + roll + ".";
+        return "Waiting for the " + getTurn().lowerName + " player to make a move with their roll of " + roll + ".";
     }
 }

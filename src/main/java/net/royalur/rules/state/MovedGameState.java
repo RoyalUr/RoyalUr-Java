@@ -11,18 +11,20 @@ import javax.annotation.Nonnull;
  * @param <R> The type of the roll that had the value of zero.
  */
 public class MovedGameState<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends ActionGameState<P, S, R> {
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> extends AbstractOngoingGameState<P, S, R> implements ActionGameState<P, S, R, ActionType> {
 
     /**
      * The roll of the dice that was used for the move.
      */
-    public final @Nonnull R roll;
+    private final @Nonnull R roll;
 
     /**
      * The move that was made.
      */
-    public final @Nonnull Move<P> move;
+    private final @Nonnull Move<P> move;
 
     /**
      * Instantiates a game state representing a move that was made in a game.
@@ -39,17 +41,37 @@ public class MovedGameState<
             @Nonnull S darkPlayer,
             @Nonnull Player turn,
             @Nonnull R roll,
-            @Nonnull Move<P> move) {
-
-        super(ActionType.MOVE, board, lightPlayer, darkPlayer, turn);
-
+            @Nonnull Move<P> move
+    ) {
+        super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
         this.move = move;
     }
 
     @Override
+    public @Nonnull ActionType getActionType() {
+        return ActionType.MOVE;
+    }
+
+    /**
+     * Gets the roll of the dice that was used for the move.
+     * @return The roll of the dice that was used for the move.
+     */
+    public @Nonnull R getRoll() {
+        return roll;
+    }
+
+    /**
+     * Gets the move that was made.
+     * @return The move that was made.
+     */
+    public @Nonnull Move<P> getMove() {
+        return move;
+    }
+
+    @Override
     public @Nonnull String describe() {
-        return "The " + turn.lowerName + " player rolled " + roll + ", " +
+        return "The " + getTurn().lowerName + " player rolled " + roll + ", " +
                 "and moved their " + move.getSource() + " piece to " + move.getDestination() + ".";
     }
 }

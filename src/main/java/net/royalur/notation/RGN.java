@@ -12,6 +12,7 @@ import net.royalur.rules.state.ActionGameState;
 import net.royalur.rules.state.MovedGameState;
 import net.royalur.rules.state.RolledGameState;
 import net.royalur.rules.RuleSet;
+import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -38,12 +39,12 @@ public class RGN implements RGUNotation {
     /**
      * A map of factories for identifying path pairs for parsing.
      */
-    private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
+    private final @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs;
 
     /**
      * A map of factories for identifying board shapes for parsing.
      */
-    private final @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes;
+    private final @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes;
 
     /**
      * The maximum length of the lines that contain moves.
@@ -58,8 +59,8 @@ public class RGN implements RGUNotation {
      * @param maxActionLineLength The maximum length of the lines that contain moves.
      */
     public RGN(
-            @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs,
-            @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes,
+            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
+            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
             int maxActionLineLength
     ) {
         this.pathPairs = pathPairs;
@@ -111,7 +112,7 @@ public class RGN implements RGUNotation {
             @Nonnull StringBuilder builder,
             @Nonnull RolledGameState<P, S, R> rolledState
     ) {
-        Roll roll = rolledState.roll;
+        Roll roll = rolledState.getRoll();
         builder.append("r").append(roll.value);
     }
 
@@ -129,7 +130,7 @@ public class RGN implements RGUNotation {
             @Nonnull StringBuilder builder,
             @Nonnull MovedGameState<P, S, R> movedState
     ) {
-        Move<?> move = movedState.move;
+        Move<?> move = movedState.getMove();
         Tile from, to;
 
         // Get the origin tile.
@@ -194,9 +195,9 @@ public class RGN implements RGUNotation {
         int lineLength = 0;
         StringBuilder actionBuilder = new StringBuilder();
 
-        List<ActionGameState<P, S, R>> states = game.getActionStates();
+        List<ActionGameState<P, S, R, ?>> states = game.getActionStates();
         for (int index = 0; index < states.size(); ++index) {
-            ActionGameState<P, S, R> actionState = states.get(index);
+            ActionGameState<P, S, R, ?> actionState = states.get(index);
             RolledGameState<P, S, R> rollState = null;
             MovedGameState<P, S, R> moveState = null;
 
@@ -206,14 +207,14 @@ public class RGN implements RGUNotation {
                     continue;
 
                 // Otherwise, encode it on its own.
-                rollState = (RolledGameState<P, S, R>) actionState;
+                rollState = Cast.unsafeCast(actionState);
             } else if (actionState instanceof MovedGameState) {
                 // Get the move.
-                moveState = (MovedGameState<P, S, R>) actionState;
+                moveState = Cast.unsafeCast(actionState);
 
                 // Try to find a roll to associate with this move.
                 if (index > 0 && states.get(index - 1) instanceof RolledGameState) {
-                    rollState = (RolledGameState<P, S, R>) states.get(index - 1);
+                    rollState = Cast.unsafeCast(states.get(index - 1));
                 }
             } else {
                 throw new IllegalArgumentException("Unknown action state type " + actionState.getClass());

@@ -2,6 +2,7 @@ package net.royalur;
 
 import net.royalur.builder.GameBuilder;
 import net.royalur.model.*;
+import net.royalur.name.Name;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.state.*;
@@ -127,10 +128,10 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The states that represent the actions that have been
      *         made so far in the game.
      */
-    default @Nonnull List<ActionGameState<P, S, R>> getActionStates() {
+    default @Nonnull List<ActionGameState<P, S, R, ?>> getActionStates() {
         return getStates().stream()
                 .filter(s -> s instanceof ActionGameState)
-                .map(s -> (ActionGameState<P, S, R>) s)
+                .map(s -> (ActionGameState<P, S, R, ?>) s)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -154,14 +155,6 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Retrieve the type of state that the game is currently in.
-     * @return The type of state that the game is currently in.
-     */
-    default @Nonnull GameStateType getCurrentStateType() {
-        return getCurrentState().type;
-    }
-
-    /**
      * Determines whether the game is currently in a finished state.
      * @return Whether the game is currently in a finished state.
      */
@@ -182,10 +175,10 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * This will throw an error if the game is not in a playable state.
      * @return The playable state that the game is currently in.
      */
-    default @Nonnull PlayableGameState<P, S, R> getCurrentPlayableState() {
+    default @Nonnull PlayableGameState<P, S, R, ?> getCurrentPlayableState() {
         GameState<P, S, R> state = getCurrentState();
         if (state instanceof PlayableGameState)
-            return (PlayableGameState<P, S, R>) state;
+            return (PlayableGameState<P, S, R, ?>) state;
 
         throw new IllegalStateException("This game is not in a playable game state");
     }
@@ -258,7 +251,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The state of the board in the current state of the game.
      */
     default @Nonnull Board<P> getBoard() {
-        return getCurrentState().board;
+        return getCurrentState().getBoard();
     }
 
     /**
@@ -266,7 +259,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The current state of the light player.
      */
     default @Nonnull S getLightPlayer() {
-        return getCurrentState().lightPlayer;
+        return getCurrentState().getLightPlayer();
     }
 
     /**
@@ -274,7 +267,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The current state of the dark player.
      */
     default @Nonnull S getDarkPlayer() {
-        return getCurrentState().darkPlayer;
+        return getCurrentState().getDarkPlayer();
     }
 
     /**
@@ -315,7 +308,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The roll that was made that can now be used to make a move.
      */
     default @Nonnull R getRoll() {
-        return getCurrentWaitingForMoveState().roll;
+        return getCurrentWaitingForMoveState().getRoll();
     }
 
     /**

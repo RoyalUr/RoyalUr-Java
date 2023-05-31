@@ -17,11 +17,6 @@ public abstract class AbstractGameState<
 > implements GameState<P, S, R> {
 
     /**
-     * The type of this game state, representing its purpose.
-     */
-    private final @Nonnull GameStateType type;
-
-    /**
      * The state of the pieces on the board.
      */
     private final @Nonnull Board<P> board;
@@ -38,39 +33,23 @@ public abstract class AbstractGameState<
 
     /**
      * Instantiates the baseline state of a game state.
-     * @param type The type of this game state, representing its purpose.
      * @param board The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer The state of the dark player.
      */
     public AbstractGameState(
-            @Nonnull GameStateType type,
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer) {
-
+            @Nonnull S darkPlayer
+    ) {
         if (lightPlayer.player != Player.LIGHT)
             throw new IllegalArgumentException("The lightPlayer should be of Player.LIGHT, not " + lightPlayer.player);
         if (darkPlayer.player != Player.DARK)
             throw new IllegalArgumentException("The darkPlayer should be of Player.DARK, not " + lightPlayer.player);
 
-        // Enforce that the GameStateTypes match the types used for the game states.
-        if (!type.baseClass.isInstance(this)) {
-            throw new IllegalArgumentException(
-                    "This state's type is " + type + ", but the state is not a subclass of " + type.baseClass + ". " +
-                            "This state is of type " + getClass() + " instead"
-            );
-        }
-
-        this.type = type;
         this.board = board;
         this.lightPlayer = lightPlayer;
         this.darkPlayer = darkPlayer;
-    }
-
-    @Override
-    public @Nonnull GameStateType getType() {
-        return type;
     }
 
     @Override
@@ -86,5 +65,10 @@ public abstract class AbstractGameState<
     @Override
     public @Nonnull S getDarkPlayer() {
         return darkPlayer;
+    }
+
+    @Override
+    public boolean isPlayable() {
+        return this instanceof PlayableGameState;
     }
 }

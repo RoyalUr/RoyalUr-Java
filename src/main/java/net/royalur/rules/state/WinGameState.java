@@ -11,7 +11,9 @@ import javax.annotation.Nonnull;
  * @param <R> The type of rolls that may be stored in this game state.
  */
 public class WinGameState<
-        P extends Piece, S extends PlayerState, R extends Roll
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
 > extends AbstractGameState<P, S, R> {
 
     /**
@@ -35,9 +37,9 @@ public class WinGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player winner) {
-
-        super(GameStateType.WIN, board, lightPlayer, darkPlayer);
+            @Nonnull Player winner
+    ) {
+        super(board, lightPlayer, darkPlayer);
         this.winner = winner;
         this.loser = winner.getOtherPlayer();
     }

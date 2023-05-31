@@ -198,29 +198,29 @@ public class StandardRuleSet<
 
         // Construct the state representing the roll that was made.
         RolledGameState<P, S, R> rolledState = new RolledGameState<>(
-                state.board, state.lightPlayer, state.darkPlayer, state.turn, roll
+                state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), state.getTurn(), roll
         );
 
         // If the player rolled zero, we need to change the turn to the other player.
         if (roll.value == 0) {
-            Player newTurn = state.turn.getOtherPlayer();
+            Player newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
-                    state.board, state.lightPlayer, state.darkPlayer, newTurn
+                    state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
             ));
         }
 
         // Determine if the player has any available moves.
-        List<Move<P>> availableMoves = findAvailableMoves(state.board, state.getTurnPlayer(), roll);
+        List<Move<P>> availableMoves = findAvailableMoves(state.getBoard(), state.getTurnPlayer(), roll);
         if (availableMoves.isEmpty()) {
-            Player newTurn = state.turn.getOtherPlayer();
+            Player newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
-                    state.board, state.lightPlayer, state.darkPlayer, newTurn
+                    state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
             ));
         }
 
         // The player has moves they can make.
         return List.of(rolledState, new WaitingForMoveGameState<>(
-                state.board, state.lightPlayer, state.darkPlayer, state.turn, roll
+                state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), state.getTurn(), roll
         ));
     }
 
@@ -232,11 +232,12 @@ public class StandardRuleSet<
 
         // Generate the state representing the move that was made.
         MovedGameState<P, S, R> movedState = new MovedGameState<>(
-                state.board, state.lightPlayer, state.darkPlayer, state.turn, state.roll, move
+                state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(),
+                state.getTurn(), state.getRoll(), move
         );
 
         // Apply the move to the board.
-        Board<P> board = state.board.copy();
+        Board<P> board = state.getBoard().copy();
         move.apply(board);
 
         // Apply the move to the player that made the move.
@@ -262,10 +263,10 @@ public class StandardRuleSet<
 
         // Check if the player has won the game.
         if (move.isScoringPiece() && turnPlayer.pieceCount <= 0 && board.countPieces(turnPlayer.player) <= 0)
-            return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.turn));
+            return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.getTurn()));
 
         // Determine who's turn it will be in the next state.
-        Player turn = state.turn;
+        Player turn = state.getTurn();
         if (!move.isLandingOnRosette(board.shape)) {
             turn = turn.getOtherPlayer();
         }

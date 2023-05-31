@@ -13,6 +13,7 @@ import net.royalur.name.NameMap;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.state.*;
+import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -43,21 +44,6 @@ public class JsonNotation implements RGUNotation {
      * The key in the JSON for the metadata of the game.
      */
     public static final @Nonnull String METADATA_KEY = "metadata";
-
-    /**
-     * The key in the JSON for the identities of the player in the game.
-     */
-    public static final @Nonnull String PLAYER_IDENTITIES_KEY = "players";
-
-    /**
-     * The key in the JSON for whether an identity is anonymous.
-     */
-    public static final @Nonnull String IDENTITY_ANONYMOUS_KEY = "is_anonymous";
-
-    /**
-     * The key in the JSON for the name of an identity.
-     */
-    public static final @Nonnull String IDENTITY_NAME_KEY = "name";
 
     /**
      * The key in the JSON for the list of actions played in the game.
@@ -174,12 +160,12 @@ public class JsonNotation implements RGUNotation {
     /**
      * A map of factories for identifying path pairs for parsing.
      */
-    private final @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs;
+    private final @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs;
 
     /**
      * A map of factories for identifying board shapes for parsing.
      */
-    private final @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes;
+    private final @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes;
 
     /**
      * Instantiates the JSON notation to encode and decode games.
@@ -187,8 +173,8 @@ public class JsonNotation implements RGUNotation {
      * @param boardShapes The board shapes that can be parsed in this notation.
      */
     public JsonNotation(
-            @Nonnull NameMap<? extends Name, ? extends PathPairFactory> pathPairs,
-            @Nonnull NameMap<? extends Name, ? extends BoardShapeFactory> boardShapes
+            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
+            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes
     ) {
         this.pathPairs = pathPairs;
         this.boardShapes = boardShapes;
@@ -239,13 +225,13 @@ public class JsonNotation implements RGUNotation {
         generator.writeBooleanField(STATE_WON_KEY, state instanceof WinGameState);
 
         if (state instanceof OngoingGameState<P, S, R> ongoingState) {
-            generator.writeStringField(STATE_TURN_KEY, ongoingState.turn.name());
+            generator.writeStringField(STATE_TURN_KEY, ongoingState.getTurn().name());
         } else if (state instanceof WinGameState<P, S, R> winState) {
             generator.writeStringField(STATE_WINNER_KEY, winState.winner.name());
             generator.writeStringField(STATE_LOSER_KEY, winState.loser.name());
         }
 
-        generator.writeStringField(STATE_BOARD_KEY, state.board.toString(BOARD_COLUMN_DELIMITER, false));
+        generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString(BOARD_COLUMN_DELIMITER, false));
 
         // Write the states of the players.
         generator.writeObjectFieldStart(STATE_PLAYERS_KEY);
@@ -253,7 +239,7 @@ public class JsonNotation implements RGUNotation {
             // Light player.
             generator.writeObjectFieldStart(Player.LIGHT.name());
             try {
-                writePlayerState(state.lightPlayer, rules, generator);
+                writePlayerState(state.getLightPlayer(), rules, generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -261,7 +247,7 @@ public class JsonNotation implements RGUNotation {
             // Dark player.
             generator.writeObjectFieldStart(Player.DARK.name());
             try {
-                writePlayerState(state.darkPlayer, rules, generator);
+                writePlayerState(state.getDarkPlayer(), rules, generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -285,7 +271,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.roll.value);
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value);
     }
 
     /**
@@ -382,11 +368,11 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.roll.value);
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value);
 
         generator.writeObjectFieldStart(ACTION_MOVE_KEY);
         try {
-            writeMove(state.move, rules, generator);
+            writeMove(state.getMove(), rules, generator);
         } finally {
             generator.writeEndObject();
         }
@@ -402,17 +388,17 @@ public class JsonNotation implements RGUNotation {
      * @throws IOException If there is an error writing the JSON.
      */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writeAction(
-            @Nonnull ActionGameState<P, S, R> state,
+            @Nonnull ActionGameState<P, S, R, ?> state,
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(ACTION_TYPE_KEY, state.actionType.name());
+        generator.writeStringField(ACTION_TYPE_KEY, state.getActionType().getTextName());
 
         if (state instanceof RolledGameState) {
-            writeRolledAction((RolledGameState<P, S, R>) state, rules, generator);
+            writeRolledAction(Cast.unsafeCast(state), rules, generator);
         } else if (state instanceof MovedGameState) {
-            writeMovedAction((MovedGameState<P, S, R>) state, rules, generator);
+            writeMovedAction(Cast.unsafeCast(state), rules, generator);
         } else {
             throw new IllegalArgumentException("Unknown action game state type " + state.getClass());
         }
@@ -431,7 +417,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        for (ActionGameState<P, S, R> state : game.getActionStates()) {
+        for (ActionGameState<P, S, R, ?> state : game.getActionStates()) {
             generator.writeStartObject();
             try {
                 writeAction(state, game.getRules(), generator);

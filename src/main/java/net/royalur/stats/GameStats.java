@@ -113,10 +113,9 @@ public class GameStats {
 
         // Count all the rolls and moves.
         for (GameState<?, ?, ?> state : game.getStates()) {
-            if (!(state instanceof ActionGameState))
+            if (!(state instanceof ActionGameState<?, ?, ?, ?> actionState))
                 continue;
 
-            ActionGameState<?, ?, ?> actionState = (ActionGameState<?, ?, ?>) state;
             Player player = actionState.getTurnPlayer().player;
 
             if (actionState instanceof RolledGameState) {

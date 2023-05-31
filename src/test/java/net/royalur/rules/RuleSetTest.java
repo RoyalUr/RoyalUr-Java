@@ -68,7 +68,7 @@ public class RuleSetTest {
 
         RuleSet<?, ?, ?> rules = nrs.rules;
         GameState<?, ?, ?> initialState = rules.generateInitialGameState();
-        Board<?> board = initialState.board;
+        Board<?> board = initialState.getBoard();
         assertNotNull(board);
         assertEquals(board.shape, rules.getBoardShape());
 
@@ -85,11 +85,11 @@ public class RuleSetTest {
         RuleSet<?, ?, ?> rules = nrs.rules;
         GameState<?, ?, ?> initialState = rules.generateInitialGameState();
 
-        PlayerState light = initialState.lightPlayer;
+        PlayerState light = initialState.getLightPlayer();
         assertNotNull(light);
         assertEquals(Player.LIGHT, light.player);
 
-        PlayerState dark = initialState.darkPlayer;
+        PlayerState dark = initialState.getDarkPlayer();
         assertNotNull(dark);
         assertEquals(Player.DARK, dark.player);
     }
@@ -116,9 +116,9 @@ public class RuleSetTest {
         Dice<R> dice = rules.getDice();
 
         GameState<P, S, R> initialState = rules.generateInitialGameState();
-        Board<P> board = initialState.board;
-        S light = initialState.lightPlayer;
-        S dark = initialState.darkPlayer;
+        Board<P> board = initialState.getBoard();
+        S light = initialState.getLightPlayer();
+        S dark = initialState.getDarkPlayer();
 
         int availableLight = 0;
         int availableDark = 0;

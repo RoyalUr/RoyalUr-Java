@@ -11,13 +11,15 @@ import javax.annotation.Nonnull;
  * @param <R> The type of roll that was made in this game state.
  */
 public class RolledGameState<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends ActionGameState<P, S, R> {
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> extends AbstractOngoingGameState<P, S, R> implements ActionGameState<P, S, R, ActionType> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    public final @Nonnull R roll;
+    private final @Nonnull R roll;
 
     /**
      * Instantiates a game state that represents a roll that was made in a game.
@@ -33,15 +35,27 @@ public class RolledGameState<
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
             @Nonnull Player turn,
-            @Nonnull R roll) {
-
-        super(ActionType.ROLL, board, lightPlayer, darkPlayer, turn);
-
+            @Nonnull R roll
+    ) {
+        super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
     }
 
     @Override
+    public @Nonnull ActionType getActionType() {
+        return ActionType.ROLL;
+    }
+
+    /**
+     * Gets the roll that the player made.
+     * @return The roll that the player made.
+     */
+    public @Nonnull R getRoll() {
+        return roll;
+    }
+
+    @Override
     public @Nonnull String describe() {
-        return "The " + turn.lowerName + " player rolled " + roll +".";
+        return "The " + getTurn().lowerName + " player rolled " + roll +".";
     }
 }

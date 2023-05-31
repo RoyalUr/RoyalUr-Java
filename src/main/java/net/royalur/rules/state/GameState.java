@@ -13,11 +13,6 @@ import javax.annotation.Nonnull;
 public interface GameState<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
-     * The type of this game state, representing its purpose.
-     */
-    @Nonnull GameStateType getType();
-
-    /**
      * The state of the pieces on the board.
      */
     @Nonnull Board<P> getBoard();

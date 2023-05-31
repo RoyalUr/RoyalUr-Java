@@ -80,9 +80,9 @@ public class StandardRuleSetTest {
     public void testFindAvailableMoves_IntroducingPieces(NamedSimpleRuleSet nrs) {
         StandardRuleSet<StandardPiece, PlayerState, Roll> rules = nrs.rules;
         GameState<StandardPiece, PlayerState, Roll> initialState = rules.generateInitialGameState();
-        Board<StandardPiece> board = initialState.board;
-        PlayerState light = initialState.lightPlayer;
-        PlayerState dark = initialState.darkPlayer;
+        Board<StandardPiece> board = initialState.getBoard();
+        PlayerState light = initialState.getLightPlayer();
+        PlayerState dark = initialState.getDarkPlayer();
 
         int maxRoll = rules.getDice().getMaxRollValue();
         PathPair paths = rules.getPaths();
