@@ -29,6 +29,11 @@ public class UnmodifiableNameMap<N extends Name, T> implements NameMap<N, T> {
     }
 
     @Override
+    public @Nonnull T get(int id) {
+        return delegate.get(id);
+    }
+
+    @Override
     public @Nonnull T get(@Nonnull String textName) {
         return delegate.get(textName);
     }

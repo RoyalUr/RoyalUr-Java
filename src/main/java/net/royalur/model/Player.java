@@ -1,11 +1,14 @@
 package net.royalur.model;
 
+import net.royalur.name.Name;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Represents the players of a game.
  */
-public enum Player {
+public enum Player implements Name {
     /**
      * The light player. Following chess, the light player moves first.
      */
@@ -51,17 +54,30 @@ public enum Player {
         this.character = character;
     }
 
+    @Override
+    public @Nonnull String getTextName() {
+        return name;
+    }
+
+    @Override
+    public boolean hasID() {
+        return true;
+    }
+
+    @Override
+    public int getID() {
+        return id;
+    }
+
     /**
      * Retrieves the Player representing the other player.
      * @return The Player representing the other player.
      */
     public Player getOtherPlayer() {
-        switch (this) {
-            case LIGHT: return DARK;
-            case DARK: return LIGHT;
-            default:
-                throw new IllegalArgumentException("Unknown Player " + this);
-        }
+        return switch (this) {
+            case LIGHT -> DARK;
+            case DARK -> LIGHT;
+        };
     }
 
     /**

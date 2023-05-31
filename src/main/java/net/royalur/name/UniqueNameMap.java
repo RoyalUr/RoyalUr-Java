@@ -21,11 +21,17 @@ public class UniqueNameMap<N extends Name, T> implements NameMap<N, T> {
     private final @Nonnull Map<String, Entry<N, T>> byLowercaseName;
 
     /**
+     * The entries stored by their ID.
+     */
+    private final @Nonnull Map<Integer, Entry<N, T>> byID;
+
+    /**
      * Instantiates an empty store.
      */
     public UniqueNameMap() {
         this.entries = new ArrayList<>();
         this.byLowercaseName = new HashMap<>();
+        this.byID = new HashMap<>();
     }
 
     /**
@@ -45,15 +51,29 @@ public class UniqueNameMap<N extends Name, T> implements NameMap<N, T> {
         String lowercaseName = textName.toLowerCase();
 
         if (byLowercaseName.containsKey(lowercaseName))
-            throw new IllegalArgumentException("Name \"" + textName + "\" is already included");
+            throw new IllegalArgumentException("Name is already included: \"" + textName + "\"");
+        if (name.hasID() && byID.containsKey(name.getID()))
+            throw new IllegalArgumentException("ID is already included: " + name.getID());
 
         entries.add(entry);
         byLowercaseName.put(lowercaseName, entry);
+        if (name.hasID()) {
+            byID.put(name.getID(), entry);
+        }
     }
 
     @Override
     public void put(@Nonnull N name, @Nonnull T value) {
         put(new Entry<>(name, value));
+    }
+
+    @Override
+    public @Nonnull T get(int id) {
+        Entry<N, T> entry = byID.get(id);
+        if (entry != null)
+            return entry.getValue();
+
+        throw new IllegalArgumentException("Unknown ID: " + id);
     }
 
     @Override

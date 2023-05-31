@@ -13,7 +13,7 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * The standard board shape.
      */
-    STANDARD("Standard", StandardBoardShape.class) {
+    STANDARD(1, "Standard") {
         @Override
         public @Nonnull BoardShape create() {
             return new StandardBoardShape();
@@ -23,7 +23,7 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * The Aseb board shape.
      */
-    ASEB("Aseb", AsebBoardShape.class) {
+    ASEB(2, "Aseb") {
         @Override
         public @Nonnull BoardShape create() {
             return new AsebBoardShape();
@@ -43,26 +43,38 @@ public enum BoardType implements Name, BoardShapeFactory {
     }
 
     /**
+     * A constant numerical ID representing the board shape.
+     * This ID will never change.
+     */
+    private final int id;
+
+    /**
      * The name of this board shape.
      */
-    public final @Nonnull String name;
+    private final @Nonnull String name;
 
     /**
-     * The class representing this board shape.
+     * Instantiates a type of path.
+     * @param id   A fixed numerical identifier to represent this board shape.
+     * @param name The name of this board shape.
      */
-    public final @Nonnull Class<? extends BoardShape> shapeClass;
-
-    /**
-     * @param name       The name of this board shape.
-     * @param shapeClass The class representing this board shape.
-     */
-    BoardType(@Nonnull String name, @Nonnull Class<? extends BoardShape> shapeClass) {
+    BoardType(int id, @Nonnull String name) {
+        this.id = id;
         this.name = name;
-        this.shapeClass = shapeClass;
     }
 
     @Override
     public @Nonnull String getTextName() {
         return name;
+    }
+
+    @Override
+    public boolean hasID() {
+        return true;
+    }
+
+    @Override
+    public int getID() {
+        return id;
     }
 }

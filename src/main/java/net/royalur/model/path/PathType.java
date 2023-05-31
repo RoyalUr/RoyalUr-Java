@@ -11,19 +11,9 @@ import javax.annotation.Nonnull;
 public enum PathType implements Name, PathPairFactory {
 
     /**
-     * The standard path used for Aseb.
-     */
-    ASEB("Aseb", AsebPathPair.class) {
-        @Override
-        public @Nonnull PathPair create() {
-            return new AsebPathPair();
-        }
-    },
-
-    /**
      * The path proposed by Bell for the Royal Game of Ur.
      */
-    BELL("Bell", BellPathPair.class) {
+    BELL(1, "Bell") {
         @Override
         public @Nonnull PathPair create() {
             return new BellPathPair();
@@ -31,9 +21,19 @@ public enum PathType implements Name, PathPairFactory {
     },
 
     /**
+     * The standard path used for Aseb.
+     */
+    ASEB(2, "Aseb") {
+        @Override
+        public @Nonnull PathPair create() {
+            return new AsebPathPair();
+        }
+    },
+
+    /**
      * The path proposed by Masters for the Royal Game of Ur.
      */
-    MASTERS("Masters", MastersPathPair.class) {
+    MASTERS(3, "Masters") {
         @Override
         public @Nonnull PathPair create() {
             return new MastersPathPair();
@@ -43,7 +43,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The path proposed by Murray for the Royal Game of Ur.
      */
-    MURRAY("Murray", MurrayPathPair.class) {
+    MURRAY(4, "Murray") {
         @Override
         public @Nonnull PathPair create() {
             return new MurrayPathPair();
@@ -53,7 +53,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The path proposed by Skiriuk for the Royal Game of Ur.
      */
-    SKIRIUK("Skiriuk", SkiriukPathPair.class) {
+    SKIRIUK(5, "Skiriuk") {
         @Override
         public @Nonnull PathPair create() {
             return new SkiriukPathPair();
@@ -73,27 +73,39 @@ public enum PathType implements Name, PathPairFactory {
     }
 
     /**
+     * A constant numerical ID representing the path.
+     * This ID will never change.
+     */
+    private final int id;
+
+    /**
      * The name given to this path.
      */
-    public final @Nonnull String name;
+    private final @Nonnull String name;
 
     /**
-     * The class representing this path.
+     * Instantiates a type of path.
+     * @param id   A fixed numerical identifier to represent this path.
+     * @param name The name given to this path.
      */
-    public final @Nonnull Class<? extends PathPair> pathClass;
-
-    /**
-     * @param name      The name given to this path.
-     * @param pathClass The class representing this path.
-     */
-    PathType(@Nonnull String name, @Nonnull Class<? extends PathPair> pathClass) {
+    PathType(int id, @Nonnull String name) {
+        this.id = id;
         this.name = name;
-        this.pathClass = pathClass;
     }
 
     @Override
     public @Nonnull String getTextName() {
         return name;
+    }
+
+    @Override
+    public boolean hasID() {
+        return true;
+    }
+
+    @Override
+    public int getID() {
+        return id;
     }
 
     /**

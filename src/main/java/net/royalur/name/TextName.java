@@ -24,4 +24,14 @@ public class TextName implements Name {
     public @Nonnull String getTextName() {
         return name;
     }
+
+    @Override
+    public boolean hasID() {
+        return false;
+    }
+
+    @Override
+    public int getID() {
+        throw new UnsupportedOperationException("No associated ID");
+    }
 }

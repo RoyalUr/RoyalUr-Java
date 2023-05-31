@@ -18,12 +18,20 @@ public interface NameMap<N extends Name, T> {
     void put(@Nonnull N name, @Nonnull T value);
 
     /**
-     * Gets a named thing from this store.
-     * @param textName The name of the thing.
+     * Gets a named thing from this store by its text name.
+     * @param textName The text name of the thing.
      * @return The thing with the given name.
      * @throws IllegalArgumentException If there is no entry with the given name.
      */
     @Nonnull T get(@Nonnull String textName);
+
+    /**
+     * Gets a named thing from this store by its integer ID.
+     * @param id The integer ID of the thing.
+     * @return The thing with the given ID.
+     * @throws IllegalArgumentException If there is no entry with the given ID.
+     */
+    @Nonnull T get(int id);
 
     /**
      * Gets a named thing from this store.
