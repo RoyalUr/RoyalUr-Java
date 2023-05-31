@@ -21,7 +21,7 @@ public class Piece {
     /**
      * The player that owns this piece.
      */
-    public final @Nonnull Player owner;
+    private final @Nonnull Player owner;
 
     /**
      * Instantiates a piece that can be placed on a board.
@@ -32,17 +32,23 @@ public class Piece {
     }
 
     /**
+     * Gets the player that owns this piece.
+     * @return The player that owns this piece.
+     */
+    public @Nonnull Player getOwner() {
+        return owner;
+    }
+
+    /**
      * Returns a piece with {@code player} as its owner.
      * @param player The player to retrieve a piece of.
      * @return The piece of the given player.
      */
     public static @Nonnull Piece of(@Nonnull Player player) {
-        switch (player) {
-            case LIGHT: return LIGHT;
-            case DARK: return DARK;
-            default:
-                throw new IllegalArgumentException("Unknown player " + player);
-        }
+        return switch (player) {
+            case LIGHT -> LIGHT;
+            case DARK -> DARK;
+        };
     }
 
     /**
@@ -88,6 +94,6 @@ public class Piece {
 
     @Override
     public @Nonnull String toString() {
-        return owner.name;
+        return owner.getTextName();
     }
 }

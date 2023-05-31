@@ -41,7 +41,7 @@ public abstract class BaseAgent<
             throw new IllegalStateException("The game has already been completed");
         if (!game.isPlayable())
             throw new IllegalStateException("The game is not in a playable state");
-        if (game.getTurnPlayer().player != player)
+        if (game.getTurnPlayer().getPlayer() != player)
             throw new IllegalStateException("It is not currently the agent's turn in the game");
 
         // Just roll the dice, there's not usually any decisions to be made here.

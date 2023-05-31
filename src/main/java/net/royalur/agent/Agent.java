@@ -45,10 +45,9 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
 
             actions += 1;
             S turnPlayer = game.getTurnPlayer();
-            switch (turnPlayer.player) {
+            switch (turnPlayer.getPlayer()) {
                 case LIGHT -> light.playTurn(game, Player.LIGHT);
                 case DARK -> dark.playTurn(game, Player.DARK);
-                default -> throw new IllegalStateException("Unknown player " + turnPlayer.player);
             }
         }
         return actions;

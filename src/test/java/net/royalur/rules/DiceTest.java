@@ -36,9 +36,9 @@ public class DiceTest {
         for (int i=0; i < samples; ++i) {
             Roll roll = dice.roll();
             assertNotNull(roll);
-            assertTrue(roll.value >= 0 && roll.value <= 4);
+            assertTrue(roll.getValue() >= 0 && roll.getValue() <= 4);
 
-            counts[roll.value] += 1;
+            counts[roll.getValue()] += 1;
         }
 
         int[] expectedCounts = {
@@ -66,8 +66,8 @@ public class DiceTest {
             assertNotNull(roll1);
             assertNotNull(roll2);
 
-            int sample1 = roll1.value;
-            int sample2 = roll2.value;
+            int sample1 = roll1.getValue();
+            int sample2 = roll2.getValue();
             assertTrue(sample1 >= 0 && sample1 <= 4);
             assertTrue(sample2 >= 0 && sample2 <= 4);
 

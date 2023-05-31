@@ -88,7 +88,7 @@ public class StandardRuleSetTest {
         PathPair paths = rules.getPaths();
         for (int roll = 1; roll < maxRoll; ++roll) {
             for (PlayerState playerState : new PlayerState[] {light, dark}) {
-                Player player = playerState.player;
+                Player player = playerState.getPlayer();
                 assertEquals(
                         List.of(new Move<>(
                                 player,

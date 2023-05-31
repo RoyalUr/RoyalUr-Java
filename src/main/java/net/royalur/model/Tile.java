@@ -11,22 +11,22 @@ public class Tile {
     /**
      * The x-coordinate of the tile. This coordinate is 1-based.
      */
-    public final int x;
+    private final int x;
 
     /**
      * The x-index of the tile. This coordinate is 0-based.
      */
-    public final int ix;
+    private final int ix;
 
     /**
      * The y-coordinate of the tile. This coordinate is 1-based.
      */
-    public final int y;
+    private final int y;
 
     /**
      * The y-index of the tile. This coordinate is 0-based.
      */
-    public final int iy;
+    private final int iy;
 
     /**
      * Instantiates a tile location.
@@ -44,6 +44,38 @@ public class Tile {
 
         this.ix = x - 1;
         this.iy = y - 1;
+    }
+
+    /**
+     * Gets the x-coordinate of the tile. This coordinate is 1-based.
+     * @return The x-coordinate of the tile.
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Gets the x-index of the tile. This coordinate is 0-based.
+     * @return The x-index of the tile.
+     */
+    public int getXIndex() {
+        return ix;
+    }
+
+    /**
+     * Gets the y-coordinate of the tile. This coordinate is 1-based.
+     * @return The y-coordinate of the tile.
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * Gets the y-index of the tile. This coordinate is 0-based.
+     * @return The y-index of the tile.
+     */
+    public int getYIndex() {
+        return iy;
     }
 
     /**
@@ -79,10 +111,9 @@ public class Tile {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof Tile))
+        if (!(obj instanceof Tile other))
             return false;
 
-        Tile other = (Tile) obj;
         return x == other.x && y == other.y;
     }
 

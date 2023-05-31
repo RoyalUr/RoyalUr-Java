@@ -69,7 +69,7 @@ public class StandardBoardShape extends BoardShape {
 
     @Override
     public boolean contains(@Nonnull Tile tile) {
-        return contains(tile.ix, tile.iy);
+        return contains(tile.getXIndex(), tile.getYIndex());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class StandardBoardShape extends BoardShape {
 
     @Override
     public boolean isRosette(@Nonnull Tile tile) {
-        return isRosette(tile.ix, tile.iy);
+        return isRosette(tile.getXIndex(), tile.getYIndex());
     }
 
     @Override

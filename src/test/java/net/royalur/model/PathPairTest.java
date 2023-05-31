@@ -157,14 +157,14 @@ public class PathPairTest {
         assertFalse(generic.isEquivalent(pair1));
 
         Path lightPath = new Path(
-                pair2.getLight().tiles,
-                pair2.getLight().startTile,
-                pair2.getLight().endTile
+                pair2.getLight().getTiles(),
+                pair2.getLight().getStartTile(),
+                pair2.getLight().getEndTile()
         );
         Path darkPath = new Path(
-                pair2.getDark().tiles,
-                pair2.getLight().startTile,
-                pair2.getLight().endTile
+                pair2.getDark().getTiles(),
+                pair2.getLight().getStartTile(),
+                pair2.getLight().getEndTile()
         );
         PathPair pair3 = PathPair.create(lightPath, darkPath);
         assertTrue(pair3.isEquivalent(pair1));

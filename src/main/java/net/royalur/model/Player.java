@@ -23,23 +23,18 @@ public enum Player implements Name {
      * A constant numerical ID representing the player.
      * This ID will never change.
      */
-    public final int id;
+    private final int id;
 
     /**
      * An English name for this player, capitalised.
      */
-    public final String name;
-
-    /**
-     * An English name for this player, in lower case.
-     */
-    public final String lowerName;
+    private final String name;
 
     /**
      * A constant character representing the player.
      * This character will never change.
      */
-    public final char character;
+    private final char character;
 
     /**
      * Instantiates a type of player.
@@ -50,7 +45,6 @@ public enum Player implements Name {
     Player(int id, String name, char character) {
         this.id = id;
         this.name = name;
-        this.lowerName = name.toLowerCase();
         this.character = character;
     }
 
@@ -67,6 +61,15 @@ public enum Player implements Name {
     @Override
     public int getID() {
         return id;
+    }
+
+    /**
+     * Gets a constant character representing the player.
+     * This character will never change.
+     * @return A constant character representing the player.
+     */
+    public char getCharacter() {
+        return character;
     }
 
     /**

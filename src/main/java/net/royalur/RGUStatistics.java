@@ -60,7 +60,8 @@ public class RGUStatistics {
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
-            String desc = sample.getBoard().shape.getDebugName() + ", " + sample.getRules().getPaths().getDebugName();
+            String desc = sample.getBoard().getShape().getDebugName()
+                    + ", " + sample.getRules().getPaths().getDebugName();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {
@@ -76,7 +77,7 @@ public class RGUStatistics {
                 double rollsStd = summary.getRollsStatistic(target, SummaryStat.STD_DEV);
                 System.out.printf(
                         "%-15s%-19s%-19s%n",
-                        target.name + ":",
+                        target.getName() + ":",
                         ((int) movesMean) + " moves ± " + ((int) movesStd) + ",",
                         ((int) rollsMean) + " rolls ± " + ((int) rollsStd)
                 );

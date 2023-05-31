@@ -34,12 +34,12 @@ public class DeterministicAgent<P extends Piece, S extends PlayerState, R extend
 
             // Otherwise move the piece that is closest to the top-left.
             Tile chosenSource = chosen.getSource();
-            int chosenY = chosenSource.y;
-            int chosenX = chosenSource.x;
+            int chosenY = chosenSource.getY();
+            int chosenX = chosenSource.getX();
 
             Tile moveSource = move.getSource();
-            int moveY = moveSource.y;
-            int moveX = moveSource.x;
+            int moveY = moveSource.getY();
+            int moveX = moveSource.getX();
 
             if (moveY < chosenY || (moveY == chosenY && moveX < chosenX)) {
                 chosen = move;

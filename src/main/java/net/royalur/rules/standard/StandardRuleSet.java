@@ -127,24 +127,27 @@ public class StandardRuleSet<
             @Nonnull S player,
             @Nonnull R roll
     ) {
-        if (roll.value <= 0)
-            throw new IllegalArgumentException("The roll's value must be at least 1, not " + roll.value);
+        if (roll.getValue() <= 0)
+            throw new IllegalArgumentException("The roll's value must be at least 1, not " + roll.getValue());
 
-        Path path = paths.get(player.player);
+        Path path = paths.get(player.getPlayer());
         List<Move<P>> moves = new ArrayList<>();
 
         // Check if a piece can be taken off the board.
-        if (roll.value <= path.length) {
-            int scorePathIndex = path.length - roll.value;
+        if (roll.getValue() <= path.length()) {
+            int scorePathIndex = path.length() - roll.getValue();
             Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
-            if (scorePiece != null && scorePiece.owner == player.player && scorePiece.pathIndex == scorePathIndex) {
-                moves.add(new Move<>(player.player, scoreTile, scorePiece, null, null, null));
+            if (scorePiece != null
+                    && scorePiece.getOwner() == player.getPlayer()
+                    && scorePiece.getPathIndex() == scorePathIndex
+            ) {
+                moves.add(new Move<>(player.getPlayer(), scoreTile, scorePiece, null, null, null));
             }
         }
 
         // Check for pieces on the board that can be moved to another tile on the board.
-        for (int index = -1; index < path.length - roll.value; ++index) {
+        for (int index = -1; index < path.length() - roll.getValue(); ++index) {
 
             Tile tile;
             P piece;
@@ -152,10 +155,10 @@ public class StandardRuleSet<
                 // Move a piece on the board.
                 tile = path.get(index);
                 piece = board.get(tile);
-                if (piece == null || piece.owner != player.player || piece.pathIndex != index)
+                if (piece == null || piece.getOwner() != player.getPlayer() || piece.getPathIndex() != index)
                     continue;
 
-            } else if (player.pieceCount > 0) {
+            } else if (player.getPieceCount() > 0) {
                 // Introduce a piece to the board.
                 tile = null;
                 piece = null;
@@ -165,16 +168,16 @@ public class StandardRuleSet<
             }
 
             // Check if the destination is free.
-            int destPathIndex = index + roll.value;
+            int destPathIndex = index + roll.getValue();
             Tile dest = path.get(destPathIndex);
             P destPiece = board.get(dest);
             if (destPiece != null)  {
                 // Can't capture your own pieces.
-                if (destPiece.owner == player.player)
+                if (destPiece.getOwner() == player.getPlayer())
                     continue;
 
                 // Can't capture pieces on rosettes.
-                if (board.shape.isRosette(dest))
+                if (board.getShape().isRosette(dest))
                     continue;
             }
 
@@ -183,9 +186,9 @@ public class StandardRuleSet<
             if (index >= 0) {
                 movedPiece = pieceProvider.createMoved(piece, destPathIndex);
             } else {
-                movedPiece = pieceProvider.createIntroduced(player.player, destPathIndex);
+                movedPiece = pieceProvider.createIntroduced(player.getPlayer(), destPathIndex);
             }
-            moves.add(new Move<>(player.player, tile, piece, dest, movedPiece, destPiece));
+            moves.add(new Move<>(player.getPlayer(), tile, piece, dest, movedPiece, destPiece));
         }
         return moves;
     }
@@ -202,7 +205,7 @@ public class StandardRuleSet<
         );
 
         // If the player rolled zero, we need to change the turn to the other player.
-        if (roll.value == 0) {
+        if (roll.getValue() == 0) {
             Player newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
                     state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
@@ -258,16 +261,16 @@ public class StandardRuleSet<
         }
 
         // Determine which player is which.
-        S lightPlayer = (turnPlayer.player == Player.LIGHT ? turnPlayer : otherPlayer);
-        S darkPlayer = (turnPlayer.player == Player.DARK ? turnPlayer : otherPlayer);
+        S lightPlayer = (turnPlayer.getPlayer() == Player.LIGHT ? turnPlayer : otherPlayer);
+        S darkPlayer = (turnPlayer.getPlayer() == Player.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
-        if (move.isScoringPiece() && turnPlayer.pieceCount <= 0 && board.countPieces(turnPlayer.player) <= 0)
+        if (move.isScoringPiece() && turnPlayer.getPieceCount() <= 0 && board.countPieces(turnPlayer.getPlayer()) <= 0)
             return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.getTurn()));
 
         // Determine who's turn it will be in the next state.
         Player turn = state.getTurn();
-        if (!move.isLandingOnRosette(board.shape)) {
+        if (!move.isLandingOnRosette(board.getShape())) {
             turn = turn.getOtherPlayer();
         }
         return List.of(movedState, new WaitingForRollGameState<>(board, lightPlayer, darkPlayer, turn));

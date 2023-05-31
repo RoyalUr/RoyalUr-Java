@@ -38,9 +38,9 @@ public class BoardShapeTest {
         );
 
         BoardShape singleTile = new BoardShape(Set.of(new Tile(1, 1)), Collections.emptySet());
-        assertEquals(1, singleTile.width);
-        assertEquals(1, singleTile.height);
-        assertEquals(1, singleTile.area);
+        assertEquals(1, singleTile.getWidth());
+        assertEquals(1, singleTile.getHeight());
+        assertEquals(1, singleTile.getArea());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -56,9 +56,9 @@ public class BoardShapeTest {
         );
 
         BoardShape noZeroZero = new BoardShape(Set.of(new Tile(1, 2), new Tile(2, 1)), Collections.emptySet());
-        assertEquals(2, noZeroZero.width);
-        assertEquals(2, noZeroZero.height);
-        assertEquals(2, noZeroZero.area);
+        assertEquals(2, noZeroZero.getWidth());
+        assertEquals(2, noZeroZero.getHeight());
+        assertEquals(2, noZeroZero.getArea());
     }
 
     @Test
@@ -81,9 +81,9 @@ public class BoardShapeTest {
         );
 
         BoardShape singleTile = new BoardShape(Set.of(new Tile(1, 1)), Set.of(new Tile(1, 1)));
-        assertEquals(1, singleTile.width);
-        assertEquals(1, singleTile.height);
-        assertEquals(1, singleTile.area);
+        assertEquals(1, singleTile.getWidth());
+        assertEquals(1, singleTile.getHeight());
+        assertEquals(1, singleTile.getArea());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -99,9 +99,9 @@ public class BoardShapeTest {
         );
 
         BoardShape noZeroZero = new BoardShape(Set.of(new Tile(1, 2), new Tile(2, 1)), Set.of(new Tile(1, 2)));
-        assertEquals(2, noZeroZero.width);
-        assertEquals(2, noZeroZero.height);
-        assertEquals(2, noZeroZero.area);
+        assertEquals(2, noZeroZero.getWidth());
+        assertEquals(2, noZeroZero.getHeight());
+        assertEquals(2, noZeroZero.getArea());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -112,14 +112,14 @@ public class BoardShapeTest {
     @Test
     public void testBasicProperties() {
         BoardShape standard = new StandardBoardShape();
-        assertEquals(3, standard.width);
-        assertEquals(8, standard.height);
-        assertEquals(20, standard.area);
+        assertEquals(3, standard.getWidth());
+        assertEquals(8, standard.getHeight());
+        assertEquals(20, standard.getArea());
 
         BoardShape aseb = new AsebBoardShape();
-        assertEquals(3, aseb.width);
-        assertEquals(12, aseb.height);
-        assertEquals(20, aseb.area);
+        assertEquals(3, aseb.getWidth());
+        assertEquals(12, aseb.getHeight());
+        assertEquals(20, aseb.getArea());
     }
 
     @ParameterizedTest
@@ -127,9 +127,9 @@ public class BoardShapeTest {
     public void testContains(BoardShape shape) {
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
-        for (int ix = -1; ix <= shape.width; ++ix) {
-            for (int iy = -1; iy <= shape.height; ++iy) {
-                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+        for (int ix = -1; ix <= shape.getWidth(); ++ix) {
+            for (int iy = -1; iy <= shape.getHeight(); ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                     assertFalse(shape.contains(ix, iy));
                     continue;
                 }
@@ -143,19 +143,19 @@ public class BoardShapeTest {
         }
 
         // Contains should have been true for an area number of tiles.
-        assertEquals(shape.area, area);
+        assertEquals(shape.getArea(), area);
     }
 
     @ParameterizedTest
     @ArgumentsSource(BoardShapeProvider.class)
     public void testContainsWithCopy(BoardShape shape) {
         // Create an untyped copy of the board shape, to ensure it acts the same for contains.
-        BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
+        BoardShape copy = new BoardShape(shape.getTiles(), shape.getRosetteTiles());
 
         // Deliberately includes out-of-bounds coordinates.
-        for (int ix = -1; ix <= shape.width; ++ix) {
-            for (int iy = -1; iy <= shape.height; ++iy) {
-                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+        for (int ix = -1; ix <= shape.getWidth(); ++ix) {
+            for (int iy = -1; iy <= shape.getHeight(); ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                     assertFalse(shape.contains(ix, iy));
                     assertFalse(copy.contains(ix, iy));
                     continue;
@@ -174,9 +174,9 @@ public class BoardShapeTest {
     public void testIsRosette(BoardShape shape) {
         // Deliberately includes out-of-bounds coordinates.
         int rosetteCount = 0;
-        for (int ix = -1; ix <= shape.width; ++ix) {
-            for (int iy = -1; iy <= shape.height; ++iy) {
-                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+        for (int ix = -1; ix <= shape.getWidth(); ++ix) {
+            for (int iy = -1; iy <= shape.getHeight(); ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                     assertFalse(shape.isRosette(ix, iy));
                     continue;
                 }
@@ -190,19 +190,19 @@ public class BoardShapeTest {
         }
 
         // We should have seen all rosettes.
-        assertEquals(shape.rosetteTiles.size(), rosetteCount);
+        assertEquals(shape.getRosetteTiles().size(), rosetteCount);
     }
 
     @ParameterizedTest
     @ArgumentsSource(BoardShapeProvider.class)
     public void testIsRosetteWithCopy(BoardShape shape) {
         // Create an untyped copy of the board shape, to ensure it acts the same for contains.
-        BoardShape copy = new BoardShape(shape.tiles, shape.rosetteTiles);
+        BoardShape copy = new BoardShape(shape.getTiles(), shape.getRosetteTiles());
 
         // Deliberately includes out-of-bounds coordinates.
-        for (int ix = -1; ix <= shape.width; ++ix) {
-            for (int iy = -1; iy <= shape.height; ++iy) {
-                if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+        for (int ix = -1; ix <= shape.getWidth(); ++ix) {
+            for (int iy = -1; iy <= shape.getHeight(); ++iy) {
+                if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                     assertFalse(shape.isRosette(ix, iy));
                     assertFalse(copy.isRosette(ix, iy));
                     continue;
@@ -220,7 +220,7 @@ public class BoardShapeTest {
     @ArgumentsSource(BoardShapeProvider.class)
     public void testGetTilesByRow(BoardShape shape) {
         List<Tile> byRow = shape.getTilesByRow();
-        assertEquals(shape.area, byRow.size());
+        assertEquals(shape.getArea(), byRow.size());
 
         Set<Tile> seen = new HashSet<>();
         Tile last = null;
@@ -228,20 +228,20 @@ public class BoardShapeTest {
             assertNotNull(tile);
 
             if (last != null) {
-                assertTrue(tile.y > last.y || (tile.y == last.y && tile.x > last.x));
+                assertTrue(tile.getY() > last.getY() || (tile.getY() == last.getY() && tile.getX() > last.getX()));
             }
             assertTrue(shape.contains(tile));
             assertTrue(seen.add(tile));
             last = tile;
         }
-        assertEquals(shape.area, seen.size());
+        assertEquals(shape.getArea(), seen.size());
     }
 
     @ParameterizedTest
     @ArgumentsSource(BoardShapeProvider.class)
     public void testGetTilesByColumn(BoardShape shape) {
         List<Tile> byCol = shape.getTilesByColumn();
-        assertEquals(shape.area, byCol.size());
+        assertEquals(shape.getArea(), byCol.size());
 
         Set<Tile> seen = new HashSet<>();
         Tile last = null;
@@ -249,13 +249,13 @@ public class BoardShapeTest {
             assertNotNull(tile);
 
             if (last != null) {
-                assertTrue(tile.x > last.x || (tile.x == last.x && tile.y > last.y));
+                assertTrue(tile.getX() > last.getX() || (tile.getX() == last.getX() && tile.getY() > last.getY()));
             }
             assertTrue(shape.contains(tile));
             assertTrue(seen.add(tile));
             last = tile;
         }
-        assertEquals(shape.area, seen.size());
+        assertEquals(shape.getArea(), seen.size());
     }
 
     @Test

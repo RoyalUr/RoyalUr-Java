@@ -14,8 +14,8 @@ public class PieceTest {
         assertNotNull(light);
         assertNotNull(dark);
 
-        assertEquals(Player.LIGHT, light.owner);
-        assertEquals(Player.DARK, dark.owner);
+        assertEquals(Player.LIGHT, light.getOwner());
+        assertEquals(Player.DARK, dark.getOwner());
     }
 
     @Test
@@ -23,14 +23,14 @@ public class PieceTest {
         Piece light = Piece.of(Player.LIGHT);
         Piece dark = Piece.of(Player.DARK);
 
-        assertEquals(Player.LIGHT.character, Piece.toChar(light));
-        assertEquals(Player.DARK.character, Piece.toChar(dark));
+        assertEquals(Player.LIGHT.getCharacter(), Piece.toChar(light));
+        assertEquals(Player.DARK.getCharacter(), Piece.toChar(dark));
 
         light = new Piece(Player.LIGHT);
         dark = new Piece(Player.DARK);
 
-        assertEquals(Player.LIGHT.character, Piece.toChar(light));
-        assertEquals(Player.DARK.character, Piece.toChar(dark));
+        assertEquals(Player.LIGHT.getCharacter(), Piece.toChar(light));
+        assertEquals(Player.DARK.getCharacter(), Piece.toChar(dark));
 
         assertEquals(Player.toChar(null), Piece.toChar(null));
     }
@@ -85,10 +85,10 @@ public class PieceTest {
         Piece light = new Piece(Player.LIGHT);
         Piece dark = new Piece(Player.DARK);
 
-        assertEquals(Player.LIGHT.name, light.toString());
-        assertEquals(Player.DARK.name, dark.toString());
+        assertEquals(Player.LIGHT.getTextName(), light.toString());
+        assertEquals(Player.DARK.getTextName(), dark.toString());
 
-        assertEquals(Player.LIGHT.name, Piece.of(Player.LIGHT).toString());
-        assertEquals(Player.DARK.name, Piece.of(Player.DARK).toString());
+        assertEquals(Player.LIGHT.getTextName(), Piece.of(Player.LIGHT).toString());
+        assertEquals(Player.DARK.getTextName(), Piece.of(Player.DARK).toString());
     }
 }

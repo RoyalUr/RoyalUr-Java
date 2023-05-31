@@ -203,8 +203,8 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(PLAYER_PIECES_KEY, playerState.pieceCount);
-        generator.writeNumberField(PLAYER_SCORE_KEY, playerState.score);
+        generator.writeNumberField(PLAYER_PIECES_KEY, playerState.getPieceCount());
+        generator.writeNumberField(PLAYER_SCORE_KEY, playerState.getScore());
     }
 
     /**
@@ -225,10 +225,10 @@ public class JsonNotation implements RGUNotation {
         generator.writeBooleanField(STATE_WON_KEY, state instanceof WinGameState);
 
         if (state instanceof OngoingGameState<P, S, R> ongoingState) {
-            generator.writeStringField(STATE_TURN_KEY, ongoingState.getTurn().name());
+            generator.writeStringField(STATE_TURN_KEY, ongoingState.getTurn().getTextName());
         } else if (state instanceof WinGameState<P, S, R> winState) {
-            generator.writeStringField(STATE_WINNER_KEY, winState.winner.name());
-            generator.writeStringField(STATE_LOSER_KEY, winState.loser.name());
+            generator.writeStringField(STATE_WINNER_KEY, winState.getWinner().getPlayer().getTextName());
+            generator.writeStringField(STATE_LOSER_KEY, winState.getLoser().getPlayer().getTextName());
         }
 
         generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString(BOARD_COLUMN_DELIMITER, false));
@@ -237,7 +237,7 @@ public class JsonNotation implements RGUNotation {
         generator.writeObjectFieldStart(STATE_PLAYERS_KEY);
         try {
             // Light player.
-            generator.writeObjectFieldStart(Player.LIGHT.name());
+            generator.writeObjectFieldStart(Player.LIGHT.getTextName());
             try {
                 writePlayerState(state.getLightPlayer(), rules, generator);
             } finally {
@@ -245,7 +245,7 @@ public class JsonNotation implements RGUNotation {
             }
 
             // Dark player.
-            generator.writeObjectFieldStart(Player.DARK.name());
+            generator.writeObjectFieldStart(Player.DARK.getTextName());
             try {
                 writePlayerState(state.getDarkPlayer(), rules, generator);
             } finally {
@@ -271,7 +271,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value);
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().getValue());
     }
 
     /**
@@ -291,7 +291,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(PIECE_OWNER_KEY, piece.owner.name());
+        generator.writeStringField(PIECE_OWNER_KEY, piece.getOwner().getTextName());
         generator.writeStringField(PIECE_TILE_KEY, tile.toString());
         if (piece.hasPathIndex()) {
             generator.writeNumberField(PIECE_INDEX_KEY, piece.getPathIndex());
@@ -368,7 +368,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value);
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().getValue());
 
         generator.writeObjectFieldStart(ACTION_MOVE_KEY);
         try {

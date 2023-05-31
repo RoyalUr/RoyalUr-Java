@@ -56,6 +56,6 @@ public class RolledGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "The " + getTurn().lowerName + " player rolled " + roll +".";
+        return "The " + getTurn().getTextName().toLowerCase() + " player rolled " + roll +".";
     }
 }

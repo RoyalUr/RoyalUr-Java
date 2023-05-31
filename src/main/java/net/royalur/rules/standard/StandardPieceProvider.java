@@ -17,6 +17,6 @@ public class StandardPieceProvider implements PieceProvider<StandardPiece> {
 
     @Override
     public @Nonnull StandardPiece createMoved(@Nonnull StandardPiece fromPiece, int newPathIndex) {
-        return new StandardPiece(fromPiece.owner, newPathIndex);
+        return new StandardPiece(fromPiece.getOwner(), newPathIndex);
     }
 }

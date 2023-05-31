@@ -2,7 +2,6 @@ package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
 import net.royalur.model.path.Path;
-import net.royalur.model.path.PathPair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,27 +15,27 @@ public class BoardShape {
     /**
      * The set of tiles that fall within the bounds of this board shape.
      */
-    public final @Nonnull Set<Tile> tiles;
+    private final @Nonnull Set<Tile> tiles;
 
     /**
      * The set of tiles that represent rosette tiles in this board shape.
      */
-    public final @Nonnull Set<Tile> rosetteTiles;
+    private final @Nonnull Set<Tile> rosetteTiles;
 
     /**
      * The number of x-coordinates that exist in this board shape.
      */
-    public final int width;
+    private final int width;
 
     /**
      * The number of y-coordinates that exist in this board shape.
      */
-    public final int height;
+    private final int height;
 
     /**
      * The number of tiles contained in this board shape.
      */
-    public final int area;
+    private final int area;
 
     /**
      * The tiles that fall within the bounds of this board shape,
@@ -59,18 +58,18 @@ public class BoardShape {
         if (tiles.size() == 0)
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
-        this.tiles = tiles;
-        this.rosetteTiles = rosetteTiles;
+        this.tiles = Collections.unmodifiableSet(new HashSet<>(tiles));
+        this.rosetteTiles = Collections.unmodifiableSet(new HashSet<>(rosetteTiles));
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (Tile tile : tiles) {
-            minX = Math.min(minX, tile.x);
-            minY = Math.min(minY, tile.y);
-            maxX = Math.max(maxX, tile.x);
-            maxY = Math.max(maxY, tile.y);
+            minX = Math.min(minX, tile.getX());
+            minY = Math.min(minY, tile.getY());
+            maxX = Math.max(maxX, tile.getX());
+            maxY = Math.max(maxY, tile.getY());
         }
         if (minX != 1 || minY != 1) {
             // This is done in an attempt to standardise board shapes.
@@ -93,6 +92,46 @@ public class BoardShape {
                 );
             }
         }
+    }
+
+    /**
+     * Gets the set of tiles that fall within the bounds of this board shape.
+     * @return The set of tiles that fall within the bounds of this board shape.
+     */
+    public @Nonnull Set<Tile> getTiles() {
+        return tiles;
+    }
+
+    /**
+     * Gets the set of tiles that represent rosette tiles in this board shape.
+     * @return The set of tiles that represent rosette tiles in this board shape.
+     */
+    public @Nonnull Set<Tile> getRosetteTiles() {
+        return rosetteTiles;
+    }
+
+    /**
+     * Gets the width of the board shape.
+     * @return The number of x-coordinates that exist in this board shape.
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Gets the height of the board shape.
+     * @return The number of y-coordinates that exist in this board shape.
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Gets the number of tiles contained in this board shape.
+     * @return The number of tiles contained in this board shape.
+     */
+    public int getArea() {
+        return area;
     }
 
     /**
@@ -199,7 +238,7 @@ public class BoardShape {
      * @return Whether {@code path} could be traversed on this shape of board.
      */
     public boolean isCompatible(@Nonnull Path path) {
-        for (Tile tile : path.tiles) {
+        for (Tile tile : path.getTiles()) {
             if (!contains(tile))
                 return false;
         }

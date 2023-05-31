@@ -15,37 +15,37 @@ public class Move<P extends Piece> {
     /**
      * The instigator of this move.
      */
-    public final @Nonnull Player player;
+    private final @Nonnull Player player;
 
     /**
      * The origin of the move. If this is {@code null}, it represents
      * moving a new piece onto the board.
      */
-    protected final @Nullable Tile from;
+    private final @Nullable Tile from;
 
     /**
      * The piece on the board to be moved, or {@code null} if a new
      * piece is to be moved onto the board.
      */
-    protected final @Nullable P fromPiece;
+    private final @Nullable P fromPiece;
 
     /**
      * The destination of the move. If this is {@code null}, it represents
      * moving a piece off of the board.
      */
-    protected final @Nullable Tile to;
+    private final @Nullable Tile to;
 
     /**
      * The piece that will be placed at the destination of the move, or
      * {@code null} if moving a piece off of the board.
      */
-    protected final @Nullable P toPiece;
+    private final @Nullable P toPiece;
 
     /**
      * The piece that will be captured by this move, or {@code null}
      * if no piece would be captured by this move.
      */
-    protected final @Nullable P capturedPiece;
+    private final @Nullable P capturedPiece;
 
     /**
      * Creates a new move with origin {@code from} and destination {@code to}.
@@ -84,6 +84,14 @@ public class Move<P extends Piece> {
         this.fromPiece = fromPiece;
         this.toPiece = toPiece;
         this.capturedPiece = capturedPiece;
+    }
+
+    /**
+     * Gets the instigator of this move.
+     * @return The instigator of this move.
+     */
+    public @Nonnull Player getPlayer() {
+        return player;
     }
 
     /**

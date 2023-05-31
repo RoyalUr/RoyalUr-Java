@@ -38,8 +38,8 @@ public class WaitingForMoveGameState<
             @Nonnull R roll
     ) {
         super(board, lightPlayer, darkPlayer, turn);
-        if (roll.value <= 0)
-            throw new IllegalArgumentException("Roll must have a value of at least 1, not " + roll.value);
+        if (roll.getValue() <= 0)
+            throw new IllegalArgumentException("Roll must have a value of at least 1, not " + roll.getValue());
 
         this.roll = roll;
     }
@@ -59,6 +59,7 @@ public class WaitingForMoveGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "Waiting for the " + getTurn().lowerName + " player to make a move with their roll of " + roll + ".";
+        return "Waiting for the " + getTurn().getTextName().toLowerCase()
+                + " player to make a move with their roll of " + roll + ".";
     }
 }

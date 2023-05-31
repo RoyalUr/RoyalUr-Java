@@ -14,14 +14,14 @@ public class BoardTest {
     @Test
     public void testBasicProperties() {
         Board<Piece> standard = new Board<>(new StandardBoardShape());
-        assertEquals(3, standard.width);
-        assertEquals(8, standard.height);
-        assertEquals(20, standard.area);
+        assertEquals(3, standard.getWidth());
+        assertEquals(8, standard.getHeight());
+        assertEquals(20, standard.getArea());
 
         Board<Piece> aseb = new Board<>(new AsebBoardShape());
-        assertEquals(3, aseb.width);
-        assertEquals(12, aseb.height);
-        assertEquals(20, aseb.area);
+        assertEquals(3, aseb.getWidth());
+        assertEquals(12, aseb.getHeight());
+        assertEquals(20, aseb.getArea());
     }
 
     @ParameterizedTest
@@ -62,9 +62,9 @@ public class BoardTest {
 
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
-        for (int ix = -1; ix <= board.width; ++ix) {
-            for (int iy = -1; iy <= board.height; ++iy) {
-                if (ix < 0 || iy < 0 || ix >= board.width || iy >= board.height) {
+        for (int ix = -1; ix <= board.getWidth(); ++ix) {
+            for (int iy = -1; iy <= board.getHeight(); ++iy) {
+                if (ix < 0 || iy < 0 || ix >= board.getWidth() || iy >= board.getHeight()) {
                     assertFalse(board.contains(ix, iy));
                     continue;
                 }
@@ -78,7 +78,7 @@ public class BoardTest {
         }
 
         // Contains should have been true for an area number of tiles.
-        assertEquals(board.area, area);
+        assertEquals(board.getArea(), area);
     }
 
     @ParameterizedTest
@@ -88,19 +88,19 @@ public class BoardTest {
         Board<Piece> board2 = new Board<>(shape);
 
         for (Tile tile : shape.getTilesByColumn()) {
-            assertNull(board2.get(tile.ix, tile.iy));
+            assertNull(board2.get(tile.getXIndex(), tile.getYIndex()));
             assertNull(board1.get(tile));
         }
 
         for (Player player : Player.values()) {
             Piece piece = Piece.of(player);
             // Deliberately includes out-of-bounds coordinates.
-            for (int ix = -1; ix <= shape.width; ++ix) {
-                for (int iy = -1; iy <= shape.height; ++iy) {
+            for (int ix = -1; ix <= shape.getWidth(); ++ix) {
+                for (int iy = -1; iy <= shape.getHeight(); ++iy) {
                     // Copies to be used in Lambda expressions.
                     int tileX = ix, tileY = iy;
 
-                    if (ix < 0 || iy < 0 || ix >= shape.width || iy >= shape.height) {
+                    if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board1.get(tileX, tileY));
                         assertThrows(IllegalArgumentException.class, () -> board1.set(tileX, tileY, piece));
@@ -123,7 +123,7 @@ public class BoardTest {
             }
 
             for (Tile tile : shape.getTilesByColumn()) {
-                assertEquals(piece, board2.get(tile.ix, tile.iy));
+                assertEquals(piece, board2.get(tile.getXIndex(), tile.getYIndex()));
                 assertEquals(piece, board1.get(tile));
             }
         }
@@ -208,15 +208,17 @@ public class BoardTest {
         Board<Piece> aseb2 = new Board<>(new AsebBoardShape());
 
         assertEquals(
-                "....  ..\n" +
-                "........\n" +
-                "....  ..",
+                """
+                ....  ..
+                ........
+                ....  ..""",
                 standard1.toString()
         );
         assertEquals(
-                "....        \n" +
-                "............\n" +
-                "....        ",
+                """
+                ....       \s
+                ............
+                ....       \s""",
                 aseb1.toString()
         );
 
@@ -237,9 +239,10 @@ public class BoardTest {
 
         standard1.set(0, 0, Piece.of(Player.LIGHT));
         assertEquals(
-                "L...  ..\n" +
-                "........\n" +
-                "....  ..",
+                """
+                L...  ..
+                ........
+                ....  ..""",
                 standard1.toString()
         );
         assertEquals(standard1.toString(), standard1.toString());
@@ -253,9 +256,10 @@ public class BoardTest {
 
         standard1.set(2, 6, Piece.of(Player.DARK));
         assertEquals(
-                "L...  ..\n" +
-                "........\n" +
-                "....  D.",
+                """
+                L...  ..
+                ........
+                ....  D.""",
                 standard1.toString()
         );
         assertEquals(standard1.toString(), standard1.toString());
@@ -264,9 +268,10 @@ public class BoardTest {
 
         standard2.set(2, 6, Piece.of(Player.LIGHT));
         assertEquals(
-                "L...  ..\n" +
-                "........\n" +
-                "....  L.",
+                """
+                L...  ..
+                ........
+                ....  L.""",
                 standard2.toString()
         );
         assertEquals(standard2.toString(), standard2.toString());
@@ -275,9 +280,10 @@ public class BoardTest {
 
         aseb1.set(1, 10, Piece.of(Player.DARK));
         assertEquals(
-                "....        \n" +
-                "..........D.\n" +
-                "....        ",
+                """
+                ....       \s
+                ..........D.
+                ....       \s""",
                 aseb1.toString()
         );
         assertEquals(aseb1.toString(), aseb1.toString());
@@ -286,9 +292,10 @@ public class BoardTest {
 
         aseb1.set(1, 10, null);
         assertEquals(
-                "....        \n" +
-                "............\n" +
-                "....        ",
+                """
+                ....       \s
+                ............
+                ....       \s""",
                 aseb1.toString()
         );
         assertEquals(aseb1.toString(), aseb1.toString());
@@ -297,16 +304,18 @@ public class BoardTest {
 
         aseb1.set(1, 10, Piece.of(Player.LIGHT));
         assertEquals(
-                "....        \n" +
-                "..........L.\n" +
-                "....        ",
+                """
+                ....       \s
+                ..........L.
+                ....       \s""",
                 aseb1.toString()
         );
         aseb2.set(1, 10, Piece.of(Player.DARK));
         assertEquals(
-                "....        \n" +
-                "..........D.\n" +
-                "....        ",
+                """
+                ....       \s
+                ..........D.
+                ....       \s""",
                 aseb2.toString()
         );
         assertEquals(aseb1.toString(), aseb1.toString());
@@ -315,32 +324,35 @@ public class BoardTest {
 
         aseb2.set(1, 10, Piece.of(Player.LIGHT));
         assertEquals(
-                "....        \n" +
-                "..........L.\n" +
-                "....        ",
+                """
+                ....       \s
+                ..........L.
+                ....       \s""",
                 aseb2.toString()
         );
         assertEquals(aseb1.toString(), aseb1.toString());
         assertEquals(aseb1.toString(), aseb2.toString());
         assertNotEquals(aseb1.toString(), standard1.toString());
 
-        for (Tile tile : standard1.shape.getTilesByRow()) {
-            standard1.set(tile, Piece.of((tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK));
+        for (Tile tile : standard1.getShape().getTilesByRow()) {
+            standard1.set(tile, Piece.of((tile.getX() + tile.getY()) % 2 == 0 ? Player.LIGHT : Player.DARK));
         }
         assertEquals(
-                "LDLD  LD\n" +
-                "DLDLDLDL\n" +
-                "LDLD  LD",
+                """
+                LDLD  LD
+                DLDLDLDL
+                LDLD  LD""",
                 standard1.toString()
         );
 
-        for (Tile tile : aseb1.shape.getTilesByRow()) {
-            aseb1.set(tile, Piece.of((tile.x + tile.y) % 2 == 0 ? Player.LIGHT : Player.DARK));
+        for (Tile tile : aseb1.getShape().getTilesByRow()) {
+            aseb1.set(tile, Piece.of((tile.getX() + tile.getY()) % 2 == 0 ? Player.LIGHT : Player.DARK));
         }
         assertEquals(
-                "LDLD        \n" +
-                "DLDLDLDLDLDL\n" +
-                "LDLD        ",
+                """
+                LDLD       \s
+                DLDLDLDLDLDL
+                LDLD       \s""",
                 aseb1.toString()
         );
     }

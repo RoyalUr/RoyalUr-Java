@@ -102,7 +102,7 @@ public class RGNTest {
         playRiggedGame(@Nonnull String name, @Nonnull Game<P, S, R> game) {
 
             while (!game.isFinished()) {
-                Player player = game.getTurnPlayer().player;
+                Player player = game.getTurnPlayer().getPlayer();
                 switch (player) {
                     case LIGHT -> {
                         if (game.isWaitingForRoll()) {

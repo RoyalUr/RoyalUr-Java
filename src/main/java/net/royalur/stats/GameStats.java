@@ -17,12 +17,12 @@ public class GameStats {
     /**
      * The number of rolls performed in the game, indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
-    public final @Nonnull int[] rolls;
+    private final @Nonnull int[] rolls;
 
     /**
      * The number of moves made in the game, indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
-    public final @Nonnull int[] moves;
+    private final @Nonnull int[] moves;
 
     /**
      * Instantiates statistics about a game of the Royal Game of Ur.
@@ -116,7 +116,7 @@ public class GameStats {
             if (!(state instanceof ActionGameState<?, ?, ?, ?> actionState))
                 continue;
 
-            Player player = actionState.getTurnPlayer().player;
+            Player player = actionState.getTurnPlayer().getPlayer();
 
             if (actionState instanceof RolledGameState) {
                 rolls[GameStatsTarget.OVERALL.ordinal()] += 1;

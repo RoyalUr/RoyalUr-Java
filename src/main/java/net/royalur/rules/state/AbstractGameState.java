@@ -42,10 +42,10 @@ public abstract class AbstractGameState<
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer
     ) {
-        if (lightPlayer.player != Player.LIGHT)
-            throw new IllegalArgumentException("The lightPlayer should be of Player.LIGHT, not " + lightPlayer.player);
-        if (darkPlayer.player != Player.DARK)
-            throw new IllegalArgumentException("The darkPlayer should be of Player.DARK, not " + lightPlayer.player);
+        if (lightPlayer.getPlayer() != Player.LIGHT)
+            throw new IllegalArgumentException("lightPlayer should be a Player.LIGHT, not " + lightPlayer.getPlayer());
+        if (darkPlayer.getPlayer() != Player.DARK)
+            throw new IllegalArgumentException("darkPlayer should be a Player.DARK, not " + darkPlayer.getPlayer());
 
         this.board = board;
         this.lightPlayer = lightPlayer;

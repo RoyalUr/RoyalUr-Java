@@ -15,7 +15,7 @@ public class StandardPiece extends Piece {
     /**
      * The index of the piece on its owner player's path.
      */
-    public final int pathIndex;
+    private final int pathIndex;
 
     /**
      * Instantiates a piece used in a game using the simple rules.
@@ -43,7 +43,7 @@ public class StandardPiece extends Piece {
 
     @Override
     public int hashCode() {
-        return owner.hashCode() ^ (37 * Integer.hashCode(pathIndex));
+        return super.hashCode() ^ (37 * Integer.hashCode(pathIndex));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class StandardPiece extends Piece {
             return false;
 
         StandardPiece other = (StandardPiece) obj;
-        return owner == other.owner && pathIndex == other.pathIndex;
+        return super.equals(other) && pathIndex == other.pathIndex;
     }
 
 }

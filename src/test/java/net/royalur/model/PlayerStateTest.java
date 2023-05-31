@@ -9,24 +9,24 @@ public class PlayerStateTest {
     @Test
     public void testNew() {
         PlayerState player = new PlayerState(Player.LIGHT, 1, 1);
-        assertEquals(Player.LIGHT, player.player);
-        assertEquals(1, player.pieceCount);
-        assertEquals(1, player.score);
+        assertEquals(Player.LIGHT, player.getPlayer());
+        assertEquals(1, player.getPieceCount());
+        assertEquals(1, player.getScore());
 
         player = new PlayerState(Player.DARK, 2, 3);
-        assertEquals(Player.DARK, player.player);
-        assertEquals(2, player.pieceCount);
-        assertEquals(3, player.score);
+        assertEquals(Player.DARK, player.getPlayer());
+        assertEquals(2, player.getPieceCount());
+        assertEquals(3, player.getScore());
 
         player = new PlayerState(Player.LIGHT, 5, 4);
-        assertEquals(Player.LIGHT, player.player);
-        assertEquals(5, player.pieceCount);
-        assertEquals(4, player.score);
+        assertEquals(Player.LIGHT, player.getPlayer());
+        assertEquals(5, player.getPieceCount());
+        assertEquals(4, player.getScore());
 
         player = new PlayerState(Player.DARK, 10, 11);
-        assertEquals(Player.DARK, player.player);
-        assertEquals(10, player.pieceCount);
-        assertEquals(11, player.score);
+        assertEquals(Player.DARK, player.getPlayer());
+        assertEquals(10, player.getPieceCount());
+        assertEquals(11, player.getScore());
 
         assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, 1, -1));

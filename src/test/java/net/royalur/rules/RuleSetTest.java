@@ -10,6 +10,7 @@ import net.royalur.rules.standard.StandardPieceProvider;
 import net.royalur.rules.standard.StandardPlayerStateProvider;
 import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.rules.state.GameState;
+import net.royalur.util.Cast;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -70,7 +71,7 @@ public class RuleSetTest {
         GameState<?, ?, ?> initialState = rules.generateInitialGameState();
         Board<?> board = initialState.getBoard();
         assertNotNull(board);
-        assertEquals(board.shape, rules.getBoardShape());
+        assertEquals(board.getShape(), rules.getBoardShape());
 
         for (Tile tile : rules.getBoardShape().getTilesByRow()) {
             assertNull(board.get(tile));
@@ -87,11 +88,11 @@ public class RuleSetTest {
 
         PlayerState light = initialState.getLightPlayer();
         assertNotNull(light);
-        assertEquals(Player.LIGHT, light.player);
+        assertEquals(Player.LIGHT, light.getPlayer());
 
         PlayerState dark = initialState.getDarkPlayer();
         assertNotNull(dark);
-        assertEquals(Player.DARK, dark.player);
+        assertEquals(Player.DARK, dark.getPlayer());
     }
 
     @ParameterizedTest
@@ -103,13 +104,12 @@ public class RuleSetTest {
         for (int test = 0; test < 10_000; ++test) {
             Roll roll = dice.roll();
             assertNotNull(roll);
-            assertTrue(roll.value <= dice.getMaxRollValue());
+            assertTrue(roll.getValue() <= dice.getMaxRollValue());
         }
     }
 
     @ParameterizedTest
     @ArgumentsSource(RuleSetProvider.class)
-    @SuppressWarnings("unchecked")
     public <P extends Piece, S extends PlayerState, R extends Roll>
     void testFindAvailableMoves(NamedRuleSet<P, S, R> nrs) {
         RuleSet<P, S, R> rules = nrs.rules;
@@ -122,12 +122,12 @@ public class RuleSetTest {
 
         int availableLight = 0;
         int availableDark = 0;
-        List<Move<P>>[] lightMovesByRoll = (List<Move<P>>[]) new List[dice.getMaxRollValue() + 1];
-        List<Move<P>>[] darkMovesByRoll = (List<Move<P>>[]) new List[dice.getMaxRollValue() + 1];
+        List<Move<P>>[] lightMovesByRoll = Cast.unsafeCast(new List[dice.getMaxRollValue() + 1]);
+        List<Move<P>>[] darkMovesByRoll = Cast.unsafeCast(new List[dice.getMaxRollValue() + 1]);
         for (int test = 0; test < 10_000; ++test) {
             R roll = dice.roll();
 
-            if (roll.value == 0) {
+            if (roll.getValue() == 0) {
                 assertThrows(IllegalArgumentException.class, () -> rules.findAvailableMoves(board, light, roll));
                 assertThrows(IllegalArgumentException.class, () -> rules.findAvailableMoves(board, dark, roll));
                 continue;
@@ -146,12 +146,12 @@ public class RuleSetTest {
                 availableDark += 1;
             }
 
-            if (lightMovesByRoll[roll.value] != null) {
-                assertEquals(lightMoves, lightMovesByRoll[roll.value]);
-                assertEquals(darkMoves, darkMovesByRoll[roll.value]);
+            if (lightMovesByRoll[roll.getValue()] != null) {
+                assertEquals(lightMoves, lightMovesByRoll[roll.getValue()]);
+                assertEquals(darkMoves, darkMovesByRoll[roll.getValue()]);
             } else {
-                lightMovesByRoll[roll.value] = lightMoves;
-                darkMovesByRoll[roll.value] = darkMoves;
+                lightMovesByRoll[roll.getValue()] = lightMoves;
+                darkMovesByRoll[roll.getValue()] = darkMoves;
             }
         }
         assertTrue(availableLight > 0);

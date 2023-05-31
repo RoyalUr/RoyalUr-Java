@@ -11,7 +11,7 @@ public class RollTest {
     public void testNew() {
         for (int value = 0; value < 10; ++value) {
             Roll roll = new Roll(value);
-            assertEquals(value, roll.value);
+            assertEquals(value, roll.getValue());
         }
 
         assertThrows(IllegalArgumentException.class, () -> new Roll(-1));
@@ -23,7 +23,7 @@ public class RollTest {
     public void testOf() {
         for (int value = 0; value < 10; ++value) {
             Roll roll = Roll.of(value);
-            assertEquals(value, roll.value);
+            assertEquals(value, roll.getValue());
         }
 
         assertThrows(IllegalArgumentException.class, () -> Roll.of(-1));

@@ -9,34 +9,34 @@ public class TileTest {
     @Test
     public void testNew() {
         Tile tile = new Tile(1, 1);
-        assertEquals(0, tile.ix);
-        assertEquals(0, tile.iy);
-        assertEquals(1, tile.x);
-        assertEquals(1, tile.y);
+        assertEquals(0, tile.getXIndex());
+        assertEquals(0, tile.getYIndex());
+        assertEquals(1, tile.getX());
+        assertEquals(1, tile.getY());
 
         tile = new Tile(3, 2);
-        assertEquals(2, tile.ix);
-        assertEquals(1, tile.iy);
-        assertEquals(3, tile.x);
-        assertEquals(2, tile.y);
+        assertEquals(2, tile.getXIndex());
+        assertEquals(1, tile.getYIndex());
+        assertEquals(3, tile.getX());
+        assertEquals(2, tile.getY());
 
         tile = new Tile(26, 1000);
-        assertEquals(25, tile.ix);
-        assertEquals(999, tile.iy);
-        assertEquals(26, tile.x);
-        assertEquals(1000, tile.y);
+        assertEquals(25, tile.getXIndex());
+        assertEquals(999, tile.getYIndex());
+        assertEquals(26, tile.getX());
+        assertEquals(1000, tile.getY());
 
         tile = new Tile(3, 0);
-        assertEquals(2, tile.ix);
-        assertEquals(-1, tile.iy);
-        assertEquals(3, tile.x);
-        assertEquals(0, tile.y);
+        assertEquals(2, tile.getXIndex());
+        assertEquals(-1, tile.getYIndex());
+        assertEquals(3, tile.getX());
+        assertEquals(0, tile.getY());
 
         for (int x = 1; x <= 26; ++x) {
             for (int y = 1; y <= 50; ++y) {
                 tile = new Tile(x, y);
-                assertEquals(x, tile.x);
-                assertEquals(y, tile.y);
+                assertEquals(x, tile.getX());
+                assertEquals(y, tile.getY());
             }
         }
 
@@ -52,34 +52,34 @@ public class TileTest {
     @Test
     public void testFromIndices() {
         Tile tile = Tile.fromIndices(0, 0);
-        assertEquals(0, tile.ix);
-        assertEquals(0, tile.iy);
-        assertEquals(1, tile.x);
-        assertEquals(1, tile.y);
+        assertEquals(0, tile.getXIndex());
+        assertEquals(0, tile.getYIndex());
+        assertEquals(1, tile.getX());
+        assertEquals(1, tile.getY());
 
         tile = Tile.fromIndices(2, 1);
-        assertEquals(2, tile.ix);
-        assertEquals(1, tile.iy);
-        assertEquals(3, tile.x);
-        assertEquals(2, tile.y);
+        assertEquals(2, tile.getXIndex());
+        assertEquals(1, tile.getYIndex());
+        assertEquals(3, tile.getX());
+        assertEquals(2, tile.getY());
 
         tile = Tile.fromIndices(25, 999);
-        assertEquals(25, tile.ix);
-        assertEquals(999, tile.iy);
-        assertEquals(26, tile.x);
-        assertEquals(1000, tile.y);
+        assertEquals(25, tile.getXIndex());
+        assertEquals(999, tile.getYIndex());
+        assertEquals(26, tile.getX());
+        assertEquals(1000, tile.getY());
 
         tile = Tile.fromIndices(2, -1);
-        assertEquals(2, tile.ix);
-        assertEquals(-1, tile.iy);
-        assertEquals(3, tile.x);
-        assertEquals(0, tile.y);
+        assertEquals(2, tile.getXIndex());
+        assertEquals(-1, tile.getYIndex());
+        assertEquals(3, tile.getX());
+        assertEquals(0, tile.getY());
 
         for (int ix = 0; ix < 26; ++ix) {
             for (int iy = 0; iy < 50; ++iy) {
                 tile = Tile.fromIndices(ix, iy);
-                assertEquals(ix, tile.ix);
-                assertEquals(iy, tile.iy);
+                assertEquals(ix, tile.getXIndex());
+                assertEquals(iy, tile.getYIndex());
             }
         }
 

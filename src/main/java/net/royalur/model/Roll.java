@@ -36,7 +36,7 @@ public class Roll {
     /**
      * The value of the dice roll.
      */
-    public final int value;
+    private final int value;
 
     /**
      * Instantiates a dice roll.
@@ -50,20 +50,27 @@ public class Roll {
     }
 
     /**
+     * Gets the value of this dice roll.
+     * @return The value of this dice roll.
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
      * Generates a roll representing a roll of the value {@code value}.
      * @param value The value that was rolled on the dice.
      * @return A roll representing a roll of the value {@code value}.
      */
     public static @Nonnull Roll of(int value) {
-        switch (value) {
-            case 0: return ZERO;
-            case 1: return ONE;
-            case 2: return TWO;
-            case 3: return THREE;
-            case 4: return FOUR;
-            default:
-                return new Roll(value);
-        }
+        return switch (value) {
+            case 0 -> ZERO;
+            case 1 -> ONE;
+            case 2 -> TWO;
+            case 3 -> THREE;
+            case 4 -> FOUR;
+            default -> new Roll(value);
+        };
     }
 
     @Override

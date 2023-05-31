@@ -19,12 +19,12 @@ public class WinGameState<
     /**
      * The player that won the game.
      */
-    public final @Nonnull Player winner;
+    private final @Nonnull Player winner;
 
     /**
      * The player that lost the game.
      */
-    public final @Nonnull Player loser;
+    private final @Nonnull Player loser;
 
     /**
      * Instantiates a game state where a player has won the game.
@@ -67,6 +67,6 @@ public class WinGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "The " + winner.lowerName + " player has won!";
+        return "The " + winner.getTextName().toLowerCase() + " player has won!";
     }
 }

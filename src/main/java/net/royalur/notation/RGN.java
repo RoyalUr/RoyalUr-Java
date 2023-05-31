@@ -6,7 +6,6 @@ import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
-import net.royalur.name.Name;
 import net.royalur.name.NameMap;
 import net.royalur.rules.state.ActionGameState;
 import net.royalur.rules.state.MovedGameState;
@@ -50,7 +49,7 @@ public class RGN implements RGUNotation {
      * The maximum length of the lines that contain moves.
      * This does not apply to the metadata lines.
      */
-    public final int maxActionLineLength;
+    private final int maxActionLineLength;
 
     /**
      * Instantiates the RGN notation to encode and decode games.
@@ -113,7 +112,7 @@ public class RGN implements RGUNotation {
             @Nonnull RolledGameState<P, S, R> rolledState
     ) {
         Roll roll = rolledState.getRoll();
-        builder.append("r").append(roll.value);
+        builder.append("r").append(roll.getValue());
     }
 
     /**
@@ -135,23 +134,23 @@ public class RGN implements RGUNotation {
 
         // Get the origin tile.
         if (move.isIntroducingPiece()) {
-            from = rules.getPaths().get(move.player).startTile;
+            from = rules.getPaths().get(move.getPlayer()).getStartTile();
         } else {
             from = move.getSource();
         }
 
         // Get the destination tile.
         if (move.isScoringPiece()) {
-            to = rules.getPaths().get(move.player).endTile;
+            to = rules.getPaths().get(move.getPlayer()).getEndTile();
         } else {
             to = move.getDestination();
         }
 
         // Include the source coordinate.
-        if (from.x != to.x) {
+        if (from.getX() != to.getX()) {
             from.encodeXLowerCase(builder);
         }
-        if (from.y != to.y) {
+        if (from.getY() != to.getY()) {
             from.encodeY(builder);
         }
 
@@ -224,7 +223,7 @@ public class RGN implements RGUNotation {
             actionBuilder.setLength(0);
 
             // Detect new turns.
-            Player currentPlayer = actionState.getTurnPlayer().player;
+            Player currentPlayer = actionState.getTurnPlayer().getPlayer();
             if (turnPlayer != currentPlayer) {
                 turn += 1;
                 turnPlayer = currentPlayer;

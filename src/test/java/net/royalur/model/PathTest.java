@@ -24,26 +24,26 @@ public class PathTest {
         tileList.add(T11);
 
         Path path = new Path(tileList, T12, T21);
-        assertEquals(1, path.length);
-        assertEquals(tileList, path.tiles);
-        assertNotSame(tileList, path.tiles);
-        assertEquals(T12, path.startTile);
-        assertEquals(T21, path.endTile);
+        assertEquals(1, path.length());
+        assertEquals(tileList, path.getTiles());
+        assertNotSame(tileList, path.getTiles());
+        assertEquals(T12, path.getStartTile());
+        assertEquals(T21, path.getEndTile());
 
         tileList.add(T22);
-        assertNotEquals(tileList, path.tiles);
-        assertEquals(1, path.length);
+        assertNotEquals(tileList, path.getTiles());
+        assertEquals(1, path.length());
 
         path = new Path(tileList, T12, T32);
-        assertEquals(2, path.length);
-        assertEquals(tileList, path.tiles);
-        assertNotSame(tileList, path.tiles);
-        assertEquals(T12, path.startTile);
-        assertEquals(T32, path.endTile);
+        assertEquals(2, path.length());
+        assertEquals(tileList, path.getTiles());
+        assertNotSame(tileList, path.getTiles());
+        assertEquals(T12, path.getStartTile());
+        assertEquals(T32, path.getEndTile());
 
         tileList.add(T23);
-        assertNotEquals(tileList, path.tiles);
-        assertEquals(2, path.length);
+        assertNotEquals(tileList, path.getTiles());
+        assertEquals(2, path.length());
 
         assertThrows(IllegalArgumentException.class, () -> new Path(List.of(), T12, T32));
     }

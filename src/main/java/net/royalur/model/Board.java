@@ -15,22 +15,22 @@ public class Board<P extends Piece> {
     /**
      * The shape of this board.
      */
-    public final @Nonnull BoardShape shape;
+    private final @Nonnull BoardShape shape;
 
     /**
      * The number of x-coordinates that exist in this board.
      */
-    public final int width;
+    private final int width;
 
     /**
      * The number of y-coordinates that exist in this board.
      */
-    public final int height;
+    private final int height;
 
     /**
      * The number of tiles contained in this board.
      */
-    public final int area;
+    private final int area;
 
     /**
      * The pieces on the tiles of this board.
@@ -43,9 +43,9 @@ public class Board<P extends Piece> {
      */
     public Board(@Nonnull BoardShape shape) {
         this.shape = shape;
-        this.width = shape.width;
-        this.height = shape.height;
-        this.area = shape.area;
+        this.width = shape.getWidth();
+        this.height = shape.getHeight();
+        this.area = shape.getArea();
         this.pieces = new Piece[width][height];
     }
 
@@ -55,8 +55,8 @@ public class Board<P extends Piece> {
      */
     protected Board(@Nonnull Board<P> template) {
         this(template.shape);
-        for (int ix = 0; ix < shape.width; ++ix) {
-            System.arraycopy(template.pieces[ix], 0, pieces[ix], 0, shape.height);
+        for (int ix = 0; ix < width; ++ix) {
+            System.arraycopy(template.pieces[ix], 0, pieces[ix], 0, height);
         }
     }
 
@@ -66,6 +66,38 @@ public class Board<P extends Piece> {
      */
     public @Nonnull Board<P> copy() {
         return new Board<>(this);
+    }
+
+    /**
+     * Gets the shape of this board.
+     * @return The shape of this board.
+     */
+    public @Nonnull BoardShape getShape() {
+        return shape;
+    }
+
+    /**
+     * Gets the width of the board.
+     * @return The number of x-coordinates that exist in this board.
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Gets the height of the board.
+     * @return The number of y-coordinates that exist in this board.
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Gets the number of tiles contained in this board.
+     * @return The number of tiles contained in this board.
+     */
+    public int getArea() {
+        return area;
     }
 
     /**
@@ -97,7 +129,7 @@ public class Board<P extends Piece> {
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
     public @Nullable P get(@Nonnull Tile tile) {
-        return get(tile.ix, tile.iy);
+        return get(tile.getXIndex(), tile.getYIndex());
     }
 
     /**
@@ -127,7 +159,7 @@ public class Board<P extends Piece> {
      * @return The previous piece on the given tile if there was one, or else {@code null}.
      */
     public @Nullable P set(@Nonnull Tile tile, @Nullable P piece) {
-        return set(tile.ix, tile.iy, piece);
+        return set(tile.getXIndex(), tile.getYIndex(), piece);
     }
 
     /**
@@ -164,7 +196,7 @@ public class Board<P extends Piece> {
                     continue;
 
                 Piece piece = get(ix, iy);
-                if (piece != null && piece.owner == player) {
+                if (piece != null && piece.getOwner() == player) {
                     totalPieces += 1;
                 }
             }
@@ -201,12 +233,12 @@ public class Board<P extends Piece> {
      */
     public @Nonnull String toString(char columnDelimiter, boolean includeOffBoardTiles) {
         StringBuilder builder = new StringBuilder();
-        for (int ix = 0; ix < shape.width; ++ix) {
+        for (int ix = 0; ix < shape.getWidth(); ++ix) {
             if (ix > 0) {
                 builder.append(columnDelimiter);
             }
 
-            for (int iy = 0; iy < shape.height; ++iy) {
+            for (int iy = 0; iy < shape.getHeight(); ++iy) {
                 if (contains(ix, iy)) {
                     builder.append(Piece.toChar(get(ix, iy)));
                 } else if (includeOffBoardTiles) {

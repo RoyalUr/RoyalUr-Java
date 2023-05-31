@@ -18,26 +18,21 @@ public class Path implements Iterable<Tile> {
      * The ordered list of tiles that pieces must progress through on the board.
      * This does not include the start and end tiles that exist off of the board.
      */
-    public final @Nonnull List<Tile> tiles;
+    private final @Nonnull List<Tile> tiles;
 
     /**
      * A tile that exists off the board, which represents where the player's
      * piece should start from to get on to the board. This is mainly useful
      * for building user interfaces.
      */
-    public final @Nonnull Tile startTile;
+    private final @Nonnull Tile startTile;
 
     /**
      * A tile that exists off the board, which represents where the player's
      * piece should end on when it is taken off of the board. This is mainly
      * useful for building user interfaces.
      */
-    public final @Nonnull Tile endTile;
-
-    /**
-     * The number of tiles in this path.
-     */
-    public final int length;
+    private final @Nonnull Tile endTile;
 
     /**
      * Instantiates a path for a player's pieces to take around the board.
@@ -52,7 +47,43 @@ public class Path implements Iterable<Tile> {
             throw new IllegalArgumentException("Paths must have at least one tile");
 
         this.tiles = Collections.unmodifiableList(new ArrayList<>(tiles));
-        this.length = tiles.size();
+    }
+
+    /**
+     * Gets the ordered list of tiles that pieces must progress through on the board.
+     * This does not include the start and end tiles that exist off of the board.
+     * @return The ordered list of tiles that pieces must progress through on the board.
+     */
+    public @Nonnull List<Tile> getTiles() {
+        return tiles;
+    }
+
+    /**
+     * Gets the tile that exists off the board, which represents where the player's
+     * piece should start from to get on to the board. This is mainly useful
+     * for building user interfaces.
+     * @return The start tile where pieces are moved from when they are introduced.
+     */
+    public @Nonnull Tile getStartTile() {
+        return startTile;
+    }
+
+    /**
+     * Gets the tile that exists off the board, which represents where the player's
+     * piece should end on when it is taken off of the board. This is mainly
+     * useful for building user interfaces.
+     * @return The end tile where pieces move when they are scored.
+     */
+    public @Nonnull Tile getEndTile() {
+        return endTile;
+    }
+
+    /**
+     * Gets the number of tiles in this path.
+     * @return The number of tiles in this path.
+     */
+    public int length() {
+        return tiles.size();
     }
 
     /**
@@ -62,10 +93,10 @@ public class Path implements Iterable<Tile> {
      * @return The tile at the given index in this path.
      */
     public @Nonnull Tile get(int index) {
-        if (index < 0 || index >= length) {
+        if (index < 0 || index >= length()) {
             throw new IndexOutOfBoundsException(
                     "Index " + index + " is out of bounds of the tiles of this path " +
-                    "(" + length + " tiles)"
+                    "(" + length() + " tiles)"
             );
         }
         return tiles.get(index);

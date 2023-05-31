@@ -27,13 +27,13 @@ public enum GameStatsTarget {
     /**
      * A human-readable name representing this target, in English.
      */
-    public final @Nonnull String name;
+    private final @Nonnull String name;
 
     /**
      * The player associated with this target, if this target
      * is associated with a player, or else {@code null}.
      */
-    public final @Nullable Player player;
+    private final @Nullable Player player;
 
     /**
      * Instantiates a target for statistics about a game.
@@ -47,16 +47,42 @@ public enum GameStatsTarget {
     }
 
     /**
+     * Gets a human-readable name representing this target, in English.
+     * @return A human-readable name representing this target, in English.
+     */
+    public @Nonnull String getName() {
+        return name;
+    }
+
+    /**
+     * Gets whether this target is associated with a specific player.
+     * @return Whether this target is associated with a specific player.
+     */
+    public boolean hasAssociatedPlayer() {
+        return player != null;
+    }
+
+    /**
+     * Gets the specific player associated with this target.
+     * @return The specific player associated with this target.
+     * @throws UnsupportedOperationException if this target does not have an associated player.
+     */
+    public @Nonnull Player getAssociatedPlayer() {
+        if (player == null)
+            throw new UnsupportedOperationException("This target does not have an associated player");
+
+        return player;
+    }
+
+    /**
      * Retrieves the target associated with {@code player}.
      * @param player The player to retrieve the statistics for.
      * @return The target associated with {@code player}.
      */
     public static @Nonnull GameStatsTarget get(@Nonnull Player player) {
-        switch (player) {
-            case LIGHT: return GameStatsTarget.LIGHT;
-            case DARK: return GameStatsTarget.DARK;
-            default:
-                throw new IllegalArgumentException("Unknown player " + player);
-        }
+        return switch (player) {
+            case LIGHT -> GameStatsTarget.LIGHT;
+            case DARK -> GameStatsTarget.DARK;
+        };
     }
 }

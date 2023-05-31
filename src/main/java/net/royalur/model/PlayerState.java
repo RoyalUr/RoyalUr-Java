@@ -2,7 +2,6 @@ package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.function.Function;
 
 /**
  * A player state represents the state of a single player at a point in the game.
@@ -13,17 +12,17 @@ public class PlayerState {
     /**
      * The player that this state represents.
      */
-    public final @Nonnull Player player;
+    private final @Nonnull Player player;
 
     /**
      * The number of pieces that the player has yet to play.
      */
-    public final int pieceCount;
+    private final int pieceCount;
 
     /**
      * The number of pieces that the player has taken off the board.
      */
-    public final int score;
+    private final int score;
 
     /**
      * Instantiates a state for a player in a game.
@@ -40,6 +39,30 @@ public class PlayerState {
         this.player = player;
         this.pieceCount = pieceCount;
         this.score = score;
+    }
+
+    /**
+     * Gets the player that this state represents.
+     * @return The player that this state represents.
+     */
+    public @Nonnull Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * Gets the number of pieces that the player has yet to play.
+     * @return The number of pieces that the player has yet to play.
+     */
+    public int getPieceCount() {
+        return pieceCount;
+    }
+
+    /**
+     * Gets the number of pieces that the player has taken off the board.
+     * @return The number of pieces that the player has taken off the board.
+     */
+    public int getScore() {
+        return score;
     }
 
     @Override
@@ -59,7 +82,7 @@ public class PlayerState {
     @Override
     public @Nonnull String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(player.name).append(": ");
+        builder.append(player.getTextName()).append(": ");
 
         builder.append(pieceCount).append(" Piece");
         if (pieceCount != 1) {

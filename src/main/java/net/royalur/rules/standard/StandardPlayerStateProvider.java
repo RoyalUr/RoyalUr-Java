@@ -34,11 +34,19 @@ public class StandardPlayerStateProvider implements PlayerStateProvider<PlayerSt
 
     @Override
     public @Nonnull PlayerState applyPiecesChange(PlayerState playerState, int pieces) {
-        return new PlayerState(playerState.player, playerState.pieceCount + pieces, playerState.score);
+        return new PlayerState(
+                playerState.getPlayer(),
+                playerState.getPieceCount() + pieces,
+                playerState.getScore()
+        );
     }
 
     @Override
     public @Nonnull PlayerState applyScoreChange(PlayerState playerState, int pieces) {
-        return new PlayerState(playerState.player, playerState.pieceCount, playerState.score + pieces);
+        return new PlayerState(
+                playerState.getPlayer(),
+                playerState.getPieceCount(),
+                playerState.getScore() + pieces
+        );
     }
 }
