@@ -1,8 +1,6 @@
 package net.royalur;
 
-import net.royalur.builder.GameBuilder;
 import net.royalur.model.*;
-import net.royalur.name.Name;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.state.*;
@@ -325,8 +323,28 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * and seven starting pieces per player.
      * @return A standard game.
      */
-    static @Nonnull Game<StandardPiece, PlayerState, Roll> createStandard() {
-        return builder().standard().build();
+    static @Nonnull Game<StandardPiece, PlayerState, Roll> createRoyalUrNet() {
+        return builder().royalUrNet().build();
+    }
+
+    /**
+     * Creates a standard game that follows the rules proposed by Irving Finkel.
+     * This uses the simple rules, the standard board shape, Bell's path, safe
+     * rosette tiles, the standard dice, and seven starting pieces per player.
+     * @return A game that follows Irving Finkel's proposed simple rules.
+     */
+    static @Nonnull Game<StandardPiece, PlayerState, Roll> createFinkel() {
+        return builder().finkel().build();
+    }
+
+    /**
+     * Creates a standard game that follows the rules proposed by James Masters.
+     * This uses the simple rules, the standard board shape, Bell's path, unsafe
+     * rosette tiles, the standard dice, and seven starting pieces per player.
+     * @return A game that follows Irving Finkel's proposed simple rules.
+     */
+    static @Nonnull Game<StandardPiece, PlayerState, Roll> createMasters() {
+        return builder().masters().build();
     }
 
     /**

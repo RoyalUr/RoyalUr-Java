@@ -7,11 +7,10 @@ import javax.annotation.Nonnull;
 import java.util.Random;
 
 /**
- * Follows the standard probability distribution for dice
- * of the Royal Game of Ur, which consist of four D2 die.
- * Dice are not thread safe.
+ * A set of dice where rolling a zero actually gives you
+ * the highest roll, instead of no moves.
  */
-public class StandardDice implements Dice<Roll> {
+public class StandardDiceWith0AsMax implements Dice<Roll> {
 
     /**
      * The source of randomness used to generate dice rolls.
@@ -29,7 +28,7 @@ public class StandardDice implements Dice<Roll> {
      * @param random The source of randomness used to generate dice rolls.
      * @param numDie The number of D2 dice to roll.
      */
-    public StandardDice(@Nonnull Random random, int numDie) {
+    public StandardDiceWith0AsMax(@Nonnull Random random, int numDie) {
         if (numDie <= 0)
             throw new IllegalArgumentException("numDice must be at least 1");
         if (numDie >= 31)
@@ -42,24 +41,25 @@ public class StandardDice implements Dice<Roll> {
     /**
      * Instantiates the standard dice with a default random number generator, and 4 dice.
      */
-    public StandardDice() {
-        this(new Random(), 4);
+    public StandardDiceWith0AsMax() {
+        this(new Random(), 3);
     }
 
     @Override
     public int getMaxRollValue() {
-        return numDie;
+        return numDie + 1;
     }
 
     @Override
     public @Nonnull Roll roll() {
         // Each generated bit represents a roll of a D2 dice.
-        return Roll.of(Integer.bitCount(random.nextInt(1 << numDie)));
+        int value = Integer.bitCount(random.nextInt(1 << numDie));
+        return value > 0 ? Roll.of(value) : Roll.of(numDie + 1);
     }
 
     @Override
     public @Nonnull Roll roll(int value) {
-        if (value < 0 || value > getMaxRollValue())
+        if (value <= 0 || value > getMaxRollValue())
             throw new IllegalArgumentException("This dice cannot roll " + value);
         return Roll.of(value);
     }

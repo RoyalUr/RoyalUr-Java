@@ -8,6 +8,7 @@ import net.royalur.model.path.BellPathPair;
 import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
+import net.royalur.rules.standard.StandardDiceWith0AsMax;
 import net.royalur.rules.standard.StandardPiece;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
@@ -52,16 +53,18 @@ public class RGUStatistics {
     public void testRandomAgentActions() {
         int tests = 10_000;
         List<Supplier<Game<StandardPiece, PlayerState, Roll>>> generators = List.of(
-                () -> Game.builder().standard().paths(new BellPathPair()).build(),
-                () -> Game.builder().standard().paths(new MastersPathPair()).build(),
-                () -> Game.builder().standard().paths(new SkiriukPathPair()).build(),
-                () -> Game.builder().standard().paths(new MurrayPathPair()).build(),
-                () -> Game.builder().aseb().build()
+                () -> Game.builder().finkel().build(),
+                () -> Game.builder().masters().build(),
+                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
+                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
+                () -> Game.builder().aseb().build(),
+                () -> Game.builder().finkel().dice(new StandardDiceWith0AsMax()).build()
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
             String desc = sample.getBoard().getShape().getDebugName()
-                    + ", " + sample.getRules().getPaths().getDebugName();
+                    + ", " + sample.getRules().getPaths().getDebugName()
+                    + ", " + sample.getRules().getDice().getClass().getName();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {

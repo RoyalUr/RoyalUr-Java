@@ -39,6 +39,12 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
     @Nonnull Dice<R> getDice();
 
     /**
+     * Gets whether rosettes are considered safe squares in this rule set.
+     * @return Whether rosettes are considered safe squares in this rule set.
+     */
+    boolean areRosettesSafe();
+
+    /**
      * Gets the provider of piece manipulations.
      * @return The provider of making piece changes.
      */

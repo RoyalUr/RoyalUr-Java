@@ -50,6 +50,14 @@ public class PlayerState {
     }
 
     /**
+     * Gets the name of this player.
+     * @return The name of this player.
+     */
+    public @Nonnull String getName() {
+        return player.getTextName();
+    }
+
+    /**
      * Gets the number of pieces that the player has yet to play.
      * @return The number of pieces that the player has yet to play.
      */

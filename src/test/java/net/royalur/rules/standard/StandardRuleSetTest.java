@@ -47,6 +47,7 @@ public class StandardRuleSetTest {
                             new StandardBoardShape(),
                             new BellPathPair(),
                             new StandardDice(),
+                            true,
                             new StandardPieceProvider(),
                             new StandardPlayerStateProvider(7)
                     ))),
@@ -54,6 +55,7 @@ public class StandardRuleSetTest {
                             new AsebBoardShape(),
                             new AsebPathPair(),
                             new StandardDice(),
+                            true,
                             new StandardPieceProvider(),
                             new StandardPlayerStateProvider(5)
                     )))
@@ -68,10 +70,10 @@ public class StandardRuleSetTest {
         StandardPlayerStateProvider playerStateProvider = new StandardPlayerStateProvider(7);
 
         assertThrows(IllegalArgumentException.class, () -> new StandardRuleSet<>(
-                new AsebBoardShape(), new BellPathPair(), dice, pieceProvider, playerStateProvider
+                new AsebBoardShape(), new BellPathPair(), dice, true, pieceProvider, playerStateProvider
         ));
         assertThrows(IllegalArgumentException.class, () -> new StandardRuleSet<>(
-                new StandardBoardShape(), new AsebPathPair(), dice, pieceProvider, playerStateProvider
+                new StandardBoardShape(), new AsebPathPair(), dice, true, pieceProvider, playerStateProvider
         ));
     }
 

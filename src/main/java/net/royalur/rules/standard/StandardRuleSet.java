@@ -44,6 +44,11 @@ public class StandardRuleSet<
     private final @Nonnull Dice<R> dice;
 
     /**
+     * Whether rosette tiles are safe squares for pieces.
+     */
+    private final boolean safeRosettes;
+
+    /**
      * Provides the manipulation of piece values.
      */
     private final @Nonnull PieceProvider<P> pieceProvider;
@@ -58,6 +63,7 @@ public class StandardRuleSet<
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
      * @param dice The dice that are used to generate dice rolls.
+     * @param safeRosettes Whether rosette tiles are safe squares for pieces.
      * @param pieceProvider Provides the manipulation of piece values.
      * @param playerStateProvider Provides the manipulation of player states.
      */
@@ -65,6 +71,7 @@ public class StandardRuleSet<
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
             @Nonnull Dice<R> dice,
+            boolean safeRosettes,
             @Nonnull PieceProvider<P> pieceProvider,
             @Nonnull PlayerStateProvider<S> playerStateProvider
     ) {
@@ -78,6 +85,7 @@ public class StandardRuleSet<
         this.boardShape = boardShape;
         this.paths = paths;
         this.dice = dice;
+        this.safeRosettes = safeRosettes;
         this.pieceProvider = pieceProvider;
         this.playerStateProvider = playerStateProvider;
     }
@@ -95,6 +103,11 @@ public class StandardRuleSet<
     @Override
     public @Nonnull Dice<R> getDice() {
         return dice;
+    }
+
+    @Override
+    public boolean areRosettesSafe() {
+        return safeRosettes;
     }
 
     @Override
@@ -176,8 +189,8 @@ public class StandardRuleSet<
                 if (destPiece.getOwner() == player.getPlayer())
                     continue;
 
-                // Can't capture pieces on rosettes.
-                if (board.getShape().isRosette(dest))
+                // Can't capture pieces on rosettes if they are safe.
+                if (safeRosettes && board.getShape().isRosette(dest))
                     continue;
             }
 

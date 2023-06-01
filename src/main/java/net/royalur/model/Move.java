@@ -201,6 +201,43 @@ public class Move<P extends Piece> {
         }
     }
 
+    /**
+     * Gets an English description of this move.
+     * @return An English description of this move.
+     */
+    public @Nonnull String describe() {
+        StringBuilder builder = new StringBuilder();
+        // Introduce a piece to capture A5
+        // Introduce a piece to A3
+        // Move A3 to B1
+        // Move A3 to capture B1
+        // Scored a piece from A3
+
+        if (isScoringPiece()) {
+            builder.append("Score a piece from ");
+        } else if (isIntroducingPiece()) {
+            builder.append("Introduce a piece to ");
+        } else {
+            builder.append("Move ");
+        }
+
+        if (!isIntroducingPiece()) {
+            builder.append(getSource());
+            if (!isScoringPiece()) {
+                builder.append(" to ");
+            }
+        }
+
+        if (capturesPiece()) {
+            builder.append("capture ");
+        }
+
+        if (!isScoringPiece()) {
+            builder.append(getDestination());
+        }
+        return builder.toString();
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(from) ^ (31 * Objects.hashCode(fromPiece)) ^

@@ -19,7 +19,7 @@ public class GameTest {
 
     @Test
     public void testCopy() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
+        Game<StandardPiece, PlayerState, Roll> game = Game.createRoyalUrNet();
         assertNotNull(game);
 
         Game<StandardPiece, PlayerState, Roll> copy = game.copy();
@@ -61,7 +61,7 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardBellGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
+        Game<StandardPiece, PlayerState, Roll> game = Game.createRoyalUrNet();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
@@ -76,7 +76,7 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardMastersGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new MastersPathPair()).build();
+        Game<StandardPiece, PlayerState, Roll> game = Game.builder().masters().build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
@@ -91,7 +91,7 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardSkiriukGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new SkiriukPathPair()).build();
+        Game<StandardPiece, PlayerState, Roll> game = Game.builder().finkel().paths(new SkiriukPathPair()).build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
@@ -106,7 +106,7 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardMurrayGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().standard().paths(new MurrayPathPair()).build();
+        Game<StandardPiece, PlayerState, Roll> game = Game.builder().finkel().paths(new MurrayPathPair()).build();
         RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);

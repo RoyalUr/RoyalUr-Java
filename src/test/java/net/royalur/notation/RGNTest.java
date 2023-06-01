@@ -2,12 +2,14 @@ package net.royalur.notation;
 
 import net.royalur.StandardGame;
 import net.royalur.Game;
+import net.royalur.agent.Agent;
+import net.royalur.agent.RandomAgent;
 import net.royalur.model.*;
 import net.royalur.model.path.BellPathPair;
-import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
+import net.royalur.util.Cast;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +19,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,19 +50,19 @@ public class RGNTest {
         public static @Nonnull List<ProvidedRules> get() {
             List<ProvidedRules> rules = new ArrayList<>();
             rules.add(new ProvidedRules(
-                    "Standard", Game.builder().standard().buildRules()
+                    "RoyalUr.net", Game.builder().royalUrNet().buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Bell", Game.builder().standard().paths(new BellPathPair()).buildRules()
+                    "Bell", Game.builder().finkel().paths(new BellPathPair()).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Masters", Game.builder().standard().paths(new MastersPathPair()).buildRules()
+                    "Masters", Game.builder().masters().buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Murray", Game.builder().standard().paths(new MurrayPathPair()).buildRules()
+                    "Murray", Game.builder().finkel().paths(new MurrayPathPair()).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Skiriuk", Game.builder().standard().paths(new SkiriukPathPair()).buildRules()
+                    "Skiriuk", Game.builder().finkel().paths(new SkiriukPathPair()).buildRules()
             ));
             rules.add(new ProvidedRules(
                     "Aseb", Game.builder().aseb().buildRules()
@@ -137,19 +140,14 @@ public class RGNTest {
 
             // Empty games.
             for (ProvidedRules rules : RulesProvider.get()) {
-                games.add(new ProvidedGame("Empty", new StandardGame<>(rules.rules)));
-            }
-
-            // Empty games with player names.
-            for (ProvidedRules rules : RulesProvider.get()) {
-                games.add(new ProvidedGame("Empty", new StandardGame<>(rules.rules)));
+                games.add(new ProvidedGame("Empty, " + rules.name, new StandardGame<>(rules.rules)));
             }
 
             // One roll by light.
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
-                games.add(new ProvidedGame("One Roll", game));
+                games.add(new ProvidedGame("One Roll, " + rules.name, game));
             }
 
             // One move by light.
@@ -157,7 +155,7 @@ public class RGNTest {
                 Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
-                games.add(new ProvidedGame("One Move", game));
+                games.add(new ProvidedGame("One Move, " + rules.name, game));
             }
 
             // One move by light, and one roll.
@@ -165,7 +163,7 @@ public class RGNTest {
                 Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
-                games.add(new ProvidedGame("One Move, One Roll", game));
+                games.add(new ProvidedGame("One Move One Roll, " + rules.name, game));
             }
 
             // One move by light, and one move by dark.
@@ -175,14 +173,27 @@ public class RGNTest {
                 game.makeMoveIntroducingPiece();
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
-                games.add(new ProvidedGame("Two Moves", game));
+                games.add(new ProvidedGame("Two Moves, " + rules.name, game));
             }
 
             // Game where light always rolls 1, and dark always rolls 0.
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game<?, ?, ?> game = new StandardGame<>(rules.rules);
                 playRiggedGame(rules.name, game);
-                games.add(new ProvidedGame("Rigged", game));
+                games.add(new ProvidedGame("Rigged, " + rules.name, game));
+            }
+
+            // Game with random moves.
+            Random random = new Random(53);
+            Agent<?, ?, ?> randomAgent = new RandomAgent<>(random);
+            for (ProvidedRules rules : RulesProvider.get()) {
+                Game<?, ?, ?> game = new StandardGame<>(rules.rules);
+                Agent.playAutonomously(
+                        Cast.unsafeCast(game),
+                        Cast.unsafeCast(randomAgent),
+                        Cast.unsafeCast(randomAgent)
+                );
+                games.add(new ProvidedGame("Random, " + rules.name, game));
             }
             return games;
         }
@@ -193,7 +204,14 @@ public class RGNTest {
         }
     }
 
-    private void testMetadata(@Nonnull String encoded, @Nonnull Game<?, ?, ?> game) {
+    @ParameterizedTest
+    @ArgumentsSource(GameProvider.class)
+    public void testMetadata(ProvidedGame providedGame) {
+        Game<?, ?, ?> game = providedGame.game;
+        RGN rgn = new RGN();
+        String encoded = rgn.encodeGame(game);
+        System.out.println(encoded);
+
         // Get a list of all the metadata lines, ignoring lines containing moves.
         String[] allLines = encoded.split("\\R");
         List<String> lines = new ArrayList<>();
@@ -213,14 +231,5 @@ public class RGNTest {
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Date \"") && line.endsWith("\"]")));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Time \"") && line.endsWith("\"]")));
         assertTrue(lines.stream().anyMatch(line -> line.startsWith("[TimeZone \"") && line.endsWith("\"]")));
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(GameProvider.class)
-    public void testMetadata(ProvidedGame providedGame) {
-        Game<?, ?, ?> game = providedGame.game;
-        RGN rgn = new RGN();
-        String encoded = rgn.encodeGame(game);
-        testMetadata(encoded, game);
     }
 }

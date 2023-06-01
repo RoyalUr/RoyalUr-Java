@@ -48,6 +48,7 @@ public class RuleSetTest {
                             new StandardBoardShape(),
                             new BellPathPair(),
                             new StandardDice(),
+                            false,
                             new StandardPieceProvider(),
                             new StandardPlayerStateProvider(7)
                     ))),
@@ -55,6 +56,7 @@ public class RuleSetTest {
                             new AsebBoardShape(),
                             new AsebPathPair(),
                             new StandardDice(),
+                            true,
                             new StandardPieceProvider(),
                             new StandardPlayerStateProvider(5)
                     )))

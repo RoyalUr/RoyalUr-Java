@@ -33,7 +33,14 @@ public class RGN implements RGUNotation {
      * The default maximum length for lines in RGN that
      * encode the actions taken in a game.
      */
-    public static final int DEFAULT_MAX_ACTION_LINE_LENGTH = 40;
+    public static final int DEFAULT_MAX_ACTION_LINE_LENGTH = 0;
+
+    /**
+     * The default maximum length of each line representing a turn
+     * in RGN. A single turn can exceed the max action line length,
+     * in which case it will be placed on its own line.
+     */
+    public static final int DEFAULT_MAX_TURN_LINE_LENGTH = 60;
 
     /**
      * A map of factories for identifying path pairs for parsing.
@@ -52,26 +59,35 @@ public class RGN implements RGUNotation {
     private final int maxActionLineLength;
 
     /**
+     * The maximum length of a turn before it is split onto another line.
+     * This does not apply to the metadata lines.
+     */
+    private final int maxTurnLineLength;
+
+    /**
      * Instantiates the RGN notation to encode and decode games.
      * @param pathPairs The paths that can be parsed in this notation.
      * @param boardShapes The board shapes that can be parsed in this notation.
      * @param maxActionLineLength The maximum length of the lines that contain moves.
+     * @param maxTurnLineLength The maximum length of a turn before it is split onto another line.
      */
     public RGN(
             @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
             @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
-            int maxActionLineLength
+            int maxActionLineLength,
+            int maxTurnLineLength
     ) {
         this.pathPairs = pathPairs;
         this.boardShapes = boardShapes;
         this.maxActionLineLength = maxActionLineLength;
+        this.maxTurnLineLength = maxTurnLineLength;
     }
 
     /**
      * Instantiates the RGN notation to encode and decode games.
      */
     public RGN() {
-        this(PathType.FACTORIES, BoardType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH);
+        this(PathType.FACTORIES, BoardType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH, DEFAULT_MAX_TURN_LINE_LENGTH);
     }
 
     /**
@@ -112,7 +128,7 @@ public class RGN implements RGUNotation {
             @Nonnull RolledGameState<P, S, R> rolledState
     ) {
         Roll roll = rolledState.getRoll();
-        builder.append("r").append(roll.getValue());
+        builder.append(roll.getValue());
     }
 
     /**
@@ -191,7 +207,10 @@ public class RGN implements RGUNotation {
         int turn = 0;
         Player turnPlayer = null;
         boolean first = true;
+
         int lineLength = 0;
+        int turnLength = 0;
+        StringBuilder turnBuilder = new StringBuilder();
         StringBuilder actionBuilder = new StringBuilder();
 
         List<ActionGameState<P, S, R, ?>> states = game.getActionStates();
@@ -227,40 +246,68 @@ public class RGN implements RGUNotation {
             if (turnPlayer != currentPlayer) {
                 turn += 1;
                 turnPlayer = currentPlayer;
-                actionBuilder.append("(").append(turn).append(") ");
+                if (currentPlayer == Player.LIGHT) {
+                    actionBuilder.append((turn + 1) / 2).append(". ");
+                } else {
+                    actionBuilder.append("~ ");
+                }
+//                actionBuilder.append(currentPlayer.getCharacter()).append(" ");
             }
 
-            // Add in the rolls and moves that were made.
-            if (rollState != null) {
+            // Rolls are only included if there was no move, as the roll
+            // can be determined from the move.
+            if (rollState != null && moveState == null) {
                 appendDiceRoll(game.getRules(), actionBuilder, rollState);
             }
-            if (rollState != null && moveState != null) {
-                actionBuilder.append(".");
-            }
+
+            // If there was a move, include it.
             if (moveState != null) {
                 appendMove(game.getRules(), actionBuilder, moveState);
+            } else {
+                // TODO : Only show this if there were no moves...
+                actionBuilder.append("-");
             }
             if (index == states.size() - 1 && game.isFinished()) {
                 actionBuilder.append("#");
             }
 
-            // Add the action to the encoded string. We wrap to a new
-            // line if required to maintain the maximum line length.
+            // Add the action to the turn. We wrap to a new line
+            // if required to maintain the maximum line length.
             int actionLength = actionBuilder.length();
-            lineLength += actionLength;
-
-            if (!first) {
-                if (lineLength + 1 < maxActionLineLength) {
-                    builder.append(" ");
-                    lineLength += 1;
+            turnLength += actionLength;
+            if (turnBuilder.length() > 0) {
+                if (turnLength + 1 < maxTurnLineLength) {
+                    turnBuilder.append(" ");
+                    turnLength += 1;
                 } else {
-                    builder.append("\n");
-                    lineLength = actionLength;
+                    turnBuilder.append("\n");
+                    turnLength = actionLength;
                 }
-            } else {
-                first = false;
             }
-            builder.append(actionBuilder);
+            turnBuilder.append(actionBuilder);
+
+            // Add the turn to the encoded string if there is a new turn.
+            if (index + 1 >= states.size()
+                    || (currentPlayer != Player.LIGHT && states.get(index + 1).getTurn() != currentPlayer)) {
+
+                lineLength += turnBuilder.length();
+                if (!first) {
+                    if (lineLength + 1 < maxActionLineLength) {
+                        builder.append(" ");
+                        lineLength += 1;
+                    } else {
+                        builder.append("\n");
+                        lineLength = turnLength;
+                    }
+                } else {
+                    first = false;
+                }
+                builder.append(turnBuilder);
+
+                // Reset turnBuilder.
+                turnBuilder.setLength(0);
+                turnLength = 0;
+            }
         }
         return builder.toString();
     }
