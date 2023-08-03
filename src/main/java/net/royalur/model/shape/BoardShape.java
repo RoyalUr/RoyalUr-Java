@@ -1,7 +1,6 @@
 package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
-import net.royalur.model.path.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -234,11 +233,12 @@ public class BoardShape {
 
     /**
      * Determines whether {@code path} could be traversed on this shape of board.
+     * The path that is provided should not include the start and end tiles.
      * @param path The path to check for compatibility.
      * @return Whether {@code path} could be traversed on this shape of board.
      */
-    public boolean isCompatible(@Nonnull Path path) {
-        for (Tile tile : path.getTiles()) {
+    public boolean isCompatible(@Nonnull List<Tile> path) {
+        for (Tile tile : path) {
             if (!contains(tile))
                 return false;
         }

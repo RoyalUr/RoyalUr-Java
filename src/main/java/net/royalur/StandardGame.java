@@ -236,7 +236,7 @@ public class StandardGame<
     public void makeMove(@Nonnull Tile tile) {
         PlayableGameState<P, S, R, ?> state = getCurrentPlayableState();
         if (!state.getBoard().contains(tile)) {
-            if (tile.equals(rules.getPaths().get(state.getTurn()).getStartTile())) {
+            if (tile.equals(rules.getPaths().getStart(state.getTurn()))) {
                 makeMoveIntroducingPiece();
                 return;
             }

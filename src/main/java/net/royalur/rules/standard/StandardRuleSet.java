@@ -1,7 +1,6 @@
 package net.royalur.rules.standard;
 
 import net.royalur.model.*;
-import net.royalur.model.path.Path;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.Dice;
@@ -143,12 +142,12 @@ public class StandardRuleSet<
         if (roll.getValue() <= 0)
             throw new IllegalArgumentException("The roll's value must be at least 1, not " + roll.getValue());
 
-        Path path = paths.get(player.getPlayer());
+        List<Tile> path = paths.get(player.getPlayer());
         List<Move<P>> moves = new ArrayList<>();
 
         // Check if a piece can be taken off the board.
-        if (roll.getValue() <= path.length()) {
-            int scorePathIndex = path.length() - roll.getValue();
+        if (roll.getValue() <= path.size()) {
+            int scorePathIndex = path.size() - roll.getValue();
             Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
             if (scorePiece != null
@@ -160,7 +159,7 @@ public class StandardRuleSet<
         }
 
         // Check for pieces on the board that can be moved to another tile on the board.
-        for (int index = -1; index < path.length() - roll.getValue(); ++index) {
+        for (int index = -1; index < path.size() - roll.getValue(); ++index) {
 
             Tile tile;
             P piece;

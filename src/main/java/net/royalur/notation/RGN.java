@@ -25,7 +25,7 @@ import java.util.Map;
  * <p>
  * RGN was developed by Padraig Lamont with help from several
  * contributors from the Royal Game of Ur Discord server:
- * Monomino, Sachertorte, and Diego Raposo.
+ * Diego Raposo, Monomino, Sachertorte, kapfab, and Raph.
  */
 public class RGN implements RGUNotation {
 
@@ -150,34 +150,34 @@ public class RGN implements RGUNotation {
 
         // Get the origin tile.
         if (move.isIntroducingPiece()) {
-            from = rules.getPaths().get(move.getPlayer()).getStartTile();
+            from = rules.getPaths().getStart(move.getPlayer());
         } else {
             from = move.getSource();
         }
 
         // Get the destination tile.
         if (move.isScoringPiece()) {
-            to = rules.getPaths().get(move.getPlayer()).getEndTile();
+            to = rules.getPaths().getEnd(move.getPlayer());
         } else {
             to = move.getDestination();
         }
 
         // Include the source coordinate.
-        if (from.getX() != to.getX()) {
+//        if (from.getX() != to.getX()) {
             from.encodeXLowerCase(builder);
-        }
-        if (from.getY() != to.getY()) {
+//        }
+//        if (from.getY() != to.getY()) {
             from.encodeY(builder);
-        }
+//        }
+
+        // Include the destination coordinates.
+        to.encodeXLowerCase(builder);
+        to.encodeY(builder);
 
         // Record that a piece was captured.
         if (move.capturesPiece()) {
             builder.append("x");
         }
-
-        // Include the destination coordinates.
-        to.encodeXLowerCase(builder);
-        to.encodeY(builder);
 
         // Mark if a rosette was reached.
         if (move.isLandingOnRosette(rules.getBoardShape())) {
@@ -249,7 +249,7 @@ public class RGN implements RGUNotation {
                 if (currentPlayer == Player.LIGHT) {
                     actionBuilder.append((turn + 1) / 2).append(". ");
                 } else {
-                    actionBuilder.append("~ ");
+                    actionBuilder.append("/ ");
                 }
 //                actionBuilder.append(currentPlayer.getCharacter()).append(" ");
             }

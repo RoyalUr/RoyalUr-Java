@@ -118,6 +118,24 @@ public class Tile {
     }
 
     /**
+     * Takes a unit length step towards the other vector.
+     * @param other The other vector to step towards.
+     * @return A new vector that is one step closer to other.
+     */
+    public Tile stepTowards(Tile other) {
+        int dx = other.x - x;
+        int dy = other.y - y;
+        if (Math.abs(dx) + Math.abs(dy) <= 1)
+            return other;
+
+        if (Math.abs(dx) < Math.abs(dy)) {
+            return new Tile(x, y + (dy > 0 ? 1 : -1));
+        } else {
+            return new Tile(x + (dx > 0 ? 1 : -1), y);
+        }
+    }
+
+    /**
      * Encodes the x-coordinate as an upper-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */

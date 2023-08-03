@@ -54,6 +54,7 @@ public class RGUStatistics {
         int tests = 10_000;
         List<Supplier<Game<StandardPiece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().finkel().build(),
+                () -> Game.builder().finkel().safeRosettes(false).build(),
                 () -> Game.builder().masters().build(),
                 () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
                 () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
@@ -64,7 +65,8 @@ public class RGUStatistics {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
             String desc = sample.getBoard().getShape().getDebugName()
                     + ", " + sample.getRules().getPaths().getDebugName()
-                    + ", " + sample.getRules().getDice().getClass().getName();
+                    + ", " + sample.getRules().getDice().getClass().getName()
+                    + ", " + sample.getRules().areRosettesSafe();
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {
