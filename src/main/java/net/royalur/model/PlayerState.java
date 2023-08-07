@@ -12,7 +12,7 @@ public class PlayerState {
     /**
      * The player that this state represents.
      */
-    private final @Nonnull Player player;
+    private final @Nonnull PlayerType player;
 
     /**
      * The number of pieces that the player has yet to play.
@@ -30,7 +30,7 @@ public class PlayerState {
      * @param pieceCount The number of pieces that the player has yet to play.
      * @param score The number of pieces that the player has taken off the board.
      */
-    public PlayerState(@Nonnull Player player, int pieceCount, int score) {
+    public PlayerState(@Nonnull PlayerType player, int pieceCount, int score) {
         if (pieceCount < 0)
             throw new IllegalArgumentException("pieceCount must be at least 0. Not: " + pieceCount);
         if (score < 0)
@@ -45,7 +45,7 @@ public class PlayerState {
      * Gets the player that this state represents.
      * @return The player that this state represents.
      */
-    public @Nonnull Player getPlayer() {
+    public @Nonnull PlayerType getPlayer() {
         return player;
     }
 

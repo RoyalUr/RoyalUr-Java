@@ -1,6 +1,6 @@
 package net.royalur.rules;
 
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 
 import javax.annotation.Nonnull;
@@ -15,7 +15,7 @@ public interface PlayerStateProvider<S extends PlayerState> {
      * @param player The player to create the starting state for.
      * @return A player state for the player {@code player} with name {@code name}.
      */
-    @Nonnull S create(@Nonnull Player player);
+    @Nonnull S create(@Nonnull PlayerType player);
 
     /**
      * Generates a new player state that is a copy of {@code playerState},

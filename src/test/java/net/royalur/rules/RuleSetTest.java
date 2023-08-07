@@ -90,11 +90,11 @@ public class RuleSetTest {
 
         PlayerState light = initialState.getLightPlayer();
         assertNotNull(light);
-        assertEquals(Player.LIGHT, light.getPlayer());
+        assertEquals(PlayerType.LIGHT, light.getPlayer());
 
         PlayerState dark = initialState.getDarkPlayer();
         assertNotNull(dark);
-        assertEquals(Player.DARK, dark.getPlayer());
+        assertEquals(PlayerType.DARK, dark.getPlayer());
     }
 
     @ParameterizedTest

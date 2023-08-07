@@ -1,6 +1,6 @@
 package net.royalur.rules.standard;
 
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 import net.royalur.rules.PlayerStateProvider;
 
@@ -28,7 +28,7 @@ public class StandardPlayerStateProvider implements PlayerStateProvider<PlayerSt
     }
 
     @Override
-    public @Nonnull PlayerState create(@Nonnull Player player) {
+    public @Nonnull PlayerState create(@Nonnull PlayerType player) {
         return new PlayerState(player, startingPieceCount, 0);
     }
 

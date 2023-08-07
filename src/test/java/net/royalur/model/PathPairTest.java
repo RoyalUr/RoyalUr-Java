@@ -79,23 +79,23 @@ public class PathPairTest {
         PathPair pair = new PathPair(lightPath, darkPath);
         assertEquals(lightPath, pair.getLightWithStartEnd());
         assertEquals(darkPath, pair.getDarkWithStartEnd());
-        assertEquals(lightPath, pair.getWithStartEnd(Player.LIGHT));
-        assertEquals(darkPath, pair.getWithStartEnd(Player.DARK));
+        assertEquals(lightPath, pair.getWithStartEnd(PlayerType.LIGHT));
+        assertEquals(darkPath, pair.getWithStartEnd(PlayerType.DARK));
 
         assertEquals(lightPath.subList(1, 2), pair.getLight());
         assertEquals(darkPath.subList(1, 2), pair.getDark());
-        assertEquals(lightPath.subList(1, 2), pair.get(Player.LIGHT));
-        assertEquals(darkPath.subList(1, 2), pair.get(Player.DARK));
+        assertEquals(lightPath.subList(1, 2), pair.get(PlayerType.LIGHT));
+        assertEquals(darkPath.subList(1, 2), pair.get(PlayerType.DARK));
 
         assertEquals(T12, pair.getLightStart());
         assertEquals(T32, pair.getDarkStart());
-        assertEquals(T12, pair.getStart(Player.LIGHT));
-        assertEquals(T32, pair.getStart(Player.DARK));
+        assertEquals(T12, pair.getStart(PlayerType.LIGHT));
+        assertEquals(T32, pair.getStart(PlayerType.DARK));
 
         assertEquals(T21, pair.getLightEnd());
         assertEquals(T21, pair.getDarkEnd());
-        assertEquals(T21, pair.getEnd(Player.LIGHT));
-        assertEquals(T21, pair.getEnd(Player.DARK));
+        assertEquals(T21, pair.getEnd(PlayerType.LIGHT));
+        assertEquals(T21, pair.getEnd(PlayerType.DARK));
     }
 
     @ParameterizedTest

@@ -23,7 +23,8 @@ public interface OngoingGameState<
      * Gets the player who can make the next interaction with the game.
      * @return The player who can make the next interaction with the game.
      */
-    @Nonnull Player getTurn();
+    @Nonnull
+    PlayerType getTurn();
 
     /**
      * Retrieves the state of the player that we are waiting on to interact with the game.

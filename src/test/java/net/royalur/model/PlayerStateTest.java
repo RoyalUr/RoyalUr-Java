@@ -8,65 +8,65 @@ public class PlayerStateTest {
 
     @Test
     public void testNew() {
-        PlayerState player = new PlayerState(Player.LIGHT, 1, 1);
-        assertEquals(Player.LIGHT, player.getPlayer());
+        PlayerState player = new PlayerState(PlayerType.LIGHT, 1, 1);
+        assertEquals(PlayerType.LIGHT, player.getPlayer());
         assertEquals(1, player.getPieceCount());
         assertEquals(1, player.getScore());
 
-        player = new PlayerState(Player.DARK, 2, 3);
-        assertEquals(Player.DARK, player.getPlayer());
+        player = new PlayerState(PlayerType.DARK, 2, 3);
+        assertEquals(PlayerType.DARK, player.getPlayer());
         assertEquals(2, player.getPieceCount());
         assertEquals(3, player.getScore());
 
-        player = new PlayerState(Player.LIGHT, 5, 4);
-        assertEquals(Player.LIGHT, player.getPlayer());
+        player = new PlayerState(PlayerType.LIGHT, 5, 4);
+        assertEquals(PlayerType.LIGHT, player.getPlayer());
         assertEquals(5, player.getPieceCount());
         assertEquals(4, player.getScore());
 
-        player = new PlayerState(Player.DARK, 10, 11);
-        assertEquals(Player.DARK, player.getPlayer());
+        player = new PlayerState(PlayerType.DARK, 10, 11);
+        assertEquals(PlayerType.DARK, player.getPlayer());
         assertEquals(10, player.getPieceCount());
         assertEquals(11, player.getScore());
 
-        assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, -1, 1));
-        assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.LIGHT, 1, -1));
-        assertThrows(IllegalArgumentException.class, () -> new PlayerState(Player.DARK, -9, -9));
+        assertThrows(IllegalArgumentException.class, () -> new PlayerState(PlayerType.LIGHT, -1, 1));
+        assertThrows(IllegalArgumentException.class, () -> new PlayerState(PlayerType.LIGHT, 1, -1));
+        assertThrows(IllegalArgumentException.class, () -> new PlayerState(PlayerType.DARK, -9, -9));
     }
 
     @Test
     public void testHashCode() {
-        PlayerState one = new PlayerState(Player.LIGHT, 2, 3);
-        PlayerState two = new PlayerState(Player.DARK, 3, 2);
-        PlayerState three = new PlayerState(Player.LIGHT, 1, 1);
-        PlayerState four = new PlayerState(Player.DARK, 9, 9);
+        PlayerState one = new PlayerState(PlayerType.LIGHT, 2, 3);
+        PlayerState two = new PlayerState(PlayerType.DARK, 3, 2);
+        PlayerState three = new PlayerState(PlayerType.LIGHT, 1, 1);
+        PlayerState four = new PlayerState(PlayerType.DARK, 9, 9);
 
         assertEquals(one.hashCode(), one.hashCode());
         assertEquals(two.hashCode(), two.hashCode());
         assertEquals(three.hashCode(), three.hashCode());
         assertEquals(four.hashCode(), four.hashCode());
 
-        assertEquals(one.hashCode(), new PlayerState(Player.LIGHT, 2, 3).hashCode());
-        assertEquals(two.hashCode(), new PlayerState(Player.DARK, 3, 2).hashCode());
-        assertEquals(three.hashCode(), new PlayerState(Player.LIGHT, 1, 1).hashCode());
-        assertEquals(four.hashCode(), new PlayerState(Player.DARK, 9, 9).hashCode());
+        assertEquals(one.hashCode(), new PlayerState(PlayerType.LIGHT, 2, 3).hashCode());
+        assertEquals(two.hashCode(), new PlayerState(PlayerType.DARK, 3, 2).hashCode());
+        assertEquals(three.hashCode(), new PlayerState(PlayerType.LIGHT, 1, 1).hashCode());
+        assertEquals(four.hashCode(), new PlayerState(PlayerType.DARK, 9, 9).hashCode());
     }
 
     @Test
     public void testEquals() {
-        PlayerState one = new PlayerState(Player.LIGHT, 2, 3);
-        PlayerState two = new PlayerState(Player.DARK, 3, 2);
-        PlayerState three = new PlayerState(Player.LIGHT, 1, 1);
-        PlayerState four = new PlayerState(Player.DARK, 9, 9);
+        PlayerState one = new PlayerState(PlayerType.LIGHT, 2, 3);
+        PlayerState two = new PlayerState(PlayerType.DARK, 3, 2);
+        PlayerState three = new PlayerState(PlayerType.LIGHT, 1, 1);
+        PlayerState four = new PlayerState(PlayerType.DARK, 9, 9);
 
         assertEquals(one, one);
         assertEquals(two, two);
         assertEquals(three, three);
         assertEquals(four, four);
 
-        assertEquals(one, new PlayerState(Player.LIGHT, 2, 3));
-        assertEquals(two, new PlayerState(Player.DARK, 3, 2));
-        assertEquals(three, new PlayerState(Player.LIGHT, 1, 1));
-        assertEquals(four, new PlayerState(Player.DARK, 9, 9));
+        assertEquals(one, new PlayerState(PlayerType.LIGHT, 2, 3));
+        assertEquals(two, new PlayerState(PlayerType.DARK, 3, 2));
+        assertEquals(three, new PlayerState(PlayerType.LIGHT, 1, 1));
+        assertEquals(four, new PlayerState(PlayerType.DARK, 9, 9));
 
         assertNotEquals(one, two);
         assertNotEquals(one, three);
@@ -94,10 +94,10 @@ public class PlayerStateTest {
 
     @Test
     public void testToString() {
-        PlayerState one = new PlayerState(Player.LIGHT, 2, 3);
-        PlayerState two = new PlayerState(Player.DARK, 3, 2);
-        PlayerState three = new PlayerState(Player.LIGHT, 1, 1);
-        PlayerState four = new PlayerState(Player.DARK, 9, 9);
+        PlayerState one = new PlayerState(PlayerType.LIGHT, 2, 3);
+        PlayerState two = new PlayerState(PlayerType.DARK, 3, 2);
+        PlayerState three = new PlayerState(PlayerType.LIGHT, 1, 1);
+        PlayerState four = new PlayerState(PlayerType.DARK, 9, 9);
 
         assertEquals("Light: 2 Pieces, 3 Score", one.toString());
         assertEquals("Dark: 3 Pieces, 2 Score", two.toString());
@@ -109,10 +109,10 @@ public class PlayerStateTest {
         assertEquals(three.toString(), three.toString());
         assertEquals(four.toString(), four.toString());
 
-        assertEquals(one.toString(), new PlayerState(Player.LIGHT, 2, 3).toString());
-        assertEquals(two.toString(), new PlayerState(Player.DARK, 3, 2).toString());
-        assertEquals(three.toString(), new PlayerState(Player.LIGHT, 1, 1).toString());
-        assertEquals(four.toString(), new PlayerState(Player.DARK, 9, 9).toString());
+        assertEquals(one.toString(), new PlayerState(PlayerType.LIGHT, 2, 3).toString());
+        assertEquals(two.toString(), new PlayerState(PlayerType.DARK, 3, 2).toString());
+        assertEquals(three.toString(), new PlayerState(PlayerType.LIGHT, 1, 1).toString());
+        assertEquals(four.toString(), new PlayerState(PlayerType.DARK, 9, 9).toString());
 
         assertNotEquals(one.toString(), two.toString());
         assertNotEquals(one.toString(), three.toString());

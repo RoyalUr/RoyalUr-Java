@@ -19,7 +19,7 @@ public abstract class AbstractOngoingGameState<
     /**
      * The player who made an action or that should make an action.
      */
-    private final @Nonnull Player turn;
+    private final @Nonnull PlayerType turn;
 
     /**
      * Instantiates the baseline state of a game state.
@@ -32,14 +32,14 @@ public abstract class AbstractOngoingGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player turn
+            @Nonnull PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer);
         this.turn = turn;
     }
 
     @Override
-    public @Nonnull Player getTurn() {
+    public @Nonnull PlayerType getTurn() {
         return turn;
     }
 }

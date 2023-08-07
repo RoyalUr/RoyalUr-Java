@@ -19,12 +19,12 @@ public class WinGameState<
     /**
      * The player that won the game.
      */
-    private final @Nonnull Player winner;
+    private final @Nonnull PlayerType winner;
 
     /**
      * The player that lost the game.
      */
-    private final @Nonnull Player loser;
+    private final @Nonnull PlayerType loser;
 
     /**
      * Instantiates a game state where a player has won the game.
@@ -37,7 +37,7 @@ public class WinGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player winner
+            @Nonnull PlayerType winner
     ) {
         super(board, lightPlayer, darkPlayer);
         this.winner = winner;

@@ -27,7 +27,7 @@ public class WaitingForRollGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player turn
+            @Nonnull PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer, turn);
     }

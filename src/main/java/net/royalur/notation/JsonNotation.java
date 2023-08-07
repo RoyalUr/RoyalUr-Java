@@ -237,7 +237,7 @@ public class JsonNotation implements RGUNotation {
         generator.writeObjectFieldStart(STATE_PLAYERS_KEY);
         try {
             // Light player.
-            generator.writeObjectFieldStart(Player.LIGHT.getTextName());
+            generator.writeObjectFieldStart(PlayerType.LIGHT.getTextName());
             try {
                 writePlayerState(state.getLightPlayer(), rules, generator);
             } finally {
@@ -245,7 +245,7 @@ public class JsonNotation implements RGUNotation {
             }
 
             // Dark player.
-            generator.writeObjectFieldStart(Player.DARK.getTextName());
+            generator.writeObjectFieldStart(PlayerType.DARK.getTextName());
             try {
                 writePlayerState(state.getDarkPlayer(), rules, generator);
             } finally {

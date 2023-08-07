@@ -64,7 +64,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of rolls performed by {@code player}.
      */
-    public int getRolls(@Nonnull Player player) {
+    public int getRolls(@Nonnull PlayerType player) {
         return getRolls(GameStatsTarget.get(player));
     }
 
@@ -82,7 +82,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of moves made by {@code player}.
      */
-    public int getMoves(@Nonnull Player player) {
+    public int getMoves(@Nonnull PlayerType player) {
         return getMoves(GameStatsTarget.get(player));
     }
 
@@ -116,7 +116,7 @@ public class GameStats {
             if (!(state instanceof ActionGameState<?, ?, ?, ?> actionState))
                 continue;
 
-            Player player = actionState.getTurnPlayer().getPlayer();
+            PlayerType player = actionState.getTurnPlayer().getPlayer();
 
             if (actionState instanceof RolledGameState) {
                 rolls[GameStatsTarget.OVERALL.ordinal()] += 1;

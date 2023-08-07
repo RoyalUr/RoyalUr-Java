@@ -36,7 +36,7 @@ public abstract class BaseAgent<
      * @param game The game to play a turn in.
      * @param player The player to play the turn as.
      */
-    public final void playTurn(@Nonnull Game<P, S, R> game, @Nonnull Player player) {
+    public final void playTurn(@Nonnull Game<P, S, R> game, @Nonnull PlayerType player) {
         if (game.isFinished())
             throw new IllegalStateException("The game has already been completed");
         if (!game.isPlayable())

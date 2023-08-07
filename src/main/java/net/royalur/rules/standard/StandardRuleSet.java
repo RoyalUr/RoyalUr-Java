@@ -127,9 +127,9 @@ public class StandardRuleSet<
     public @Nonnull GameState<P, S, R> generateInitialGameState() {
         return new WaitingForRollGameState<>(
                 new Board<>(boardShape),
-                playerStateProvider.create(Player.LIGHT),
-                playerStateProvider.create(Player.DARK),
-                Player.LIGHT
+                playerStateProvider.create(PlayerType.LIGHT),
+                playerStateProvider.create(PlayerType.DARK),
+                PlayerType.LIGHT
         );
     }
 
@@ -218,7 +218,7 @@ public class StandardRuleSet<
 
         // If the player rolled zero, we need to change the turn to the other player.
         if (roll.getValue() == 0) {
-            Player newTurn = state.getTurn().getOtherPlayer();
+            PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
                     state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
             ));
@@ -227,7 +227,7 @@ public class StandardRuleSet<
         // Determine if the player has any available moves.
         List<Move<P>> availableMoves = findAvailableMoves(state.getBoard(), state.getTurnPlayer(), roll);
         if (availableMoves.isEmpty()) {
-            Player newTurn = state.getTurn().getOtherPlayer();
+            PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
                     state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
             ));
@@ -273,15 +273,15 @@ public class StandardRuleSet<
         }
 
         // Determine which player is which.
-        S lightPlayer = (turnPlayer.getPlayer() == Player.LIGHT ? turnPlayer : otherPlayer);
-        S darkPlayer = (turnPlayer.getPlayer() == Player.DARK ? turnPlayer : otherPlayer);
+        S lightPlayer = (turnPlayer.getPlayer() == PlayerType.LIGHT ? turnPlayer : otherPlayer);
+        S darkPlayer = (turnPlayer.getPlayer() == PlayerType.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
         if (move.isScoringPiece() && turnPlayer.getPieceCount() <= 0 && board.countPieces(turnPlayer.getPlayer()) <= 0)
             return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.getTurn()));
 
         // Determine who's turn it will be in the next state.
-        Player turn = state.getTurn();
+        PlayerType turn = state.getTurn();
         if (!move.isLandingOnRosette(board.getShape())) {
             turn = turn.getOtherPlayer();
         }

@@ -11,23 +11,23 @@ public class Piece {
     /**
      * A piece of the light player.
      */
-    private static final Piece LIGHT = new Piece(Player.LIGHT);
+    private static final Piece LIGHT = new Piece(PlayerType.LIGHT);
 
     /**
      * A piece of the dark player.
      */
-    private static final Piece DARK = new Piece(Player.DARK);
+    private static final Piece DARK = new Piece(PlayerType.DARK);
 
     /**
      * The player that owns this piece.
      */
-    private final @Nonnull Player owner;
+    private final @Nonnull PlayerType owner;
 
     /**
      * Instantiates a piece that can be placed on a board.
      * @param owner The player that owns the piece.
      */
-    public Piece(@Nonnull Player owner) {
+    public Piece(@Nonnull PlayerType owner) {
         this.owner = owner;
     }
 
@@ -35,7 +35,7 @@ public class Piece {
      * Gets the player that owns this piece.
      * @return The player that owns this piece.
      */
-    public @Nonnull Player getOwner() {
+    public @Nonnull PlayerType getOwner() {
         return owner;
     }
 
@@ -44,7 +44,7 @@ public class Piece {
      * @param player The player to retrieve a piece of.
      * @return The piece of the given player.
      */
-    public static @Nonnull Piece of(@Nonnull Player player) {
+    public static @Nonnull Piece of(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> LIGHT;
             case DARK -> DARK;
@@ -59,7 +59,7 @@ public class Piece {
      * @return The character representing {@code piece}.
      */
     public static char toChar(@Nullable Piece piece) {
-        return Player.toChar(piece != null ? piece.owner : null);
+        return PlayerType.toChar(piece != null ? piece.owner : null);
     }
 
     /**

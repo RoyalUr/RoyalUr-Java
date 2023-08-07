@@ -1,7 +1,7 @@
 package net.royalur.rules;
 
 import net.royalur.model.Piece;
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +18,7 @@ public interface PieceProvider<P extends Piece> {
      * @param newPathIndex The destination index of the piece in the player's path.
      * @return The new piece that may be introduced to the board.
      */
-    @Nonnull P createIntroduced(@Nonnull Player owner, int newPathIndex);
+    @Nonnull P createIntroduced(@Nonnull PlayerType owner, int newPathIndex);
 
     /**
      * Generates a piece that has been moved from another tile on the board.

@@ -39,7 +39,7 @@ public class MovedGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player turn,
+            @Nonnull PlayerType turn,
             @Nonnull R roll,
             @Nonnull Move<P> move
     ) {

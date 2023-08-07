@@ -32,7 +32,7 @@ public interface GameState<P extends Piece, S extends PlayerState, R extends Rol
      * @param player The player to retrieve the state of.
      * @return The state of the player {@code player}.
      */
-    default @Nonnull S getPlayer(@Nonnull Player player) {
+    default @Nonnull S getPlayer(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightPlayer();
             case DARK -> getDarkPlayer();

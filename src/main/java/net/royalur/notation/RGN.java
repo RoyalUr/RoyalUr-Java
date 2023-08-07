@@ -205,7 +205,7 @@ public class RGN implements RGUNotation {
 
         // Encode the moves.
         int turn = 0;
-        Player turnPlayer = null;
+        PlayerType turnPlayer = null;
         boolean first = true;
 
         int lineLength = 0;
@@ -242,11 +242,11 @@ public class RGN implements RGUNotation {
             actionBuilder.setLength(0);
 
             // Detect new turns.
-            Player currentPlayer = actionState.getTurnPlayer().getPlayer();
+            PlayerType currentPlayer = actionState.getTurnPlayer().getPlayer();
             if (turnPlayer != currentPlayer) {
                 turn += 1;
                 turnPlayer = currentPlayer;
-                if (currentPlayer == Player.LIGHT) {
+                if (currentPlayer == PlayerType.LIGHT) {
                     actionBuilder.append((turn + 1) / 2).append(". ");
                 } else {
                     actionBuilder.append("/ ");
@@ -288,7 +288,7 @@ public class RGN implements RGUNotation {
 
             // Add the turn to the encoded string if there is a new turn.
             if (index + 1 >= states.size()
-                    || (currentPlayer != Player.LIGHT && states.get(index + 1).getTurn() != currentPlayer)) {
+                    || (currentPlayer != PlayerType.LIGHT && states.get(index + 1).getTurn() != currentPlayer)) {
 
                 lineLength += turnBuilder.length();
                 if (!first) {

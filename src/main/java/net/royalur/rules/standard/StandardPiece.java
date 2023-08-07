@@ -1,7 +1,7 @@
 package net.royalur.rules.standard;
 
 import net.royalur.model.Piece;
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ public class StandardPiece extends Piece {
      * @param owner The player that owns the piece.
      * @param pathIndex The index of this piece on its owner's path around the board.
      */
-    public StandardPiece(@Nonnull Player owner, int pathIndex) {
+    public StandardPiece(@Nonnull PlayerType owner, int pathIndex) {
         super(owner);
 
         if (pathIndex < 0)

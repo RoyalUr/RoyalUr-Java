@@ -1,6 +1,6 @@
 package net.royalur.rules.standard;
 
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.rules.PieceProvider;
 
 import javax.annotation.Nonnull;
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 public class StandardPieceProvider implements PieceProvider<StandardPiece> {
 
     @Override
-    public @Nonnull StandardPiece createIntroduced(@Nonnull Player owner, int newPathIndex) {
+    public @Nonnull StandardPiece createIntroduced(@Nonnull PlayerType owner, int newPathIndex) {
         return new StandardPiece(owner, newPathIndex);
     }
 

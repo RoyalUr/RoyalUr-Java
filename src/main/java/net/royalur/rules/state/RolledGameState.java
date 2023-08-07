@@ -34,7 +34,7 @@ public class RolledGameState<
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
-            @Nonnull Player turn,
+            @Nonnull PlayerType turn,
             @Nonnull R roll
     ) {
         super(board, lightPlayer, darkPlayer, turn);

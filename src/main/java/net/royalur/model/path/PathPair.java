@@ -1,13 +1,12 @@
 package net.royalur.model.path;
 
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
 import net.royalur.name.TextName;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -103,7 +102,7 @@ public class PathPair {
      * @param player The player to get the path for.
      * @return The path for the given player.
      */
-    public @Nonnull List<Tile> get(@Nonnull Player player) {
+    public @Nonnull List<Tile> get(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> getLight();
             case DARK -> getDark();
@@ -132,7 +131,7 @@ public class PathPair {
      * @param player The player to get the path for.
      * @return The path for the given player.
      */
-    public @Nonnull List<Tile> getWithStartEnd(@Nonnull Player player) {
+    public @Nonnull List<Tile> getWithStartEnd(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightWithStartEnd();
             case DARK -> getDarkWithStartEnd();
@@ -161,7 +160,7 @@ public class PathPair {
      * @param player The player to get the start tile for.
      * @return The start tile of the given player.
      */
-    public @Nonnull Tile getStart(@Nonnull Player player) {
+    public @Nonnull Tile getStart(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightStart();
             case DARK -> getDarkStart();
@@ -190,7 +189,7 @@ public class PathPair {
      * @param player The player to get the end tile for.
      * @return The end tile of the given player.
      */
-    public @Nonnull Tile getEnd(@Nonnull Player player) {
+    public @Nonnull Tile getEnd(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightEnd();
             case DARK -> getDarkEnd();

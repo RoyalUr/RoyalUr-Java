@@ -3,10 +3,9 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.DeterministicAgent;
 import net.royalur.agent.RandomAgent;
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
-import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.standard.StandardPiece;
@@ -32,7 +31,7 @@ public class GameTest {
         DeterministicAgent<StandardPiece, PlayerState, Roll> agent = new DeterministicAgent<>();
 
         game.rollDice(2);
-        agent.playTurn(game, Player.LIGHT);
+        agent.playTurn(game, PlayerType.LIGHT);
 
         assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());

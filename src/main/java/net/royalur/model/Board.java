@@ -188,7 +188,7 @@ public class Board<P extends Piece> {
      * @param player The player to count the pieces of.
      * @return The number of pieces on the board for the given player.
      */
-    public int countPieces(@Nonnull Player player) {
+    public int countPieces(@Nonnull PlayerType player) {
         int totalPieces = 0;
         for (int ix = 0; ix < width; ++ix) {
             for (int iy = 0; iy < height; ++iy) {

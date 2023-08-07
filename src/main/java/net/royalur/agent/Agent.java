@@ -19,7 +19,7 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param game The game to play a turn in.
      * @param player The player to play the turn as.
      */
-    void playTurn(@Nonnull Game<P, S, R> game, @Nonnull Player player);
+    void playTurn(@Nonnull Game<P, S, R> game, @Nonnull PlayerType player);
 
     /**
      * Completes this game using the two agents to play its moves.
@@ -46,8 +46,8 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
             actions += 1;
             S turnPlayer = game.getTurnPlayer();
             switch (turnPlayer.getPlayer()) {
-                case LIGHT -> light.playTurn(game, Player.LIGHT);
-                case DARK -> dark.playTurn(game, Player.DARK);
+                case LIGHT -> light.playTurn(game, PlayerType.LIGHT);
+                case DARK -> dark.playTurn(game, PlayerType.DARK);
             }
         }
         return actions;

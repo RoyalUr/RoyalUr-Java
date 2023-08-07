@@ -15,7 +15,7 @@ public class Move<P extends Piece> {
     /**
      * The instigator of this move.
      */
-    private final @Nonnull Player player;
+    private final @Nonnull PlayerType player;
 
     /**
      * The origin of the move. If this is {@code null}, it represents
@@ -66,7 +66,7 @@ public class Move<P extends Piece> {
      *                       if no piece would be captured by this move.
      */
     public Move(
-            @Nonnull Player player,
+            @Nonnull PlayerType player,
             @Nullable Tile from, @Nullable P fromPiece,
             @Nullable Tile to, @Nullable P toPiece,
             @Nullable P capturedPiece
@@ -90,7 +90,7 @@ public class Move<P extends Piece> {
      * Gets the instigator of this move.
      * @return The instigator of this move.
      */
-    public @Nonnull Player getPlayer() {
+    public @Nonnull PlayerType getPlayer() {
         return player;
     }
 

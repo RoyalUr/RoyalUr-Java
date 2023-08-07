@@ -1,6 +1,6 @@
 package net.royalur.stats;
 
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,12 +17,12 @@ public enum GameStatsTarget {
     /**
      * The statistics of the light player.
      */
-    LIGHT("Light Player", Player.LIGHT),
+    LIGHT("Light Player", PlayerType.LIGHT),
 
     /**
      * The statistics of the dark player.
      */
-    DARK("Dark Player", Player.DARK);
+    DARK("Dark Player", PlayerType.DARK);
 
     /**
      * A human-readable name representing this target, in English.
@@ -33,7 +33,7 @@ public enum GameStatsTarget {
      * The player associated with this target, if this target
      * is associated with a player, or else {@code null}.
      */
-    private final @Nullable Player player;
+    private final @Nullable PlayerType player;
 
     /**
      * Instantiates a target for statistics about a game.
@@ -41,7 +41,7 @@ public enum GameStatsTarget {
      * @param player The player associated with this target, if this target is
      *               associated with a player, or else {@code null}.
      */
-    GameStatsTarget(@Nonnull String name, @Nullable Player player) {
+    GameStatsTarget(@Nonnull String name, @Nullable PlayerType player) {
         this.name = name;
         this.player = player;
     }
@@ -67,7 +67,7 @@ public enum GameStatsTarget {
      * @return The specific player associated with this target.
      * @throws UnsupportedOperationException if this target does not have an associated player.
      */
-    public @Nonnull Player getAssociatedPlayer() {
+    public @Nonnull PlayerType getAssociatedPlayer() {
         if (player == null)
             throw new UnsupportedOperationException("This target does not have an associated player");
 
@@ -79,7 +79,7 @@ public enum GameStatsTarget {
      * @param player The player to retrieve the statistics for.
      * @return The target associated with {@code player}.
      */
-    public static @Nonnull GameStatsTarget get(@Nonnull Player player) {
+    public static @Nonnull GameStatsTarget get(@Nonnull PlayerType player) {
         return switch (player) {
             case LIGHT -> GameStatsTarget.LIGHT;
             case DARK -> GameStatsTarget.DARK;

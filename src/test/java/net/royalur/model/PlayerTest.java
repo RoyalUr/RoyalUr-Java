@@ -8,14 +8,14 @@ public class PlayerTest {
 
     @Test
     public void testToCharacter() {
-        assertEquals('.', Player.toChar(null));
-        assertEquals('L', Player.toChar(Player.LIGHT));
-        assertEquals('D', Player.toChar(Player.DARK));
+        assertEquals('.', PlayerType.toChar(null));
+        assertEquals('L', PlayerType.toChar(PlayerType.LIGHT));
+        assertEquals('D', PlayerType.toChar(PlayerType.DARK));
     }
 
     @Test
     public void testGetOtherPlayer() {
-        assertEquals(Player.DARK, Player.LIGHT.getOtherPlayer());
-        assertEquals(Player.LIGHT, Player.DARK.getOtherPlayer());
+        assertEquals(PlayerType.DARK, PlayerType.LIGHT.getOtherPlayer());
+        assertEquals(PlayerType.LIGHT, PlayerType.DARK.getOtherPlayer());
     }
 }
