@@ -13,17 +13,20 @@ import javax.annotation.Nonnull;
 public interface GameState<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
-     * The state of the pieces on the board.
+     * Get the state of the pieces on the board.
+     * @return The state of the pieces on the board.
      */
     @Nonnull Board<P> getBoard();
 
     /**
-     * The state of the light player.
+     * Get the state of the light player.
+     * @return The state of the light player.
      */
     @Nonnull S getLightPlayer();
 
     /**
-     * The state of the dark player.
+     * Get the state of the dark player.
+     * @return The state of the dark player.
      */
     @Nonnull S getDarkPlayer();
 

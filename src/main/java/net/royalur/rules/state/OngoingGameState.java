@@ -1,14 +1,14 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.Piece;
-import net.royalur.model.Player;
+import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
 
 import javax.annotation.Nonnull;
 
 /**
- * A game state from within a game.
+ * A game state from within a game where a winner has not yet been determined.
  * @param <P> The type of pieces that are stored on the board in this game state.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be stored in this game state.

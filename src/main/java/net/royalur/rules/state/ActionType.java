@@ -4,6 +4,10 @@ import net.royalur.name.Name;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The type of action that occurred in a state,
+ * or that is expected in a state.
+ */
 public enum ActionType implements Name {
 
     /**

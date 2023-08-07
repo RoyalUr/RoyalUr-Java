@@ -6,9 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
- * The standard shape of board used for The Royal Game of Ur that
- * follows the game boards that were excavated by Sir Leonard Woolley.
- * It has the following shape:
+ * The shape of the board used for the game Aseb:
  * <code>
  *     xxxx
  *     xxxxxxxxxxxx

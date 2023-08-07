@@ -6,16 +6,16 @@ import java.util.Collection;
 /**
  * A store of named values, where names are stored case-insensitive.
  * @param <N> The type of names.
- * @param <T> The type of values to store.
+ * @param <V> The type of values to store.
  */
-public interface NameMap<N extends Name, T> {
+public interface NameMap<N extends Name, V> {
 
     /**
      * Adds a new named thing into this store.
      * @param name The name to store the value with.
      * @param value The value to store.
      */
-    void put(@Nonnull N name, @Nonnull T value);
+    void put(@Nonnull N name, @Nonnull V value);
 
     /**
      * Gets a named thing from this store by its text name.
@@ -23,7 +23,8 @@ public interface NameMap<N extends Name, T> {
      * @return The thing with the given name.
      * @throws IllegalArgumentException If there is no entry with the given name.
      */
-    @Nonnull T get(@Nonnull String textName);
+    @Nonnull
+    V get(@Nonnull String textName);
 
     /**
      * Gets a named thing from this store by its integer ID.
@@ -31,7 +32,8 @@ public interface NameMap<N extends Name, T> {
      * @return The thing with the given ID.
      * @throws IllegalArgumentException If there is no entry with the given ID.
      */
-    @Nonnull T get(int id);
+    @Nonnull
+    V get(int id);
 
     /**
      * Gets a named thing from this store.
@@ -39,19 +41,20 @@ public interface NameMap<N extends Name, T> {
      * @return The thing with the given name.
      * @throws IllegalArgumentException If there is no entry with the given name.
      */
-    @Nonnull T get(@Nonnull N name);
+    @Nonnull
+    V get(@Nonnull N name);
 
     /**
      * Gets all the keys and values in this store.
      * @return All the key/value pairs in this store.
      */
-    @Nonnull Collection<Entry<N, T>> entries();
+    @Nonnull Collection<Entry<N, V>> entries();
 
     /**
      * Creates a modifiable copy of {@code this}.
      * @return A modifiable copy of {@code this}.
      */
-    default @Nonnull NameMap<N, T> modifiableCopy() {
+    default @Nonnull NameMap<N, V> modifiableCopy() {
         return new UniqueNameMap<>(this);
     }
 
