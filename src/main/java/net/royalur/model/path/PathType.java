@@ -2,6 +2,7 @@ package net.royalur.model.path;
 
 import net.royalur.name.Name;
 import net.royalur.name.NameMap;
+import net.royalur.name.UniqueNameMap;
 
 import javax.annotation.Nonnull;
 
@@ -65,7 +66,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     public static final @Nonnull NameMap<PathType, PathPairFactory> FACTORIES;
     static {
-        NameMap<PathType, PathPairFactory> factories = NameMap.create();
+        NameMap<PathType, PathPairFactory> factories = new UniqueNameMap();
         for (PathType type : values()) {
             factories.put(type, type);
         }

@@ -62,18 +62,8 @@ public interface NameMap<N extends Name, V> {
      * Creates an unmodifiable copy of {@code this}.
      * @return An unmodifiable copy of {@code this}.
      */
-    default @Nonnull NameMap<N, T> unmodifiableCopy() {
+    default @Nonnull NameMap<N, V> unmodifiableCopy() {
         return new UnmodifiableNameMap<>(modifiableCopy());
-    }
-
-    /**
-     * Creates an empty store for named values.
-     * @return An empty store for named values.
-     * @param <N> The type of names.
-     * @param <T> The type of values.
-     */
-    static @Nonnull <N extends Name, T> NameMap<N, T> create() {
-        return new UniqueNameMap<>();
     }
 
     /**

@@ -2,6 +2,7 @@ package net.royalur.model.shape;
 
 import net.royalur.name.Name;
 import net.royalur.name.NameMap;
+import net.royalur.name.UniqueNameMap;
 
 import javax.annotation.Nonnull;
 
@@ -35,7 +36,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      */
     public static final @Nonnull NameMap<BoardType, BoardShapeFactory> FACTORIES;
     static {
-        NameMap<BoardType, BoardShapeFactory> factories = NameMap.create();
+        NameMap<BoardType, BoardShapeFactory> factories = new UniqueNameMap<>();
         for (BoardType type : values()) {
             factories.put(type, type);
         }
