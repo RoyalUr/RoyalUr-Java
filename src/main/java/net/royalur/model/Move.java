@@ -206,38 +206,30 @@ public class Move<P extends Piece> {
      * @return An English description of this move.
      */
     public @Nonnull String describe() {
-        StringBuilder builder = new StringBuilder();
         // Introduce a piece to capture A5
         // Introduce a piece to A3
         // Move A3 to B1
         // Move A3 to capture B1
         // Scored a piece from A3
 
-        if (isScoringPiece()) {
-            if (isIntroducingPiece())
-                return "Introduce and score a piece.";
+        boolean scoring = isScoringPiece();
+        boolean introducing = isIntroducingPiece();
+        if (scoring && introducing)
+            return "Introduce and score a piece.";
 
-            builder.append("Score a piece from ");
-        } else if (isIntroducingPiece()) {
+        if (scoring)
+            return "Score a piece from " + getSource() + ".";
+
+        StringBuilder builder = new StringBuilder();
+        if (introducing) {
             builder.append("Introduce a piece to ");
         } else {
-            builder.append("Move ");
+            builder.append("Move ").append(getSource()).append(" to ");
         }
-
-        if (!isIntroducingPiece()) {
-            builder.append(getSource());
-            if (!isScoringPiece()) {
-                builder.append(" to ");
-            }
-        }
-
         if (capturesPiece()) {
             builder.append("capture ");
         }
-
-        if (!isScoringPiece()) {
-            builder.append(getDestination());
-        }
+        builder.append(getDestination()).append(".");
         return builder.toString();
     }
 
