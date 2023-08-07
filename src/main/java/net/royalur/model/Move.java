@@ -214,6 +214,9 @@ public class Move<P extends Piece> {
         // Scored a piece from A3
 
         if (isScoringPiece()) {
+            if (isIntroducingPiece())
+                return "Introduce and score a piece.";
+
             builder.append("Score a piece from ");
         } else if (isIntroducingPiece()) {
             builder.append("Introduce a piece to ");

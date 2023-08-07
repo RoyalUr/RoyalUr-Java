@@ -74,8 +74,7 @@ public class MovedGameState<
         StringBuilder builder = new StringBuilder();
         builder.append("The ");
         builder.append(getTurn().getTextName().toLowerCase());
-        builder.append(" player rolled ").append(roll);
-        builder.append(", and ");
+        builder.append(" player ");
 
         boolean introducing = move.isIntroducingPiece();
         boolean scoring = move.isScoringPiece();
@@ -94,6 +93,7 @@ public class MovedGameState<
             builder.append("moved their ")
                     .append(move.getSource())
                     .append(" piece to ")
+                    .append(move.capturesPiece() ? "capture " : "")
                     .append(move.getDestination())
                     .append(".");
         }
