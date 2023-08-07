@@ -71,7 +71,32 @@ public class MovedGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "The " + getTurn().getTextName().toLowerCase() + " player rolled " + roll + ", " +
-                "and moved their " + move.getSource() + " piece to " + move.getDestination() + ".";
+        StringBuilder builder = new StringBuilder();
+        builder.append("The ");
+        builder.append(getTurn().getTextName().toLowerCase());
+        builder.append(" player rolled ").append(roll);
+        builder.append(", and ");
+
+        boolean introducing = move.isIntroducingPiece();
+        boolean scoring = move.isScoringPiece();
+
+        if (introducing && scoring) {
+            builder.append("scored a newly introduced piece.");
+        } else if (scoring) {
+            builder.append("scored their ")
+                    .append(move.getSource())
+                    .append("piece.");
+        } else if (introducing) {
+            builder.append("introduced a piece to ")
+                    .append(move.getDestination())
+                    .append(".");
+        } else {
+            builder.append("moved their ")
+                    .append(move.getSource())
+                    .append(" piece to ")
+                    .append(move.getDestination())
+                    .append(".");
+        }
+        return builder.toString();
     }
 }

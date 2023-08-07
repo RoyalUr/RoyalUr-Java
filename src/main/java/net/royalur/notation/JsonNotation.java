@@ -8,7 +8,6 @@ import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
-import net.royalur.name.Name;
 import net.royalur.name.NameMap;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
