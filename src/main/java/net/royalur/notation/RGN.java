@@ -159,7 +159,7 @@ public class RGN implements RGUNotation {
         if (move.isScoringPiece()) {
             to = rules.getPaths().getEnd(move.getPlayer());
         } else {
-            to = move.getDestination();
+            to = move.getDest();
         }
 
         // Include the source coordinate.

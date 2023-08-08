@@ -157,7 +157,7 @@ public class Move<P extends Piece> {
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination tile of this move.
      */
-    public @Nonnull Tile getDestination() {
+    public @Nonnull Tile getDest() {
         if (to == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
@@ -169,7 +169,7 @@ public class Move<P extends Piece> {
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination piece of this move.
      */
-    public @Nonnull P getDestinationPiece() {
+    public @Nonnull P getDestPiece() {
         if (toPiece == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
@@ -229,7 +229,7 @@ public class Move<P extends Piece> {
         if (capturesPiece()) {
             builder.append("capture ");
         }
-        builder.append(getDestination()).append(".");
+        builder.append(getDest()).append(".");
         return builder.toString();
     }
 

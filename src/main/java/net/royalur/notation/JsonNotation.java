@@ -331,7 +331,7 @@ public class JsonNotation implements RGUNotation {
         if (!move.isScoringPiece()) {
             generator.writeObjectFieldStart(MOVE_DEST_KEY);
             try {
-                writePiece(move.getDestination(), move.getDestinationPiece(), rules, generator);
+                writePiece(move.getDest(), move.getDestPiece(), rules, generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -343,7 +343,7 @@ public class JsonNotation implements RGUNotation {
         if (move.capturesPiece()) {
             generator.writeObjectFieldStart(MOVE_CAPTURED_KEY);
             try {
-                writePiece(move.getDestination(), move.getCapturedPiece(), rules, generator);
+                writePiece(move.getDest(), move.getCapturedPiece(), rules, generator);
             } finally {
                 generator.writeEndObject();
             }

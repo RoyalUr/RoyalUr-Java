@@ -87,14 +87,14 @@ public class MovedGameState<
                     .append("piece.");
         } else if (introducing) {
             builder.append("introduced a piece to ")
-                    .append(move.getDestination())
+                    .append(move.getDest())
                     .append(".");
         } else {
             builder.append("moved their ")
                     .append(move.getSource())
                     .append(" piece to ")
                     .append(move.capturesPiece() ? "capture " : "")
-                    .append(move.getDestination())
+                    .append(move.getDest())
                     .append(".");
         }
         return builder.toString();
