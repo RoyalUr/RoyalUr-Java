@@ -118,7 +118,7 @@ public class Tile {
     }
 
     /**
-     * Takes a unit length step towards the other vector.
+     * Takes a unit length step towards the other tile.
      * @param other The other vector to step towards.
      * @return A new vector that is one step closer to other.
      */
