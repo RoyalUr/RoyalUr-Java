@@ -71,4 +71,9 @@ public abstract class AbstractGameState<
     public boolean isPlayable() {
         return this instanceof PlayableGameState;
     }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

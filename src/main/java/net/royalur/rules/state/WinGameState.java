@@ -49,6 +49,11 @@ public class WinGameState<
         return false;
     }
 
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
+
     /**
      * Retrieves the state of the player that won the game.
      * @return The state of the player that won the game.

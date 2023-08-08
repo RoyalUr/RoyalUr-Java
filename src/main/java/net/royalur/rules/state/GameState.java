@@ -49,6 +49,12 @@ public interface GameState<P extends Piece, S extends PlayerState, R extends Rol
     boolean isPlayable();
 
     /**
+     * Returns whether this state represents a finished game.
+     * @return Whether this state represents a finished game.
+     */
+    boolean isFinished();
+
+    /**
      * Generates an English text description of the state of the game.
      * @return An English text description of the state of the game.
      */
