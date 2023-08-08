@@ -14,7 +14,8 @@ public class WaitingForMoveGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends AbstractOngoingGameState<P, S, R> implements PlayableGameState<P, S, R, ActionType> {
+> extends AbstractOngoingGameState<P, S, R>
+implements PlayableGameState<P, S, R, ActionType> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
@@ -38,8 +39,11 @@ public class WaitingForMoveGameState<
             @Nonnull R roll
     ) {
         super(board, lightPlayer, darkPlayer, turn);
-        if (roll.getValue() <= 0)
-            throw new IllegalArgumentException("Roll must have a value of at least 1, not " + roll.getValue());
+        if (roll.getValue() <= 0) {
+            throw new IllegalArgumentException(
+                    "Roll must have a value of at least 1, not " + roll.getValue()
+            );
+        }
 
         this.roll = roll;
     }

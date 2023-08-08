@@ -22,11 +22,6 @@ public class WinGameState<
     private final @Nonnull PlayerType winner;
 
     /**
-     * The player that lost the game.
-     */
-    private final @Nonnull PlayerType loser;
-
-    /**
      * Instantiates a game state where a player has won the game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
@@ -41,7 +36,6 @@ public class WinGameState<
     ) {
         super(board, lightPlayer, darkPlayer);
         this.winner = winner;
-        this.loser = winner.getOtherPlayer();
     }
 
     @Override
@@ -55,19 +49,35 @@ public class WinGameState<
     }
 
     /**
+     * Retrieves the player that won the game.
+     * @return The player that won the game.
+     */
+    public @Nonnull PlayerType getWinner() {
+        return this.winner;
+    }
+
+    /**
+     * Retrieves the player that lost the game.
+     * @return The player that lost the game.
+     */
+    public @Nonnull PlayerType getLoser() {
+        return this.winner.getOtherPlayer();
+    }
+
+    /**
      * Retrieves the state of the player that won the game.
      * @return The state of the player that won the game.
      */
-    public S getWinner() {
-        return getPlayer(winner);
+    public S getWinningPlayer() {
+        return getPlayer(getWinner());
     }
 
     /**
      * Retrieves the state of the player that lost the game.
      * @return The state of the player that lost the game.
      */
-    public S getLoser() {
-        return getPlayer(loser);
+    public S getLosingPlayer() {
+        return getPlayer(getLoser());
     }
 
     @Override

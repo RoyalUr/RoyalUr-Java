@@ -7,7 +7,7 @@ import net.royalur.rules.PlayerStateProvider;
 import javax.annotation.Nonnull;
 
 /**
- * TODO
+ * Provides new instances of, and manipulations to, standard player states.
  */
 public class StandardPlayerStateProvider implements PlayerStateProvider<PlayerState> {
 

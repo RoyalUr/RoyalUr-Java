@@ -31,9 +31,9 @@ public class StandardDice implements Dice<Roll> {
      */
     public StandardDice(@Nonnull Random random, int numDie) {
         if (numDie <= 0)
-            throw new IllegalArgumentException("numDice must be at least 1");
+            throw new IllegalArgumentException("numDie must be at least 1");
         if (numDie >= 31)
-            throw new IllegalArgumentException("numDice must be less than 32");
+            throw new IllegalArgumentException("numDie must be less than 32");
 
         this.random = random;
         this.numDie = numDie;

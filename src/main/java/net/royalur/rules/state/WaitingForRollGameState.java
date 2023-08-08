@@ -14,7 +14,8 @@ public class WaitingForRollGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends AbstractOngoingGameState<P, S, R> implements PlayableGameState<P, S, R, ActionType> {
+> extends AbstractOngoingGameState<P, S, R>
+implements PlayableGameState<P, S, R, ActionType> {
 
     /**
      * Instantiates a game state where the game is waiting for a player to roll the dice.
@@ -39,6 +40,7 @@ public class WaitingForRollGameState<
 
     @Override
     public @Nonnull String describe() {
-        return "Waiting for the " + getTurn().getTextName().toLowerCase() + " player to roll the dice.";
+        return "Waiting for the " + getTurn().getTextName().toLowerCase() +
+                " player to roll the dice.";
     }
 }
