@@ -66,7 +66,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     public static final @Nonnull NameMap<PathType, PathPairFactory> FACTORIES;
     static {
-        NameMap<PathType, PathPairFactory> factories = new UniqueNameMap();
+        NameMap<PathType, PathPairFactory> factories = new UniqueNameMap<>();
         for (PathType type : values()) {
             factories.put(type, type);
         }
