@@ -226,8 +226,8 @@ public class JsonNotation implements RGUNotation {
         if (state instanceof OngoingGameState<P, S, R> ongoingState) {
             generator.writeStringField(STATE_TURN_KEY, ongoingState.getTurn().getTextName());
         } else if (state instanceof WinGameState<P, S, R> winState) {
-            generator.writeStringField(STATE_WINNER_KEY, winState.getWinner().getPlayer().getTextName());
-            generator.writeStringField(STATE_LOSER_KEY, winState.getLoser().getPlayer().getTextName());
+            generator.writeStringField(STATE_WINNER_KEY, winState.getWinner().getTextName());
+            generator.writeStringField(STATE_LOSER_KEY, winState.getLoser().getTextName());
         }
 
         generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString(BOARD_COLUMN_DELIMITER, false));

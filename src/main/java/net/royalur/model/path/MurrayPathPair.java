@@ -11,7 +11,7 @@ import java.util.List;
  * Citation: H.J.R. Murray, A History of Board-games Other Than Chess,
  * Oxford University Press, Oxford, 1952.
  */
-public class MurrayPathPair extends NamedPathPair<PathType> {
+public class MurrayPathPair extends PathPair {
 
     /**
      * The path of the light player's pieces.

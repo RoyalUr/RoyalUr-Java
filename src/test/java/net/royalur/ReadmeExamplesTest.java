@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Random;
 
-public class ReadmeExamples {
+public class ReadmeExamplesTest {
 
     @Test
     public void testReadmeExample() {
@@ -36,6 +36,6 @@ public class ReadmeExamples {
         }
 
         // Report the winner!
-        System.out.println("\n" + game.getWinner().getName() + " won the game!");
+        System.out.println("\n" + game.getWinningPlayer().getName() + " won the game!");
     }
 }

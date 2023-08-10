@@ -4,8 +4,6 @@ import net.royalur.agent.Agent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.PlayerState;
 import net.royalur.model.Roll;
-import net.royalur.model.path.BellPathPair;
-import net.royalur.model.path.MastersPathPair;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.standard.StandardDiceWith0AsMax;
@@ -63,8 +61,8 @@ public class RGUStatistics {
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
-            String desc = sample.getBoard().getShape().getDebugName()
-                    + ", " + sample.getRules().getPaths().getDebugName()
+            String desc = sample.getBoard().getShape().getName().getTextName()
+                    + ", " + sample.getRules().getPaths().getName().getTextName()
                     + ", " + sample.getRules().getDice().getClass().getName()
                     + ", " + sample.getRules().areRosettesSafe();
 

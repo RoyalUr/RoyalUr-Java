@@ -1,7 +1,5 @@
 package net.royalur;
 
-import net.royalur.StandardGame;
-import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.path.*;
 import net.royalur.model.shape.AsebBoardShape;

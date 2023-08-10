@@ -1,6 +1,10 @@
 package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
+import net.royalur.model.path.PathPair;
+import net.royalur.name.Name;
+import net.royalur.name.Named;
+import net.royalur.name.TextName;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,7 +13,12 @@ import java.util.*;
 /**
  * A type of board shape available for the Royal Game of Ur.
  */
-public class BoardShape {
+public class BoardShape implements Named<Name> {
+
+    /**
+     * The name of this board shape.
+     */
+    private final @Nonnull Name name;
 
     /**
      * The set of tiles that fall within the bounds of this board shape.
@@ -50,13 +59,19 @@ public class BoardShape {
 
     /**
      * Instantiates a board shape with {@code tiles} representing the tiles on the board.
+     * @param name         The name of this board shape.
      * @param tiles        The set of tiles that fall within the bounds of this board shape.
      * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
      */
-    public BoardShape(@Nonnull Set<Tile> tiles, @Nonnull Set<Tile> rosetteTiles) {
-        if (tiles.size() == 0)
+    public BoardShape(
+            @Nonnull Name name,
+            @Nonnull Set<Tile> tiles,
+            @Nonnull Set<Tile> rosetteTiles
+    ) {
+        if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
+        this.name = name;
         this.tiles = Collections.unmodifiableSet(new HashSet<>(tiles));
         this.rosetteTiles = Collections.unmodifiableSet(new HashSet<>(rosetteTiles));
 
@@ -91,6 +106,11 @@ public class BoardShape {
                 );
             }
         }
+    }
+
+    @Override
+    public @Nonnull Name getName() {
+        return name;
     }
 
     /**
@@ -131,14 +151,6 @@ public class BoardShape {
      */
     public int getArea() {
         return area;
-    }
-
-    /**
-     * Gets a name to be used for identifying this board shape in debugging.
-     * @return A name to be used for identifying this board shape in debugging.
-     */
-    public @Nonnull String getDebugName() {
-        return getClass().getName();
     }
 
     /**
@@ -262,5 +274,21 @@ public class BoardShape {
 
         BoardShape other = (BoardShape) obj;
         return isEquivalent(other);
+    }
+
+    /**
+     * Create a new board shape with the name {@code name}, the tiles
+     * {@code tiles}, and the rosettes on {@code rosetteTiles}.
+     * @param name         The name of the board shape.
+     * @param tiles        The set of tiles that fall within the bounds of this board shape.
+     * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
+     * @return A new board shape with the given name.
+     */
+    public static @Nonnull BoardShape create(
+            @Nonnull String name,
+            @Nonnull Set<Tile> tiles,
+            @Nonnull Set<Tile> rosetteTiles
+    ) {
+        return new BoardShape(new TextName(name), tiles, rosetteTiles);
     }
 }

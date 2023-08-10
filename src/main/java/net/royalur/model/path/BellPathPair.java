@@ -11,7 +11,7 @@ import java.util.List;
  * Citation: R.C. Bell, Board and Table Games From Many Civilizations,
  * revised ed., Vol. 1 and 2, Dover Publications, Inc., New York, 1979.
  */
-public class BellPathPair extends NamedPathPair<PathType> {
+public class BellPathPair extends PathPair {
 
     /**
      * The path of the light player's pieces.

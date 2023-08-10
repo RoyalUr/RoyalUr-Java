@@ -2,6 +2,8 @@ package net.royalur.model.path;
 
 import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
+import net.royalur.name.Name;
+import net.royalur.name.Named;
 import net.royalur.name.TextName;
 
 import javax.annotation.Nonnull;
@@ -13,7 +15,12 @@ import java.util.List;
  * Represents a pair of paths for the light and dark players to
  * move their pieces along in a game of the Royal Game of Ur.
  */
-public class PathPair {
+public class PathPair implements Named<Name> {
+
+    /**
+     * The name of this path pair.
+     */
+    private final @Nonnull Name name;
 
     /**
      * The path that light players take around the board, including
@@ -61,15 +68,18 @@ public class PathPair {
 
     /**
      * Instantiates a pair of paths.
+     * @param name The name of this path.
      * @param lightWithStartEnd The path that light players take around the board,
      *                          including the start and end tiles that exist off the board.
      * @param darkWithStartEnd The path that dark players take around the board,
      *                         including the start and end tiles that exist off the board.
      */
     public PathPair(
+            @Nonnull Name name,
             @Nonnull List<Tile> lightWithStartEnd,
             @Nonnull List<Tile> darkWithStartEnd
     ) {
+        this.name = name;
         this.lightWithStartEnd = List.copyOf(lightWithStartEnd);
         this.darkWithStartEnd = List.copyOf(darkWithStartEnd);
         this.light = this.lightWithStartEnd.subList(1, lightWithStartEnd.size() - 1);
@@ -78,6 +88,11 @@ public class PathPair {
         this.lightEnd = lightWithStartEnd.get(lightWithStartEnd.size() - 1);
         this.darkStart = darkWithStartEnd.get(0);
         this.darkEnd = darkWithStartEnd.get(darkWithStartEnd.size() - 1);
+    }
+
+    @Override
+    public @Nonnull Name getName() {
+        return name;
     }
 
     /**
@@ -221,14 +236,6 @@ public class PathPair {
     }
 
     /**
-     * Gets a name to be used for identifying this path pair in debugging.
-     * @return A name to be used for identifying this path pair in debugging.
-     */
-    public @Nonnull String getDebugName() {
-        return getClass().getName();
-    }
-
-    /**
      * Create a new path pair with the name {@code name} and the
      * paths {@code lightPath} and {@code darkPath}.
      * @param name The name of the path pair.
@@ -241,7 +248,7 @@ public class PathPair {
             @Nonnull List<Tile> lightPath,
             @Nonnull List<Tile> darkPath
     ) {
-        return new NamedPathPair<>(new TextName(name), lightPath, darkPath);
+        return new PathPair(new TextName(name), lightPath, darkPath);
     }
 
     /**

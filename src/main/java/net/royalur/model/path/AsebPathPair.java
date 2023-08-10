@@ -12,7 +12,7 @@ import java.util.List;
  * Ancient Egyptians at Play: Board Games Across Borders,
  * Bloomsbury Egyptology, Bloomsbury Academic, London, 2016.
  */
-public class AsebPathPair extends NamedPathPair<PathType> {
+public class AsebPathPair extends PathPair {
 
     /**
      * The path of the light player's pieces.

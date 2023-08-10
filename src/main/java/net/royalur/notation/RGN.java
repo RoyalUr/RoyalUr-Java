@@ -199,7 +199,7 @@ public class RGN implements RGUNotation {
                     .append(escape(item.getValue()))
                     .append("]\n");
         }
-        if (builder.length() > 0) {
+        if (!builder.isEmpty()) {
             builder.append("\n");
         }
 
@@ -275,7 +275,7 @@ public class RGN implements RGUNotation {
             // if required to maintain the maximum line length.
             int actionLength = actionBuilder.length();
             turnLength += actionLength;
-            if (turnBuilder.length() > 0) {
+            if (!turnBuilder.isEmpty()) {
                 if (turnLength + 1 < maxTurnLineLength) {
                     turnBuilder.append(" ");
                     turnLength += 1;

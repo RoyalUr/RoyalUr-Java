@@ -14,7 +14,7 @@ import java.util.List;
  *     https://www.tradgames.org.uk/games/Royal-Game-Ur.htm
  * </a>.
  */
-public class MastersPathPair extends NamedPathPair<PathType> {
+public class MastersPathPair extends PathPair {
 
     /**
      * The path of the light player's pieces.

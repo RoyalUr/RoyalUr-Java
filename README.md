@@ -37,7 +37,7 @@ while (!game.isFinished()) {
 }
 
 // Report the winner!
-System.out.println("\n" + game.getWinner().getName() + " won the game!");
+System.out.println("\n" + game.getWinningPlayer().getName() + " won the game!");
 ```
 
 Here is a snippet from the end of the output from running

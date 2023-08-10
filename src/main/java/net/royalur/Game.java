@@ -285,19 +285,35 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Retrieves the player that won the game.
+     * @return The player that won the game.
+     */
+    default PlayerType getWinner() {
+        return getCurrentWinState().getWinner();
+    }
+
+    /**
+     * Retrieves the player that lost the game.
+     * @return The player that lost the game.
+     */
+    default PlayerType getLoser() {
+        return getCurrentWinState().getLoser();
+    }
+
+    /**
      * Retrieves the state of the winning player.
      * @return The state of the winning player.
      */
-    default @Nonnull S getWinner() {
-        return getCurrentWinState().getWinner();
+    default @Nonnull S getWinningPlayer() {
+        return getCurrentWinState().getWinningPlayer();
     }
 
     /**
      * Retrieves the state of the losing player.
      * @return The state of the losing player.
      */
-    default @Nonnull S getLoser() {
-        return getCurrentWinState().getLoser();
+    default @Nonnull S getLosingPlayer() {
+        return getCurrentWinState().getLosingPlayer();
     }
 
     /**

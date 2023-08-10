@@ -13,7 +13,7 @@ import java.util.List;
  *     https://skyruk.livejournal.com/231444.html
  * </a>.
  */
-public class SkiriukPathPair extends NamedPathPair<PathType> {
+public class SkiriukPathPair extends PathPair {
 
     /**
      * The path of the light player's pieces.
