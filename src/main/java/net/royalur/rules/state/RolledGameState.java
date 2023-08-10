@@ -3,6 +3,7 @@ package net.royalur.rules.state;
 import net.royalur.model.*;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * A game state that represents a roll that was made in a game.
@@ -22,6 +23,11 @@ public class RolledGameState<
     private final @Nonnull R roll;
 
     /**
+     * The moves that are available from this position using the given roll.
+     */
+    private final @Nonnull List<Move<P>> availableMoves;
+
+    /**
      * Instantiates a game state that represents a roll that was made in a game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
@@ -29,16 +35,20 @@ public class RolledGameState<
      * @param turn        The player who can roll the dice.
      * @param roll        The value of the dice that was rolled that can be
      *                    used as the number of places to move a piece.
+     * @param availableMoves The moves that are available from this position
+     *                       using the given roll.
      */
     public RolledGameState(
             @Nonnull Board<P> board,
             @Nonnull S lightPlayer,
             @Nonnull S darkPlayer,
             @Nonnull PlayerType turn,
-            @Nonnull R roll
+            @Nonnull R roll,
+            @Nonnull List<Move<P>> availableMoves
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
+        this.availableMoves = availableMoves;
     }
 
     @Override
@@ -54,9 +64,27 @@ public class RolledGameState<
         return roll;
     }
 
+    /**
+     * Gets the moves that are available from this position
+     * using the given roll.
+     * @return The moves that are available from
+     *         this position using the given roll.
+     */
+    public @Nonnull List<Move<P>> getAvailableMoves() {
+        return this.availableMoves;
+    }
+
     @Override
     public @Nonnull String describe() {
+        String noMoves = "";
+        if (availableMoves.isEmpty()) {
+            if (roll.getValue() == 0) {
+                noMoves = ", and had no moves";
+            } else {
+                noMoves = ", and all moves were blocked";
+            }
+        }
         return "The " + getTurn().getTextName().toLowerCase() +
-                " player rolled " + roll +".";
+                " player rolled " + roll + noMoves + ".";
     }
 }

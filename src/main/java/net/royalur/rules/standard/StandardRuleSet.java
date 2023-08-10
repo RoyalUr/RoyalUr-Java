@@ -11,6 +11,7 @@ import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -140,9 +141,10 @@ public class StandardRuleSet<
             @Nonnull R roll
     ) {
         if (roll.getValue() <= 0)
-            throw new IllegalArgumentException("The roll's value must be at least 1, not " + roll.getValue());
+            return Collections.emptyList();
 
-        List<Tile> path = paths.get(player.getPlayer());
+        PlayerType playerType = player.getPlayer();
+        List<Tile> path = paths.get(playerType);
         List<Move<P>> moves = new ArrayList<>();
 
         // Check if a piece can be taken off the board.
@@ -150,11 +152,11 @@ public class StandardRuleSet<
             int scorePathIndex = path.size() - roll.getValue();
             Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
-            if (scorePiece != null
-                    && scorePiece.getOwner() == player.getPlayer()
-                    && scorePiece.getPathIndex() == scorePathIndex
+            if (scorePiece != null &&
+                    scorePiece.getOwner() == playerType &&
+                    scorePiece.getPathIndex() == scorePathIndex
             ) {
-                moves.add(new Move<>(player.getPlayer(), scoreTile, scorePiece, null, null, null));
+                moves.add(new Move<>(playerType, scoreTile, scorePiece, null, null, null));
             }
         }
 
@@ -167,7 +169,9 @@ public class StandardRuleSet<
                 // Move a piece on the board.
                 tile = path.get(index);
                 piece = board.get(tile);
-                if (piece == null || piece.getOwner() != player.getPlayer() || piece.getPathIndex() != index)
+                if (piece == null)
+                    continue;
+                if (piece.getOwner() != playerType || piece.getPathIndex() != index)
                     continue;
 
             } else if (player.getPieceCount() > 0) {
@@ -185,7 +189,7 @@ public class StandardRuleSet<
             P destPiece = board.get(dest);
             if (destPiece != null)  {
                 // Can't capture your own pieces.
-                if (destPiece.getOwner() == player.getPlayer())
+                if (destPiece.getOwner() == playerType)
                     continue;
 
                 // Can't capture pieces on rosettes if they are safe.
@@ -198,9 +202,9 @@ public class StandardRuleSet<
             if (index >= 0) {
                 movedPiece = pieceProvider.createMoved(piece, destPathIndex);
             } else {
-                movedPiece = pieceProvider.createIntroduced(player.getPlayer(), destPathIndex);
+                movedPiece = pieceProvider.createIntroduced(playerType, destPathIndex);
             }
-            moves.add(new Move<>(player.getPlayer(), tile, piece, dest, movedPiece, destPiece));
+            moves.add(new Move<>(playerType, tile, piece, dest, movedPiece, destPiece));
         }
         return moves;
     }
@@ -212,30 +216,47 @@ public class StandardRuleSet<
     ) {
 
         // Construct the state representing the roll that was made.
+        List<Move<P>> availableMoves = findAvailableMoves(
+                state.getBoard(), state.getTurnPlayer(), roll
+        );
         RolledGameState<P, S, R> rolledState = new RolledGameState<>(
-                state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), state.getTurn(), roll
+                state.getBoard(),
+                state.getLightPlayer(),
+                state.getDarkPlayer(),
+                state.getTurn(),
+                roll,
+                availableMoves
         );
 
         // If the player rolled zero, we need to change the turn to the other player.
         if (roll.getValue() == 0) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
-                    state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
+                    state.getBoard(),
+                    state.getLightPlayer(),
+                    state.getDarkPlayer(),
+                    newTurn
             ));
         }
 
         // Determine if the player has any available moves.
-        List<Move<P>> availableMoves = findAvailableMoves(state.getBoard(), state.getTurnPlayer(), roll);
         if (availableMoves.isEmpty()) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
-                    state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), newTurn
+                    state.getBoard(),
+                    state.getLightPlayer(),
+                    state.getDarkPlayer(),
+                    newTurn
             ));
         }
 
         // The player has moves they can make.
         return List.of(rolledState, new WaitingForMoveGameState<>(
-                state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(), state.getTurn(), roll
+                state.getBoard(),
+                state.getLightPlayer(),
+                state.getDarkPlayer(),
+                state.getTurn(),
+                roll
         ));
     }
 
