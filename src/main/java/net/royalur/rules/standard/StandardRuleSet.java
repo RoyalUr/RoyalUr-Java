@@ -260,6 +260,19 @@ public class StandardRuleSet<
         ));
     }
 
+    /**
+     * Determines whether the move represent by {@code movedState}
+     * should grant another roll to the player that made the move.
+     * @param movedState The state representing a move.
+     * @return Whether the player that made the move should be granted
+     *         another roll.
+     */
+    public boolean shouldGrantRoll(@Nonnull MovedGameState<P, S, R> movedState) {
+        BoardShape boardShape = movedState.getBoard().getShape();
+        Move<P> move = movedState.getMove();
+        return move.isLandingOnRosette(boardShape);
+    }
+
     @Override
     public @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state,
@@ -278,13 +291,11 @@ public class StandardRuleSet<
 
         // Apply the move to the player that made the move.
         S turnPlayer = state.getTurnPlayer();
-        if (move.isIntroducingPiece() || move.isScoringPiece()) {
-            if (move.isIntroducingPiece()) {
-                turnPlayer = playerStateProvider.applyPiecesChange(turnPlayer, -1);
-            }
-            if (move.isScoringPiece()) {
-                turnPlayer = playerStateProvider.applyScoreChange(turnPlayer, 1);
-            }
+        if (move.isIntroducingPiece()) {
+            turnPlayer = playerStateProvider.applyPiecesChange(turnPlayer, -1);
+        }
+        if (move.isScoringPiece()) {
+            turnPlayer = playerStateProvider.applyScoreChange(turnPlayer, 1);
         }
 
         // Apply the effects of the move to the other player.
@@ -294,18 +305,22 @@ public class StandardRuleSet<
         }
 
         // Determine which player is which.
-        S lightPlayer = (turnPlayer.getPlayer() == PlayerType.LIGHT ? turnPlayer : otherPlayer);
-        S darkPlayer = (turnPlayer.getPlayer() == PlayerType.DARK ? turnPlayer : otherPlayer);
+        PlayerType turn = turnPlayer.getPlayer();
+        S lightPlayer = (turn == PlayerType.LIGHT ? turnPlayer : otherPlayer);
+        S darkPlayer = (turn == PlayerType.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
-        if (move.isScoringPiece() && turnPlayer.getPieceCount() <= 0 && board.countPieces(turnPlayer.getPlayer()) <= 0)
-            return List.of(movedState, new WinGameState<>(board, lightPlayer, darkPlayer, state.getTurn()));
-
-        // Determine who's turn it will be in the next state.
-        PlayerType turn = state.getTurn();
-        if (!move.isLandingOnRosette(board.getShape())) {
-            turn = turn.getOtherPlayer();
+        int turnPlayerPieces = turnPlayer.getPieceCount();
+        if (move.isScoringPiece() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
+            return List.of(movedState, new WinGameState<>(
+                    board, lightPlayer, darkPlayer, turn
+            ));
         }
-        return List.of(movedState, new WaitingForRollGameState<>(board, lightPlayer, darkPlayer, turn));
+
+        // Determine whose turn it will be in the next state.
+        PlayerType nextTurn = (shouldGrantRoll(movedState) ? turn : turn.getOtherPlayer());
+        return List.of(movedState, new WaitingForRollGameState<>(
+                board, lightPlayer, darkPlayer, nextTurn
+        ));
     }
 }

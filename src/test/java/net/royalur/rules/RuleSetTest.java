@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -130,8 +131,8 @@ public class RuleSetTest {
             R roll = dice.roll();
 
             if (roll.getValue() == 0) {
-                assertThrows(IllegalArgumentException.class, () -> rules.findAvailableMoves(board, light, roll));
-                assertThrows(IllegalArgumentException.class, () -> rules.findAvailableMoves(board, dark, roll));
+                assertEquals(Collections.emptyList(), rules.findAvailableMoves(board, light, roll));
+                assertEquals(Collections.emptyList(), rules.findAvailableMoves(board, dark, roll));
                 continue;
             }
 
@@ -141,10 +142,10 @@ public class RuleSetTest {
             List<Move<P>> darkMoves = rules.findAvailableMoves(board, dark, roll);
             assertNotNull(darkMoves);
 
-            if (lightMoves.size() > 0) {
+            if (!lightMoves.isEmpty()) {
                 availableLight += 1;
             }
-            if (darkMoves.size() > 0) {
+            if (!darkMoves.isEmpty()) {
                 availableDark += 1;
             }
 
