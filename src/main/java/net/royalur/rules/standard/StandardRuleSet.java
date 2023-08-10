@@ -74,7 +74,7 @@ public class StandardRuleSet<
             @Nonnull PieceProvider<P> pieceProvider,
             @Nonnull PlayerStateProvider<S> playerStateProvider
     ) {
-        if (!boardShape.isCompatible(paths.getLight()) || !boardShape.isCompatible(paths.getDark())) {
+        if (!boardShape.isCompatible(paths)) {
             throw new IllegalArgumentException(
                     "The " + paths.getName().getTextName() + " paths are not compatible with the " +
                             boardShape.getName().getTextName() + " board shape"

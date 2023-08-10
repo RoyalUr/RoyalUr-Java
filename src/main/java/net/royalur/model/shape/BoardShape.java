@@ -238,17 +238,28 @@ public class BoardShape implements Named<Name> {
     }
 
     /**
-     * Determines whether {@code path} could be traversed on this shape of board.
-     * The path that is provided should not include the start and end tiles.
-     * @param path The path to check for compatibility.
-     * @return Whether {@code path} could be traversed on this shape of board.
+     * Determines whether all tiles in {@code tiles} are included
+     * in this board shape.
+     * @param tiles The tiles to check for.
+     * @return Whether all of {@code tiles} exist on this board shape.
      */
-    public boolean isCompatible(@Nonnull List<Tile> path) {
-        for (Tile tile : path) {
+    public boolean containsAll(@Nonnull List<Tile> tiles) {
+        for (Tile tile : tiles) {
             if (!contains(tile))
                 return false;
         }
         return true;
+    }
+
+    /**
+     * Determines whether the pair of paths, {@code paths}, could be
+     * played on this shape of board.
+     * @param paths The pair of paths.
+     * @return Whether the pair of paths could be played on this shape
+     *         of board.
+     */
+    public boolean isCompatible(@Nonnull PathPair paths) {
+        return this.containsAll(paths.getLight()) && this.containsAll(paths.getDark());
     }
 
     /**
