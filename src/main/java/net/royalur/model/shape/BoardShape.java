@@ -41,11 +41,6 @@ public class BoardShape implements Named<Name> {
     private final int height;
 
     /**
-     * The number of tiles contained in this board shape.
-     */
-    private final int area;
-
-    /**
      * The tiles that fall within the bounds of this board shape,
      * ordered by ascending row number and then ascending column number.
      */
@@ -96,7 +91,6 @@ public class BoardShape implements Named<Name> {
 
         this.width = maxX;
         this.height = maxY;
-        this.area = tiles.size();
 
         for (Tile tile : rosetteTiles) {
             if (!contains(tile)) {
@@ -150,7 +144,7 @@ public class BoardShape implements Named<Name> {
      * @return The number of tiles contained in this board shape.
      */
     public int getArea() {
-        return area;
+        return tiles.size();
     }
 
     /**

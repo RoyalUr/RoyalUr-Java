@@ -16,12 +16,10 @@ public class BoardTest {
         Board<Piece> standard = new Board<>(new StandardBoardShape());
         assertEquals(3, standard.getWidth());
         assertEquals(8, standard.getHeight());
-        assertEquals(20, standard.getArea());
 
         Board<Piece> aseb = new Board<>(new AsebBoardShape());
         assertEquals(3, aseb.getWidth());
         assertEquals(12, aseb.getHeight());
-        assertEquals(20, aseb.getArea());
     }
 
     @ParameterizedTest
@@ -78,7 +76,7 @@ public class BoardTest {
         }
 
         // Contains should have been true for an area number of tiles.
-        assertEquals(board.getArea(), area);
+        assertEquals(board.getShape().getArea(), area);
     }
 
     @ParameterizedTest

@@ -28,11 +28,6 @@ public class Board<P extends Piece> {
     private final int height;
 
     /**
-     * The number of tiles contained in this board.
-     */
-    private final int area;
-
-    /**
      * The pieces on the tiles of this board.
      */
     private final @Nonnull Piece[][] pieces;
@@ -45,7 +40,6 @@ public class Board<P extends Piece> {
         this.shape = shape;
         this.width = shape.getWidth();
         this.height = shape.getHeight();
-        this.area = shape.getArea();
         this.pieces = new Piece[width][height];
     }
 
@@ -90,14 +84,6 @@ public class Board<P extends Piece> {
      */
     public int getHeight() {
         return height;
-    }
-
-    /**
-     * Gets the number of tiles contained in this board.
-     * @return The number of tiles contained in this board.
-     */
-    public int getArea() {
-        return area;
     }
 
     /**
