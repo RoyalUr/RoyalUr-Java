@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import net.royalur.Game;
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
@@ -270,7 +271,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().getValue());
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value());
     }
 
     /**
@@ -367,7 +368,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().getValue());
+        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value());
 
         generator.writeObjectFieldStart(ACTION_MOVE_KEY);
         try {

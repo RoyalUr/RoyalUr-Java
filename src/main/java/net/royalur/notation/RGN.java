@@ -2,6 +2,7 @@ package net.royalur.notation;
 
 import net.royalur.Game;
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
@@ -128,7 +129,7 @@ public class RGN implements RGUNotation {
             @Nonnull RolledGameState<P, S, R> rolledState
     ) {
         Roll roll = rolledState.getRoll();
-        builder.append(roll.getValue());
+        builder.append(roll.value());
     }
 
     /**

@@ -1,359 +1,245 @@
 package net.royalur;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.DiceFactory;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.*;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.model.shape.BoardType;
 import net.royalur.model.shape.StandardBoardShape;
-import net.royalur.rules.Dice;
+import net.royalur.model.dice.Dice;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.RuleSetProvider;
 import net.royalur.rules.standard.*;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Random;
+import java.util.random.RandomGenerator;
 
 /**
  * A builder to help in the creation of custom games of the Royal Game of Ur.
  */
-public class GameBuilder {
+public class GameBuilder<
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> {
 
     /**
-     * A builder for constructing games that follow the standard rules.
-     * @param <R> The type of rolls that the dice produce.
-     * @param <SELF> The type of the subclass of this builder.
+     * The settings of the game being built.
      */
-    public static abstract class BaseStandardGameBuilder<R extends Roll, SELF extends BaseStandardGameBuilder<R, SELF>> {
+    private final @Nonnull GameSettings<R> settings;
 
-        /**
-         * The shape of the board.
-         */
-        protected final @Nonnull BoardShape boardShape;
+    /**
+     * The metadata of the game being built.
+     */
+    private final @Nonnull Map<String, String> metadata;
 
-        /**
-         * The paths that each player must take around the board.
-         */
-        protected final @Nonnull PathPair paths;
+    /**
+     * The provider to use to construct the final rule set.
+     */
+    private final @Nonnull RuleSetProvider<P, S> ruleSetProvider;
 
-        /**
-         * Whether rosette tiles are safe squares for pieces.
-         */
-        protected final boolean safeRosettes;
-
-        /**
-         * The number of pieces that each player starts with.
-         */
-        protected final int startingPieceCount;
-
-        /**
-         * Instantiates a builder to build games following a standard rule set.
-         * @param boardShape The shape of the board.
-         * @param paths The paths that each player must take around the board.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @param startingPieceCount The number of pieces that each player starts with.
-         */
-        public BaseStandardGameBuilder(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            this.boardShape = boardShape;
-            this.paths = paths;
-            this.safeRosettes = safeRosettes;
-            this.startingPieceCount = startingPieceCount;
-        }
-
-        /**
-         * Copies this game builder with new settings.
-         * @param boardShape The shape of the board.
-         * @param paths The paths that each player must take around the board.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @param startingPieceCount The number of pieces that each player starts with.
-         * @return A copy of this game builder with updated settings.
-         */
-        protected abstract @Nonnull SELF copy(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                boolean safeRosettes,
-                int startingPieceCount
-        );
-
-        /**
-         * Copies this game builder with the shape of the board set to {@code boardType}.
-         * @param boardType The type of board shape to use for generated games.
-         * @return A copy of this game builder with the shape of the board set to {@code boardType}.
-         */
-        public @Nonnull SELF boardShape(@Nonnull BoardType boardType) {
-            return boardShape(boardType.create());
-        }
-
-        /**
-         * Copies this game builder with the shape of the board set to {@code boardShape}.
-         * @param boardShape The shape of the board to use for generated games.
-         * @return A copy of this game builder with the shape of the board set to {@code boardShape}.
-         */
-        public @Nonnull SELF boardShape(@Nonnull BoardShape boardShape) {
-            return copy(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        /**
-         * Copies this game builder with the paths taken by each player set to {@code pathType}.
-         * @param pathType The type of paths to be taken by each player.
-         * @return A copy of this game builder with the paths taken by each player set to {@code pathType}.
-         */
-        public @Nonnull SELF paths(@Nonnull PathType pathType) {
-            return paths(pathType.create());
-        }
-
-        /**
-         * Copies this game builder with the paths taken by each player set to {@code paths}.
-         * @param paths The paths to be taken by each player.
-         * @return A copy of this game builder with the paths taken by each player set to {@code paths}.
-         */
-        public @Nonnull SELF paths(@Nonnull PathPair paths) {
-            return copy(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        /**
-         * Copies this game builder with the dice to be used to generate dice rolls set to {@code dice}.
-         * @param dice The dice to be used to generate dice rolls.
-         * @param <NR> The type of the dice rolls generated by {@code dice}.
-         * @return A copy of this game builder with the dice to be used to generate dice rolls set to {@code dice}.
-         */
-        public abstract <NR extends Roll> @Nonnull BaseStandardGameBuilder<NR, ?> dice(@Nonnull Dice<NR> dice);
-
-        /**
-         * Copies this game builder with safe rosettes if {@code safeRosettes}
-         * is true, or else with unsafe rosettes.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @return A copy of this game builder with safe rosettes if {@code safeRosettes}
-         *         is true, or else with unsafe rosettes.
-         */
-        public @Nonnull SELF safeRosettes(boolean safeRosettes) {
-            return copy(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        /**
-         * Copies this game builder with the number of starting pieces of each player
-         * set to {@code startingPieceCount}.
-         * @param startingPieceCount The number of pieces that each player starts with in the game.
-         * @return A copy of this game builder with the number of starting pieces of each player
-         *         set to {@code startingPieceCount}.
-         */
-        public @Nonnull SELF startingPieceCount(int startingPieceCount) {
-            return copy(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        /**
-         * Generates a standard rule set to match the settings in this builder.
-         * The rules do not contain any player identification information set in this builder.
-         * @return A standard rule set to match the settings in this builder.
-         */
-        public abstract @Nonnull RuleSet<StandardPiece, PlayerState, R> buildRules();
-
-        /**
-         * Builds a new game using the rules set in this builder.
-         * @return A new game using the rules set in this builder.
-         */
-        public @Nonnull Game<StandardPiece, PlayerState, R> build() {
-            return new StandardGame<>(buildRules());
-        }
+    /**
+     * Instantiates a new game builder.
+     * @param settings The settings of the game being built.
+     * @param metadata The metadata of the game being built.
+     * @param ruleSetProvider The provider to use to construct the final rule set.
+     */
+    public GameBuilder(
+            @Nonnull GameSettings<R> settings,
+            @Nonnull Map<String, String> metadata,
+            @Nonnull RuleSetProvider<P, S> ruleSetProvider
+    ) {
+        this.settings = settings;
+        this.metadata = Collections.unmodifiableMap(metadata);
+        this.ruleSetProvider = ruleSetProvider;
     }
 
     /**
-     * A builder for constructing games that follow the standard rules, with dice
-     * that produce standard rolls of type {@link Roll}.
+     * Create a copy of this game builder with new settings.
+     * @param settings The new settings.
+     * @param <NEW_R> The type of the dice rolls generated.
+     * @return A copy of this game builder with new settings.
      */
-    public static class StandardGameBuilder extends BaseStandardGameBuilder<Roll, StandardGameBuilder> {
-
-        /**
-         * Instantiates a builder to build games following a standard rule set.
-         * @param boardShape The shape of the board.
-         * @param paths The paths that each player must take around the board.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @param startingPieceCount The number of pieces that each player starts with.
-         */
-        public StandardGameBuilder(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            super(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        @Override
-        protected @Nonnull StandardGameBuilder copy(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            return new StandardGameBuilder(boardShape, paths, safeRosettes, startingPieceCount);
-        }
-
-        @Override
-        public <R extends Roll> @Nonnull StandardWithDiceGameBuilder<R> dice(@Nonnull Dice<R> dice) {
-            return new StandardWithDiceGameBuilder<>(
-                    boardShape, paths, dice, safeRosettes, startingPieceCount
-            );
-        }
-
-        @Override
-        public @Nonnull RuleSet<StandardPiece, PlayerState, Roll> buildRules() {
-            return new StandardRuleSet<>(
-                    boardShape,
-                    paths,
-                    new StandardDice(),
-                    safeRosettes,
-                    new StandardPieceProvider(),
-                    new StandardPlayerStateProvider(startingPieceCount)
-            );
-        }
+    private <NEW_R extends Roll> @Nonnull GameBuilder<P, S, NEW_R>
+    copy(@Nonnull GameSettings<NEW_R> settings) {
+        return new GameBuilder<>(settings, metadata, ruleSetProvider);
     }
 
     /**
-     * A builder for constructing games that follow the standard rules, with dice
-     * that produce non-standard types of rolls.
-     * @param <R> The type of rolls that the dice produce.
+     * Get the settings of the game being built.
+     * @return The settings of the game being built.
      */
-    public static class StandardWithDiceGameBuilder<R extends Roll>
-            extends BaseStandardGameBuilder<R, StandardWithDiceGameBuilder<R>> {
-
-        /**
-         * The dice that is used to generate rolls.
-         */
-        private final @Nonnull Dice<R> dice;
-
-        /**
-         * Instantiates a builder to build games following a standard rule set.
-         * @param boardShape The shape of the board.
-         * @param paths The paths that each player must take around the board.
-         * @param dice The dice that is used to generate rolls.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @param startingPieceCount The number of pieces that each player starts with.
-         */
-        public StandardWithDiceGameBuilder(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                @Nonnull Dice<R> dice,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            super(boardShape, paths, safeRosettes, startingPieceCount);
-            this.dice = dice;
-        }
-
-        /**
-         * Copies this game builder with new settings.
-         * @param boardShape The shape of the board.
-         * @param paths The paths that each player must take around the board.
-         * @param dice The dice that is used to generate rolls.
-         * @param safeRosettes Whether rosette tiles are safe squares for pieces.
-         * @param startingPieceCount The number of pieces that each player starts with.
-         * @param <NR> The type of the dice rolls generated by {@code dice}.
-         * @return A copy of this game builder with updated settings.
-         */
-        protected <NR extends Roll> @Nonnull StandardWithDiceGameBuilder<NR> copy(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                @Nonnull Dice<NR> dice,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            return new StandardWithDiceGameBuilder<>(
-                    boardShape, paths, dice, safeRosettes, startingPieceCount
-            );
-        }
-
-        @Override
-        protected @Nonnull StandardWithDiceGameBuilder<R> copy(
-                @Nonnull BoardShape boardShape,
-                @Nonnull PathPair paths,
-                boolean safeRosettes,
-                int startingPieceCount
-        ) {
-            return copy(boardShape, paths, dice, safeRosettes, startingPieceCount);
-        }
-
-        @Override
-        public <NR extends Roll> @Nonnull StandardWithDiceGameBuilder<NR> dice(@Nonnull Dice<NR> dice) {
-            return copy(boardShape, paths, dice, safeRosettes, startingPieceCount);
-        }
-
-        @Override
-        public @Nonnull RuleSet<StandardPiece, PlayerState, R> buildRules() {
-            return new StandardRuleSet<>(
-                    boardShape,
-                    paths,
-                    dice,
-                    safeRosettes,
-                    new StandardPieceProvider(),
-                    new StandardPlayerStateProvider(startingPieceCount)
-            );
-        }
+    public @Nonnull GameSettings<R> getSettings() {
+        return settings;
     }
 
     /**
-     * Instantiate a builder to help in the creation of custom games of the Royal Game of Ur.
+     * Get the metadata of the game being built.
+     * @return The metadata of the game being built.
      */
-    public GameBuilder() {}
-
-    /**
-     * Creates a new builder that allows the construction of games following the standard rules
-     * from RoyalUr.net.
-     * @return A new builder that allows the construction of games following the rules used on
-     *         RoyalUr.net.
-     */
-    public @Nonnull StandardGameBuilder royalUrNet() {
-        return new StandardGameBuilder(
-                new StandardBoardShape(),
-                new BellPathPair(),
-                true,
-                7
-        );
+    public @Nonnull Map<String, String> getMetadata() {
+        return metadata;
     }
 
     /**
-     * Creates a new builder that allows the construction of games following the simple rules
-     * proposed by Irving Finkel.
-     * @return A new builder that allows the construction of games following the rules proposed
-     *         by Irving Finkel.
+     * Copies this game builder with the shape of the board set to {@code boardType}.
+     * @param boardType The type of board shape to use for generated games.
+     * @return A copy of this game builder with the shape of the board set to {@code boardType}.
      */
-    public @Nonnull StandardGameBuilder finkel() {
-        return new StandardGameBuilder(
-                new StandardBoardShape(),
-                new BellPathPair(),
-                true,
-                7
-        );
+    public @Nonnull GameBuilder<P, S, R> boardShape(@Nonnull BoardType boardType) {
+        return boardShape(boardType.create());
     }
 
     /**
-     * Creates a new builder that allows the construction of games following the rules proposed
-     * by James Masters.
-     * @return A new builder that allows the construction of games following the rules proposed
-     *         James Masters.
+     * Copies this game builder with the shape of the board set to {@code boardShape}.
+     * @param boardShape The shape of the board to use for generated games.
+     * @return A copy of this game builder with the shape of the board set to {@code boardShape}.
      */
-    public @Nonnull StandardGameBuilder masters() {
-        return new StandardGameBuilder(
-                new StandardBoardShape(),
-                new MastersPathPair(),
-                false,
-                7
-        );
+    public @Nonnull GameBuilder<P, S, R> boardShape(@Nonnull BoardShape boardShape) {
+        return copy(settings.withBoardShape(boardShape));
     }
 
     /**
-     * Creates a new builder that allows the construction of games following the Aseb rules.
-     * @return A new builder that allows the construction of games following the Aseb rules.
+     * Copies this game builder with the paths taken by each player set to {@code pathType}.
+     * @param pathType The type of paths to be taken by each player.
+     * @return A copy of this game builder with the paths taken by each player set to {@code pathType}.
      */
-    public @Nonnull StandardGameBuilder aseb() {
-        return new StandardGameBuilder(
-                new AsebBoardShape(),
-                new AsebPathPair(),
-                true,
-                5
-        );
+    public @Nonnull GameBuilder<P, S, R> paths(@Nonnull PathType pathType) {
+        return paths(pathType.create());
+    }
+
+    /**
+     * Copies this game builder with the paths taken by each player set to {@code paths}.
+     * @param paths The paths to be taken by each player.
+     * @return A copy of this game builder with the paths taken by each player set to {@code paths}.
+     */
+    public @Nonnull GameBuilder<P, S, R> paths(@Nonnull PathPair paths) {
+        return copy(settings.withPaths(paths));
+    }
+
+    /**
+     * Copies this game builder with the dice to be used to generate dice rolls set to {@code dice}.
+     * @param diceFactory The generator of dice to be used to generate dice rolls.
+     * @param <NEW_R> The type of the dice rolls generated by {@code dice}.
+     * @return A copy of this game builder with the dice to be used to generate dice rolls set to {@code dice}.
+     */
+    public <NEW_R extends Roll> @Nonnull GameBuilder<P, S, NEW_R>
+    dice(@Nonnull DiceFactory<NEW_R> diceFactory) {
+        return copy(settings.withDice(diceFactory));
+    }
+
+    /**
+     * Copies this game builder with the number of starting pieces of each player
+     * set to {@code startingPieceCount}.
+     * @param startingPieceCount The number of pieces that each player starts with in the game.
+     * @return A copy of this game builder with the number of starting pieces of each player
+     *         set to {@code startingPieceCount}.
+     */
+    public @Nonnull GameBuilder<P, S, R> startingPieceCount(int startingPieceCount) {
+        return copy(settings.withStartingPieceCount(startingPieceCount));
+    }
+
+    /**
+     * Copies this game builder with safe rosettes if {@code safeRosettes}
+     * is true, or else with unsafe rosettes.
+     * @param safeRosettes Whether rosette tiles are safe squares for pieces.
+     * @return A copy of this game builder with safe rosettes if {@code safeRosettes}
+     *         is true, or else with unsafe rosettes.
+     */
+    public @Nonnull GameBuilder<P, S, R> safeRosettes(boolean safeRosettes) {
+        return copy(settings.withSafeRosettes(safeRosettes));
+    }
+
+    /**
+     * Copies this game builder with rosettes granting extra dice rolls
+     * if {@code rosettesGrantExtraRolls} is true.
+     * @param rosettesGrantExtraRolls Whether landing on a rosette grants an extra roll.
+     * @return A copy of this game builder with rosettes granting extra dice rolls
+     *         set to {@code rosettesGrantExtraRolls}.
+     */
+    public @Nonnull GameBuilder<P, S, R> rosettesGrantExtraRolls(boolean rosettesGrantExtraRolls) {
+        return copy(settings.withRosettesGrantExtraRolls(rosettesGrantExtraRolls));
+    }
+
+    /**
+     * Copies this game builder with capturing pieces granting extra dice rolls
+     * if {@code capturesGrantExtraRolls} is true.
+     * @param capturesGrantExtraRolls Whether capturing a piece grants an extra roll.
+     * @return A copy of this game builder with capturing pieces granting extra dice rolls
+     *         set to {@code capturesGrantExtraRolls}.
+     */
+    public @Nonnull GameBuilder<P, S, R> capturesGrantExtraRolls(boolean capturesGrantExtraRolls) {
+        return copy(settings.withCapturesGrantExtraRolls(capturesGrantExtraRolls));
+    }
+
+    /**
+     * Generates a standard rule set to match the settings in this builder.
+     * The rules do not contain any player identification information set in this builder.
+     * @return A standard rule set to match the settings in this builder.
+     */
+    public @Nonnull RuleSet<P, S, R> buildRules() {
+        return ruleSetProvider.create(settings, metadata);
+    }
+
+    /**
+     * Builds a new game using the rules set in this builder.
+     * @return A new game using the rules set in this builder.
+     */
+    public @Nonnull Game<P, S, R> build() {
+        return build(new Random());
+    }
+
+    /**
+     * Builds a new game using the rules set in this builder.
+     * @param random The source of randomness to use for dice rolls.
+     * @return A new game using the rules set in this builder.
+     */
+    public @Nonnull Game<P, S, R> build(@Nonnull RandomGenerator random) {
+        return new BasicGame<>(random, buildRules());
+    }
+
+    /**
+     * Creates a new builder that allows the construction of games
+     * following the standard rules from RoyalUr.net.
+     * @return A new builder that allows the construction of games
+     *         following the rules used on RoyalUr.net.
+     */
+    public @Nonnull GameBuilder<P, S, Roll> royalUrNet() {
+        return copy(GameSettings.ROYALUR_NET);
+    }
+
+    /**
+     * Creates a new builder that allows the construction of games
+     * following the simple rules proposed by Irving Finkel.
+     * @return A new builder that allows the construction of games
+     *         following the rules proposed by Irving Finkel.
+     */
+    public @Nonnull GameBuilder<P, S, Roll> finkel() {
+        return copy(GameSettings.FINKEL);
+    }
+
+    /**
+     * Creates a new builder that allows the construction of games
+     * following the rules proposed by James Masters.
+     * @return A new builder that allows the construction of games
+     *         following the rules proposed James Masters.
+     */
+    public @Nonnull GameBuilder<P, S, Roll> masters() {
+        return copy(GameSettings.MASTERS);
+    }
+
+    /**
+     * Creates a new builder that allows the construction of games
+     * following the Aseb rules.
+     * @return A new builder that allows the construction of games
+     *         following the Aseb rules.
+     */
+    public @Nonnull GameBuilder<P, S, Roll> aseb() {
+        return copy(GameSettings.ASEB);
     }
 }

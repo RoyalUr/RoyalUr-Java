@@ -1,13 +1,18 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.DiceFactory;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
+import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.standard.StandardRuleSetProvider;
 import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.WaitingForMoveGameState;
 import net.royalur.rules.state.WaitingForRollGameState;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +21,11 @@ import java.util.List;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll> {
+public interface RuleSet<
+        P extends Piece,
+        S extends PlayerState,
+        R extends Roll
+> {
 
     /**
      * Gets the shape of the board used in this rule set.
@@ -33,16 +42,28 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
     PathPair getPaths();
 
     /**
-     * Gets the dice that are used to generate dice rolls.
-     * @return The dice that are used to generate dice rolls.
+     * Gets the generator of dice that are used to generate dice rolls.
+     * @return The generator of dice that are used to generate dice rolls.
      */
-    @Nonnull Dice<R> getDice();
+    @Nonnull DiceFactory<R> getDiceFactory();
 
     /**
      * Gets whether rosettes are considered safe squares in this rule set.
      * @return Whether rosettes are considered safe squares in this rule set.
      */
     boolean areRosettesSafe();
+
+    /**
+     * Gets whether landing on rosette tiles grants an additional roll.
+     * @return Whether landing on rosette tiles grants an additional roll.
+     */
+    boolean doRosettesGrantExtraRolls();
+
+    /**
+     * Gets whether capturing a piece grants an additional roll.
+     * @return Whether capturing a piece grants an additional roll.
+     */
+    boolean doCapturesGrantExtraRolls();
 
     /**
      * Gets the provider of piece manipulations.
@@ -107,4 +128,12 @@ public interface RuleSet<P extends Piece, S extends PlayerState, R extends Roll>
      */
     @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state, @Nonnull Move<P> move);
+
+    /*
+     * Creates a standard rule set that follows the given game settings.
+     */
+    static <R extends Roll> @Nonnull RuleSet<StandardPiece, PlayerState, R>
+    createStandard(@Nonnull GameSettings<R> settings) {
+        return new StandardRuleSetProvider().create(settings, Collections.emptyMap());
+    }
 }

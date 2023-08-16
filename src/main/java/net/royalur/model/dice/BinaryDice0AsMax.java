@@ -1,0 +1,49 @@
+package net.royalur.model.dice;
+
+import net.royalur.name.Name;
+
+import javax.annotation.Nonnull;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+/**
+ * A set of binary dice where a roll of zero actually represents
+ * the highest roll possible, rather than the lowest.
+ */
+public class BinaryDice0AsMax extends BinaryDice {
+
+    /**
+     * The maximum value that can be rolled by this dice.
+     */
+    private final int maxRollValue;
+
+    /**
+     * Instantiates this binary dice with {@code random} as the source
+     * of randomness to generate rolls.
+     * @param name The name of this dice.
+     * @param random The source of randomness used to generate dice rolls.
+     * @param numDie The number of binary dice to roll.
+     */
+    public BinaryDice0AsMax(@Nonnull Name name, @Nonnull RandomGenerator random, int numDie) {
+        super(name, random, numDie);
+        this.maxRollValue = numDie + 1;
+    }
+
+    @Override
+    public int getMaxRollValue() {
+        return maxRollValue;
+    }
+
+    @Override
+    public int rollValue() {
+        int value = super.rollValue();
+        return value > 0 ? value : maxRollValue;
+    }
+
+    @Override
+    public @Nonnull Roll roll(int value) {
+        if (value <= 0 || value > getMaxRollValue())
+            throw new IllegalArgumentException("This dice cannot roll " + value);
+        return Roll.of(value);
+    }
+}

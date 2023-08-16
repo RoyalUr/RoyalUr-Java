@@ -2,6 +2,7 @@ package net.royalur.agent;
 
 import net.royalur.Game;
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 
 import javax.annotation.Nonnull;
 

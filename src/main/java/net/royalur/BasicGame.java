@@ -1,7 +1,8 @@
 package net.royalur;
 
 import net.royalur.model.*;
-import net.royalur.name.Name;
+import net.royalur.model.dice.Dice;
+import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.PlayableGameState;
@@ -12,6 +13,7 @@ import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.random.RandomGenerator;
 
 /**
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
@@ -21,7 +23,7 @@ import java.util.*;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public class StandardGame<
+public class BasicGame<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
@@ -43,9 +45,19 @@ public class StandardGame<
     private static final @Nonnull String TIMEZONE_PATTERN = "OOOO";
 
     /**
+     * The source of randomness to use for generating dice rolls.
+     */
+    private final @Nonnull RandomGenerator random;
+
+    /**
      * The set of rules that are being used for this game.
      */
     private final @Nonnull RuleSet<P, S, R> rules;
+
+    /**
+     * The dice to be used to generate dice rolls.
+     */
+    private final @Nonnull Dice<R> dice;
 
     /**
      * Arbitrary metadata about this game.
@@ -60,24 +72,25 @@ public class StandardGame<
 
     /**
      * Instantiates a game of the Royal Game of Ur.
+     * @param random The source of randomness to use to generate dice rolls.
      * @param rules The set of rules that are being used for this game.
      * @param states The states that have occurred so far in the game.
      */
-    public StandardGame(
+    public BasicGame(
+            @Nonnull RandomGenerator random,
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull List<GameState<P, S, R>> states
     ) {
         if (states.isEmpty())
             throw new IllegalArgumentException("Games must have at least one state to play from");
 
+        this.random = random;
         this.rules = rules;
+        this.dice = rules.getDiceFactory().create(random);
         this.metadata = new LinkedHashMap<>();
         this.states = new ArrayList<>();
 
         addStates(states);
-
-        // TODO : Replacement for this with new ID system.
-//        metadata.put("Rules", rules.getDescriptor());
 
         ZonedDateTime now = ZonedDateTime.now();
         metadata.put("Date", DateTimeFormatter.ofPattern(DATE_PATTERN).format(now));
@@ -87,22 +100,27 @@ public class StandardGame<
 
     /**
      * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
+     * @param random The source of randomness to use to generate dice rolls.
      * @param rules The rules of the game.
      */
-    public StandardGame(@Nonnull RuleSet<P, S, R> rules) {
-        this(rules, List.of(rules.generateInitialGameState()));
+    public BasicGame(@Nonnull RandomGenerator random, @Nonnull RuleSet<P, S, R> rules) {
+        this(random, rules, List.of(rules.generateInitialGameState()));
     }
 
     /**
      * Instantiates a game of the Royal Game of Ur that is a copy of {@code game}.
      * @param game The rules of the game.
      */
-    private StandardGame(@Nonnull StandardGame<P, S, R> game) {
-        this(game.rules, game.states);
+    private BasicGame(@Nonnull BasicGame<P, S, R> game) {
+        this(game.random, game.rules, game.states);
         metadata.clear();
         metadata.putAll(game.metadata);
     }
 
+    @Override
+    public @Nonnull BasicGame<P, S, R> copy() {
+        return new BasicGame<>(this);
+    }
 
     @Override
     public @Nonnull RuleSet<P, S, R> getRules() {
@@ -110,8 +128,8 @@ public class StandardGame<
     }
 
     @Override
-    public @Nonnull StandardGame<P, S, R> copy() {
-        return new StandardGame<>(this);
+    public @Nonnull Dice<R> getDice() {
+        return dice;
     }
 
     @Override
@@ -184,14 +202,14 @@ public class StandardGame<
 
     @Override
     public @Nonnull R rollDice() {
-        R roll = rules.getDice().roll();
+        R roll = dice.roll();
         rollDice(roll);
         return roll;
     }
 
     @Override
     public @Nonnull R rollDice(int value) {
-        R roll = rules.getDice().roll(value);
+        R roll = dice.roll(value);
         rollDice(roll);
         return roll;
     }

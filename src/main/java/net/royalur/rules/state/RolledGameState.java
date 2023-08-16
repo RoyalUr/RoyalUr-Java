@@ -1,6 +1,7 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -78,7 +79,7 @@ public class RolledGameState<
     public @Nonnull String describe() {
         String noMoves = "";
         if (availableMoves.isEmpty()) {
-            if (roll.getValue() == 0) {
+            if (roll.value() == 0) {
                 noMoves = ", and had no moves";
             } else {
                 noMoves = ", and all moves were blocked";

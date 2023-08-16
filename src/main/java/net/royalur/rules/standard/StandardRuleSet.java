@@ -1,9 +1,10 @@
 package net.royalur.rules.standard;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.DiceFactory;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
-import net.royalur.rules.Dice;
 import net.royalur.rules.PieceProvider;
 import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
@@ -39,14 +40,24 @@ public class StandardRuleSet<
     private final @Nonnull PathPair paths;
 
     /**
-     * The dice that are used to generate dice rolls.
+     * The generator of dice that are used to generate dice rolls.
      */
-    private final @Nonnull Dice<R> dice;
+    private final @Nonnull DiceFactory<R> diceFactory;
 
     /**
      * Whether rosette tiles are safe squares for pieces.
      */
     private final boolean safeRosettes;
+
+    /**
+     * Whether landing on rosette tiles grants an additional roll.
+     */
+    private final boolean rosettesGrantExtraRolls;
+
+    /**
+     * Whether capturing a piece grants an additional roll.
+     */
+    private final boolean capturesGrantExtraRolls;
 
     /**
      * Provides the manipulation of piece values.
@@ -62,16 +73,20 @@ public class StandardRuleSet<
      * Instantiates a simple rule set for the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
-     * @param dice The dice that are used to generate dice rolls.
+     * @param diceFactory The generator of dice that are used to generate dice rolls.
      * @param safeRosettes Whether rosette tiles are safe squares for pieces.
+     * @param rosettesGrantExtraRolls Whether landing on rosette tiles gives an extra roll.
+     * @param capturesGrantExtraRolls Whether capturing a piece gives an extra roll.
      * @param pieceProvider Provides the manipulation of piece values.
      * @param playerStateProvider Provides the manipulation of player states.
      */
     public StandardRuleSet(
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
-            @Nonnull Dice<R> dice,
+            @Nonnull DiceFactory<R> diceFactory,
             boolean safeRosettes,
+            boolean rosettesGrantExtraRolls,
+            boolean capturesGrantExtraRolls,
             @Nonnull PieceProvider<P> pieceProvider,
             @Nonnull PlayerStateProvider<S> playerStateProvider
     ) {
@@ -84,8 +99,10 @@ public class StandardRuleSet<
 
         this.boardShape = boardShape;
         this.paths = paths;
-        this.dice = dice;
+        this.diceFactory = diceFactory;
         this.safeRosettes = safeRosettes;
+        this.rosettesGrantExtraRolls = rosettesGrantExtraRolls;
+        this.capturesGrantExtraRolls = capturesGrantExtraRolls;
         this.pieceProvider = pieceProvider;
         this.playerStateProvider = playerStateProvider;
     }
@@ -101,13 +118,23 @@ public class StandardRuleSet<
     }
 
     @Override
-    public @Nonnull Dice<R> getDice() {
-        return dice;
+    public @Nonnull DiceFactory<R> getDiceFactory() {
+        return diceFactory;
     }
 
     @Override
     public boolean areRosettesSafe() {
         return safeRosettes;
+    }
+
+    @Override
+    public boolean doRosettesGrantExtraRolls() {
+        return rosettesGrantExtraRolls;
+    }
+
+    @Override
+    public boolean doCapturesGrantExtraRolls() {
+        return capturesGrantExtraRolls;
     }
 
     @Override
@@ -140,7 +167,7 @@ public class StandardRuleSet<
             @Nonnull S player,
             @Nonnull R roll
     ) {
-        if (roll.getValue() <= 0)
+        if (roll.value() <= 0)
             return Collections.emptyList();
 
         PlayerType playerType = player.getPlayer();
@@ -148,8 +175,8 @@ public class StandardRuleSet<
         List<Move<P>> moves = new ArrayList<>();
 
         // Check if a piece can be taken off the board.
-        if (roll.getValue() <= path.size()) {
-            int scorePathIndex = path.size() - roll.getValue();
+        if (roll.value() <= path.size()) {
+            int scorePathIndex = path.size() - roll.value();
             Tile scoreTile = path.get(scorePathIndex);
             P scorePiece = board.get(scoreTile);
             if (scorePiece != null &&
@@ -161,7 +188,7 @@ public class StandardRuleSet<
         }
 
         // Check for pieces on the board that can be moved to another tile on the board.
-        for (int index = -1; index < path.size() - roll.getValue(); ++index) {
+        for (int index = -1; index < path.size() - roll.value(); ++index) {
 
             Tile tile;
             P piece;
@@ -184,7 +211,7 @@ public class StandardRuleSet<
             }
 
             // Check if the destination is free.
-            int destPathIndex = index + roll.getValue();
+            int destPathIndex = index + roll.value();
             Tile dest = path.get(destPathIndex);
             P destPiece = board.get(dest);
             if (destPiece != null)  {
@@ -229,7 +256,7 @@ public class StandardRuleSet<
         );
 
         // If the player rolled zero, we need to change the turn to the other player.
-        if (roll.getValue() == 0) {
+        if (roll.value() == 0) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
                     state.getBoard(),
@@ -268,9 +295,14 @@ public class StandardRuleSet<
      *         another roll.
      */
     public boolean shouldGrantRoll(@Nonnull MovedGameState<P, S, R> movedState) {
-        BoardShape boardShape = movedState.getBoard().getShape();
         Move<P> move = movedState.getMove();
-        return move.isLandingOnRosette(boardShape);
+
+        if (rosettesGrantExtraRolls) {
+            BoardShape boardShape = movedState.getBoard().getShape();
+            if (move.isLandingOnRosette(boardShape))
+                return true;
+        }
+        return capturesGrantExtraRolls && move.capturesPiece();
     }
 
     @Override

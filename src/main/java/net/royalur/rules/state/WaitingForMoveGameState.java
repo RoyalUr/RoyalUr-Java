@@ -1,6 +1,7 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 
 import javax.annotation.Nonnull;
 
@@ -39,9 +40,9 @@ implements PlayableGameState<P, S, R, ActionType> {
             @Nonnull R roll
     ) {
         super(board, lightPlayer, darkPlayer, turn);
-        if (roll.getValue() <= 0) {
+        if (roll.value() <= 0) {
             throw new IllegalArgumentException(
-                    "Roll must have a value of at least 1, not " + roll.getValue()
+                    "Roll must have a value of at least 1, not " + roll.value()
             );
         }
 

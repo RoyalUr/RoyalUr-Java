@@ -15,7 +15,7 @@ and reporting what happens in the game as it progresses.
 
 ```java
 // Create a new game using the Finkel rules.
-Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
+Game<StandardPiece, PlayerState, Roll> game = Game.createFinkel();
 
 // Play through a game making random moves.
 Random rand = new Random(42);
@@ -26,7 +26,7 @@ while (!game.isFinished()) {
     if (game.isWaitingForRoll()) {
         // Roll the dice!
         Roll roll = game.rollDice();
-        System.out.println(turnPlayerName + ": Roll " + roll.getValue());
+        System.out.println(turnPlayerName + ": Roll " + roll.value());
     } else {
         // Make a random move.
         List<Move<StandardPiece>> moves = game.findAvailableMoves();

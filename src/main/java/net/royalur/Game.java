@@ -1,8 +1,11 @@
 package net.royalur;
 
 import net.royalur.model.*;
+import net.royalur.model.dice.Dice;
+import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.standard.StandardRuleSetProvider;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
@@ -19,15 +22,16 @@ import java.util.stream.Collectors;
 public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
-     * The set of rules that are being used for this game.
+     * Gets the set of rules that are being used for this game.
+     * @return The set of rules that are being used for this game.
      */
     @Nonnull RuleSet<P, S, R> getRules();
 
     /**
-     * Generates a copy of this game.
-     * @return A copy of {@code this}.
+     * Gets the dice to are used to make dice rolls.
+     * @return The dice to be used to make dice rolls.
      */
-    @Nonnull Game<P, S, R> copy();
+    @Nonnull Dice<R> getDice();
 
     /**
      * Sets the value of the metadata associated with the key {@code key} to {@code value}.
@@ -68,6 +72,12 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The state that the game is currently in.
      */
     @Nonnull GameState<P, S, R> getCurrentState();
+
+    /**
+     * Generates a copy of this game.
+     * @return A copy of {@code this}.
+     */
+    @Nonnull Game<P, S, R> copy();
 
     /**
      * Rolls the dice, with a known value of {@code roll}, and updates the
@@ -327,10 +337,35 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
      * Creates a builder to assist in constructing games with custom settings.
+     * @param settings The settings to initialise the builder with.
      * @return A builder to assist in constructing games with custom settings.
      */
-    static @Nonnull GameBuilder builder() {
-        return new GameBuilder();
+    static <R extends Roll> @Nonnull GameBuilder<StandardPiece, PlayerState, R>
+    builder(GameSettings<R> settings) {
+        return new GameBuilder<>(
+                settings, Collections.emptyMap(),
+                new StandardRuleSetProvider()
+        );
+    }
+
+    /**
+     * Creates a standard game with custom settings.
+     * @param settings The settings to use for the game.
+     * @return A game with custom settings.
+     */
+    static <R extends Roll> @Nonnull Game<StandardPiece, PlayerState, R>
+    create(GameSettings<R> settings) {
+        return builder(settings).build();
+    }
+
+    /**
+     * Creates a builder to assist in constructing games with custom settings.
+     * Provides a builder that is set up to produce games using the Finkel
+     * rule set by default.
+     * @return A builder to assist in constructing games with custom settings.
+     */
+    static @Nonnull GameBuilder<StandardPiece, PlayerState, Roll> builder() {
+        return builder(GameSettings.FINKEL);
     }
 
     /**
@@ -340,7 +375,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A standard game.
      */
     static @Nonnull Game<StandardPiece, PlayerState, Roll> createRoyalUrNet() {
-        return builder().royalUrNet().build();
+        return builder(GameSettings.ROYALUR_NET).build();
     }
 
     /**
@@ -350,7 +385,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     static @Nonnull Game<StandardPiece, PlayerState, Roll> createFinkel() {
-        return builder().finkel().build();
+        return builder(GameSettings.FINKEL).build();
     }
 
     /**
@@ -360,7 +395,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     static @Nonnull Game<StandardPiece, PlayerState, Roll> createMasters() {
-        return builder().masters().build();
+        return builder(GameSettings.MASTERS).build();
     }
 
     /**
@@ -369,6 +404,6 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game of Aseb.
      */
     static @Nonnull Game<StandardPiece, PlayerState, Roll> createAseb() {
-        return builder().aseb().build();
+        return builder(GameSettings.ASEB).build();
     }
 }

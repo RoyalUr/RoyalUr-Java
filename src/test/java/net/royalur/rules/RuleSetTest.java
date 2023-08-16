@@ -1,14 +1,8 @@
 package net.royalur.rules;
 
 import net.royalur.model.*;
-import net.royalur.model.path.AsebPathPair;
-import net.royalur.model.path.BellPathPair;
-import net.royalur.model.shape.AsebBoardShape;
-import net.royalur.model.shape.StandardBoardShape;
-import net.royalur.rules.standard.StandardDice;
-import net.royalur.rules.standard.StandardPieceProvider;
-import net.royalur.rules.standard.StandardPlayerStateProvider;
-import net.royalur.rules.standard.StandardRuleSet;
+import net.royalur.model.dice.Dice;
+import net.royalur.model.dice.Roll;
 import net.royalur.rules.state.GameState;
 import net.royalur.util.Cast;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -17,7 +11,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,16 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RuleSetTest {
 
     public static class NamedRuleSet<P extends Piece, S extends PlayerState, R extends Roll> {
-        public final @Nonnull String name;
-        public final @Nonnull RuleSet<P, S, R> rules;
+        public final String name;
+        public final RuleSet<P, S, R> rules;
 
-        public NamedRuleSet(@Nonnull String name, @Nonnull RuleSet<P, S, R> rules) {
+        public NamedRuleSet(String name, RuleSet<P, S, R> rules) {
             this.name = name;
             this.rules = rules;
         }
 
         @Override
-        public @Nonnull String toString() {
+        public String toString() {
             return name;
         }
     }
@@ -45,22 +38,14 @@ public class RuleSetTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(new NamedRuleSet<>("Standard-Bell", new StandardRuleSet<>(
-                            new StandardBoardShape(),
-                            new BellPathPair(),
-                            new StandardDice(),
-                            false,
-                            new StandardPieceProvider(),
-                            new StandardPlayerStateProvider(7)
-                    ))),
-                    Arguments.of(new NamedRuleSet<>("Standard-Aseb", new StandardRuleSet<>(
-                            new AsebBoardShape(),
-                            new AsebPathPair(),
-                            new StandardDice(),
-                            true,
-                            new StandardPieceProvider(),
-                            new StandardPlayerStateProvider(5)
-                    )))
+                    Arguments.of(new NamedRuleSet<>(
+                            "Standard-Finkel",
+                            RuleSet.createStandard(GameSettings.FINKEL)
+                    )),
+                    Arguments.of(new NamedRuleSet<>(
+                            "Standard-Aseb",
+                            RuleSet.createStandard(GameSettings.ASEB)
+                    ))
             );
         }
     }
@@ -103,11 +88,11 @@ public class RuleSetTest {
     public <P extends Piece, S extends PlayerState, R extends Roll>
     void testRollDice(NamedRuleSet<P, S, R> nrs) {
         RuleSet<?, ?, ?> rules = nrs.rules;
-        Dice<?> dice = rules.getDice();
+        Dice<?> dice = rules.getDiceFactory().create();
         for (int test = 0; test < 10_000; ++test) {
             Roll roll = dice.roll();
             assertNotNull(roll);
-            assertTrue(roll.getValue() <= dice.getMaxRollValue());
+            assertTrue(roll.value() <= dice.getMaxRollValue());
         }
     }
 
@@ -116,7 +101,7 @@ public class RuleSetTest {
     public <P extends Piece, S extends PlayerState, R extends Roll>
     void testFindAvailableMoves(NamedRuleSet<P, S, R> nrs) {
         RuleSet<P, S, R> rules = nrs.rules;
-        Dice<R> dice = rules.getDice();
+        Dice<R> dice = rules.getDiceFactory().create();
 
         GameState<P, S, R> initialState = rules.generateInitialGameState();
         Board<P> board = initialState.getBoard();
@@ -130,7 +115,7 @@ public class RuleSetTest {
         for (int test = 0; test < 10_000; ++test) {
             R roll = dice.roll();
 
-            if (roll.getValue() == 0) {
+            if (roll.value() == 0) {
                 assertEquals(Collections.emptyList(), rules.findAvailableMoves(board, light, roll));
                 assertEquals(Collections.emptyList(), rules.findAvailableMoves(board, dark, roll));
                 continue;
@@ -149,12 +134,12 @@ public class RuleSetTest {
                 availableDark += 1;
             }
 
-            if (lightMovesByRoll[roll.getValue()] != null) {
-                assertEquals(lightMoves, lightMovesByRoll[roll.getValue()]);
-                assertEquals(darkMoves, darkMovesByRoll[roll.getValue()]);
+            if (lightMovesByRoll[roll.value()] != null) {
+                assertEquals(lightMoves, lightMovesByRoll[roll.value()]);
+                assertEquals(darkMoves, darkMovesByRoll[roll.value()]);
             } else {
-                lightMovesByRoll[roll.getValue()] = lightMoves;
-                darkMovesByRoll[roll.getValue()] = darkMoves;
+                lightMovesByRoll[roll.value()] = lightMoves;
+                darkMovesByRoll[roll.value()] = darkMoves;
             }
         }
         assertTrue(availableLight > 0);

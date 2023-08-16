@@ -3,10 +3,10 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.PlayerState;
-import net.royalur.model.Roll;
+import net.royalur.model.dice.DiceType;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.rules.standard.StandardDiceWith0AsMax;
 import net.royalur.rules.standard.StandardPiece;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
@@ -53,18 +53,23 @@ public class RGUStatistics {
         List<Supplier<Game<StandardPiece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().finkel().build(),
                 () -> Game.builder().finkel().safeRosettes(false).build(),
+                () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
+                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
                 () -> Game.builder().masters().build(),
+                () -> Game.builder().masters().capturesGrantExtraRolls(true).build(),
                 () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
                 () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
                 () -> Game.builder().aseb().build(),
-                () -> Game.builder().finkel().dice(new StandardDiceWith0AsMax()).build()
+                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
         );
         for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
             Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
             String desc = sample.getBoard().getShape().getName().getTextName()
                     + ", " + sample.getRules().getPaths().getName().getTextName()
-                    + ", " + sample.getRules().getDice().getClass().getName()
-                    + ", " + sample.getRules().areRosettesSafe();
+                    + ", " + sample.getRules().getDiceFactory().getName().getTextName()
+                    + ", " + (sample.getRules().areRosettesSafe() ? "safe" : "unsafe")
+                    + ", " + (sample.getRules().doRosettesGrantExtraRolls() ? "rosettes+" : "rosettes-")
+                    + ", " + (sample.getRules().doCapturesGrantExtraRolls() ? "captures+" : "captures-");
 
             GameStats[] stats = new GameStats[tests];
             for (int test = 0; test < tests; ++test) {

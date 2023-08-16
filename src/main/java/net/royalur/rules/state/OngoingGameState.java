@@ -3,7 +3,7 @@ package net.royalur.rules.state;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
-import net.royalur.model.Roll;
+import net.royalur.model.dice.Roll;
 
 import javax.annotation.Nonnull;
 

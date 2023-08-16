@@ -5,7 +5,7 @@ import net.royalur.agent.DeterministicAgent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
-import net.royalur.model.Roll;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.standard.StandardPiece;
