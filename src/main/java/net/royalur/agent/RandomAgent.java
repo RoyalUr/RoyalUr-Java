@@ -1,5 +1,6 @@
 package net.royalur.agent;
 
+import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.state.WaitingForMoveGameState;
@@ -38,7 +39,7 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
 
     @Override
     public @Nonnull Move<P> decideMove(
-            @Nonnull WaitingForMoveGameState<P, S, R> state,
+            @Nonnull Game<P, S, R> game,
             @Nonnull List<Move<P>> moves
     ) {
         int randomIndex = random.nextInt(moves.size());

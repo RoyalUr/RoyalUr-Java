@@ -279,6 +279,27 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Gets the player who can make the next interaction with the game.
+     * @return The player who can make the next interaction with the game.
+     */
+    default @Nonnull PlayerType getTurn() {
+        return getCurrentPlayableState().getTurn();
+    }
+
+    /**
+     * Gets the player who can make the next interaction with the game,
+     * or the winner of the game if it is finished.
+     * @return The player who can make the next interaction with the game,
+     *         or the winner of the game if it is finished.
+     */
+    default @Nonnull PlayerType getTurnOrWinner() {
+        if (isFinished())
+            return getWinner();
+
+        return getCurrentPlayableState().getTurn();
+    }
+
+    /**
      * Retrieves the state of the player whose turn it is.
      * @return The state of the player whose turn it is.
      */

@@ -53,6 +53,13 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
     public abstract int getMaxRollValue();
 
     /**
+     * Gets the probability of rolling each value of the dice, where the
+     * index into the returned array represents the value of the roll.
+     * @return The probability of rolling each value of the dice.
+     */
+    public abstract float[] getRollProbabilities();
+
+    /**
      * Generates a random roll using this dice, and returns just the value.
      * @return A random roll of this dice, and returns just the value.
      */

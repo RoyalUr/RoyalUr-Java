@@ -31,7 +31,7 @@ public class GameTest {
         DeterministicAgent<StandardPiece, PlayerState, Roll> agent = new DeterministicAgent<>();
 
         game.rollDice(2);
-        agent.playTurn(game, PlayerType.LIGHT);
+        agent.playTurn(game);
 
         assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());

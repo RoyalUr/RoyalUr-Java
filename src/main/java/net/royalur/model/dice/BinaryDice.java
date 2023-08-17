@@ -17,6 +17,11 @@ public class BinaryDice extends Dice<Roll> {
     private final int numDie;
 
     /**
+     * The probability of rolling each value with these dice.
+     */
+    private final float[] rollProbabilities;
+
+    /**
      * Instantiates this binary dice with {@code random} as the source
      * of randomness to generate rolls.
      * @param name The name of this dice.
@@ -31,11 +36,25 @@ public class BinaryDice extends Dice<Roll> {
             throw new IllegalArgumentException("numDie must be less than 32");
 
         this.numDie = numDie;
+        this.rollProbabilities = new float[numDie + 1];
+
+        // Binomial Distribution
+        double baseProb = Math.pow(0.5, numDie);
+        int nChooseK = 1;
+        for (int roll = 0; roll <= numDie; ++roll) {
+            rollProbabilities[roll] = (float) (baseProb * nChooseK);
+            nChooseK = nChooseK * (numDie - roll) / (roll + 1);
+        }
     }
 
     @Override
     public int getMaxRollValue() {
         return numDie;
+    }
+
+    @Override
+    public float[] getRollProbabilities() {
+        return rollProbabilities;
     }
 
     @Override

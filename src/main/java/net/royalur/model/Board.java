@@ -1,16 +1,20 @@
 package net.royalur.model;
 
 import net.royalur.model.shape.BoardShape;
+import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.
+ * The pieces can be iterated through, and first .
  * @param <P> The type of pieces that may be placed on this board.
  */
-public class Board<P extends Piece> {
+public class Board<P extends Piece> implements Iterable<P> {
 
     /**
      * The shape of this board.
@@ -126,12 +130,13 @@ public class Board<P extends Piece> {
      * @param iy The y-index of the tile to find the piece on. This coordinate is 0-based.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
-    @SuppressWarnings("unchecked")
     public @Nullable P get(int ix, int iy) {
-        if (!contains(ix, iy))
-            throw new IllegalArgumentException("There is no tile at the 0-based indices (" + ix + ", " + iy + ")");
-
-        return (P) pieces[ix][iy];
+        if (!contains(ix, iy)) {
+            throw new IllegalArgumentException(
+                    "There is no tile at the 0-based indices (" + ix + ", " + iy + ")"
+            );
+        }
+        return Cast.unsafeCast(pieces[ix][iy]);
     }
 
     /**
@@ -238,5 +243,53 @@ public class Board<P extends Piece> {
     @Override
     public @Nonnull String toString() {
         return toString('\n', true);
+    }
+
+    @Override
+    public @Nonnull Iterator<P> iterator() {
+        return new BoardIterator();
+    }
+
+    private class BoardIterator implements Iterator<P> {
+
+        private int ix;
+        private int iy;
+
+        public BoardIterator() {
+            this.ix = 0;
+            this.iy = 0;
+        }
+
+        private void moveToNext() {
+            if (ix + 1 >= width) {
+                ix = 0;
+                iy += 1;
+            } else {
+                ix += 1;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (iy >= height)
+                return false;
+
+            while (pieces[ix][iy] == null) {
+                moveToNext();
+                if (iy >= height)
+                    return false;
+            }
+            return true;
+        }
+
+        @Override
+        public P next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+
+            P piece = Cast.unsafeCast(pieces[ix][iy]);
+            moveToNext();
+            return piece;
+        }
     }
 }

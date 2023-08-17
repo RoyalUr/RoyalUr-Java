@@ -23,27 +23,25 @@ public abstract class BaseAgent<
 
     /**
      * Determines the move to be executed from the current state of the game.
-     * @param state The current state of the game.
+     * @param game The game to find the best move in.
      * @param moves The list of available moves to be chosen from.
      * @return The move that the agent chose to play.
      */
     public abstract @Nonnull Move<P> decideMove(
-            @Nonnull WaitingForMoveGameState<P, S, R> state,
+            @Nonnull Game<P, S, R> game,
             @Nonnull List<Move<P>> moves
     );
 
     /**
      * Initiates the agent to play their turn in the given game.
      * @param game The game to play a turn in.
-     * @param player The player to play the turn as.
      */
-    public final void playTurn(@Nonnull Game<P, S, R> game, @Nonnull PlayerType player) {
+    @Override
+    public final void playTurn(@Nonnull Game<P, S, R> game) {
         if (game.isFinished())
             throw new IllegalStateException("The game has already been completed");
         if (!game.isPlayable())
             throw new IllegalStateException("The game is not in a playable state");
-        if (game.getTurnPlayer().getPlayer() != player)
-            throw new IllegalStateException("It is not currently the agent's turn in the game");
 
         // Just roll the dice, there's not usually any decisions to be made here.
         if (game.isWaitingForRoll()) {
@@ -55,7 +53,7 @@ public abstract class BaseAgent<
         if (game.isWaitingForMove()) {
             WaitingForMoveGameState<P, S, R> state = game.getCurrentWaitingForMoveState();
             List<Move<P>> moves = game.findAvailableMoves();
-            Move<P> chosenMove = decideMove(state, moves);
+            Move<P> chosenMove = decideMove(game, moves);
             game.makeMove(chosenMove);
             return;
         }

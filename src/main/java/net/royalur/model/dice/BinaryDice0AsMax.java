@@ -18,6 +18,11 @@ public class BinaryDice0AsMax extends BinaryDice {
     private final int maxRollValue;
 
     /**
+     * The probability of rolling each value with these dice.
+     */
+    private final float[] rollProbabilities;
+
+    /**
      * Instantiates this binary dice with {@code random} as the source
      * of randomness to generate rolls.
      * @param name The name of this dice.
@@ -27,11 +32,23 @@ public class BinaryDice0AsMax extends BinaryDice {
     public BinaryDice0AsMax(@Nonnull Name name, @Nonnull RandomGenerator random, int numDie) {
         super(name, random, numDie);
         this.maxRollValue = numDie + 1;
+        this.rollProbabilities = new float[maxRollValue + 1];
+
+        // Move the probability of 0 to the max roll slot.
+        float[] dist = super.getRollProbabilities();
+        rollProbabilities[0] = 0.0f;
+        rollProbabilities[maxRollValue] = dist[0];
+        System.arraycopy(dist, 1, rollProbabilities, 1, maxRollValue - 1);
     }
 
     @Override
     public int getMaxRollValue() {
         return maxRollValue;
+    }
+
+    @Override
+    public float[] getRollProbabilities() {
+        return rollProbabilities;
     }
 
     @Override

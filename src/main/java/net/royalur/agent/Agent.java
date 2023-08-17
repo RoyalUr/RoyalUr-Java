@@ -18,9 +18,8 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
     /**
      * Initiates the agent to play their turn in the given game.
      * @param game The game to play a turn in.
-     * @param player The player to play the turn as.
      */
-    void playTurn(@Nonnull Game<P, S, R> game, @Nonnull PlayerType player);
+    void playTurn(@Nonnull Game<P, S, R> game);
 
     /**
      * Completes this game using the two agents to play its moves.
@@ -32,9 +31,11 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param <R> The type of rolls that may be made.
      * @return The number of actions that were made by both agents combined. Includes rolls of the dice and moves.
      */
-    static <P extends Piece, S extends PlayerState, R extends Roll> int
-    playAutonomously(@Nonnull Game<P, S, R> game, @Nonnull Agent<P, S, R> light, @Nonnull Agent<P, S, R> dark) {
-
+    static <P extends Piece, S extends PlayerState, R extends Roll> int playAutonomously(
+            @Nonnull Game<P, S, R> game,
+            @Nonnull Agent<P, S, R> light,
+            @Nonnull Agent<P, S, R> dark
+    ) {
         int actions = 0;
         while (!game.isFinished()) {
             if (!game.isPlayable()) {
@@ -47,8 +48,8 @@ public interface Agent<P extends Piece, S extends PlayerState, R extends Roll> {
             actions += 1;
             S turnPlayer = game.getTurnPlayer();
             switch (turnPlayer.getPlayer()) {
-                case LIGHT -> light.playTurn(game, PlayerType.LIGHT);
-                case DARK -> dark.playTurn(game, PlayerType.DARK);
+                case LIGHT -> light.playTurn(game);
+                case DARK -> dark.playTurn(game);
             }
         }
         return actions;
