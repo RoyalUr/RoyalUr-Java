@@ -15,6 +15,11 @@ import javax.annotation.Nonnull;
 public class GameStats {
 
     /**
+     * Whether the light player won the game.
+     */
+    private final boolean didLightWin;
+
+    /**
      * The number of rolls performed in the game, indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
     private final @Nonnull int[] rolls;
@@ -26,12 +31,13 @@ public class GameStats {
 
     /**
      * Instantiates statistics about a game of the Royal Game of Ur.
+     * @param didLightWin Whether the light player won the game.
      * @param rolls The number of rolls performed in the game,
      *              indexed by the ordinal of an element of {@link GameStatsTarget}.
      * @param moves The number of moves made in the game,
      *              indexed by the ordinal of an element of {@link GameStatsTarget}.
      */
-    protected GameStats(@Nonnull int[] rolls, @Nonnull int[] moves) {
+    protected GameStats(boolean didLightWin, @Nonnull int[] rolls, @Nonnull int[] moves) {
         int targetCount = GameStatsTarget.values().length;
         if (rolls.length != targetCount) {
             throw new IllegalArgumentException(
@@ -46,8 +52,17 @@ public class GameStats {
             );
         }
 
+        this.didLightWin = didLightWin;
         this.rolls = rolls;
         this.moves = moves;
+    }
+
+    /**
+     * Returns whether the light player won the game.
+     * @return Whether the light player won the game.
+     */
+    public boolean didLightWin() {
+        return didLightWin;
     }
 
     /**
@@ -128,7 +143,7 @@ public class GameStats {
         }
 
         // Create the statistics container.
-        return new GameStats(rolls, moves);
+        return new GameStats(game.getWinner() == PlayerType.LIGHT, rolls, moves);
     }
 
     /**

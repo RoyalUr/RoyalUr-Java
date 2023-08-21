@@ -6,6 +6,7 @@ import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.rules.standard.StandardRuleSetProvider;
 import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.WaitingForMoveGameState;
@@ -132,7 +133,7 @@ public interface RuleSet<
     /*
      * Creates a standard rule set that follows the given game settings.
      */
-    static <R extends Roll> @Nonnull RuleSet<StandardPiece, PlayerState, R>
+    static <R extends Roll> @Nonnull StandardRuleSet<StandardPiece, PlayerState, R>
     createStandard(@Nonnull GameSettings<R> settings) {
         return new StandardRuleSetProvider().create(settings, Collections.emptyMap());
     }

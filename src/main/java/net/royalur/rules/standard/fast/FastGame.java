@@ -211,14 +211,9 @@ public class FastGame {
         int[] path = turnPlayer.path;
         int[] boardPieces = this.board.pieces;
 
-        int capturedPiece = 0;
         if (pathIndex >= 0) {
             // Moving a piece on the board.
             int sourceTileIndex = path[pathIndex];
-            capturedPiece = boardPieces[sourceTileIndex];
-            if (capturedPiece != 0) {
-                getPlayer(capturedPiece > 0).pieces += 1;
-            }
             boardPieces[sourceTileIndex] = 0;
 
         } else {
@@ -228,9 +223,14 @@ public class FastGame {
 
         int destPathIndex = pathIndex + rollValue;
         int destTileIndex = -1;
+        int capturedPiece = 0;
         if (destPathIndex < path.length) {
             // Moving a piece on the board.
             destTileIndex = path[destPathIndex];
+            capturedPiece = boardPieces[destTileIndex];
+            if (capturedPiece != 0) {
+                getPlayer(capturedPiece > 0).pieces += 1;
+            }
             boardPieces[destTileIndex] = turnPlayerSign * (destPathIndex + 1);
 
         } else {
@@ -238,6 +238,7 @@ public class FastGame {
             turnPlayer.score += 1;
             if (turnPlayer.score >= startingPieceCount) {
                 isFinished = true;
+                return;
             }
         }
 

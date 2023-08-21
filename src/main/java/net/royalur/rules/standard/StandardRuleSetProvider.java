@@ -31,7 +31,7 @@ public class StandardRuleSetProvider implements RuleSetProvider<StandardPiece, P
     }
 
     @Override
-    public <R extends Roll> @Nonnull RuleSet<StandardPiece, PlayerState, R> create(
+    public <R extends Roll> @Nonnull StandardRuleSet<StandardPiece, PlayerState, R> create(
             @Nonnull GameSettings<R> settings,
             @Nonnull Map<String, String> metadata
     ) {

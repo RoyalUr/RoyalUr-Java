@@ -53,6 +53,19 @@ public class GameSettings<R extends Roll> {
     );
 
     /**
+     * The settings proposed by James Masters.
+     */
+//    public static final @Nonnull GameSettings<Roll> MASTERS = new GameSettings<>(
+//            new StandardBoardShape(),
+//            new MastersPathPair(),
+//            DiceType.FOUR_BINARY,
+//            7,
+//            false,
+//            true,
+//            false
+//    );
+
+    /**
      * The settings used for Aseb.
      */
     public static final @Nonnull GameSettings<Roll> ASEB = new GameSettings<>(
