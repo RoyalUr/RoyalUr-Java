@@ -11,6 +11,12 @@ import javax.annotation.Nonnull;
 public interface PlayerStateProvider<S extends PlayerState> {
 
     /**
+     * Gets the number of pieces that players start with.
+     * @return The number of pieces that players start with.
+     */
+    int getStartingPieceCount();
+
+    /**
      * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
      * @return A player state for the player {@code player} with name {@code name}.

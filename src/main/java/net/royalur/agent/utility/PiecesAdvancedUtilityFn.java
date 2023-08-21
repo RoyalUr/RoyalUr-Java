@@ -5,10 +5,14 @@ import net.royalur.model.dice.Roll;
 import net.royalur.name.TextName;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
-import net.royalur.rules.state.GameState;
+import net.royalur.rules.standard.fast.FastGame;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Scores game states based upon how much pieces have been advanced
+ * by each player.
+ */
 public class PiecesAdvancedUtilityFn extends UtilityFunction<StandardPiece, PlayerState, Roll> {
 
     private final int scoredPieceUtility;
@@ -26,15 +30,13 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction<StandardPiece, Play
     }
 
     @Override
-    public float scoreGameStateForLight(
-            @Nonnull GameState<StandardPiece, PlayerState, Roll> state
-    ) {
-        int lightScore = state.getLightPlayer().getScore();
-        int darkScore = state.getDarkPlayer().getScore();
-        float utility = (lightScore - darkScore) * scoredPieceUtility;
-
-        for (StandardPiece piece : state.getBoard()) {
-            utility += piece.getPathIndex() + 1;
+    public float scoreGameStateForLight(@Nonnull FastGame game) {
+        float utility = (game.light.score - game.dark.score) * scoredPieceUtility;
+        int[] boardPieces = game.board.pieces;
+        for (int boardPiece : boardPieces) {
+            // The board piece is already positive for light, negative for dark,
+            // and has a magnitude equal to how far each piece has moved.
+            utility += boardPiece;
         }
         return utility;
     }

@@ -1,5 +1,6 @@
 package net.royalur.rules.standard;
 
+import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
@@ -8,6 +9,7 @@ import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.PieceProvider;
 import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.standard.fast.FastGame;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
@@ -105,6 +107,11 @@ public class StandardRuleSet<
         this.capturesGrantExtraRolls = capturesGrantExtraRolls;
         this.pieceProvider = pieceProvider;
         this.playerStateProvider = playerStateProvider;
+    }
+
+    public @Nonnull FastGame createCompatibleFastGame() {
+        int startingPieceCount = playerStateProvider.getStartingPieceCount();
+        return new FastGame(this, startingPieceCount);
     }
 
     @Override
@@ -255,7 +262,7 @@ public class StandardRuleSet<
                 availableMoves
         );
 
-        // If the player rolled zero, we need to change the turn to the other player.
+        // Swap turn when rolling a zero.
         if (roll.value() == 0) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(

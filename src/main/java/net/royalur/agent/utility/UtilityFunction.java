@@ -7,6 +7,7 @@ import net.royalur.model.PlayerType;
 import net.royalur.model.dice.Roll;
 import net.royalur.name.Name;
 import net.royalur.name.Named;
+import net.royalur.rules.standard.fast.FastGame;
 import net.royalur.rules.state.GameState;
 
 import javax.annotation.Nonnull;
@@ -42,10 +43,10 @@ public abstract class UtilityFunction<
      * Scores the state of the game numerically, where a positive
      * value represents that light is advantaged, and a negative
      * value represents that dark is advantaged.
-     * @param state The state of the game.
+     * @param game The game to evaluate.
      * @return A utility value for light in the given state.
      */
-    public abstract float scoreGameStateForLight(@Nonnull GameState<P, S, R> state);
+    public abstract float scoreGameStateForLight(@Nonnull FastGame game);
 
     /**
      * Scores the state of the game numerically, where a positive
@@ -54,8 +55,8 @@ public abstract class UtilityFunction<
      * @param game The game to evaluate.
      * @return A utility value for the current player of the game.
      */
-    public float scoreGame(@Nonnull Game<P, S, R> game) {
-        float lightUtility = scoreGameStateForLight(game.getCurrentState());
-        return game.getTurnOrWinner() == PlayerType.LIGHT ? lightUtility : -lightUtility;
+    public float scoreGame(@Nonnull FastGame game) {
+        float lightUtility = scoreGameStateForLight(game);
+        return game.isLightTurn ? lightUtility : -lightUtility;
     }
 }

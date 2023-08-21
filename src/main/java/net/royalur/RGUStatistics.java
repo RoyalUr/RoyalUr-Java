@@ -10,6 +10,7 @@ import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardPiece;
+import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -41,14 +42,18 @@ public class RGUStatistics {
     private @Nonnull GameStats testAgentActions(
             @Nonnull Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator,
             @Nonnull Function<
-                    RuleSet<StandardPiece, PlayerState, Roll>,
+                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
                     Agent<StandardPiece, PlayerState, Roll>
             > agentGenerator
     ) {
 
         Game<StandardPiece, PlayerState, Roll> game = gameGenerator.get();
-        Agent<StandardPiece, PlayerState, Roll> light = agentGenerator.apply(game.getRules());
-        Agent<StandardPiece, PlayerState, Roll> dark = agentGenerator.apply(game.getRules());
+        RuleSet<StandardPiece, PlayerState, Roll> rules = game.getRules();
+        if (!(rules instanceof StandardRuleSet<StandardPiece, PlayerState, Roll> standardRules))
+            throw new IllegalArgumentException("Game does not use standard rules");
+
+        Agent<StandardPiece, PlayerState, Roll> light = agentGenerator.apply(standardRules);
+        Agent<StandardPiece, PlayerState, Roll> dark = agentGenerator.apply(standardRules);
         Agent.playAutonomously(game, light, dark);
         return GameStats.gather(game);
     }
@@ -60,7 +65,7 @@ public class RGUStatistics {
      */
     public void testAgentActions(
             @Nonnull Function<
-                    RuleSet<StandardPiece, PlayerState, Roll>,
+                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
                     Agent<StandardPiece, PlayerState, Roll>
             > agentGenerator,
             int tests
@@ -119,8 +124,10 @@ public class RGUStatistics {
      */
     public static void main(String[] args) {
         new RGUStatistics().testAgentActions(
-                rules -> new LikelihoodAgent<>(new PiecesAdvancedUtilityFn(rules), 0.09f),
-                1
+                rules -> new LikelihoodAgent<>(
+                        rules, new PiecesAdvancedUtilityFn(rules), 0.0055f
+                ),
+                1000
         );
     }
 }

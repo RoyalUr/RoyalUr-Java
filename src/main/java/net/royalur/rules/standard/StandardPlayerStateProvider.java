@@ -28,6 +28,11 @@ public class StandardPlayerStateProvider implements PlayerStateProvider<PlayerSt
     }
 
     @Override
+    public int getStartingPieceCount() {
+        return startingPieceCount;
+    }
+
+    @Override
     public @Nonnull PlayerState create(@Nonnull PlayerType player) {
         return new PlayerState(player, startingPieceCount, 0);
     }

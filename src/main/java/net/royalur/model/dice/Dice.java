@@ -33,6 +33,26 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
         this.random = random;
     }
 
+    /**
+     * Returns whether this dice holds any state that affects its dice rolls.
+     * If this is overriden, then {@link #copyFrom(Dice)} should also be overriden.
+     * @return Whether this dice holds any state that affects its dice rolls.
+     */
+    public boolean hasState() {
+        return false;
+    }
+
+    /**
+     * Copies the state of {@code other} into this dice. If the dice does
+     * not have state, this is a no-op. The state copied does _not_ include
+     * the seeding of the random number generator. If this is overriden,
+     * then {@link #hasState()} should also be overriden.
+     * @param other The dice to copy the state from.
+     */
+    public void copyFrom(@Nonnull Dice<R> other) {
+        // Nothing to do.
+    }
+
     @Override
     public @Nonnull Name getName() {
         return name;
@@ -61,9 +81,18 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
 
     /**
      * Generates a random roll using this dice, and returns just the value.
+     * If this dice has state, this should call {@link #rollValue(int)}.
      * @return A random roll of this dice, and returns just the value.
      */
     public abstract int rollValue();
+
+    /**
+     * Updates the state of this dice after having rolled {@code value}.
+     * @param value The value that was rolled using this dice.
+     */
+    public void rollValue(int value) {
+        // Nothing to do.
+    }
 
     /**
      * Generates a roll with value {@code value} using this dice.
