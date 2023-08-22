@@ -23,19 +23,19 @@ public class RollTest {
     @Test
     public void testOf() {
         for (int value = 0; value < 10; ++value) {
-            Roll roll = Roll.of(value);
+            Roll roll = BasicRoll.of(value);
             assertEquals(value, roll.value());
         }
 
-        assertThrows(IllegalArgumentException.class, () -> Roll.of(-1));
-        assertThrows(IllegalArgumentException.class, () -> Roll.of(-5));
-        assertThrows(IllegalArgumentException.class, () -> Roll.of(-999));
+        assertThrows(IllegalArgumentException.class, () -> BasicRoll.of(-1));
+        assertThrows(IllegalArgumentException.class, () -> BasicRoll.of(-5));
+        assertThrows(IllegalArgumentException.class, () -> BasicRoll.of(-999));
     }
 
     @Test
     public void testHashCode() {
         for (int value = 0; value < 10; ++value) {
-            assertEquals(new BasicRoll(value).hashCode(), Roll.of(value).hashCode());
+            assertEquals(new BasicRoll(value).hashCode(), BasicRoll.of(value).hashCode());
         }
     }
 
@@ -44,11 +44,11 @@ public class RollTest {
         for (int value1 = 0; value1 < 10; ++value1) {
             for (int value2 = 0; value2 < 10; ++value2) {
                 if (value1 == value2) {
-                    assertEquals(new BasicRoll(value1), Roll.of(value2));
-                    assertEquals(Roll.of(value1), new BasicRoll(value2));
+                    assertEquals(new BasicRoll(value1), BasicRoll.of(value2));
+                    assertEquals(BasicRoll.of(value1), new BasicRoll(value2));
                 } else {
-                    assertNotEquals(new BasicRoll(value1), Roll.of(value2));
-                    assertNotEquals(Roll.of(value1), new BasicRoll(value2));
+                    assertNotEquals(new BasicRoll(value1), BasicRoll.of(value2));
+                    assertNotEquals(BasicRoll.of(value1), new BasicRoll(value2));
                 }
             }
         }
@@ -56,9 +56,9 @@ public class RollTest {
         Object notRoll = new Object();
         for (int value = 0; value < 10; ++value) {
             assertNotEquals(new BasicRoll(value), notRoll);
-            assertNotEquals(Roll.of(value), notRoll);
+            assertNotEquals(BasicRoll.of(value), notRoll);
             assertNotEquals(new BasicRoll(value), null);
-            assertNotEquals(Roll.of(value), null);
+            assertNotEquals(BasicRoll.of(value), null);
         }
     }
 

@@ -2,6 +2,7 @@ package net.royalur.rules.standard;
 
 import net.royalur.Game;
 import net.royalur.model.*;
+import net.royalur.model.dice.BasicRoll;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.path.PathType;
@@ -104,7 +105,7 @@ public class StandardRuleSetTest {
                                 new StandardPiece(player, roll - 1),
                                 null
                         )),
-                        rules.findAvailableMoves(board, playerState, Roll.of(roll))
+                        rules.findAvailableMoves(board, playerState, BasicRoll.of(roll))
                 );
             }
         }
