@@ -74,4 +74,20 @@ public record BasicRoll(int value) implements Roll {
     public @Nonnull String toString() {
         return Integer.toString(value);
     }
+
+    /**
+     * Generates a roll representing a roll of the value {@code value}.
+     * @param value The value that was rolled on the dice.
+     * @return A roll representing a roll of the value {@code value}.
+     */
+    public static @Nonnull BasicRoll of(int value) {
+        return switch (value) {
+            case 0 -> ZERO;
+            case 1 -> ONE;
+            case 2 -> TWO;
+            case 3 -> THREE;
+            case 4 -> FOUR;
+            default -> new BasicRoll(value);
+        };
+    }
 }
