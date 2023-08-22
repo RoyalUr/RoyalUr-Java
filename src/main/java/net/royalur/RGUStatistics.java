@@ -2,6 +2,7 @@ package net.royalur;
 
 import net.royalur.agent.Agent;
 import net.royalur.agent.LikelihoodAgent;
+import net.royalur.agent.RandomAgent;
 import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.DiceType;
@@ -89,13 +90,7 @@ public class RGUStatistics {
                 // Blitz
                 () -> Game.builder()
                         .masters()
-                        .startingPieceCount(5)
-                        .safeRosettes(false)
-                        .capturesGrantExtraRolls(true)
-                        .build(),
-                () -> Game.builder()
-                        .finkel()
-                        .startingPieceCount(5)
+                        .startingPieceCount(6)
                         .safeRosettes(false)
                         .capturesGrantExtraRolls(true)
                         .build(),
@@ -170,9 +165,7 @@ public class RGUStatistics {
                 rules -> new LikelihoodAgent<>(
                         rules, new PiecesAdvancedUtilityFn(rules), 0.0055f
                 ),
-                rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.2f
-                ),
+                rules -> new RandomAgent<>(),
                 1000
         );
     }

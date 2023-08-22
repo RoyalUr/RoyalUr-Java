@@ -54,6 +54,14 @@ public class StandardRuleSetTest {
                             GameSettings.MASTERS
                     )),
                     Arguments.of(new NamedGameSettings(
+                            "Skiriuk",
+                            GameSettings.FINKEL.withPaths(PathType.SKIRIUK.create())
+                    )),
+                    Arguments.of(new NamedGameSettings(
+                            "Murray",
+                            GameSettings.FINKEL.withPaths(PathType.MURRAY.create())
+                    )),
+                    Arguments.of(new NamedGameSettings(
                             "Aseb",
                             GameSettings.ASEB
                     ))
