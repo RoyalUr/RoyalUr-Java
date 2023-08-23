@@ -3,7 +3,6 @@ package net.royalur.model.dice;
 import net.royalur.name.Name;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 import java.util.random.RandomGenerator;
 
 /**
@@ -65,7 +64,7 @@ public class BinaryDice extends Dice<Roll> {
     }
 
     @Override
-    public @Nonnull Roll roll(int value) {
+    public @Nonnull Roll generateRoll(int value) {
         if (value < 0 || value > getMaxRollValue())
             throw new IllegalArgumentException("This dice cannot roll " + value);
 

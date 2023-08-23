@@ -209,7 +209,7 @@ public class BasicGame<
 
     @Override
     public @Nonnull R rollDice(int value) {
-        R roll = dice.roll(value);
+        R roll = dice.generateRoll(value);
         rollDice(roll);
         return roll;
     }

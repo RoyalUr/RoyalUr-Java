@@ -99,13 +99,13 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
      * @param value The value of the dice to be rolled.
      * @return A roll with value {@code value} of this dice.
      */
-    public abstract @Nonnull R roll(int value);
+    public abstract @Nonnull R generateRoll(int value);
 
     /**
      * Generates a random roll using this dice.
      * @return A random roll of this dice.
      */
     public @Nonnull R roll() {
-        return roll(rollValue());
+        return generateRoll(rollValue());
     }
 }
