@@ -2,6 +2,7 @@ package net.royalur.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * A tile represents location on a Royal Game of Ur board.
@@ -199,5 +200,63 @@ public class Tile {
 
         int y = Integer.parseInt(tile.substring(1));
         return new Tile(x, y);
+    }
+
+    /**
+     * Constructs a list of tiles from the tile coordinates.
+     * @param coordinates The tile coordinates. Must be an even list
+     *                    ordered following x0, y0, x1, y1, x2, y2, etc.
+     * @return A list of tiles.
+     */
+    public static @Nonnull List<Tile> createList(int... coordinates) {
+        if (coordinates.length == 0)
+            throw new IllegalArgumentException("No coordinates provided");
+        if (coordinates.length % 2 != 0)
+            throw new IllegalArgumentException("Expected an even number of coordinates");
+
+        List<Tile> tiles = new ArrayList<>();
+
+        for (int index = 0; index < coordinates.length; index += 2) {
+            int x = coordinates[index];
+            int y = coordinates[index + 1];
+            tiles.add(new Tile(x, y));
+        }
+        return tiles;
+    }
+
+    /**
+     * Constructs a path from waypoints on the board.
+     * @param coordinates The waypoint coordinates. Must be an even list
+     *                    ordered following x0, y0, x1, y1, x2, y2, etc.
+     * @return A list of tiles following the path between the given waypoints.
+     */
+    public static @Nonnull List<Tile> createPath(int... coordinates) {
+        List<Tile> tiles = createList(coordinates);
+        List<Tile> path = new ArrayList<>();
+        path.add(tiles.get(0));
+
+        for (int index = 1; index < tiles.size(); ++index) {
+            Tile current = tiles.get(index - 1);
+            Tile next = tiles.get(index);
+            while (!current.equals(next)) {
+                current = current.stepTowards(next);
+                path.add(current);
+            }
+        }
+        return path;
+    }
+
+    /**
+     * Calculates the union of all given tile lists.
+     * @param tileLists The lists of tiles.
+     * @return A set of all tiles.
+     */
+    @SafeVarargs
+    public static @Nonnull Set<Tile> unionLists(Collection<Tile>... tileLists) {
+        Set<Tile> tiles = new HashSet<>();
+        for (Collection<Tile> tileList : tileLists) {
+            tiles.addAll(tileList);
+        }
+        return tiles;
     }
 }

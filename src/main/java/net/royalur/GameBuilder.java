@@ -4,14 +4,10 @@ import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.*;
-import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.model.shape.BoardType;
-import net.royalur.model.shape.StandardBoardShape;
-import net.royalur.model.dice.Dice;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.RuleSetProvider;
-import net.royalur.rules.standard.*;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;

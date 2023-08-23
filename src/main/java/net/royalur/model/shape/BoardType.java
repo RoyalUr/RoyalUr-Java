@@ -65,6 +65,11 @@ public enum BoardType implements Name, BoardShapeFactory {
     }
 
     @Override
+    public @Nonnull Name getName() {
+        return this;
+    }
+
+    @Override
     public @Nonnull String getTextName() {
         return name;
     }

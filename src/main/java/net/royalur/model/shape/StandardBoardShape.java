@@ -1,6 +1,7 @@
 package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
+import net.royalur.model.path.BellPathPair;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -19,34 +20,10 @@ public class StandardBoardShape extends BoardShape {
 
     /**
      * The set of all tiles that exist on the standard board.
-     * Any tile that exists in this set is on the standard board,
-     * and any tiles that don't do not fall on the standard board.
      */
-    public static final @Nonnull Set<Tile> BOARD_TILES = Set.of(
-            new Tile(1, 4),
-            new Tile(1, 3),
-            new Tile(1, 2),
-            new Tile(1, 1),
-
-            new Tile(3, 4),
-            new Tile(3, 3),
-            new Tile(3, 2),
-            new Tile(3, 1),
-
-            new Tile(2, 1),
-            new Tile(2, 2),
-            new Tile(2, 3),
-            new Tile(2, 4),
-            new Tile(2, 5),
-            new Tile(2, 6),
-            new Tile(2, 7),
-            new Tile(2, 8),
-
-            new Tile(1, 8),
-            new Tile(1, 7),
-
-            new Tile(3, 8),
-            new Tile(3, 7)
+    public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
+            BellPathPair.LIGHT_PATH,
+            BellPathPair.DARK_PATH
     );
 
     /**

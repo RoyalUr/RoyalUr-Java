@@ -95,6 +95,11 @@ public enum PathType implements Name, PathPairFactory {
     }
 
     @Override
+    public @Nonnull Name getName() {
+        return this;
+    }
+
+    @Override
     public @Nonnull String getTextName() {
         return name;
     }

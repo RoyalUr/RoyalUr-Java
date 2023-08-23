@@ -69,10 +69,12 @@ public class PathPair implements Named<Name> {
     /**
      * Instantiates a pair of paths.
      * @param name The name of this path.
-     * @param lightWithStartEnd The path that light players take around the board,
-     *                          including the start and end tiles that exist off the board.
-     * @param darkWithStartEnd The path that dark players take around the board,
-     *                         including the start and end tiles that exist off the board.
+     * @param lightWithStartEnd The path that light players take around
+     *                          the board, including the start and end
+     *                          tiles that exist off the board.
+     * @param darkWithStartEnd The path that dark players take around
+     *                         the board, including the start and end
+     *                         tiles that exist off the board.
      */
     public PathPair(
             @Nonnull Name name,
@@ -96,24 +98,28 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * The path that the light player's pieces must take, excluding
+     * Gets the path that the light player's pieces must take, excluding
      * the start and end tiles that exist off the board.
+     * @return The path that the light player's pieces must take
+     *         on the board.
      */
     public @Nonnull List<Tile> getLight() {
         return light;
     }
 
     /**
-     * The path that the dark player's pieces must take, excluding
+     * Gets the path that the dark player's pieces must take, excluding
      * the start and end tiles that exist off the board.
+     * @return The path that the dark player's pieces must take
+     *         on the board.
      */
     public @Nonnull List<Tile> getDark() {
         return dark;
     }
 
     /**
-     * Retrieves the path for the player {@code player}, excluding
-     * the start and end tiles that exist off the board.
+     * Retrieves the path of {@code player}, excluding the start and
+     * end tiles that exist off the board.
      * @param player The player to get the path for.
      * @return The path for the given player.
      */
@@ -125,24 +131,28 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * The path that the light player's pieces must take, including
+     * Gets the path that the light player's pieces must take, including
      * the start and end tiles that exist off the board.
+     * @return The path that the light player's pieces must take
+     *         on and off the board.
      */
     public @Nonnull List<Tile> getLightWithStartEnd() {
         return lightWithStartEnd;
     }
 
     /**
-     * The path that the dark player's pieces must take, including
+     * Gets the path that the dark player's pieces must take, including
      * the start and end tiles that exist off the board.
+     * @return The path that the dark player's pieces must take
+     *         on and off the board.
      */
     public @Nonnull List<Tile> getDarkWithStartEnd() {
         return darkWithStartEnd;
     }
 
     /**
-     * Retrieves the path for the player {@code player}, including
-     * the start and end tiles that exist off the board.
+     * Retrieves the path of {@code player}, including the start and
+     * end tiles that exist off the board.
      * @param player The player to get the path for.
      * @return The path for the given player.
      */
@@ -154,7 +164,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the start tile for the light player that exists off the board.
+     * Gets the start tile for the light player that exists off the board.
      * @return The start tile for the light player.
      */
     public @Nonnull Tile getLightStart() {
@@ -162,7 +172,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the start tile for the dark player that exists off the board.
+     * Gets the start tile for the dark player that exists off the board.
      * @return The start tile for the dark player.
      */
     public @Nonnull Tile getDarkStart() {
@@ -170,8 +180,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the start tile that exists off the board
-     * for the player {@code player}.
+     * Gets the start tile of {@code player} that exists off the board.
      * @param player The player to get the start tile for.
      * @return The start tile of the given player.
      */
@@ -183,7 +192,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the end tile for the light player that exists off the board.
+     * Gets the end tile for the light player that exists off the board.
      * @return The end tile for the light player.
      */
     public @Nonnull Tile getLightEnd() {
@@ -191,7 +200,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the end tile for the dark player that exists off the board.
+     * Gets the end tile for the dark player that exists off the board.
      * @return The end tile for the dark player.
      */
     public @Nonnull Tile getDarkEnd() {
@@ -199,8 +208,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the end tile that exists off the board
-     * for the player {@code player}.
+     * Gets the end tile of {@code player} that exists off the board.
      * @param player The player to get the end tile for.
      * @return The end tile of the given player.
      */
@@ -236,50 +244,24 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Create a new path pair with the name {@code name} and the
+     * Create a new path pair called {@code name} with
      * paths {@code lightPath} and {@code darkPath}.
      * @param name The name of the path pair.
-     * @param lightPath The path for light pieces.
-     * @param darkPath The path for dark pieces.
+     * @param lightPathWithStartEnd The path for light pieces, including the
+     *                              start and end tiles that exist off the board.
+     * @param darkPathWithStartEnd The path for dark pieces, including the
+     *                             start and end tiles that exist off the board.
      * @return A new path pair with the given name and paths.
      */
     public static @Nonnull PathPair create(
             @Nonnull String name,
-            @Nonnull List<Tile> lightPath,
-            @Nonnull List<Tile> darkPath
+            @Nonnull List<Tile> lightPathWithStartEnd,
+            @Nonnull List<Tile> darkPathWithStartEnd
     ) {
-        return new PathPair(new TextName(name), lightPath, darkPath);
-    }
-
-    /**
-     * Constructs a path from waypoints on the board.
-     * @param coordinates The waypoint coordinates. Must be an even list
-     *                    ordered following x0, y0, x1, y1, x2, y2, etc.
-     * @return A list of tiles following the path between the given waypoints.
-     */
-    public static @Nonnull List<Tile> createPath(int... coordinates) {
-        if (coordinates.length == 0)
-            throw new IllegalArgumentException("No coordinates provided");
-        if (coordinates.length % 2 != 0)
-            throw new IllegalArgumentException("Expected an even number of coordinates");
-
-        Tile current = null;
-        List<Tile> path = new ArrayList<>();
-
-        for (int index = 0; index < coordinates.length; index += 2) {
-            int x = coordinates[index];
-            int y = coordinates[index + 1];
-            Tile next = new Tile(x, y);
-            if (current != null) {
-                while (!current.equals(next)) {
-                    current = current.stepTowards(next);
-                    path.add(current);
-                }
-            } else {
-                path.add(next);
-            }
-            current = next;
-        }
-        return path;
+        return new PathPair(
+                new TextName(name),
+                lightPathWithStartEnd,
+                darkPathWithStartEnd
+        );
     }
 }
