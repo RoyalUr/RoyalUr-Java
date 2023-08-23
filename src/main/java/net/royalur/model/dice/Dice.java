@@ -81,7 +81,7 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
 
     /**
      * Generates a random roll using this dice, and returns just the value.
-     * If this dice has state, this should call {@link #rollValue(int)}.
+     * If this dice has state, this should call {@link #recordRoll(int)}.
      * @return A random roll of this dice, and returns just the value.
      */
     public abstract int rollValue();
@@ -90,7 +90,7 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
      * Updates the state of this dice after having rolled {@code value}.
      * @param value The value that was rolled using this dice.
      */
-    public void rollValue(int value) {
+    public void recordRoll(int value) {
         // Nothing to do.
     }
 

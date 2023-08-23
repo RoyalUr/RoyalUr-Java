@@ -205,7 +205,7 @@ public class LikelihoodAgent<
 
             // Update the state of the dice.
             dice.copyFrom(precedingDice);
-            dice.rollValue(roll);
+            dice.recordRoll(roll);
 
             // Update the state of the game.
             game.copyFrom(precedingGame);
