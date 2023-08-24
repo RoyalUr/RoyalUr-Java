@@ -43,22 +43,11 @@ public class Piece {
     }
 
     /**
-     * Retrieves the path index of this piece.
+     * Gets the path index of this piece.
      * @return The path index of this piece.
      */
     public int getPathIndex() {
         return pathIndex;
-    }
-
-    /**
-     * Converts {@code piece} to a single character that can be used
-     * to textually represent the owner of a piece.
-     *
-     * @param piece The piece or {@code null} to convert to a character.
-     * @return The character representing {@code piece}.
-     */
-    public static char toChar(@Nullable Piece piece) {
-        return PlayerType.toChar(piece != null ? piece.owner : null);
     }
 
     @Override
@@ -78,5 +67,15 @@ public class Piece {
     @Override
     public @Nonnull String toString() {
         return owner.getTextName();
+    }
+
+    /**
+     * Converts {@code piece} to a single character that can be used
+     * to textually represent the owner of a piece.
+     * @param piece The piece or {@code null} to convert to a character.
+     * @return The character representing {@code piece}.
+     */
+    public static char toChar(@Nullable Piece piece) {
+        return PlayerType.toChar(piece != null ? piece.owner : null);
     }
 }
