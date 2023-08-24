@@ -215,12 +215,12 @@ public class BoardShapeTest {
         for (int ix = -1; ix <= shape.getWidth(); ++ix) {
             for (int iy = -1; iy <= shape.getHeight(); ++iy) {
                 if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
-                    assertFalse(shape.isRosette(ix, iy));
+                    assertFalse(shape.isRosetteIndices(ix, iy));
                     continue;
                 }
 
                 Tile tile = Tile.fromIndices(ix, iy);
-                assertEquals(shape.isRosette(tile), shape.isRosette(ix, iy));
+                assertEquals(shape.isRosette(tile), shape.isRosetteIndices(ix, iy));
                 if (shape.isRosette(tile)) {
                     rosetteCount += 1;
                 }
@@ -241,15 +241,15 @@ public class BoardShapeTest {
         for (int ix = -1; ix <= shape.getWidth(); ++ix) {
             for (int iy = -1; iy <= shape.getHeight(); ++iy) {
                 if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
-                    assertFalse(shape.isRosette(ix, iy));
-                    assertFalse(copy.isRosette(ix, iy));
+                    assertFalse(shape.isRosetteIndices(ix, iy));
+                    assertFalse(copy.isRosetteIndices(ix, iy));
                     continue;
                 }
 
                 Tile tile = Tile.fromIndices(ix, iy);
-                assertEquals(shape.isRosette(tile), shape.isRosette(ix, iy));
+                assertEquals(shape.isRosette(tile), shape.isRosetteIndices(ix, iy));
                 assertEquals(shape.isRosette(tile), copy.isRosette(tile));
-                assertEquals(shape.isRosette(ix, iy), copy.isRosette(ix, iy));
+                assertEquals(shape.isRosetteIndices(ix, iy), copy.isRosetteIndices(ix, iy));
             }
         }
     }

@@ -90,21 +90,6 @@ public class Tile {
         return new Tile(ix + 1, iy + 1);
     }
 
-    /**
-     * Determines whether the indices ({@code ix}, {@code iy}),
-     * 0-based, could possibly represent a tile on a board. This
-     * does not know the shape of the board, so it should only be
-     * used as a quick common-sense check.
-     *
-     * @param ix The x-index of the tile. This coordinate is 0-based.
-     * @param iy The y-index of the tile. This coordinate is 0-based.
-     * @return Whether the tile at the given indices could possibly
-     *         represent a tile on a board.
-     */
-    public static boolean isValidIndices(int ix, int iy) {
-        return ix >= 0 && ix < 26 && iy >= 0;
-    }
-
     @Override
     public int hashCode() {
         return Integer.hashCode(x) ^ (97 * Integer.hashCode(y));

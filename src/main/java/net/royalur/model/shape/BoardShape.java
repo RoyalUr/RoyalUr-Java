@@ -76,15 +76,13 @@ public class BoardShape implements Named<Name> {
                     "Minimum X = " + minX + ", Minimum Y = " + minY
             );
         }
-
         this.width = maxX;
         this.height = maxY;
 
-        for (Tile tile : rosetteTiles) {
-            if (!contains(tile)) {
+        for (Tile rosette : rosetteTiles) {
+            if (!contains(rosette)) {
                 throw new IllegalArgumentException(
-                        "rosetteTiles should not include any tiles that are off of the game board," +
-                                "but it contains " + tile
+                        "Rosette " + rosette + " does not exist on the board"
                 );
             }
         }
@@ -174,29 +172,44 @@ public class BoardShape implements Named<Name> {
     }
 
     /**
-     * Determines whether {@code tile} falls within the bounds of this shape of board.
+     * Determines whether {@code tile} falls within this board shape.
      * @param tile The tile to be bounds-checked.
-     * @return Whether the given tile falls within the bounds of this board.
+     * @return Whether the given tile falls within this board shape.
      */
     public boolean contains(@Nonnull Tile tile) {
         return tiles.contains(tile);
     }
 
     /**
-     * Determines whether the tile at the indices ({@code x}, {@code y}),
+     * Determines whether the tile at indices ({@code ix}, {@code iy}),
      * 0-based, falls within the bounds of this shape of board.
-     * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
-     * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
-     * @return Whether the given tile falls within the bounds of this shape of board.
+     * @param ix The x-index of the tile to be bounds-checked.
+     *           This coordinate is 0-based.
+     * @param iy The y-index of the tile to be bounds-checked.
+     *           This coordinate is 0-based.
+     * @return Whether the given tile falls within the bounds of this
+     *         shape of board.
      */
     public boolean containsIndices(int ix, int iy) {
-        if (!Tile.isValidIndices(ix, iy))
-            return false;
         return contains(Tile.fromIndices(ix, iy));
     }
 
     /**
-     * Determines whether {@code tile} is a rosette tile on this board.
+     * Determines whether all tiles in {@code tiles} are included
+     * in this board shape.
+     * @param tiles The tiles to check for.
+     * @return Whether all of {@code tiles} exist on this board shape.
+     */
+    public boolean containsAll(@Nonnull Collection<Tile> tiles) {
+        for (Tile tile : tiles) {
+            if (!contains(tile))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Determines whether {@code tile} is a rosette tile in this board shape.
      * @param tile The tile to check if it is a rosette.
      * @return Whether the given tile is a rosette tile on this board.
      */
@@ -206,31 +219,15 @@ public class BoardShape implements Named<Name> {
 
     /**
      * Determines whether the tile at the indices ({@code ix}, {@code iy}),
-     * 0-based, is a rosette tile on this board.
+     * 0-based, is a rosette tile in this board shape.
      * @param ix The x-index of the tile to be checked for being a rosette.
      *           This coordinate is 0-based.
      * @param iy The y-index of the tile to be checked for being a rosette.
      *           This coordinate is 0-based.
      * @return Whether the given tile is a rosette tile on this board.
      */
-    public boolean isRosette(int ix, int iy) {
-        if (!Tile.isValidIndices(ix, iy))
-            return false;
+    public boolean isRosetteIndices(int ix, int iy) {
         return isRosette(Tile.fromIndices(ix, iy));
-    }
-
-    /**
-     * Determines whether all tiles in {@code tiles} are included
-     * in this board shape.
-     * @param tiles The tiles to check for.
-     * @return Whether all of {@code tiles} exist on this board shape.
-     */
-    public boolean containsAll(@Nonnull List<Tile> tiles) {
-        for (Tile tile : tiles) {
-            if (!contains(tile))
-                return false;
-        }
-        return true;
     }
 
     /**
@@ -260,15 +257,17 @@ public class BoardShape implements Named<Name> {
             return false;
 
         BoardShape other = (BoardShape) obj;
-        return isEquivalent(other);
+        return name.equals(other.name) && isEquivalent(other);
     }
 
     /**
      * Create a new board shape with the name {@code name}, the tiles
      * {@code tiles}, and the rosettes on {@code rosetteTiles}.
      * @param name         The name of the board shape.
-     * @param tiles        The set of tiles that fall within the bounds of this board shape.
-     * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
+     * @param tiles        The set of tiles that fall within the bounds of
+     *                     this board shape.
+     * @param rosetteTiles The set of tiles that represent rosette tiles in
+     *                     this board shape.
      * @return A new board shape with the given name.
      */
     public static @Nonnull BoardShape create(

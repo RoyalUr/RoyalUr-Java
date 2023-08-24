@@ -56,11 +56,11 @@ public class StandardBoardShape extends BoardShape {
 
     @Override
     public boolean isRosette(@Nonnull Tile tile) {
-        return isRosette(tile.getXIndex(), tile.getYIndex());
+        return isRosetteIndices(tile.getXIndex(), tile.getYIndex());
     }
 
     @Override
-    public boolean isRosette(int ix, int iy) {
+    public boolean isRosetteIndices(int ix, int iy) {
         if (ix == 1) {
             return iy == 3;
         } else {
