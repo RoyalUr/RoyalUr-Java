@@ -22,7 +22,8 @@ public class StandardBoardShape extends BoardShape {
      * The set of all tiles that exist on the standard board.
      */
     public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
-            BellPathPair.LIGHT_PATH, BellPathPair.DARK_PATH
+            new BellPathPair().getLight(),
+            new BellPathPair().getDark()
     );
 
     /**
@@ -45,11 +46,11 @@ public class StandardBoardShape extends BoardShape {
 
     @Override
     public boolean contains(@Nonnull Tile tile) {
-        return contains(tile.getXIndex(), tile.getYIndex());
+        return containsIndices(tile.getXIndex(), tile.getYIndex());
     }
 
     @Override
-    public boolean contains(int ix, int iy) {
+    public boolean containsIndices(int ix, int iy) {
         return ix >= 0 && ix < 3 && iy >= 0 && iy < 8 && (ix == 1 || (iy < 4 || iy >= 6));
     }
 

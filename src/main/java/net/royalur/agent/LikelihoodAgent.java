@@ -5,7 +5,6 @@ import net.royalur.agent.utility.UtilityFunction;
 import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.rules.standard.fast.FastGame;
 import net.royalur.rules.standard.fast.FastMoveList;
@@ -13,7 +12,6 @@ import net.royalur.rules.standard.fast.FastPlayer;
 import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +22,7 @@ import java.util.List;
  * @param <R> The type of rolls that may be made by this agent.
  */
 public class LikelihoodAgent<
-        P extends StandardPiece,
+        P extends Piece,
         S extends PlayerState,
         R extends Roll
 > extends BaseAgent<P, S, R> {

@@ -85,9 +85,9 @@ public class StandardRuleSetTest {
     @ArgumentsSource(StandardGameSettingsProvider.class)
     public void testFindAvailableMoves_IntroducingPieces(NamedGameSettings nrs) {
         GameSettings<Roll> settings = nrs.settings;
-        StandardRuleSet<StandardPiece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
-        GameState<StandardPiece, PlayerState, Roll> initialState = rules.generateInitialGameState();
-        Board<StandardPiece> board = initialState.getBoard();
+        StandardRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
+        GameState<Piece, PlayerState, Roll> initialState = rules.generateInitialGameState();
+        Board<Piece> board = initialState.getBoard();
         PlayerState light = initialState.getLightPlayer();
         PlayerState dark = initialState.getDarkPlayer();
 
@@ -102,7 +102,7 @@ public class StandardRuleSetTest {
                                 player,
                                 null, null,
                                 paths.get(player).get(roll - 1),
-                                new StandardPiece(player, roll - 1),
+                                new Piece(player, roll - 1),
                                 null
                         )),
                         rules.findAvailableMoves(board, playerState, BasicRoll.of(roll))
@@ -112,7 +112,7 @@ public class StandardRuleSetTest {
     }
 
     private static void assertGamesMatch(
-            @Nonnull Game<StandardPiece, PlayerState, Roll> game,
+            @Nonnull Game<Piece, PlayerState, Roll> game,
             @Nonnull FastGame fastGame
     ) {
         assertEquals(game.isFinished(), fastGame.isFinished);
@@ -124,10 +124,10 @@ public class StandardRuleSetTest {
         assertEquals(game.isWaitingForRoll(), fastGame.isWaitingForRoll());
         assertEquals(game.isWaitingForMove(), fastGame.isWaitingForMove());
 
-        Board<StandardPiece> board = game.getBoard();
+        Board<Piece> board = game.getBoard();
         int[] fastBoard = fastGame.board.pieces;
         for (Tile tile : board.getShape().getTiles()) {
-            StandardPiece piece = board.get(tile);
+            Piece piece = board.get(tile);
             int fastPiece = fastBoard[fastGame.board.calcTileIndex(tile)];
             if (piece == null) {
                 assertEquals(0, fastPiece);
@@ -153,7 +153,7 @@ public class StandardRuleSetTest {
     @ArgumentsSource(StandardGameSettingsProvider.class)
     public void testFastGameIsCompliant(NamedGameSettings nrs) {
         GameSettings<Roll> settings = nrs.settings;
-        StandardRuleSet<StandardPiece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
+        StandardRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
 
         int tests = 100;
         Random random = new Random(43);
@@ -162,7 +162,7 @@ public class StandardRuleSetTest {
         Dice<Roll> dice = rules.getDiceFactory().create(random);
 
         for (int test = 0; test < tests; ++test) {
-            Game<StandardPiece, PlayerState, Roll> game = Game.create(settings);
+            Game<Piece, PlayerState, Roll> game = Game.create(settings);
             fastGame.copyFrom(game);
 
             while (true) {
@@ -176,11 +176,11 @@ public class StandardRuleSetTest {
                     fastGame.applyRoll(roll.value(), moveList);
 
                 } else if (game.isWaitingForMove()) {
-                    List<Move<StandardPiece>> moves = game.findAvailableMoves();
+                    List<Move<Piece>> moves = game.findAvailableMoves();
                     fastGame.findAvailableMoves(moveList);
                     assertEquals(moves.size(), moveList.moveCount);
                     for (int moveIndex = 0; moveIndex < moves.size(); ++moveIndex) {
-                        Move<StandardPiece> move = moves.get(moveIndex);
+                        Move<Piece> move = moves.get(moveIndex);
                         int movePathIndex = moveList.moves[moveIndex];
                         if (move.isIntroducingPiece()) {
                             assertEquals(-1, movePathIndex);

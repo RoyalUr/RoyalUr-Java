@@ -4,7 +4,6 @@ import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.standard.StandardRuleSetProvider;
 import net.royalur.rules.state.*;
 
@@ -361,7 +360,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param settings The settings to initialise the builder with.
      * @return A builder to assist in constructing games with custom settings.
      */
-    static <R extends Roll> @Nonnull GameBuilder<StandardPiece, PlayerState, R>
+    static <R extends Roll> @Nonnull GameBuilder<Piece, PlayerState, R>
     builder(GameSettings<R> settings) {
         return new GameBuilder<>(
                 settings, Collections.emptyMap(),
@@ -374,7 +373,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param settings The settings to use for the game.
      * @return A game with custom settings.
      */
-    static <R extends Roll> @Nonnull Game<StandardPiece, PlayerState, R>
+    static <R extends Roll> @Nonnull Game<Piece, PlayerState, R>
     create(GameSettings<R> settings) {
         return builder(settings).build();
     }
@@ -385,7 +384,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * rule set by default.
      * @return A builder to assist in constructing games with custom settings.
      */
-    static @Nonnull GameBuilder<StandardPiece, PlayerState, Roll> builder() {
+    static @Nonnull GameBuilder<Piece, PlayerState, Roll> builder() {
         return builder(GameSettings.FINKEL);
     }
 
@@ -395,7 +394,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * and seven starting pieces per player.
      * @return A standard game.
      */
-    static @Nonnull Game<StandardPiece, PlayerState, Roll> createRoyalUrNet() {
+    static @Nonnull Game<Piece, PlayerState, Roll> createRoyalUrNet() {
         return builder(GameSettings.ROYALUR_NET).build();
     }
 
@@ -405,7 +404,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
-    static @Nonnull Game<StandardPiece, PlayerState, Roll> createFinkel() {
+    static @Nonnull Game<Piece, PlayerState, Roll> createFinkel() {
         return builder(GameSettings.FINKEL).build();
     }
 
@@ -415,7 +414,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
-    static @Nonnull Game<StandardPiece, PlayerState, Roll> createMasters() {
+    static @Nonnull Game<Piece, PlayerState, Roll> createMasters() {
         return builder(GameSettings.MASTERS).build();
     }
 
@@ -424,7 +423,7 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * the Aseb paths, the standard dice, and five starting pieces per player.
      * @return A game of Aseb.
      */
-    static @Nonnull Game<StandardPiece, PlayerState, Roll> createAseb() {
+    static @Nonnull Game<Piece, PlayerState, Roll> createAseb() {
         return builder(GameSettings.ASEB).build();
     }
 }

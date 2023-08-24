@@ -3,12 +3,11 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.DeterministicAgent;
 import net.royalur.agent.RandomAgent;
-import net.royalur.model.PlayerType;
+import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
-import net.royalur.rules.standard.StandardPiece;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +17,17 @@ public class GameTest {
 
     @Test
     public void testCopy() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.createRoyalUrNet();
+        Game<Piece, PlayerState, Roll> game = Game.createRoyalUrNet();
         assertNotNull(game);
 
-        Game<StandardPiece, PlayerState, Roll> copy = game.copy();
+        Game<Piece, PlayerState, Roll> copy = game.copy();
         assertNotNull(copy);
         assertNotSame(game, copy);
         assertSame(game.getRules(), copy.getRules());
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
 
-        DeterministicAgent<StandardPiece, PlayerState, Roll> agent = new DeterministicAgent<>();
+        DeterministicAgent<Piece, PlayerState, Roll> agent = new DeterministicAgent<>();
 
         game.rollDice(2);
         agent.playTurn(game);
@@ -60,9 +59,9 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardBellGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.createRoyalUrNet();
-        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<Piece, PlayerState, Roll> game = Game.createRoyalUrNet();
+        RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
@@ -75,9 +74,9 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardMastersGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().masters().build();
-        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<Piece, PlayerState, Roll> game = Game.builder().masters().build();
+        RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
@@ -90,9 +89,9 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardSkiriukGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().finkel().paths(new SkiriukPathPair()).build();
-        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<Piece, PlayerState, Roll> game = Game.builder().finkel().paths(new SkiriukPathPair()).build();
+        RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
@@ -105,9 +104,9 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardMurrayGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.builder().finkel().paths(new MurrayPathPair()).build();
-        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<Piece, PlayerState, Roll> game = Game.builder().finkel().paths(new MurrayPathPair()).build();
+        RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 
@@ -120,9 +119,9 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testAsebGameRandom() {
-        Game<StandardPiece, PlayerState, Roll> game = Game.createAseb();
-        RandomAgent<StandardPiece, PlayerState, Roll> light = new RandomAgent<>();
-        RandomAgent<StandardPiece, PlayerState, Roll> dark = new RandomAgent<>();
+        Game<Piece, PlayerState, Roll> game = Game.createAseb();
+        RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
+        RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);
         assertTrue(game.isFinished());
 

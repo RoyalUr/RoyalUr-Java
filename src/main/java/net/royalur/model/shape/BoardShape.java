@@ -207,7 +207,7 @@ public class BoardShape implements Named<Name> {
      * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
      * @return Whether the given tile falls within the bounds of this shape of board.
      */
-    public boolean contains(int ix, int iy) {
+    public boolean containsIndices(int ix, int iy) {
         if (!Tile.isValidIndices(ix, iy))
             return false;
         return contains(Tile.fromIndices(ix, iy));

@@ -4,13 +4,13 @@ import net.royalur.agent.Agent;
 import net.royalur.agent.LikelihoodAgent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
+import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.DiceType;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.MurrayPathPair;
 import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
@@ -42,24 +42,24 @@ public class RGUStatistics {
      * @return Statistics about the game that was played between two random agents.
      */
     private @Nonnull GameStats testAgentActions(
-            @Nonnull Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator,
+            @Nonnull Supplier<Game<Piece, PlayerState, Roll>> gameGenerator,
             @Nonnull Function<
-                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
-                    Agent<StandardPiece, PlayerState, Roll>
+                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    Agent<Piece, PlayerState, Roll>
             > lightAgentGenerator,
             @Nonnull Function<
-                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
-                    Agent<StandardPiece, PlayerState, Roll>
+                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    Agent<Piece, PlayerState, Roll>
             > darkAgentGenerator
     ) {
 
-        Game<StandardPiece, PlayerState, Roll> game = gameGenerator.get();
-        RuleSet<StandardPiece, PlayerState, Roll> rules = game.getRules();
-        if (!(rules instanceof StandardRuleSet<StandardPiece, PlayerState, Roll> standardRules))
+        Game<Piece, PlayerState, Roll> game = gameGenerator.get();
+        RuleSet<Piece, PlayerState, Roll> rules = game.getRules();
+        if (!(rules instanceof StandardRuleSet<Piece, PlayerState, Roll> standardRules))
             throw new IllegalArgumentException("Game does not use standard rules");
 
-        Agent<StandardPiece, PlayerState, Roll> light = lightAgentGenerator.apply(standardRules);
-        Agent<StandardPiece, PlayerState, Roll> dark = darkAgentGenerator.apply(standardRules);
+        Agent<Piece, PlayerState, Roll> light = lightAgentGenerator.apply(standardRules);
+        Agent<Piece, PlayerState, Roll> dark = darkAgentGenerator.apply(standardRules);
         Agent.playAutonomously(game, light, dark);
         return GameStats.gather(game);
     }
@@ -72,16 +72,16 @@ public class RGUStatistics {
      */
     public void testAgentActions(
             @Nonnull Function<
-                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
-                    Agent<StandardPiece, PlayerState, Roll>
+                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    Agent<Piece, PlayerState, Roll>
             > agent1Generator,
             @Nonnull Function<
-                    StandardRuleSet<StandardPiece, PlayerState, Roll>,
-                    Agent<StandardPiece, PlayerState, Roll>
+                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    Agent<Piece, PlayerState, Roll>
             > agent2Generator,
             int tests
     ) {
-        List<Supplier<Game<StandardPiece, PlayerState, Roll>>> generators = List.of(
+        List<Supplier<Game<Piece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().finkel().build(),
                 () -> Game.builder().finkel().safeRosettes(false).build(),
                 () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
@@ -102,8 +102,8 @@ public class RGUStatistics {
                 () -> Game.builder().aseb().build(),
                 () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
         );
-        for (Supplier<Game<StandardPiece, PlayerState, Roll>> gameGenerator : generators) {
-            Game<StandardPiece, PlayerState, Roll> sample = gameGenerator.get();
+        for (Supplier<Game<Piece, PlayerState, Roll>> gameGenerator : generators) {
+            Game<Piece, PlayerState, Roll> sample = gameGenerator.get();
             String desc = sample.getBoard().getShape().getName().getTextName()
                     + ", " + sample.getRules().getPaths().getName().getTextName()
                     + ", " + sample.getRules().getPlayerStateProvider().getStartingPieceCount() + " pieces"

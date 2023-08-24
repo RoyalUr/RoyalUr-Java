@@ -1,11 +1,11 @@
 package net.royalur.rules.standard.fast;
 
 import net.royalur.Game;
+import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.standard.StandardRuleSet;
 
 import javax.annotation.Nonnull;
@@ -33,7 +33,7 @@ public class FastGame {
 
     public FastGame(
             @Nonnull StandardRuleSet<
-                    ? extends StandardPiece,
+                    ? extends Piece,
                     ? extends PlayerState,
                     ? extends Roll
             > rules,
@@ -75,7 +75,7 @@ public class FastGame {
 
     public void copyFrom(
             @Nonnull Game<
-                    ? extends StandardPiece,
+                    ? extends Piece,
                     ? extends PlayerState,
                     ? extends Roll
             > game

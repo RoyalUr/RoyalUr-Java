@@ -20,7 +20,8 @@ public class AsebBoardShape extends BoardShape {
      * The set of all tiles that exist on the Aseb board.
      */
     public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
-            AsebPathPair.LIGHT_PATH, AsebPathPair.DARK_PATH
+            new AsebPathPair().getLight(),
+            new AsebPathPair().getDark()
     );
 
     /**

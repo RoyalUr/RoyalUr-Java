@@ -1,10 +1,10 @@
 package net.royalur.rules.standard.fast;
 
 import net.royalur.model.Board;
+import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
 import net.royalur.model.shape.BoardShape;
-import net.royalur.rules.standard.StandardPiece;
 
 import javax.annotation.Nonnull;
 
@@ -44,13 +44,13 @@ public class FastBoard {
         System.arraycopy(other.pieces, 0, pieces, 0, pieces.length);
     }
 
-    public void copyFrom(@Nonnull Board<? extends StandardPiece> board) {
+    public void copyFrom(@Nonnull Board<? extends Piece> board) {
         if (!shape.isEquivalent(board.getShape()))
             throw new IllegalArgumentException("board has a different shape");
 
         for (int ix = 0; ix < board.getWidth(); ++ix) {
             for (int iy = 0; iy < board.getHeight(); ++iy) {
-                StandardPiece piece = board.contains(ix, iy) ? board.get(ix, iy) : null;
+                Piece piece = board.containsIndices(ix, iy) ? board.getByIndices(ix, iy) : null;
 
                 int piecePathIndex;
                 if (piece == null) {

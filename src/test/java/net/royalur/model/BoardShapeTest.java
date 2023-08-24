@@ -168,12 +168,12 @@ public class BoardShapeTest {
         for (int ix = -1; ix <= shape.getWidth(); ++ix) {
             for (int iy = -1; iy <= shape.getHeight(); ++iy) {
                 if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
-                    assertFalse(shape.contains(ix, iy));
+                    assertFalse(shape.containsIndices(ix, iy));
                     continue;
                 }
 
                 Tile tile = Tile.fromIndices(ix, iy);
-                assertEquals(shape.contains(tile), shape.contains(ix, iy));
+                assertEquals(shape.contains(tile), shape.containsIndices(ix, iy));
                 if (shape.contains(tile)) {
                     area += 1;
                 }
@@ -194,15 +194,15 @@ public class BoardShapeTest {
         for (int ix = -1; ix <= shape.getWidth(); ++ix) {
             for (int iy = -1; iy <= shape.getHeight(); ++iy) {
                 if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
-                    assertFalse(shape.contains(ix, iy));
-                    assertFalse(copy.contains(ix, iy));
+                    assertFalse(shape.containsIndices(ix, iy));
+                    assertFalse(copy.containsIndices(ix, iy));
                     continue;
                 }
 
                 Tile tile = Tile.fromIndices(ix, iy);
-                assertEquals(shape.contains(tile), shape.contains(ix, iy));
+                assertEquals(shape.contains(tile), shape.containsIndices(ix, iy));
                 assertEquals(shape.contains(tile), copy.contains(tile));
-                assertEquals(shape.contains(ix, iy), copy.contains(ix, iy));
+                assertEquals(shape.containsIndices(ix, iy), copy.containsIndices(ix, iy));
             }
         }
     }

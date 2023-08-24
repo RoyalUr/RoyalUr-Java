@@ -11,7 +11,6 @@ import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
 import net.royalur.name.NameMap;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.StandardPiece;
 import net.royalur.rules.state.*;
 import net.royalur.util.Cast;
 
@@ -98,7 +97,7 @@ public class JsonNotation implements RGUNotation {
     /**
      * The key in the JSON for the index of a piece on its path.
      * This is only used for pieces that have an index stored with
-     * them, such as {@link StandardPiece}.
+     * them, such as {@link Piece}.
      */
     public static final @Nonnull String PIECE_INDEX_KEY = "index";
 
@@ -293,9 +292,7 @@ public class JsonNotation implements RGUNotation {
 
         generator.writeStringField(PIECE_OWNER_KEY, piece.getOwner().getTextName());
         generator.writeStringField(PIECE_TILE_KEY, tile.toString());
-        if (piece.hasPathIndex()) {
-            generator.writeNumberField(PIECE_INDEX_KEY, piece.getPathIndex());
-        }
+        generator.writeNumberField(PIECE_INDEX_KEY, piece.getPathIndex());
     }
 
     /**

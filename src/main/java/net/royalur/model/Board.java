@@ -5,13 +5,13 @@ import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.
- * The pieces can be iterated through, and first .
  * @param <P> The type of pieces that may be placed on this board.
  */
 public class Board<P extends Piece> implements Iterable<P> {
@@ -33,8 +33,9 @@ public class Board<P extends Piece> implements Iterable<P> {
 
     /**
      * The pieces on the tiles of this board.
+     * Tiles that contain no piece are null.
      */
-    private final @Nonnull Piece[][] pieces;
+    private final @Nonnull Piece[] pieces;
 
     /**
      * Instantiates an empty board with the shape {@code shape}.
@@ -44,7 +45,7 @@ public class Board<P extends Piece> implements Iterable<P> {
         this.shape = shape;
         this.width = shape.getWidth();
         this.height = shape.getHeight();
-        this.pieces = new Piece[width][height];
+        this.pieces = new Piece[width * height];
     }
 
     /**
@@ -53,9 +54,7 @@ public class Board<P extends Piece> implements Iterable<P> {
      */
     protected Board(@Nonnull Board<P> template) {
         this(template.shape);
-        for (int ix = 0; ix < width; ++ix) {
-            System.arraycopy(template.pieces[ix], 0, pieces[ix], 0, height);
-        }
+        System.arraycopy(template.pieces, 0, pieces, 0, pieces.length);
     }
 
     /**
@@ -64,6 +63,20 @@ public class Board<P extends Piece> implements Iterable<P> {
      */
     public @Nonnull Board<P> copy() {
         return new Board<>(this);
+    }
+
+    private int calcTileIndex(int ix, int iy) {
+        if (ix < 0 || iy < 0 || ix >= this.width || iy >= this.height) {
+            throw new IllegalArgumentException(
+                    "There is no tile at the indices (" + ix + ", " + iy + ")"
+            );
+        }
+
+        return iy * this.width + ix;
+    }
+
+    private int calcTileIndex(Tile tile) {
+        return calcTileIndex(tile.getXIndex(), tile.getYIndex());
     }
 
     /**
@@ -75,7 +88,8 @@ public class Board<P extends Piece> implements Iterable<P> {
     }
 
     /**
-     * Gets the width of the board.
+     * Gets the width of the board, which represents
+     * the number of x-coordinates in this board.
      * @return The number of x-coordinates that exist in this board.
      */
     public int getWidth() {
@@ -83,7 +97,8 @@ public class Board<P extends Piece> implements Iterable<P> {
     }
 
     /**
-     * Gets the height of the board.
+     * Gets the height of the board, which represents
+     * the number of y-coordinates in this board.
      * @return The number of y-coordinates that exist in this board.
      */
     public int getHeight() {
@@ -92,7 +107,6 @@ public class Board<P extends Piece> implements Iterable<P> {
 
     /**
      * Determines whether {@code tile} falls within the bounds of this board.
-     *
      * @param tile The tile to be bounds-checked.
      * @return Whether the given tile falls within the bounds of this board.
      */
@@ -103,75 +117,90 @@ public class Board<P extends Piece> implements Iterable<P> {
     /**
      * Determines whether the tile at the indices ({@code ix}, {@code iy}),
      * 0-based, falls within the bounds of this board.
-     *
-     * @param ix The x-index of the tile to be bounds-checked. This coordinate is 0-based.
-     * @param iy The y-index of the tile to be bounds-checked. This coordinate is 0-based.
+     * @param ix The x-index of the tile to be bounds-checked.
+     *           This coordinate is 0-based.
+     * @param iy The y-index of the tile to be bounds-checked.
+     *           This coordinate is 0-based.
      * @return Whether the given tile falls within the bounds of this board.
      */
-    public boolean contains(int ix, int iy) {
-        return shape.contains(ix, iy);
+    public boolean containsIndices(int ix, int iy) {
+        return shape.containsIndices(ix, iy);
     }
 
     /**
-     * Retrieves the piece on {@code tile}. Returns {@code null} if there is no piece on the tile.
-     *
+     * Retrieves the piece on {@code tile}. Returns {@code null} if there
+     * is no piece on the tile.
      * @param tile The tile to find the piece on.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
     public @Nullable P get(@Nonnull Tile tile) {
-        return get(tile.getXIndex(), tile.getYIndex());
+        return getByIndices(tile.getXIndex(), tile.getYIndex());
     }
 
     /**
-     * Retrieves the piece on the tile at the indices ({@code ix}, {@code iy}), 0-based.
-     * Returns {@code null} if there is no piece on the tile.
-     *
-     * @param ix The x-index of the tile to find the piece on. This coordinate is 0-based.
-     * @param iy The y-index of the tile to find the piece on. This coordinate is 0-based.
+     * Retrieves the piece on the tile at the indices ({@code ix}, {@code iy}),
+     * 0-based. Returns {@code null} if there is no piece on the tile.
+     * @param ix The x-index of the tile to find the piece on.
+     *           This coordinate is 0-based.
+     * @param iy The y-index of the tile to find the piece on.
+     *           This coordinate is 0-based.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
-    public @Nullable P get(int ix, int iy) {
-        if (!contains(ix, iy)) {
+    public @Nullable P getByIndices(int ix, int iy) {
+        if (!containsIndices(ix, iy)) {
             throw new IllegalArgumentException(
-                    "There is no tile at the 0-based indices (" + ix + ", " + iy + ")"
+                    "There is no tile at the indices (" + ix + ", " + iy + ")"
             );
         }
-        return Cast.unsafeCast(pieces[ix][iy]);
+        int index = calcTileIndex(ix, iy);
+        return Cast.unsafeCast(pieces[index]);
     }
 
     /**
-     * Sets the piece on {@code tile} to {@code piece}. If
-     * {@code piece} is {@code null}, it removes any piece on the tile.
-     * Returns the piece that was previously on the tile, or
-     * {@code null} if there was no piece on the tile.
-     *
+     * Sets the piece on {@code tile} to {@code piece}. If {@code piece}
+     * is {@code null}, it removes any piece on the tile. Returns the piece
+     * that was previously on the tile, or {@code null} if there was no
+     * piece on the tile.
      * @param tile The tile to find the piece on.
      * @param piece The piece that should be placed on the tile.
-     * @return The previous piece on the given tile if there was one, or else {@code null}.
+     * @return The previous piece on the given tile if there was one,
+     *         or else {@code null}.
      */
     public @Nullable P set(@Nonnull Tile tile, @Nullable P piece) {
-        return set(tile.getXIndex(), tile.getYIndex(), piece);
+        return setByIndices(tile.getXIndex(), tile.getYIndex(), piece);
     }
 
     /**
-     * Sets the piece on the tile at the indices ({@code ix}, {@code iy}), 0-based,
-     * to the piece {@code piece}. If {@code piece} is {@code null}, it
-     * removes any piece on the tile. Returns the piece that was previously
+     * Sets the piece on the tile at the indices ({@code ix}, {@code iy}),
+     * 0-based, to the piece {@code piece}. If {@code piece} is {@code null},
+     * it removes any piece on the tile. Returns the piece that was previously
      * on the tile, or {@code null} if there was no piece on the tile.
-     *
-     * @param ix The x-index of the tile to place the piece on. This coordinate is 0-based.
-     * @param iy The y-index of the tile to place the piece on. This coordinate is 0-based.
+     * @param ix The x-index of the tile to place the piece on.
+     *           This coordinate is 0-based.
+     * @param iy The y-index of the tile to place the piece on.
+     *           This coordinate is 0-based.
      * @param piece The piece that should be placed on the tile.
-     * @return The previous piece on the given tile if there was one, or else {@code null}.
+     * @return The previous piece on the given tile if there was one,
+     *         or else {@code null}.
      */
-    @SuppressWarnings("unchecked")
-    public @Nullable P set(int ix, int iy, @Nullable P piece) {
-        if (!contains(ix, iy))
-            throw new IllegalArgumentException("There is no tile at the 0-based indices (" + ix + ", " + iy + ")");
+    public @Nullable P setByIndices(int ix, int iy, @Nullable P piece) {
+        if (!containsIndices(ix, iy)) {
+            throw new IllegalArgumentException(
+                    "There is no tile at indices (" + ix + ", " + iy + ")"
+            );
+        }
 
-        P previous = (P) pieces[ix][iy];
-        pieces[ix][iy] = piece;
+        int index = calcTileIndex(ix, iy);
+        P previous = Cast.unsafeCast(pieces[index]);
+        pieces[index] = piece;
         return previous;
+    }
+
+    /**
+     * Removes all pieces from this board.
+     */
+    public void clear() {
+        Arrays.fill(this.pieces, null);
     }
 
     /**
@@ -181,12 +210,12 @@ public class Board<P extends Piece> implements Iterable<P> {
      */
     public int countPieces(@Nonnull PlayerType player) {
         int totalPieces = 0;
-        for (int ix = 0; ix < width; ++ix) {
-            for (int iy = 0; iy < height; ++iy) {
-                if (!contains(ix, iy))
+        for (int iy = 0; iy < height; ++iy) {
+            for (int ix = 0; ix < width; ++ix) {
+                if (!containsIndices(ix, iy))
                     continue;
 
-                Piece piece = get(ix, iy);
+                Piece piece = getByIndices(ix, iy);
                 if (piece != null && piece.getOwner() == player) {
                     totalPieces += 1;
                 }
@@ -201,15 +230,17 @@ public class Board<P extends Piece> implements Iterable<P> {
             return false;
 
         Board<?> other = (Board<?>) obj;
-        if (width != other.width || height != other.height || !shape.equals(other.shape))
+        if (!shape.equals(other.shape))
             return false;
 
-        for (int ix = 0; ix < width; ++ix) {
-            for (int iy = 0; iy < height; ++iy) {
-                if (!contains(ix, iy))
+        for (int iy = 0; iy < height; ++iy) {
+            for (int ix = 0; ix < width; ++ix) {
+                if (!containsIndices(ix, iy))
                     continue;
 
-                if (!Objects.equals(get(ix, iy), other.get(ix, iy)))
+                Piece thisPiece = getByIndices(ix, iy);
+                Piece otherPiece = other.getByIndices(ix, iy);
+                if (!Objects.equals(thisPiece, otherPiece))
                     return false;
             }
         }
@@ -230,8 +261,8 @@ public class Board<P extends Piece> implements Iterable<P> {
             }
 
             for (int iy = 0; iy < shape.getHeight(); ++iy) {
-                if (contains(ix, iy)) {
-                    builder.append(Piece.toChar(get(ix, iy)));
+                if (containsIndices(ix, iy)) {
+                    builder.append(Piece.toChar(getByIndices(ix, iy)));
                 } else if (includeOffBoardTiles) {
                     builder.append(' ');
                 }
@@ -252,31 +283,27 @@ public class Board<P extends Piece> implements Iterable<P> {
 
     private class BoardIterator implements Iterator<P> {
 
-        private int ix;
-        private int iy;
+        private int index;
 
         public BoardIterator() {
-            this.ix = 0;
-            this.iy = 0;
+            this.index = 0;
         }
 
         private void moveToNext() {
-            if (ix + 1 >= width) {
-                ix = 0;
-                iy += 1;
-            } else {
-                ix += 1;
-            }
+            if (index >= pieces.length)
+                throw new IllegalStateException("");
+
+            index += 1;
         }
 
         @Override
         public boolean hasNext() {
-            if (iy >= height)
+            if (index >= pieces.length)
                 return false;
 
-            while (pieces[ix][iy] == null) {
+            while (pieces[index] == null) {
                 moveToNext();
-                if (iy >= height)
+                if (index >= pieces.length)
                     return false;
             }
             return true;
@@ -287,7 +314,7 @@ public class Board<P extends Piece> implements Iterable<P> {
             if (!hasNext())
                 throw new NoSuchElementException();
 
-            P piece = Cast.unsafeCast(pieces[ix][iy]);
+            P piece = Cast.unsafeCast(pieces[index]);
             moveToNext();
             return piece;
         }

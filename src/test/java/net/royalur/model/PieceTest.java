@@ -7,27 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PieceTest {
 
     @Test
-    public void testOf() {
-        Piece light = Piece.of(PlayerType.LIGHT);
-        Piece dark = Piece.of(PlayerType.DARK);
-
-        assertNotNull(light);
-        assertNotNull(dark);
-
-        assertEquals(PlayerType.LIGHT, light.getOwner());
-        assertEquals(PlayerType.DARK, dark.getOwner());
-    }
-
-    @Test
     public void testToChar() {
-        Piece light = Piece.of(PlayerType.LIGHT);
-        Piece dark = Piece.of(PlayerType.DARK);
+        Piece light = new Piece(PlayerType.LIGHT, 1);
+        Piece dark = new Piece(PlayerType.DARK, 1);
 
         assertEquals(PlayerType.LIGHT.getCharacter(), Piece.toChar(light));
         assertEquals(PlayerType.DARK.getCharacter(), Piece.toChar(dark));
 
-        light = new Piece(PlayerType.LIGHT);
-        dark = new Piece(PlayerType.DARK);
+        light = new Piece(PlayerType.LIGHT, 2);
+        dark = new Piece(PlayerType.DARK, 2);
 
         assertEquals(PlayerType.LIGHT.getCharacter(), Piece.toChar(light));
         assertEquals(PlayerType.DARK.getCharacter(), Piece.toChar(dark));
@@ -37,24 +25,32 @@ public class PieceTest {
 
     @Test
     public void testEquals() {
-        Piece light = new Piece(PlayerType.LIGHT);
-        Piece dark = new Piece(PlayerType.DARK);
+        Piece light = new Piece(PlayerType.LIGHT, 1);
+        Piece dark = new Piece(PlayerType.DARK, 1);
 
         assertEquals(light, light);
         assertEquals(dark, dark);
         assertNotEquals(light, dark);
 
-        assertEquals(Piece.of(PlayerType.LIGHT), Piece.of(PlayerType.LIGHT));
-        assertEquals(Piece.of(PlayerType.DARK), Piece.of(PlayerType.DARK));
-        assertNotEquals(Piece.of(PlayerType.LIGHT), Piece.of(PlayerType.DARK));
+        assertEquals(new Piece(PlayerType.LIGHT, 1), new Piece(PlayerType.LIGHT, 1));
+        assertEquals(new Piece(PlayerType.DARK, 1), new Piece(PlayerType.DARK, 1));
+        assertNotEquals(new Piece(PlayerType.LIGHT, 1), new Piece(PlayerType.DARK, 1));
 
-        assertEquals(Piece.of(PlayerType.LIGHT), light);
-        assertEquals(Piece.of(PlayerType.DARK), dark);
-        assertNotEquals(Piece.of(PlayerType.LIGHT), dark);
+        assertEquals(new Piece(PlayerType.LIGHT, 1), light);
+        assertEquals(new Piece(PlayerType.DARK, 1), dark);
+        assertNotEquals(new Piece(PlayerType.LIGHT, 1), dark);
 
-        assertEquals(light, Piece.of(PlayerType.LIGHT));
-        assertEquals(dark, Piece.of(PlayerType.DARK));
-        assertNotEquals(light, Piece.of(PlayerType.DARK));
+        assertEquals(light, new Piece(PlayerType.LIGHT, 1));
+        assertEquals(dark, new Piece(PlayerType.DARK, 1));
+        assertNotEquals(light, new Piece(PlayerType.DARK, 1));
+
+        assertEquals(new Piece(PlayerType.LIGHT, 1), new Piece(PlayerType.LIGHT, 1));
+        assertEquals(new Piece(PlayerType.LIGHT, 5), new Piece(PlayerType.LIGHT, 5));
+        assertNotEquals(new Piece(PlayerType.LIGHT, 1), new Piece(PlayerType.LIGHT, 5));
+
+        assertEquals(new Piece(PlayerType.DARK, 1), new Piece(PlayerType.DARK, 1));
+        assertEquals(new Piece(PlayerType.DARK, 8), new Piece(PlayerType.DARK, 8));
+        assertNotEquals(new Piece(PlayerType.DARK, 1), new Piece(PlayerType.DARK, 8));
 
         Object notPiece = new Object();
         assertNotEquals(light, notPiece);
@@ -64,31 +60,40 @@ public class PieceTest {
 
     @Test
     public void testHashCode() {
-        Piece light = new Piece(PlayerType.LIGHT);
-        Piece dark = new Piece(PlayerType.DARK);
+        Piece light = new Piece(PlayerType.LIGHT, 1);
+        Piece dark = new Piece(PlayerType.DARK, 2);
 
         assertEquals(light.hashCode(), light.hashCode());
         assertEquals(dark.hashCode(), dark.hashCode());
 
-        assertEquals(Piece.of(PlayerType.LIGHT).hashCode(), Piece.of(PlayerType.LIGHT).hashCode());
-        assertEquals(Piece.of(PlayerType.DARK).hashCode(), Piece.of(PlayerType.DARK).hashCode());
+        assertEquals(
+                new Piece(PlayerType.LIGHT, 1).hashCode(),
+                new Piece(PlayerType.LIGHT, 1).hashCode()
+        );
+        assertEquals(
+                new Piece(PlayerType.DARK, 2).hashCode(),
+                new Piece(PlayerType.DARK, 2).hashCode()
+        );
 
-        assertEquals(Piece.of(PlayerType.LIGHT).hashCode(), light.hashCode());
-        assertEquals(Piece.of(PlayerType.DARK).hashCode(), dark.hashCode());
+        assertEquals(new Piece(PlayerType.LIGHT, 1).hashCode(), light.hashCode());
+        assertEquals(new Piece(PlayerType.DARK, 2).hashCode(), dark.hashCode());
 
-        assertEquals(light.hashCode(), Piece.of(PlayerType.LIGHT).hashCode());
-        assertEquals(dark.hashCode(), Piece.of(PlayerType.DARK).hashCode());
+        assertEquals(light.hashCode(), new Piece(PlayerType.LIGHT, 1).hashCode());
+        assertEquals(dark.hashCode(), new Piece(PlayerType.DARK, 2).hashCode());
     }
 
     @Test
     public void testToString() {
-        Piece light = new Piece(PlayerType.LIGHT);
-        Piece dark = new Piece(PlayerType.DARK);
+        Piece light = new Piece(PlayerType.LIGHT, 1);
+        Piece dark = new Piece(PlayerType.DARK, 2);
 
         assertEquals(PlayerType.LIGHT.getTextName(), light.toString());
         assertEquals(PlayerType.DARK.getTextName(), dark.toString());
 
-        assertEquals(PlayerType.LIGHT.getTextName(), Piece.of(PlayerType.LIGHT).toString());
-        assertEquals(PlayerType.DARK.getTextName(), Piece.of(PlayerType.DARK).toString());
+        light = new Piece(PlayerType.LIGHT, 3);
+        dark = new Piece(PlayerType.DARK, 4);
+
+        assertEquals(PlayerType.LIGHT.getTextName(), light.toString());
+        assertEquals(PlayerType.DARK.getTextName(), dark.toString());
     }
 }

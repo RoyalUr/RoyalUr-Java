@@ -9,26 +9,29 @@ import javax.annotation.Nullable;
 public class Piece {
 
     /**
-     * A piece of the light player.
-     */
-    private static final Piece LIGHT = new Piece(PlayerType.LIGHT);
-
-    /**
-     * A piece of the dark player.
-     */
-    private static final Piece DARK = new Piece(PlayerType.DARK);
-
-    /**
      * The player that owns this piece.
      */
     private final @Nonnull PlayerType owner;
 
     /**
+     * The index of the piece on its owner player's path.
+     */
+    private final int pathIndex;
+
+    /**
      * Instantiates a piece that can be placed on a board.
      * @param owner The player that owns the piece.
+     * @param pathIndex The index of this piece on its owner's path
+     *                  around the board.
      */
-    public Piece(@Nonnull PlayerType owner) {
+    public Piece(@Nonnull PlayerType owner, int pathIndex) {
+        if (pathIndex < 0) {
+            throw new IllegalArgumentException(
+                    "The path index cannot be negative: " + pathIndex
+            );
+        }
         this.owner = owner;
+        this.pathIndex = pathIndex;
     }
 
     /**
@@ -40,15 +43,11 @@ public class Piece {
     }
 
     /**
-     * Returns a piece with {@code player} as its owner.
-     * @param player The player to retrieve a piece of.
-     * @return The piece of the given player.
+     * Retrieves the path index of this piece.
+     * @return The path index of this piece.
      */
-    public static @Nonnull Piece of(@Nonnull PlayerType player) {
-        return switch (player) {
-            case LIGHT -> LIGHT;
-            case DARK -> DARK;
-        };
+    public int getPathIndex() {
+        return pathIndex;
     }
 
     /**
@@ -62,25 +61,9 @@ public class Piece {
         return PlayerType.toChar(piece != null ? piece.owner : null);
     }
 
-    /**
-     * Returns whether this piece has a stored path index.
-     * @return Whether this piece has a stored path index.
-     */
-    public boolean hasPathIndex() {
-        return false;
-    }
-
-    /**
-     * Retrieves the path index of this piece.
-     * @return The path index of this piece.
-     */
-    public int getPathIndex() {
-        throw new UnsupportedOperationException("This piece does not have a path index");
-    }
-
     @Override
     public int hashCode() {
-        return owner.hashCode();
+        return owner.hashCode() ^ (37 * Integer.hashCode(pathIndex));
     }
 
     @Override
@@ -89,7 +72,7 @@ public class Piece {
             return false;
 
         Piece other = (Piece) obj;
-        return owner == other.owner;
+        return owner == other.owner && pathIndex == other.pathIndex;
     }
 
     @Override

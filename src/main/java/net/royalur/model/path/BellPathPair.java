@@ -16,26 +16,26 @@ public class BellPathPair extends PathPair {
     /**
      * The path of the light player's pieces.
      */
-    public static final @Nonnull List<Tile> LIGHT_PATH = List.copyOf(Tile.createPath(
+    public static final @Nonnull List<Tile> LIGHT_PATH = Tile.createPath(
             1, 5,
             1, 1,
             2, 1,
             2, 8,
             1, 8,
             1, 6
-    ));
+    );
 
     /**
      * The path of the dark player's pieces.
      */
-    public static final @Nonnull List<Tile> DARK_PATH = List.copyOf(Tile.createPath(
+    public static final @Nonnull List<Tile> DARK_PATH = Tile.createPath(
             3, 5,
             3, 1,
             2, 1,
             2, 8,
             3, 8,
             3, 6
-    ));
+    );
 
     /**
      * Instantiates Bell's paths for the light and dark player.

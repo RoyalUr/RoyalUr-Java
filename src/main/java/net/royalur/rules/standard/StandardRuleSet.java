@@ -26,7 +26,7 @@ import java.util.List;
  * @param <R> The type of rolls that may be made.
  */
 public class StandardRuleSet<
-        P extends StandardPiece,
+        P extends Piece,
         S extends PlayerState,
         R extends Roll
 > implements RuleSet<P, S, R> {
