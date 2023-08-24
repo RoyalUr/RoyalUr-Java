@@ -15,7 +15,8 @@ public class PlayerState {
     private final @Nonnull PlayerType player;
 
     /**
-     * The number of pieces that the player has yet to play.
+     * The number of pieces that the player has available to introduce
+     * to the board.
      */
     private final int pieceCount;
 
@@ -27,7 +28,8 @@ public class PlayerState {
     /**
      * Instantiates a state for a player in a game.
      * @param player The player that this state represents.
-     * @param pieceCount The number of pieces that the player has yet to play.
+     * @param pieceCount The number of pieces that the player has available to
+     *                   introduce to the board.
      * @param score The number of pieces that the player has taken off the board.
      */
     public PlayerState(@Nonnull PlayerType player, int pieceCount, int score) {
@@ -50,8 +52,10 @@ public class PlayerState {
     }
 
     /**
-     * Gets the number of pieces that the player has yet to play.
-     * @return The number of pieces that the player has yet to play.
+     * Gets the number of pieces that the player has available
+     * to introduce to the board.
+     * @return The number of pieces that the player has available
+     *         to introduce to the board.
      */
     public int getPieceCount() {
         return pieceCount;
@@ -76,7 +80,9 @@ public class PlayerState {
             return false;
 
         PlayerState other = (PlayerState) obj;
-        return player == other.player && pieceCount == other.pieceCount && score == other.score;
+        return player == other.player &&
+                pieceCount == other.pieceCount &&
+                score == other.score;
     }
 
     @Override
