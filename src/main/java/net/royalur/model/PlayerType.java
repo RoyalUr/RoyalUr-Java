@@ -92,9 +92,6 @@ public enum PlayerType implements Name {
      * @return The character representing {@code player}.
      */
     public static char toChar(@Nullable PlayerType player) {
-        if (player == null)
-            return '.';
-
-        return player.character;
+        return player != null ? player.character : '.';
     }
 }
