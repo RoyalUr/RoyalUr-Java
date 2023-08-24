@@ -41,18 +41,6 @@ public class BoardShape implements Named<Name> {
     private final int height;
 
     /**
-     * The tiles that fall within the bounds of this board shape,
-     * ordered by ascending row number and then ascending column number.
-     */
-    private @Nullable List<Tile> tilesByRow = null;
-
-    /**
-     * The tiles that fall within the bounds of this board shape,
-     * ordered into columns with ascending row number.
-     */
-    private @Nullable List<Tile> tilesByColumn = null;
-
-    /**
      * Instantiates a board shape with {@code tiles} representing the tiles on the board.
      * @param name         The name of this board shape.
      * @param tiles        The set of tiles that fall within the bounds of this board shape.
@@ -154,19 +142,16 @@ public class BoardShape implements Named<Name> {
      *         ascending column number.
      */
     public final @Nonnull List<Tile> getTilesByRow() {
-        if (this.tilesByRow == null) {
-            List<Tile> tilesByRow = new ArrayList<>();
-            for (int iy = 0; iy < height; ++iy) {
-                for (int ix = 0; ix < width; ++ix) {
-                    Tile tile = Tile.fromIndices(ix, iy);
-                    if (contains(tile)) {
-                        tilesByRow.add(tile);
-                    }
+        List<Tile> tilesByRow = new ArrayList<>();
+        for (int iy = 0; iy < height; ++iy) {
+            for (int ix = 0; ix < width; ++ix) {
+                Tile tile = Tile.fromIndices(ix, iy);
+                if (contains(tile)) {
+                    tilesByRow.add(tile);
                 }
             }
-            this.tilesByRow = Collections.unmodifiableList(tilesByRow);
         }
-        return this.tilesByRow;
+        return tilesByRow;
     }
 
     /**
@@ -176,19 +161,16 @@ public class BoardShape implements Named<Name> {
      *         ascending row.
      */
     public final @Nonnull List<Tile> getTilesByColumn() {
-        if (this.tilesByColumn == null) {
-            List<Tile> tilesByColumn = new ArrayList<>();
-            for (int ix = 0; ix < width; ++ix) {
-                for (int iy = 0; iy < height; ++iy) {
-                    Tile tile = Tile.fromIndices(ix, iy);
-                    if (contains(tile)) {
-                        tilesByColumn.add(tile);
-                    }
+        List<Tile> tilesByColumn = new ArrayList<>();
+        for (int ix = 0; ix < width; ++ix) {
+            for (int iy = 0; iy < height; ++iy) {
+                Tile tile = Tile.fromIndices(ix, iy);
+                if (contains(tile)) {
+                    tilesByColumn.add(tile);
                 }
             }
-            this.tilesByColumn = Collections.unmodifiableList(tilesByColumn);
         }
-        return this.tilesByColumn;
+        return tilesByColumn;
     }
 
     /**

@@ -6,15 +6,13 @@ import net.royalur.util.Cast;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.
  * @param <P> The type of pieces that may be placed on this board.
  */
-public class Board<P extends Piece> implements Iterable<P> {
+public class Board<P extends Piece> {
 
     /**
      * The shape of this board.
@@ -274,49 +272,5 @@ public class Board<P extends Piece> implements Iterable<P> {
     @Override
     public @Nonnull String toString() {
         return toString('\n', true);
-    }
-
-    @Override
-    public @Nonnull Iterator<P> iterator() {
-        return new BoardIterator();
-    }
-
-    private class BoardIterator implements Iterator<P> {
-
-        private int index;
-
-        public BoardIterator() {
-            this.index = 0;
-        }
-
-        private void moveToNext() {
-            if (index >= pieces.length)
-                throw new IllegalStateException("");
-
-            index += 1;
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (index >= pieces.length)
-                return false;
-
-            while (pieces[index] == null) {
-                moveToNext();
-                if (index >= pieces.length)
-                    return false;
-            }
-            return true;
-        }
-
-        @Override
-        public P next() {
-            if (!hasNext())
-                throw new NoSuchElementException();
-
-            P piece = Cast.unsafeCast(pieces[index]);
-            moveToNext();
-            return piece;
-        }
     }
 }
