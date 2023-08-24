@@ -22,8 +22,7 @@ public class StandardBoardShape extends BoardShape {
      * The set of all tiles that exist on the standard board.
      */
     public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
-            BellPathPair.LIGHT_PATH,
-            BellPathPair.DARK_PATH
+            BellPathPair.LIGHT_PATH, BellPathPair.DARK_PATH
     );
 
     /**
