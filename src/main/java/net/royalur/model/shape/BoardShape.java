@@ -192,6 +192,8 @@ public class BoardShape implements Named<Name> {
      *         shape of board.
      */
     public boolean containsIndices(int ix, int iy) {
+        if (ix < 0 || iy < 0 || ix >= width || iy >= height)
+            return false;
         return contains(Tile.fromIndices(ix, iy));
     }
 
@@ -228,6 +230,8 @@ public class BoardShape implements Named<Name> {
      * @return Whether the given tile is a rosette tile on this board.
      */
     public boolean isRosetteIndices(int ix, int iy) {
+        if (ix < 0 || iy < 0 || ix >= width || iy >= height)
+            return false;
         return isRosette(Tile.fromIndices(ix, iy));
     }
 

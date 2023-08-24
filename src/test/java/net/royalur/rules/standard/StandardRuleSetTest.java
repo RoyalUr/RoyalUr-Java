@@ -56,11 +56,11 @@ public class StandardRuleSetTest {
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Skiriuk",
-                            GameSettings.FINKEL.withPaths(PathType.SKIRIUK.create())
+                            GameSettings.FINKEL.withPaths(PathType.SKIRIUK.createPathPair())
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Murray",
-                            GameSettings.FINKEL.withPaths(PathType.MURRAY.create())
+                            GameSettings.FINKEL.withPaths(PathType.MURRAY.createPathPair())
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Aseb",
@@ -91,7 +91,7 @@ public class StandardRuleSetTest {
         PlayerState light = initialState.getLightPlayer();
         PlayerState dark = initialState.getDarkPlayer();
 
-        Dice<Roll> sampleDice = rules.getDiceFactory().create();
+        Dice<Roll> sampleDice = rules.getDiceFactory().createDice();
         int maxRoll = sampleDice.getMaxRollValue();
         PathPair paths = rules.getPaths();
         for (int roll = 1; roll < maxRoll; ++roll) {
@@ -159,7 +159,7 @@ public class StandardRuleSetTest {
         Random random = new Random(43);
         FastGame fastGame = rules.createCompatibleFastGame();
         FastMoveList moveList = new FastMoveList();
-        Dice<Roll> dice = rules.getDiceFactory().create(random);
+        Dice<Roll> dice = rules.getDiceFactory().createDice(random);
 
         for (int test = 0; test < tests; ++test) {
             Game<Piece, PlayerState, Roll> game = Game.create(settings);

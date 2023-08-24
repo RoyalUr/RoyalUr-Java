@@ -16,7 +16,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     BELL(1, "Bell") {
         @Override
-        public @Nonnull PathPair create() {
+        public @Nonnull PathPair createPathPair() {
             return new BellPathPair();
         }
     },
@@ -26,7 +26,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     ASEB(2, "Aseb") {
         @Override
-        public @Nonnull PathPair create() {
+        public @Nonnull PathPair createPathPair() {
             return new AsebPathPair();
         }
     },
@@ -36,7 +36,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     MASTERS(3, "Masters") {
         @Override
-        public @Nonnull PathPair create() {
+        public @Nonnull PathPair createPathPair() {
             return new MastersPathPair();
         }
     },
@@ -46,7 +46,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     MURRAY(4, "Murray") {
         @Override
-        public @Nonnull PathPair create() {
+        public @Nonnull PathPair createPathPair() {
             return new MurrayPathPair();
         }
     },
@@ -56,7 +56,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     SKIRIUK(5, "Skiriuk") {
         @Override
-        public @Nonnull PathPair create() {
+        public @Nonnull PathPair createPathPair() {
             return new SkiriukPathPair();
         }
     };
@@ -118,5 +118,5 @@ public enum PathType implements Name, PathPairFactory {
      * Create an instance of the paths.
      * @return The instance of the paths.
      */
-    public abstract @Nonnull PathPair create();
+    public abstract @Nonnull PathPair createPathPair();
 }

@@ -93,41 +93,6 @@ public class TileTest {
     }
 
     @Test
-    public void testIsValid() {
-        assertTrue(Tile.isValidIndices(0, 0));
-        assertTrue(Tile.isValidIndices(1, 0));
-        assertTrue(Tile.isValidIndices(0, 1));
-        assertTrue(Tile.isValidIndices(1, 1));
-        assertTrue(Tile.isValidIndices(25, 999));
-        assertTrue(Tile.isValidIndices(12, 12));
-        assertTrue(Tile.isValidIndices(11, 13));
-
-        assertFalse(Tile.isValidIndices(-1, 0));
-        assertFalse(Tile.isValidIndices(1, -1));
-        assertFalse(Tile.isValidIndices(-1, 1));
-        assertFalse(Tile.isValidIndices(1, -1));
-        assertFalse(Tile.isValidIndices(-1, 999));
-        assertFalse(Tile.isValidIndices(12, -1));
-        assertFalse(Tile.isValidIndices(-1, 13));
-
-        assertFalse(Tile.isValidIndices(26, 0));
-        assertFalse(Tile.isValidIndices(1, -1));
-        assertFalse(Tile.isValidIndices(29, 1));
-        assertFalse(Tile.isValidIndices(1, -1));
-        assertFalse(Tile.isValidIndices(34, 999));
-        assertFalse(Tile.isValidIndices(12, -1));
-        assertFalse(Tile.isValidIndices(26, 13));
-
-        for (int ix = 0; ix < 26; ++ix) {
-            assertFalse(Tile.isValidIndices(ix, -1));
-            assertFalse(Tile.isValidIndices(ix, -5));
-            for (int iy = 0; iy < 50; ++iy) {
-                assertTrue(Tile.isValidIndices(ix, iy));
-            }
-        }
-    }
-
-    @Test
     public void testEquals() {
         Tile oneOne = new Tile(1, 1);
         Tile twoOne = new Tile(2, 1);

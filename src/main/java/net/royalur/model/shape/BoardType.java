@@ -16,7 +16,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      */
     STANDARD(1, "Standard") {
         @Override
-        public @Nonnull BoardShape create() {
+        public @Nonnull BoardShape createBoardShape() {
             return new StandardBoardShape();
         }
     },
@@ -26,7 +26,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      */
     ASEB(2, "Aseb") {
         @Override
-        public @Nonnull BoardShape create() {
+        public @Nonnull BoardShape createBoardShape() {
             return new AsebBoardShape();
         }
     };

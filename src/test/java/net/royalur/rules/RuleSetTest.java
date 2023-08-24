@@ -88,7 +88,7 @@ public class RuleSetTest {
     public <P extends Piece, S extends PlayerState, R extends Roll>
     void testRollDice(NamedRuleSet<P, S, R> nrs) {
         RuleSet<?, ?, ?> rules = nrs.rules;
-        Dice<?> dice = rules.getDiceFactory().create();
+        Dice<?> dice = rules.getDiceFactory().createDice();
         for (int test = 0; test < 10_000; ++test) {
             Roll roll = dice.roll();
             assertNotNull(roll);
@@ -101,7 +101,7 @@ public class RuleSetTest {
     public <P extends Piece, S extends PlayerState, R extends Roll>
     void testFindAvailableMoves(NamedRuleSet<P, S, R> nrs) {
         RuleSet<P, S, R> rules = nrs.rules;
-        Dice<R> dice = rules.getDiceFactory().create();
+        Dice<R> dice = rules.getDiceFactory().createDice();
 
         GameState<P, S, R> initialState = rules.generateInitialGameState();
         Board<P> board = initialState.getBoard();

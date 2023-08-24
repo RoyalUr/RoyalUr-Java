@@ -86,7 +86,7 @@ public class BasicGame<
 
         this.random = random;
         this.rules = rules;
-        this.dice = rules.getDiceFactory().create(random);
+        this.dice = rules.getDiceFactory().createDice(random);
         this.metadata = new LinkedHashMap<>();
         this.states = new ArrayList<>();
 

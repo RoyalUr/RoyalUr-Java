@@ -135,7 +135,7 @@ public class LikelihoodAgent<
             int previousLength = diceHolders.length;
             diceHolders = Arrays.copyOf(diceHolders, newLength);
             for (int index = previousLength; index < newLength; ++index) {
-                diceHolders[index] = rules.getDiceFactory().create();
+                diceHolders[index] = rules.getDiceFactory().createDice();
             }
         }
         return diceHolders[depth];

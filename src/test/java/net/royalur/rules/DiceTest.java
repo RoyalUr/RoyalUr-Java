@@ -3,7 +3,6 @@ package net.royalur.rules;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.DiceType;
 import net.royalur.model.dice.Dice;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -71,8 +70,8 @@ public class DiceTest {
         int diceSamples = 10;
         int samplesPerDice = 10_000;
         for (int diceIndex = 0; diceIndex < diceSamples; ++diceIndex) {
-            Dice<?> dice1 = diceFactory.create(new Random(diceIndex));
-            Dice<?> dice2 = diceFactory.create(new Random(diceIndex));
+            Dice<?> dice1 = diceFactory.createDice(new Random(diceIndex));
+            Dice<?> dice2 = diceFactory.createDice(new Random(diceIndex));
 
             for (int sample = 0; sample < samplesPerDice; ++sample) {
                 int value1 = dice1.rollValue();
@@ -88,7 +87,7 @@ public class DiceTest {
     public void testFourBinaryDiceDistribution(NamedRollFunction nrf) {
         Function<Dice<?>, Integer> rollFunction = nrf.rollFunction;
 
-        Dice<?> dice = DiceType.FOUR_BINARY.create(new Random(47));
+        Dice<?> dice = DiceType.FOUR_BINARY.createDice(new Random(47));
         assertEquals(dice.getMaxRollValue(), 4);
 
         int samples = 160_000;
@@ -157,8 +156,8 @@ public class DiceTest {
     @ParameterizedTest
     @ArgumentsSource(DiceFactoryProvider.class)
     public void testDiceNoSeed(DiceFactory<?> diceFactory) {
-        Dice<?> dice1 = diceFactory.create();
-        Dice<?> dice2 = diceFactory.create();
+        Dice<?> dice1 = diceFactory.createDice();
+        Dice<?> dice2 = diceFactory.createDice();
         double diceMatchRatio;
 
         // The roll function used should not affect correlation.
@@ -179,8 +178,8 @@ public class DiceTest {
     @ArgumentsSource(DiceFactoryProvider.class)
     public void testDiceWithSeed(DiceFactory<?> diceFactory) {
         int seed = 763;
-        Dice<?> dice1 = diceFactory.create(new Random(seed));
-        Dice<?> dice2 = diceFactory.create(new Random(seed));
+        Dice<?> dice1 = diceFactory.createDice(new Random(seed));
+        Dice<?> dice2 = diceFactory.createDice(new Random(seed));
         double diceMatchRatio;
 
         // The roll function used should not affect correlation.

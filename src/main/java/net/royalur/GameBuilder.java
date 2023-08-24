@@ -88,7 +88,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the shape of the board set to {@code boardType}.
      */
     public @Nonnull GameBuilder<P, S, R> boardShape(@Nonnull BoardType boardType) {
-        return boardShape(boardType.create());
+        return boardShape(boardType.createBoardShape());
     }
 
     /**
@@ -106,7 +106,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the paths taken by each player set to {@code pathType}.
      */
     public @Nonnull GameBuilder<P, S, R> paths(@Nonnull PathType pathType) {
-        return paths(pathType.create());
+        return paths(pathType.createPathPair());
     }
 
     /**

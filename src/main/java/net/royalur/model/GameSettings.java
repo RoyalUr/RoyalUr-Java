@@ -227,7 +227,7 @@ public class GameSettings<R extends Roll> {
      * @return New game settings updated with a new board shape.
      */
     public @Nonnull GameSettings<R> withBoardShape(@Nonnull BoardShapeFactory boardShapeFactory) {
-        return withBoardShape(boardShapeFactory.create());
+        return withBoardShape(boardShapeFactory.createBoardShape());
     }
 
     /**
@@ -250,7 +250,7 @@ public class GameSettings<R extends Roll> {
      * @return New game settings updated with new paths.
      */
     public @Nonnull GameSettings<R> withPaths(@Nonnull PathPairFactory pathsFactory) {
-        return withPaths(pathsFactory.create());
+        return withPaths(pathsFactory.createPathPair());
     }
 
     /**

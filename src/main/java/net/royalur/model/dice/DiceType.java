@@ -19,7 +19,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      */
     FOUR_BINARY(1, "FourBinary") {
         @Override
-        public @Nonnull Dice<Roll> create(@Nonnull RandomGenerator random) {
+        public @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random) {
             return new BinaryDice(this, random, 4);
         }
     },
@@ -31,7 +31,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      */
     THREE_BINARY_0MAX(2, "ThreeBinary0Max") {
         @Override
-        public @Nonnull Dice<Roll> create(@Nonnull RandomGenerator random) {
+        public @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random) {
             return new BinaryDice0AsMax(this, random, 3);
         }
     },
@@ -91,10 +91,10 @@ public enum DiceType implements Name, DiceFactory<Roll> {
     }
 
     @Override
-    public @Nonnull Dice<Roll> create() {
-        return create(new Random());
+    public @Nonnull Dice<Roll> createDice() {
+        return createDice(new Random());
     }
 
     @Override
-    public abstract @Nonnull Dice<Roll> create(@Nonnull RandomGenerator random);
+    public abstract @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random);
 }
