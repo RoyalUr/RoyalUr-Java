@@ -28,7 +28,7 @@ public class BoardShape implements Named<Name> {
     /**
      * The set of tiles that represent rosette tiles in this board shape.
      */
-    private final @Nonnull Set<Tile> rosetteTiles;
+    private final @Nonnull Set<Tile> rosettes;
 
     /**
      * The number of x-coordinates that exist in this board shape.
@@ -41,22 +41,23 @@ public class BoardShape implements Named<Name> {
     private final int height;
 
     /**
-     * Instantiates a board shape with {@code tiles} representing the tiles on the board.
-     * @param name         The name of this board shape.
-     * @param tiles        The set of tiles that fall within the bounds of this board shape.
-     * @param rosetteTiles The set of tiles that represent rosette tiles in this board shape.
+     * Instantiates a board shape with {@code tiles} representing the tiles
+     * on the board.
+     * @param name     The name of this board shape.
+     * @param tiles    The set of tiles that fall within this board shape.
+     * @param rosettes The set of tiles that represent rosettes in this board shape.
      */
     public BoardShape(
             @Nonnull Name name,
             @Nonnull Set<Tile> tiles,
-            @Nonnull Set<Tile> rosetteTiles
+            @Nonnull Set<Tile> rosettes
     ) {
         if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
         this.name = name;
         this.tiles = Collections.unmodifiableSet(new HashSet<>(tiles));
-        this.rosetteTiles = Collections.unmodifiableSet(new HashSet<>(rosetteTiles));
+        this.rosettes = Collections.unmodifiableSet(new HashSet<>(rosettes));
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
@@ -79,7 +80,7 @@ public class BoardShape implements Named<Name> {
         this.width = maxX;
         this.height = maxY;
 
-        for (Tile rosette : rosetteTiles) {
+        for (Tile rosette : rosettes) {
             if (!contains(rosette)) {
                 throw new IllegalArgumentException(
                         "Rosette " + rosette + " does not exist on the board"
@@ -106,7 +107,7 @@ public class BoardShape implements Named<Name> {
      * @return The set of tiles that represent rosette tiles in this board shape.
      */
     public @Nonnull Set<Tile> getRosetteTiles() {
-        return rosetteTiles;
+        return rosettes;
     }
 
     /**
@@ -214,7 +215,7 @@ public class BoardShape implements Named<Name> {
      * @return Whether the given tile is a rosette tile on this board.
      */
     public boolean isRosette(@Nonnull Tile tile) {
-        return rosetteTiles.contains(tile);
+        return rosettes.contains(tile);
     }
 
     /**
@@ -231,10 +232,9 @@ public class BoardShape implements Named<Name> {
     }
 
     /**
-     * Determines whether the pair of paths, {@code paths}, could be
-     * played on this shape of board.
+     Determines whether {@code paths} can be used on this shape of board.
      * @param paths The pair of paths.
-     * @return Whether the pair of paths could be played on this shape
+     * @return Whether the pair of paths could be used on this shape
      *         of board.
      */
     public boolean isCompatible(@Nonnull PathPair paths) {
@@ -248,7 +248,7 @@ public class BoardShape implements Named<Name> {
      * @return Whether this board shape is equivalent to {@param other}.
      */
     public boolean isEquivalent(@Nonnull BoardShape other) {
-        return tiles.equals(other.tiles) && rosetteTiles.equals(other.rosetteTiles);
+        return tiles.equals(other.tiles) && rosettes.equals(other.rosettes);
     }
 
     @Override

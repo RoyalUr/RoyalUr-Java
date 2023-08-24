@@ -26,13 +26,4 @@ public interface Name {
      * @throws UnsupportedOperationException if this name does not have an associated ID.
      */
     int getID();
-
-    /**
-     * Instantiates a new text-based name.
-     * @param text The text name.
-     * @return A new text-based name.
-     */
-    static @Nonnull Name of(@Nonnull String text) {
-        return new TextName(text);
-    }
 }
