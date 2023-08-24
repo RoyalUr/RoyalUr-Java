@@ -77,6 +77,8 @@ public class Move<P extends Piece> {
             throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
         if ((to == null) ^ (toPiece == null))
             throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
+        if (to == null && capturedPiece != null)
+            throw new IllegalArgumentException("Scoring moves cannot capture a piece");
 
         this.player = player;
         this.from = from;
@@ -202,18 +204,13 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Gets an English description of this move.
+     * Generates an English description of this move.
      * @return An English description of this move.
      */
     public @Nonnull String describe() {
-        // Introduce a piece to capture A5
-        // Introduce a piece to A3
-        // Move A3 to B1
-        // Move A3 to capture B1
-        // Scored a piece from A3
-
         boolean scoring = isScoringPiece();
         boolean introducing = isIntroducingPiece();
+
         if (scoring && introducing)
             return "Introduce and score a piece.";
 
