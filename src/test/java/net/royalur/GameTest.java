@@ -17,7 +17,7 @@ public class GameTest {
 
     @Test
     public void testCopy() {
-        Game<Piece, PlayerState, Roll> game = Game.createRoyalUrNet();
+        Game<Piece, PlayerState, Roll> game = Game.createFinkel();
         assertNotNull(game);
 
         Game<Piece, PlayerState, Roll> copy = game.copy();
@@ -59,7 +59,7 @@ public class GameTest {
 
     @RepeatedTest(3)
     public void testStandardBellGameRandom() {
-        Game<Piece, PlayerState, Roll> game = Game.createRoyalUrNet();
+        Game<Piece, PlayerState, Roll> game = Game.createFinkel();
         RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
         int actions = Agent.playAutonomously(game, light, dark);

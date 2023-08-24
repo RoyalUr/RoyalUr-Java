@@ -35,11 +35,6 @@ public class GameSettings<R extends Roll> {
     );
 
     /**
-     * The default settings used on RoyalUr.net.
-     */
-    public static final @Nonnull GameSettings<Roll> ROYALUR_NET = FINKEL;
-
-    /**
      * The settings proposed by James Masters.
      */
     public static final @Nonnull GameSettings<Roll> MASTERS = new GameSettings<>(
@@ -51,19 +46,6 @@ public class GameSettings<R extends Roll> {
             true,
             false
     );
-
-    /**
-     * The settings proposed by James Masters.
-     */
-//    public static final @Nonnull GameSettings<Roll> MASTERS = new GameSettings<>(
-//            new StandardBoardShape(),
-//            new MastersPathPair(),
-//            DiceType.FOUR_BINARY,
-//            7,
-//            false,
-//            true,
-//            false
-//    );
 
     /**
      * The settings used for Aseb.

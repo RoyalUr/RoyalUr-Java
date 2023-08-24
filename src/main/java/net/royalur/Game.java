@@ -389,16 +389,6 @@ public interface Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Creates a standard game that follows the default rules on RoyalUr.net. Therefore,
-     * this uses the simple rules, the standard board shape, Bell's path, the standard dice,
-     * and seven starting pieces per player.
-     * @return A standard game.
-     */
-    static @Nonnull Game<Piece, PlayerState, Roll> createRoyalUrNet() {
-        return builder(GameSettings.ROYALUR_NET).build();
-    }
-
-    /**
      * Creates a standard game that follows the rules proposed by Irving Finkel.
      * This uses the simple rules, the standard board shape, Bell's path, safe
      * rosette tiles, the standard dice, and seven starting pieces per player.

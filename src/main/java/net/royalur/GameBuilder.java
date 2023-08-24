@@ -201,16 +201,6 @@ public class GameBuilder<
 
     /**
      * Creates a new builder that allows the construction of games
-     * following the standard rules from RoyalUr.net.
-     * @return A new builder that allows the construction of games
-     *         following the rules used on RoyalUr.net.
-     */
-    public @Nonnull GameBuilder<P, S, Roll> royalUrNet() {
-        return copy(GameSettings.ROYALUR_NET);
-    }
-
-    /**
-     * Creates a new builder that allows the construction of games
      * following the simple rules proposed by Irving Finkel.
      * @return A new builder that allows the construction of games
      *         following the rules proposed by Irving Finkel.

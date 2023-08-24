@@ -51,10 +51,7 @@ public class RGNTest {
         public static @Nonnull List<ProvidedRules> get() {
             List<ProvidedRules> rules = new ArrayList<>();
             rules.add(new ProvidedRules(
-                    "RoyalUr.net", Game.builder().royalUrNet().buildRules()
-            ));
-            rules.add(new ProvidedRules(
-                    "Bell", Game.builder().finkel().paths(new BellPathPair()).buildRules()
+                    "Bell", Game.builder().finkel().buildRules()
             ));
             rules.add(new ProvidedRules(
                     "Masters", Game.builder().masters().buildRules()
