@@ -15,29 +15,29 @@ and reporting what happens in the game as it progresses.
 
 ```java
 // Create a new game using the Finkel rules.
-Game<StandardPiece, PlayerState, Roll> game = Game.createStandard();
+Game<Piece, PlayerState, Roll> game = Game.createFinkel();
 
 // Play through a game making random moves.
 Random rand = new Random(42);
 
 while (!game.isFinished()) {
-    String turnPlayerName = game.getTurnPlayer().getName();
+    String turnPlayerName = game.getTurn().getTextName();
 
     if (game.isWaitingForRoll()) {
         // Roll the dice!
         Roll roll = game.rollDice();
-        System.out.println(turnPlayerName + ": Roll " + roll.getValue());
+        System.out.println(turnPlayerName + ": Roll " + roll.value());
     } else {
         // Make a random move.
-        List<Move<StandardPiece>> moves = game.findAvailableMoves();
-        Move<StandardPiece> randomMove = moves.get(rand.nextInt(moves.size()));
+        List<Move<Piece>> moves = game.findAvailableMoves();
+        Move<Piece> randomMove = moves.get(rand.nextInt(moves.size()));
         game.makeMove(randomMove);
         System.out.println(turnPlayerName + ": " + randomMove.describe());
     }
 }
 
 // Report the winner!
-System.out.println("\n" + game.getWinner().getName() + " won the game!");
+System.out.println("\n" + game.getWinner().getTextName() + " won the game!");
 ```
 
 Here is a snippet from the end of the output from running

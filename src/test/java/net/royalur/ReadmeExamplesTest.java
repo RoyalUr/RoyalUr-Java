@@ -20,7 +20,7 @@ public class ReadmeExamplesTest {
         Random rand = new Random(42);
 
         while (!game.isFinished()) {
-            String turnPlayerName = game.getTurnPlayer().getName();
+            String turnPlayerName = game.getTurn().getTextName();
 
             if (game.isWaitingForRoll()) {
                 // Roll the dice!
@@ -36,6 +36,6 @@ public class ReadmeExamplesTest {
         }
 
         // Report the winner!
-        System.out.println("\n" + game.getWinningPlayer().getName() + " won the game!");
+        System.out.println("\n" + game.getWinner().getTextName() + " won the game!");
     }
 }
