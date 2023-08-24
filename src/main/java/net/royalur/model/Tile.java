@@ -15,14 +15,14 @@ public class Tile {
     private final int x;
 
     /**
-     * The x-index of the tile. This coordinate is 0-based.
-     */
-    private final int ix;
-
-    /**
      * The y-coordinate of the tile. This coordinate is 1-based.
      */
     private final int y;
+
+    /**
+     * The x-index of the tile. This coordinate is 0-based.
+     */
+    private final int ix;
 
     /**
      * The y-index of the tile. This coordinate is 0-based.
