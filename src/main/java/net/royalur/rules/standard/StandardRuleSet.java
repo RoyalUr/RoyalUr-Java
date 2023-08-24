@@ -98,7 +98,6 @@ public class StandardRuleSet<
                             boardShape.getName().getTextName() + " board shape"
             );
         }
-
         this.boardShape = boardShape;
         this.paths = paths;
         this.diceFactory = diceFactory;
@@ -154,10 +153,6 @@ public class StandardRuleSet<
         return playerStateProvider;
     }
 
-    /**
-     * Generates the initial state for a game.
-     * @return The initial state for a game.
-     */
     @Override
     public @Nonnull GameState<P, S, R> generateInitialGameState() {
         return new WaitingForRollGameState<>(
@@ -273,7 +268,7 @@ public class StandardRuleSet<
             ));
         }
 
-        // Determine if the player has any available moves.
+        // Determine if the player has no available moves.
         if (availableMoves.isEmpty()) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
