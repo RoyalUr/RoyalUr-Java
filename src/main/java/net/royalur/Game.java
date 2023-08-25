@@ -31,9 +31,9 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     private final @Nonnull Dice<R> dice;
 
     /**
-     * Arbitrary metadata about this game.
+     * The metadata of this game.
      */
-    private final @Nonnull Map<String, String> metadata;
+    private final @Nonnull GameMetadata metadata;
 
     /**
      * The states that have occurred so far in the game.
@@ -45,17 +45,19 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * Instantiates a game of the Royal Game of Ur.
      * @param rules The set of rules that are being used for this game.
      * @param states The states that have occurred so far in the game.
+     * @param metadata The metadata of this game.
      */
     public Game(
             @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull List<GameState<P, S, R>> states
+            @Nonnull List<GameState<P, S, R>> states,
+            @Nonnull GameMetadata metadata
     ) {
         if (states.isEmpty())
             throw new IllegalArgumentException("Games must have at least one state to play from");
 
         this.rules = rules;
         this.dice = rules.getDiceFactory().createDice();
-        this.metadata = new LinkedHashMap<>();
+        this.metadata = metadata;
         this.states = new ArrayList<>();
 
         addStates(states);
@@ -66,7 +68,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param rules The rules of the game.
      */
     public Game(@Nonnull RuleSet<P, S, R> rules) {
-        this(rules, List.of(rules.generateInitialGameState()));
+        this(
+                rules,
+                List.of(rules.generateInitialGameState()),
+                GameMetadata.createForNewGame(rules)
+        );
     }
 
     /**
@@ -74,10 +80,8 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @param game The rules of the game.
      */
     protected Game(@Nonnull Game<P, S, R> game) {
-        this(game.rules, game.states);
+        this(game.rules, game.states, game.metadata.copy());
         dice.copyFrom(game.dice);
-        metadata.clear();
-        metadata.putAll(game.metadata);
     }
 
     /**
@@ -136,44 +140,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Sets the value of the metadata associated with the key {@code key} to {@code value}.
-     * @param key   The key of the metadata item to be updated.
-     * @param value The new value to be associated with the given metadata key.
+     * Retrieves the metadata of this game.
+     * @return The metadata of this game.
      */
-    public void putMetadata(@Nonnull String key, @Nonnull String value) {
-        metadata.put(key, value);
-    }
-
-    /**
-     * Removes any metadata associated with the key {@code key}.
-     * @param key The key of the metadata item to be removed.
-     */
-    public void removeMetadata(@Nonnull String key) {
-        metadata.remove(key);
-    }
-
-    /**
-     * Retrieves the metadata associated with the key {@code key}.
-     * @param key The key of the metadata item to be retrieved.
-     * @return The metadata associated with the key {@code key}.
-     * @throws IllegalStateException If there is no metadata associated with the key {@code key}.
-     */
-    public @Nonnull String getMetadata(@Nonnull String key) {
-        String value = metadata.get(key);
-        if (value != null)
-            return value;
-
-        throw new IllegalStateException(
-                "This game does not contain any metadata associated with the key '" + key + "'"
-        );
-    }
-
-    /**
-     * Retrieves all metadata about this game.
-     * @return The metadata about this game.
-     */
-    public @Nonnull Map<String, String> getMetadata() {
-        return Collections.unmodifiableMap(metadata);
+    public @Nonnull GameMetadata getMetadata() {
+        return metadata;
     }
 
     /**

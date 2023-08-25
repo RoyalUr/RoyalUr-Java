@@ -193,7 +193,7 @@ public class RGN implements RGUNotation {
         StringBuilder builder = new StringBuilder();
 
         // Encode the metadata.
-        for (Map.Entry<String, String> item : game.getMetadata().entrySet()) {
+        for (Map.Entry<String, String> item : game.getMetadata().getAll().entrySet()) {
             builder.append("[")
                     .append(item.getKey())
                     .append(" ")

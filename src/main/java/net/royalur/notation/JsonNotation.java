@@ -460,7 +460,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        for (Map.Entry<String, String> entry : game.getMetadata().entrySet()) {
+        for (Map.Entry<String, String> entry : game.getMetadata().getAll().entrySet()) {
             generator.writeStringField(entry.getKey(), entry.getValue());
         }
     }
