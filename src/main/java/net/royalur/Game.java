@@ -18,32 +18,139 @@ import java.util.stream.Collectors;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public abstract class Game<P extends Piece, S extends PlayerState, R extends Roll> {
+public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
+
+    /**
+     * The set of rules that are being used for this game.
+     */
+    private final @Nonnull RuleSet<P, S, R> rules;
+
+    /**
+     * The dice to be used to generate dice rolls.
+     */
+    private final @Nonnull Dice<R> dice;
+
+    /**
+     * Arbitrary metadata about this game.
+     */
+    private final @Nonnull Map<String, String> metadata;
+
+    /**
+     * The states that have occurred so far in the game.
+     * The last state in the list is the current state of the game.
+     */
+    private final @Nonnull List<GameState<P, S, R>> states;
+
+    /**
+     * Instantiates a game of the Royal Game of Ur.
+     * @param rules The set of rules that are being used for this game.
+     * @param states The states that have occurred so far in the game.
+     */
+    public Game(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull List<GameState<P, S, R>> states
+    ) {
+        if (states.isEmpty())
+            throw new IllegalArgumentException("Games must have at least one state to play from");
+
+        this.rules = rules;
+        this.dice = rules.getDiceFactory().createDice();
+        this.metadata = new LinkedHashMap<>();
+        this.states = new ArrayList<>();
+
+        addStates(states);
+    }
+
+    /**
+     * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
+     * @param rules The rules of the game.
+     */
+    public Game(@Nonnull RuleSet<P, S, R> rules) {
+        this(rules, List.of(rules.generateInitialGameState()));
+    }
+
+    /**
+     * Instantiates a game of the Royal Game of Ur that is a copy of {@code game}.
+     * @param game The rules of the game.
+     */
+    protected Game(@Nonnull Game<P, S, R> game) {
+        this(game.rules, game.states);
+        dice.copyFrom(game.dice);
+        metadata.clear();
+        metadata.putAll(game.metadata);
+    }
+
+    /**
+     * Adds all states from {@code states} to this game.
+     * @param states The states to add to this game.
+     */
+    public void addStates(@Nonnull Iterable<GameState<P, S, R>> states) {
+        int seen = 0;
+        for (GameState<P, S, R> state : states) {
+            seen += 1;
+            if (state == null)
+                throw new IllegalArgumentException("The states list should not contain any null entries");
+
+            addState(state);
+        }
+        if (seen == 0)
+            throw new IllegalArgumentException("There were no states to add");
+    }
+
+    /**
+     * Adds the state {@code state} to this game.
+     * @param state The state to add to this game.
+     */
+    public void addState(@Nonnull GameState<P, S, R> state) {
+        // Actually add the state to this game!
+        states.add(state);
+    }
+
+    /**
+     * Generates a copy of this game.
+     * @return A copy of {@code this}.
+     */
+    public @Nonnull Game<P, S, R> copy() {
+        if (!getClass().equals(Game.class)) {
+            throw new UnsupportedOperationException(
+                    getClass() + " does not support copy"
+            );
+        }
+        return new Game<>(this);
+    }
 
     /**
      * Gets the set of rules that are being used for this game.
      * @return The set of rules that are being used for this game.
      */
-    public abstract @Nonnull RuleSet<P, S, R> getRules();
+    public @Nonnull RuleSet<P, S, R> getRules() {
+        return rules;
+    }
 
     /**
      * Gets the dice to are used to make dice rolls.
      * @return The dice to be used to make dice rolls.
      */
-    public abstract @Nonnull Dice<R> getDice();
+    public @Nonnull Dice<R> getDice() {
+        return dice;
+    }
 
     /**
      * Sets the value of the metadata associated with the key {@code key} to {@code value}.
      * @param key   The key of the metadata item to be updated.
      * @param value The new value to be associated with the given metadata key.
      */
-    public abstract void putMetadata(@Nonnull String key, @Nonnull String value);
+    public void putMetadata(@Nonnull String key, @Nonnull String value) {
+        metadata.put(key, value);
+    }
 
     /**
      * Removes any metadata associated with the key {@code key}.
-     * @param key   The key of the metadata item to be removed.
+     * @param key The key of the metadata item to be removed.
      */
-    public abstract void removeMetadata(@Nonnull String key);
+    public void removeMetadata(@Nonnull String key) {
+        metadata.remove(key);
+    }
 
     /**
      * Retrieves the metadata associated with the key {@code key}.
@@ -51,82 +158,150 @@ public abstract class Game<P extends Piece, S extends PlayerState, R extends Rol
      * @return The metadata associated with the key {@code key}.
      * @throws IllegalStateException If there is no metadata associated with the key {@code key}.
      */
-    public abstract @Nonnull String getMetadata(@Nonnull String key);
+    public @Nonnull String getMetadata(@Nonnull String key) {
+        String value = metadata.get(key);
+        if (value != null)
+            return value;
+
+        throw new IllegalStateException(
+                "This game does not contain any metadata associated with the key '" + key + "'"
+        );
+    }
 
     /**
      * Retrieves all metadata about this game.
      * @return The metadata about this game.
      */
-    public abstract @Nonnull Map<String, String> getMetadata();
+    public @Nonnull Map<String, String> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
+    }
 
     /**
      * Retrieves the states that have occurred so far in the game.
      * The last state in the list is the current state of the game.
      * @return The states that have occurred so far in the game.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> getStates();
+    public @Nonnull List<GameState<P, S, R>> getStates() {
+        return Collections.unmodifiableList(states);
+    }
 
     /**
      * Retrieve the state that the game is currently in.
      * @return The state that the game is currently in.
      */
-    public abstract @Nonnull GameState<P, S, R> getCurrentState();
-
-    /**
-     * Generates a copy of this game.
-     * @return A copy of {@code this}.
-     */
-    public abstract @Nonnull Game<P, S, R> copy();
+    public @Nonnull GameState<P, S, R> getCurrentState() {
+        return states.get(states.size() - 1);
+    }
 
     /**
      * Rolls the dice, with a known value of {@code roll}, and updates the
      * state of the game accordingly.
      * @param roll The value of the dice that is to be rolled.
      */
-    public abstract void rollDice(@Nonnull R roll);
+    public void rollDice(@Nonnull R roll) {
+        WaitingForRollGameState<P, S, R> state = getCurrentWaitingForRollState();
+        addStates(rules.applyRoll(state, roll));
+    }
 
     /**
      * Rolls the dice, and updates the state of the game accordingly.
      * @return The value of the dice that were rolled.
      */
-    public abstract @Nonnull R rollDice();
+    public @Nonnull R rollDice() {
+        R roll = dice.roll();
+        rollDice(roll);
+        return roll;
+    }
 
     /**
      * Rolls the dice with a known value of {@code value}, and updates the state of the game accordingly.
      * @param value The value of the dice to be rolled.
      * @return The value of the dice that were rolled.
      */
-    public abstract @Nonnull R rollDice(int value);
+    public @Nonnull R rollDice(int value) {
+        R roll = dice.generateRoll(value);
+        rollDice(roll);
+        return roll;
+    }
 
     /**
      * Finds all available moves that can be made from the current state of the game.
      * @return All available moves that can be made from the current state of the game.
      */
-    public abstract @Nonnull List<Move<P>> findAvailableMoves();
+    public @Nonnull List<Move<P>> findAvailableMoves() {
+        WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
+        return rules.findAvailableMoves(
+                state.getBoard(),
+                state.getTurnPlayer(),
+                state.getRoll()
+        );
+    }
 
     /**
      * Applies the move {@code move} to update the state of the game.
      * This does not check whether the move is valid.
      * @param move The move to make from the current state of the game.
      */
-    public abstract void makeMove(@Nonnull Move<P> move);
+    public void makeMove(@Nonnull Move<P> move) {
+        WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
+        addStates(rules.applyMove(state, move));
+    }
 
     /**
      * Moves the piece {@code piece}, and updates the state of the game.
      * @param piece The piece to be moved.
      */
-    public abstract void makeMove(@Nonnull P piece);
+    public void makeMove(@Nonnull P piece) {
+        for (Move<P> move : findAvailableMoves()) {
+            if (!move.getSourcePiece().equals(piece))
+                continue;
+
+            makeMove(move);
+            return;
+        }
+        throw new IllegalStateException("The piece cannot be moved, " + piece);
+    }
 
     /**
      * Moves the piece on tile {@code tile}, and updates the state of the game.
      * @param tile The tile where the piece to be moved resides.
      */
-    public abstract void makeMove(@Nonnull Tile tile);
+    public void makeMove(@Nonnull Tile tile) {
+        WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
+        Board<P> board = state.getBoard();
+
+        if (!board.contains(tile)) {
+            Tile startTile = rules.getPaths().getStart(state.getTurn());
+            if (!tile.equals(startTile)) {
+                throw new IllegalStateException(
+                        "The tile does not exist on the board, " + tile +
+                        ", and is not the source tile for introducing pieces"
+                );
+            }
+            makeMoveIntroducingPiece();
+            return;
+        }
+
+        P piece = board.get(tile);
+        if (piece == null)
+            throw new IllegalStateException("There is no piece on tile " + tile);
+
+        makeMove(piece);
+    }
 
     /**
      * Moves a new piece onto the board.
      */
-    public abstract void makeMoveIntroducingPiece();
+    public void makeMoveIntroducingPiece() {
+        for (Move<P> move : findAvailableMoves()) {
+            if (!move.isIntroducingPiece())
+                continue;
+
+            makeMove(move);
+            return;
+        }
+        throw new IllegalStateException("There is no available move to introduce a piece to the board");
+    }
 
     /**
      * Retrieves the states that represent the actions that have been

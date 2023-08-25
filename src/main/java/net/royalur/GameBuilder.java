@@ -185,7 +185,7 @@ public class GameBuilder<
      * @return A new game using the rules set in this builder.
      */
     public @Nonnull Game<P, S, R> build() {
-        return new BasicGame<>(buildRules());
+        return new Game<>(buildRules());
     }
 
     /**
