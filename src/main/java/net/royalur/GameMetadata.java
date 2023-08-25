@@ -138,6 +138,20 @@ public class GameMetadata {
         return DateTimeFormatter.RFC_1123_DATE_TIME.parse(formatted);
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !getClass().equals(obj.getClass()))
+            return false;
+
+        GameMetadata other = (GameMetadata) obj;
+        return metadata.equals(other.metadata);
+    }
+
+    @Override
+    public @Nonnull String toString() {
+        return metadata.toString();
+    }
+
     /**
      * Initialises metadata for a new game.
      * @param rules The rules used for the game.

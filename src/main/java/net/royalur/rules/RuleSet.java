@@ -1,5 +1,6 @@
 package net.royalur.rules;
 
+import net.royalur.GameMetadata;
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
@@ -12,7 +13,6 @@ import net.royalur.rules.state.WaitingForMoveGameState;
 import net.royalur.rules.state.WaitingForRollGameState;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -132,6 +132,6 @@ public interface RuleSet<
      */
     static <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R>
     createStandard(@Nonnull GameSettings<R> settings) {
-        return new StandardRuleSetProvider().create(settings, Collections.emptyMap());
+        return new StandardRuleSetProvider().create(settings, new GameMetadata());
     }
 }

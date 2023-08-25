@@ -14,25 +14,15 @@ import javax.annotation.Nonnull;
  */
 public class StandardRuleSetProvider implements RuleSetProvider<Piece, PlayerState> {
 
-    public <R extends Roll> @Nonnull PieceProvider<Piece> createPieceProvider(
-            @Nonnull GameSettings<R> settings,
-            @Nonnull GameMetadata metadata
-    ) {
-        return new BasicPieceProvider();
-    }
-
-    public <R extends Roll> @Nonnull PlayerStateProvider<PlayerState> createPlayerStateProvider(
-            @Nonnull GameSettings<R> settings,
-            @Nonnull GameMetadata metadata
-    ) {
-        return new BasicPlayerStateProvider(settings.getStartingPieceCount());
-    }
-
     @Override
     public <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R> create(
             @Nonnull GameSettings<R> settings,
             @Nonnull GameMetadata metadata
     ) {
+        BasicPieceProvider pieceProvider = new BasicPieceProvider();
+        BasicPlayerStateProvider stateProvider = new BasicPlayerStateProvider(
+                settings.getStartingPieceCount()
+        );
         return new StandardRuleSet<>(
                 settings.getBoardShape(),
                 settings.getPaths(),
@@ -40,8 +30,8 @@ public class StandardRuleSetProvider implements RuleSetProvider<Piece, PlayerSta
                 settings.areRosettesSafe(),
                 settings.doRosettesGrantExtraRolls(),
                 settings.doCapturesGrantExtraRolls(),
-                createPieceProvider(settings, metadata),
-                createPlayerStateProvider(settings, metadata)
+                pieceProvider,
+                stateProvider
         );
     }
 }

@@ -51,7 +51,7 @@ public class GameTest {
         assertEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());
 
-        copy.putMetadata("TEST", "Some data");
+        copy.getMetadata().put("TEST", "Some data");
         assertSame(game.getRules(), copy.getRules());
         assertNotEquals(game.getMetadata(), copy.getMetadata());
         assertEquals(game.getStates(), copy.getStates());

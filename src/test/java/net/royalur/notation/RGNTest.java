@@ -241,8 +241,8 @@ public class RGNTest {
 //        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
 //        assertTrue(lines.contains("[Light " + RGN.escape(game.getLightPlayer().name) + "]"));
 //        assertTrue(lines.contains("[Dark " + RGN.escape(game.getDarkPlayer().name) + "]"));
-        assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Date \"") && line.endsWith("\"]")));
-        assertTrue(lines.stream().anyMatch(line -> line.startsWith("[Time \"") && line.endsWith("\"]")));
-        assertTrue(lines.stream().anyMatch(line -> line.startsWith("[TimeZone \"") && line.endsWith("\"]")));
+        assertTrue(lines.stream().anyMatch(
+                line -> line.startsWith("[StartTime \"") && line.endsWith("\"]")
+        ));
     }
 }
