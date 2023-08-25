@@ -500,10 +500,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      */
     public static <R extends Roll> @Nonnull GameBuilder<Piece, PlayerState, R>
     builder(GameSettings<R> settings) {
-        return new GameBuilder<>(
-                settings, Collections.emptyMap(),
-                new StandardRuleSetProvider()
-        );
+        return new GameBuilder<>(settings, new StandardRuleSetProvider());
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.royalur.rules;
 
+import net.royalur.GameMetadata;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
@@ -26,18 +27,6 @@ public interface RuleSetProvider<P extends Piece, S extends PlayerState> {
      */
     <R extends Roll> @Nonnull RuleSet<P, S, R> create(
             @Nonnull GameSettings<R> settings,
-            @Nonnull Map<String, String> metadata
+            @Nonnull GameMetadata metadata
     );
-
-    /**
-     * Creates a rule set to match the given settings, with no associated metadata.
-     * @param settings The settings of the game.
-     * @param <R> The type of rolls that may be made.
-     * @return A rule set matching the given settings.
-     */
-    default <R extends Roll> @Nonnull RuleSet<P, S, R> create(
-            @Nonnull GameSettings<R> settings
-    ) {
-        return create(settings, Collections.emptyMap());
-    }
 }
