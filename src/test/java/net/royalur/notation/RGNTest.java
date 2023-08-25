@@ -2,13 +2,14 @@ package net.royalur.notation;
 
 import net.royalur.BasicGame;
 import net.royalur.Game;
+import net.royalur.TestUtils;
 import net.royalur.agent.Agent;
 import net.royalur.agent.RandomAgent;
 import net.royalur.model.*;
+import net.royalur.model.dice.DiceFactory;
+import net.royalur.model.dice.DiceType;
 import net.royalur.model.dice.Roll;
-import net.royalur.model.path.BellPathPair;
-import net.royalur.model.path.MurrayPathPair;
-import net.royalur.model.path.SkiriukPathPair;
+import net.royalur.model.path.PathType;
 import net.royalur.rules.RuleSet;
 import net.royalur.util.Cast;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -50,20 +51,32 @@ public class RGNTest {
     public static class RulesProvider implements ArgumentsProvider {
         public static @Nonnull List<ProvidedRules> get() {
             List<ProvidedRules> rules = new ArrayList<>();
+
+            DiceFactory<Roll> dice = TestUtils.createDeterministicDice(
+                    DiceType.FOUR_BINARY
+            );
+
             rules.add(new ProvidedRules(
-                    "Bell", Game.builder().finkel().buildRules()
+                    "Bell",
+                    Game.builder().finkel().dice(dice).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Masters", Game.builder().masters().buildRules()
+                    "Masters",
+                    Game.builder().masters().dice(dice).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Murray", Game.builder().finkel().paths(new MurrayPathPair()).buildRules()
+                    "Murray",
+                    Game.builder().finkel().paths(PathType.MURRAY)
+                            .dice(dice).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Skiriuk", Game.builder().finkel().paths(new SkiriukPathPair()).buildRules()
+                    "Skiriuk",
+                    Game.builder().finkel().paths(PathType.SKIRIUK)
+                            .dice(dice).buildRules()
             ));
             rules.add(new ProvidedRules(
-                    "Aseb", Game.builder().aseb().buildRules()
+                    "Aseb",
+                    Game.builder().aseb().dice(dice).buildRules()
             ));
             return rules;
         }
@@ -135,26 +148,25 @@ public class RGNTest {
 
         public static @Nonnull List<ProvidedGame> get() {
             List<ProvidedGame> games = new ArrayList<>();
-            int seed = 1;
 
             // Empty games.
             for (ProvidedRules rules : RulesProvider.get()) {
                 games.add(new ProvidedGame(
                         "Empty, " + rules.name,
-                        new BasicGame<>(new Random(++seed), rules.rules)
+                        new BasicGame<>(rules.rules)
                 ));
             }
 
             // One roll by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 game.rollDice(1);
                 games.add(new ProvidedGame("One Roll, " + rules.name, game));
             }
 
             // One move by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 games.add(new ProvidedGame("One Move, " + rules.name, game));
@@ -162,7 +174,7 @@ public class RGNTest {
 
             // One move by light, and one roll.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 games.add(new ProvidedGame("One Move One Roll, " + rules.name, game));
@@ -170,7 +182,7 @@ public class RGNTest {
 
             // One move by light, and one move by dark.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 game.rollDice(1);
                 game.makeMoveIntroducingPiece();
                 game.rollDice(1);
@@ -180,7 +192,7 @@ public class RGNTest {
 
             // Game where light always rolls 1, and dark always rolls 0.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 playRiggedGame(rules.name, game);
                 games.add(new ProvidedGame("Rigged, " + rules.name, game));
             }
@@ -189,7 +201,7 @@ public class RGNTest {
             Random random = new Random(53);
             Agent<?, ?, ?> randomAgent = new RandomAgent<>(random);
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game<?, ?, ?> game = new BasicGame<>(new Random(++seed), rules.rules);
+                Game<?, ?, ?> game = new BasicGame<>(rules.rules);
                 Agent.playAutonomously(
                         Cast.unsafeCast(game),
                         Cast.unsafeCast(randomAgent),

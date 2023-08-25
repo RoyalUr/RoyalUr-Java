@@ -6,6 +6,7 @@ import net.royalur.name.UniqueNameMap;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
+import java.util.function.Supplier;
 import java.util.random.RandomGenerator;
 
 /**
@@ -95,6 +96,32 @@ public enum DiceType implements Name, DiceFactory<Roll> {
         return createDice(new Random());
     }
 
-    @Override
+    /**
+     * Creates a set of these dice using {@code random} as its source of randomness.
+     * @param random The source of randomness to use for the dice.
+     * @return A new set of these dice.
+     */
     public abstract @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random);
+
+    /**
+     * Creates a factory that produces dice using {@code randomProvider} to
+     * generate the source of randomness for each dice that is produced.
+     * @param randomProvider The provider of the source of randomness for each dice.
+     * @return A factory for these dice.
+     */
+    public @Nonnull DiceFactory<Roll> createFactory(
+            @Nonnull Supplier<RandomGenerator> randomProvider
+    ) {
+        return new DiceFactory<>() {
+            @Override
+            public @Nonnull Dice<Roll> createDice() {
+                return DiceType.this.createDice(randomProvider.get());
+            }
+
+            @Override
+            public @Nonnull Name getName() {
+                return DiceType.this;
+            }
+        };
+    }
 }

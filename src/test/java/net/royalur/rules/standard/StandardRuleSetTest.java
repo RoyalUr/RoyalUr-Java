@@ -1,12 +1,11 @@
 package net.royalur.rules.standard;
 
 import net.royalur.Game;
+import net.royalur.TestUtils;
 import net.royalur.model.*;
-import net.royalur.model.dice.BasicRoll;
-import net.royalur.model.dice.Roll;
+import net.royalur.model.dice.*;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.path.PathType;
-import net.royalur.model.dice.Dice;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.fast.FastGame;
 import net.royalur.rules.standard.fast.FastMoveList;
@@ -45,26 +44,32 @@ public class StandardRuleSetTest {
     public static class StandardGameSettingsProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+
+            DiceFactory<Roll> dice = TestUtils.createDeterministicDice(
+                    DiceType.FOUR_BINARY
+            );
             return Stream.of(
                     Arguments.of(new NamedGameSettings(
                             "Finkel",
-                            GameSettings.FINKEL
+                            GameSettings.FINKEL.withDice(dice)
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Masters",
-                            GameSettings.MASTERS
+                            GameSettings.MASTERS.withDice(dice)
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Skiriuk",
-                            GameSettings.FINKEL.withPaths(PathType.SKIRIUK.createPathPair())
+                            GameSettings.FINKEL.withPaths(PathType.SKIRIUK)
+                                    .withDice(dice)
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Murray",
-                            GameSettings.FINKEL.withPaths(PathType.MURRAY.createPathPair())
+                            GameSettings.FINKEL.withPaths(PathType.MURRAY)
+                                    .withDice(dice)
                     )),
                     Arguments.of(new NamedGameSettings(
                             "Aseb",
-                            GameSettings.ASEB
+                            GameSettings.ASEB.withDice(dice)
                     ))
             );
         }
@@ -156,10 +161,10 @@ public class StandardRuleSetTest {
         StandardRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
 
         int tests = 100;
-        Random random = new Random(43);
+        Random moveChoiceRandom = new Random(43);
         FastGame fastGame = rules.createCompatibleFastGame();
         FastMoveList moveList = new FastMoveList();
-        Dice<Roll> dice = rules.getDiceFactory().createDice(random);
+        Dice<Roll> dice = rules.getDiceFactory().createDice();
 
         for (int test = 0; test < tests; ++test) {
             Game<Piece, PlayerState, Roll> game = Game.create(settings);
@@ -189,7 +194,7 @@ public class StandardRuleSetTest {
                         }
                     }
 
-                    int moveIndex = random.nextInt(moves.size());
+                    int moveIndex = moveChoiceRandom.nextInt(moves.size());
                     game.makeMove(moves.get(moveIndex));
                     fastGame.applyMove(moveList.moves[moveIndex]);
 

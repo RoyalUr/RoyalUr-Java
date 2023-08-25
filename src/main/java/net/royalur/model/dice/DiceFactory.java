@@ -17,11 +17,4 @@ public interface DiceFactory<R extends Roll> extends Named<Name> {
      * @return The instance of the dice using a default source of randomness.
      */
     @Nonnull Dice<R> createDice();
-
-    /**
-     * Create an instance of the dice.
-     * @param random The source of randomness to use when generating dice rolls.
-     * @return The instance of the dice.
-     */
-    @Nonnull Dice<R> createDice(@Nonnull RandomGenerator random);
 }

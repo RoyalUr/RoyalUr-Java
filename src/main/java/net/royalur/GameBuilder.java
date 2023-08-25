@@ -12,8 +12,6 @@ import net.royalur.rules.RuleSetProvider;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Random;
-import java.util.random.RandomGenerator;
 
 /**
  * A builder to help in the creation of custom games of the Royal Game of Ur.
@@ -187,16 +185,7 @@ public class GameBuilder<
      * @return A new game using the rules set in this builder.
      */
     public @Nonnull Game<P, S, R> build() {
-        return build(new Random());
-    }
-
-    /**
-     * Builds a new game using the rules set in this builder.
-     * @param random The source of randomness to use for dice rolls.
-     * @return A new game using the rules set in this builder.
-     */
-    public @Nonnull Game<P, S, R> build(@Nonnull RandomGenerator random) {
-        return new BasicGame<>(random, buildRules());
+        return new BasicGame<>(buildRules());
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.royalur.rules;
 
+import net.royalur.TestUtils;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.DiceType;
 import net.royalur.model.dice.Dice;
@@ -54,13 +55,29 @@ public class DiceTest {
         }
     }
 
+    public static class DiceTypeProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            DiceType[] diceTypes = DiceType.values();
+            Arguments[] arguments = new Arguments[diceTypes.length];
+            for (int index = 0; index < diceTypes.length; ++index) {
+                arguments[index] = Arguments.of(diceTypes[index]);
+            }
+            return Stream.of(arguments);
+        }
+    }
+
     public static class DiceFactoryProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.of(DiceType.FOUR_BINARY),
-                    Arguments.of(DiceType.THREE_BINARY_0MAX)
-            );
+            DiceType[] diceTypes = DiceType.values();
+            Arguments[] arguments = new Arguments[diceTypes.length];
+            for (int index = 0; index < diceTypes.length; ++index) {
+                arguments[index] = Arguments.of(
+                        TestUtils.createDeterministicDice(diceTypes[index])
+                );
+            }
+            return Stream.of(arguments);
         }
     }
 
@@ -70,8 +87,8 @@ public class DiceTest {
         int diceSamples = 10;
         int samplesPerDice = 10_000;
         for (int diceIndex = 0; diceIndex < diceSamples; ++diceIndex) {
-            Dice<?> dice1 = diceFactory.createDice(new Random(diceIndex));
-            Dice<?> dice2 = diceFactory.createDice(new Random(diceIndex));
+            Dice<?> dice1 = diceFactory.createDice();
+            Dice<?> dice2 = diceFactory.createDice();
 
             for (int sample = 0; sample < samplesPerDice; ++sample) {
                 int value1 = dice1.rollValue();
@@ -175,11 +192,11 @@ public class DiceTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(DiceFactoryProvider.class)
-    public void testDiceWithSeed(DiceFactory<?> diceFactory) {
+    @ArgumentsSource(DiceTypeProvider.class)
+    public void testDiceWithSeed(DiceType diceType) {
         int seed = 763;
-        Dice<?> dice1 = diceFactory.createDice(new Random(seed));
-        Dice<?> dice2 = diceFactory.createDice(new Random(seed));
+        Dice<?> dice1 = diceType.createDice(new Random(seed));
+        Dice<?> dice2 = diceType.createDice(new Random(seed));
         double diceMatchRatio;
 
         // The roll function used should not affect correlation.
