@@ -103,6 +103,7 @@ public class BasicGame<
      */
     private BasicGame(@Nonnull BasicGame<P, S, R> game) {
         this(game.rules, game.states);
+        dice.copyFrom(game.dice);
         metadata.clear();
         metadata.putAll(game.metadata);
     }
