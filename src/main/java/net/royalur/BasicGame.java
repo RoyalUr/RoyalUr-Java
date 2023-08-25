@@ -13,7 +13,6 @@ import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.random.RandomGenerator;
 
 /**
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
@@ -27,7 +26,7 @@ public class BasicGame<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> implements Game<P, S, R> {
+> extends Game<P, S, R> {
 
     /**
      * The standard format to use for Date metadata values.
@@ -43,11 +42,6 @@ public class BasicGame<
      * The standard format to use for TimeZone metadata values.
      */
     private static final @Nonnull String TIMEZONE_PATTERN = "OOOO";
-
-    /**
-     * The source of randomness to use for generating dice rolls.
-     */
-    private final @Nonnull RandomGenerator random;
 
     /**
      * The set of rules that are being used for this game.
@@ -72,21 +66,18 @@ public class BasicGame<
 
     /**
      * Instantiates a game of the Royal Game of Ur.
-     * @param random The source of randomness to use to generate dice rolls.
      * @param rules The set of rules that are being used for this game.
      * @param states The states that have occurred so far in the game.
      */
     public BasicGame(
-            @Nonnull RandomGenerator random,
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull List<GameState<P, S, R>> states
     ) {
         if (states.isEmpty())
             throw new IllegalArgumentException("Games must have at least one state to play from");
 
-        this.random = random;
         this.rules = rules;
-        this.dice = rules.getDiceFactory().createDice(random);
+        this.dice = rules.getDiceFactory().createDice();
         this.metadata = new LinkedHashMap<>();
         this.states = new ArrayList<>();
 
@@ -100,11 +91,10 @@ public class BasicGame<
 
     /**
      * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
-     * @param random The source of randomness to use to generate dice rolls.
      * @param rules The rules of the game.
      */
-    public BasicGame(@Nonnull RandomGenerator random, @Nonnull RuleSet<P, S, R> rules) {
-        this(random, rules, List.of(rules.generateInitialGameState()));
+    public BasicGame(@Nonnull RuleSet<P, S, R> rules) {
+        this(rules, List.of(rules.generateInitialGameState()));
     }
 
     /**
@@ -112,7 +102,7 @@ public class BasicGame<
      * @param game The rules of the game.
      */
     private BasicGame(@Nonnull BasicGame<P, S, R> game) {
-        this(game.random, game.rules, game.states);
+        this(game.rules, game.states);
         metadata.clear();
         metadata.putAll(game.metadata);
     }
