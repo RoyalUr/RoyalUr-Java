@@ -18,7 +18,7 @@ and reporting what happens in the game as it progresses.
 Game<Piece, PlayerState, Roll> game = Game.createFinkel();
 
 // Play through a game making random moves.
-Random rand = new Random(42);
+Random rand = new Random();
 
 while (!game.isFinished()) {
     String turnPlayerName = game.getTurn().getTextName();
