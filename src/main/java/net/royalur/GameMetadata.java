@@ -34,7 +34,7 @@ public class GameMetadata {
     public static final @Nonnull String END_DATETIME_KEY = "EndTime";
 
     /**
-     * Arbitrary metadata about this game.
+     * Arbitrary metadata about a game.
      */
     private final @Nonnull Map<String, String> metadata;
 
@@ -106,9 +106,8 @@ public class GameMetadata {
     }
 
     /**
-     * Gets the date and time when this game began,
-     * or {@code null} if no end time is included in this
-     * game's metadata.
+     * Gets the date and time when this game began, or {@code null}
+     * if no end time is included in this game's metadata.
      * @return The date and time when this game began,
      *         or else {@code null}.
      */
@@ -130,9 +129,8 @@ public class GameMetadata {
     }
 
     /**
-     * Gets the date and time when this game was finished,
-     * or {@code null} if no end time is included in this
-     * game's metadata.
+     * Gets the date and time when this game was finished, or {@code null}
+     * if no end time is included in this game's metadata.
      * @return The date and time when this game was finished,
      *         or else {@code null}.
      */
