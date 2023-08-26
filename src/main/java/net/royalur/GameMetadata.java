@@ -20,12 +20,12 @@ public class GameMetadata {
     /**
      * The key for storing when a game started.
      */
-    private static final @Nonnull String START_TIME_KEY = "StartTime";
+    public static final @Nonnull String START_TIME_KEY = "StartTime";
 
     /**
      * The key for storing when a game was finished.
      */
-    private static final @Nonnull String END_TIME_KEY = "EndTime";
+    public static final @Nonnull String END_TIME_KEY = "EndTime";
 
     /**
      * Arbitrary metadata about this game.
