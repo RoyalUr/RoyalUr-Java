@@ -18,14 +18,20 @@ import java.util.Map;
 public class GameMetadata {
 
     /**
+     * The format used for parsing and serialising date times to text.
+     */
+    public static final @Nonnull DateTimeFormatter DATETIME_FORMATTER =
+            DateTimeFormatter.ISO_DATE;
+
+    /**
      * The key for storing when a game started.
      */
-    public static final @Nonnull String START_TIME_KEY = "StartTime";
+    public static final @Nonnull String START_DATETIME_KEY = "StartTime";
 
     /**
      * The key for storing when a game was finished.
      */
-    public static final @Nonnull String END_TIME_KEY = "EndTime";
+    public static final @Nonnull String END_DATETIME_KEY = "EndTime";
 
     /**
      * Arbitrary metadata about this game.
@@ -95,8 +101,8 @@ public class GameMetadata {
      * @param datetime The date and time when this game began.
      */
     public void setStartTime(@Nonnull TemporalAccessor datetime) {
-        String formatted = DateTimeFormatter.RFC_1123_DATE_TIME.format(datetime);
-        put(START_TIME_KEY, formatted);
+        String formatted = DATETIME_FORMATTER.format(datetime);
+        put(START_DATETIME_KEY, formatted);
     }
 
     /**
@@ -107,11 +113,11 @@ public class GameMetadata {
      *         or else {@code null}.
      */
     public @Nullable TemporalAccessor getStartTime() {
-        String formatted = get(START_TIME_KEY);
+        String formatted = get(START_DATETIME_KEY);
         if (formatted == null)
             return null;
 
-        return DateTimeFormatter.RFC_1123_DATE_TIME.parse(formatted);
+        return DATETIME_FORMATTER.parse(formatted);
     }
 
     /**
@@ -119,8 +125,8 @@ public class GameMetadata {
      * @param datetime The date and time when this game was finished.
      */
     public void setEndTime(@Nonnull TemporalAccessor datetime) {
-        String formatted = DateTimeFormatter.RFC_1123_DATE_TIME.format(datetime);
-        put(END_TIME_KEY, formatted);
+        String formatted = DATETIME_FORMATTER.format(datetime);
+        put(END_DATETIME_KEY, formatted);
     }
 
     /**
@@ -131,11 +137,11 @@ public class GameMetadata {
      *         or else {@code null}.
      */
     public @Nullable TemporalAccessor getEndTime() {
-        String formatted = get(END_TIME_KEY);
+        String formatted = get(END_DATETIME_KEY);
         if (formatted == null)
             return null;
 
-        return DateTimeFormatter.RFC_1123_DATE_TIME.parse(formatted);
+        return DATETIME_FORMATTER.parse(formatted);
     }
 
     @Override
