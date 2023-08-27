@@ -497,12 +497,9 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
 
     /**
      * Creates a builder to assist in constructing games with custom settings.
-     * @param settings The settings to initialise the builder with.
-     * @return A builder to assist in constructing games with custom settings.
      */
-    public static <R extends Roll> @Nonnull GameBuilder<Piece, PlayerState, R>
-    builder(GameSettings<R> settings) {
-        return new GameBuilder<>(settings, new StandardRuleSetProvider());
+    public static @Nonnull GameBuilder<Piece, PlayerState, Roll> builder() {
+        return new GameBuilder<>(GameSettings.FINKEL, new StandardRuleSetProvider());
     }
 
     /**
@@ -512,17 +509,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      */
     public static <R extends Roll> @Nonnull Game<Piece, PlayerState, R>
     create(GameSettings<R> settings) {
-        return builder(settings).build();
-    }
-
-    /**
-     * Creates a builder to assist in constructing games with custom settings.
-     * Provides a builder that is set up to produce games using the Finkel
-     * rule set by default.
-     * @return A builder to assist in constructing games with custom settings.
-     */
-    public static @Nonnull GameBuilder<Piece, PlayerState, Roll> builder() {
-        return builder(GameSettings.FINKEL);
+        return builder().settings(settings).build();
     }
 
     /**
@@ -532,7 +519,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createFinkel() {
-        return builder(GameSettings.FINKEL).build();
+        return builder().finkel().build();
     }
 
     /**
@@ -542,7 +529,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createMasters() {
-        return builder(GameSettings.MASTERS).build();
+        return builder().masters().build();
     }
 
     /**
@@ -551,6 +538,6 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game of Aseb.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createAseb() {
-        return builder(GameSettings.ASEB).build();
+        return builder().aseb().build();
     }
 }
