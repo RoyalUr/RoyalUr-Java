@@ -36,7 +36,9 @@ public class FastBoard {
         this.rosetteTiles = new int[shape.getRosetteTiles().size()];
         int rosetteTilesIndex = 0;
         for (Tile tile : shape.getRosetteTiles()) {
-            rosetteTiles[rosetteTilesIndex++] = calcTileIndex(tile);
+            rosetteTiles[rosetteTilesIndex++] = calcTileIndex(
+                    tile.getXIndex(), tile.getYIndex()
+            );
         }
     }
 
@@ -57,25 +59,15 @@ public class FastBoard {
                     piecePathIndex = 0;
                 } else {
                     int pieceSign = (piece.getOwner() == PlayerType.LIGHT ? 1 : -1);
-                    piecePathIndex = pieceSign * piece.getPathIndex();
+                    piecePathIndex = pieceSign * (piece.getPathIndex() + 1);
                 }
                 set(calcTileIndex(ix, iy), piecePathIndex);
             }
         }
     }
 
-    public int calcTileIndex(@Nonnull Tile tile) {
-        return calcTileIndex(tile.getXIndex(), tile.getYIndex());
-    }
-
     public int calcTileIndex(int ix, int iy) {
         return ix + iy * width;
-    }
-
-    public Tile reverseTileIndex(int tileIndex) {
-        int ix = tileIndex % width;
-        int iy = tileIndex / width;
-        return new Tile(ix + 1, iy + 1);
     }
 
     /**
@@ -87,10 +79,6 @@ public class FastBoard {
      */
     public int get(int tileIndex) {
         return pieces[tileIndex];
-    }
-
-    public int get(int ix, int iy) {
-        return get(calcTileIndex(ix, iy));
     }
 
     public void set(int tileIndex, int piece) {

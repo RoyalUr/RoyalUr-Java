@@ -8,7 +8,6 @@ import net.royalur.model.dice.Roll;
 import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.rules.standard.fast.FastGame;
 import net.royalur.rules.standard.fast.FastMoveList;
-import net.royalur.rules.standard.fast.FastPlayer;
 import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
@@ -35,7 +34,7 @@ public class LikelihoodAgent<
     /**
      * The utility function to use to evaluate game states.
      */
-    private final @Nonnull UtilityFunction<P, S, R> utilityFunction;
+    private final @Nonnull UtilityFunction utilityFunction;
 
     /**
      * Any sequence of rolls that has a lower likelihood of
@@ -69,7 +68,7 @@ public class LikelihoodAgent<
      */
     public LikelihoodAgent(
             @Nonnull StandardRuleSet<P, S, R> rules,
-            @Nonnull UtilityFunction<P, S, R> utilityFunction,
+            @Nonnull UtilityFunction utilityFunction,
             float likelihoodThreshold
     ) {
         this.rules = rules;
@@ -145,7 +144,6 @@ public class LikelihoodAgent<
             @Nonnull FastGame precedingGame,
             @Nonnull FastMoveList availableMoves,
             @Nonnull Dice<R> dice,
-            int roll,
             float likelihood,
             int depth
     ) {
@@ -154,8 +152,6 @@ public class LikelihoodAgent<
 
         float maxUtility = Float.NEGATIVE_INFINITY;
 
-        FastPlayer turnPlayer = precedingGame.getTurnPlayer();
-        int[] pathTiles = turnPlayer.path;
         int[] moves = availableMoves.moves;
         int moveCount = availableMoves.moveCount;
 
@@ -216,10 +212,10 @@ public class LikelihoodAgent<
                 rollUtility = calculateProbabilityWeightedUtility(
                         game, dice, rollLikelihood, depth + 1
                 );
-            } else {
 
+            } else {
                 rollUtility = calculateBestMoveUtility(
-                        game, moveList, dice, roll, rollLikelihood, depth + 1
+                        game, moveList, dice, rollLikelihood, depth + 1
                 );
             }
             if (game.isLightTurn != precedingGame.isLightTurn) {

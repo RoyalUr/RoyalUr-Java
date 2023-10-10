@@ -10,10 +10,10 @@ import net.royalur.rules.standard.fast.FastGame;
 import javax.annotation.Nonnull;
 
 /**
- * Scores game states based upon how much pieces have been advanced
+ * Scores game states based upon how far pieces have been advanced
  * by each player.
  */
-public class PiecesAdvancedUtilityFn extends UtilityFunction<Piece, PlayerState, Roll> {
+public class PiecesAdvancedUtilityFn extends UtilityFunction {
 
     private final int scoredPieceUtility;
 

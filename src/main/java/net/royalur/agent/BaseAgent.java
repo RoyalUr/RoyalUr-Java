@@ -3,7 +3,6 @@ package net.royalur.agent;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.state.WaitingForMoveGameState;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -24,12 +23,12 @@ public abstract class BaseAgent<
     /**
      * Determines the move to be executed from the current state of the game.
      * @param game The game to find the best move in.
-     * @param moves The list of available moves to be chosen from.
+     * @param availableMoves The list of available moves to be chosen from.
      * @return The move that the agent chose to play.
      */
     public abstract @Nonnull Move<P> decideMove(
             @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> moves
+            @Nonnull List<Move<P>> availableMoves
     );
 
     /**
@@ -51,7 +50,6 @@ public abstract class BaseAgent<
 
         // Decide the move to be made.
         if (game.isWaitingForMove()) {
-            WaitingForMoveGameState<P, S, R> state = game.getCurrentWaitingForMoveState();
             List<Move<P>> moves = game.findAvailableMoves();
             Move<P> chosenMove = decideMove(game, moves);
             game.makeMove(chosenMove);

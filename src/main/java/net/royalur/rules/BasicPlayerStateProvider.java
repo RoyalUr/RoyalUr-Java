@@ -2,7 +2,6 @@ package net.royalur.rules;
 
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
-import net.royalur.rules.PlayerStateProvider;
 
 import javax.annotation.Nonnull;
 

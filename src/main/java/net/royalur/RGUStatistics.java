@@ -90,7 +90,7 @@ public class RGUStatistics {
                 // Blitz
                 () -> Game.builder()
                         .masters()
-                        .startingPieceCount(6)
+                        .startingPieceCount(5)
                         .safeRosettes(false)
                         .capturesGrantExtraRolls(true)
                         .build(),
@@ -165,7 +165,9 @@ public class RGUStatistics {
                 rules -> new LikelihoodAgent<>(
                         rules, new PiecesAdvancedUtilityFn(rules), 0.0055f
                 ),
-                rules -> new RandomAgent<>(),
+                rules -> new LikelihoodAgent<>(
+                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
+                ),
                 1000
         );
     }

@@ -1,25 +1,15 @@
 package net.royalur.agent.utility;
 
-import net.royalur.Game;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.PlayerType;
-import net.royalur.model.dice.Roll;
 import net.royalur.name.Name;
 import net.royalur.name.Named;
 import net.royalur.rules.standard.fast.FastGame;
-import net.royalur.rules.state.GameState;
 
 import javax.annotation.Nonnull;
 
 /**
  * A function that is used to score game states.
  */
-public abstract class UtilityFunction<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> implements Named<Name> {
+public abstract class UtilityFunction implements Named<Name> {
 
     /**
      * The name of this path pair.

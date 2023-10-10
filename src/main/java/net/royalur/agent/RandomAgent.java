@@ -3,7 +3,6 @@ package net.royalur.agent;
 import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.state.WaitingForMoveGameState;
 
 import javax.annotation.Nonnull;
 import java.util.List;

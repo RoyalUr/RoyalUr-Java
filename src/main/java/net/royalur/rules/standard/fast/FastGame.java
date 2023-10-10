@@ -224,6 +224,7 @@ public class FastGame {
         int destPathIndex = pathIndex + rollValue;
         int destTileIndex = -1;
         int capturedPiece = 0;
+
         if (destPathIndex < path.length) {
             // Moving a piece on the board.
             destTileIndex = path[destPathIndex];
