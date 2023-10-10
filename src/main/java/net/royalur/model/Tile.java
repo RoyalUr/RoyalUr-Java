@@ -194,8 +194,6 @@ public class Tile {
      * @return A list of tiles.
      */
     public static @Nonnull List<Tile> createList(int... coordinates) {
-        if (coordinates.length == 0)
-            throw new IllegalArgumentException("No coordinates provided");
         if (coordinates.length % 2 != 0)
             throw new IllegalArgumentException("Expected an even number of coordinates");
 
@@ -217,6 +215,9 @@ public class Tile {
      */
     public static @Nonnull List<Tile> createPath(int... coordinates) {
         List<Tile> tiles = createList(coordinates);
+        if (tiles.isEmpty())
+            throw new IllegalArgumentException("No coordinates were provided");
+
         List<Tile> path = new ArrayList<>();
         path.add(tiles.get(0));
 

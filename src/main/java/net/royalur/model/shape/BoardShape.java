@@ -55,6 +55,11 @@ public class BoardShape implements Named<Name> {
         if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
+        for (Tile rosette : rosettes) {
+            if (!contains(rosette))
+                throw new IllegalArgumentException("Rosette " + rosette + " does not exist on the board");
+        }
+
         this.name = name;
         this.tiles = Collections.unmodifiableSet(new HashSet<>(tiles));
         this.rosettes = Collections.unmodifiableSet(new HashSet<>(rosettes));
@@ -79,14 +84,6 @@ public class BoardShape implements Named<Name> {
         }
         this.width = maxX;
         this.height = maxY;
-
-        for (Tile rosette : rosettes) {
-            if (!contains(rosette)) {
-                throw new IllegalArgumentException(
-                        "Rosette " + rosette + " does not exist on the board"
-                );
-            }
-        }
     }
 
     @Override

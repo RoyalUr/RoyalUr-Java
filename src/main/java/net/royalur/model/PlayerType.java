@@ -74,8 +74,8 @@ public enum PlayerType implements Name {
     }
 
     /**
-     * Retrieves the Player representing the other player.
-     * @return The Player representing the other player.
+     * Retrieves the PlayerType representing the other player.
+     * @return The PlayerType representing the other player.
      */
     public PlayerType getOtherPlayer() {
         return switch (this) {

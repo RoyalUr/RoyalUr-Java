@@ -117,7 +117,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the path of {@code player}, excluding the start and
+     * Gets the path of {@code player}, excluding the start and
      * end tiles that exist off the board.
      * @param player The player to get the path for.
      * @return The path for the given player.
@@ -150,7 +150,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Retrieves the path of {@code player}, including the start and
+     * Gets the path of {@code player}, including the start and
      * end tiles that exist off the board.
      * @param player The player to get the path for.
      * @return The path for the given player.
@@ -179,7 +179,7 @@ public class PathPair implements Named<Name> {
     }
 
     /**
-     * Gets the start tile of {@code player} that exists off the board.
+     * Gets the start tile of {@code player}, which exists off the board.
      * @param player The player to get the start tile for.
      * @return The start tile of the given player.
      */
@@ -238,7 +238,8 @@ public class PathPair implements Named<Name> {
             return false;
 
         PathPair other = (PathPair) obj;
-        return getLightWithStartEnd().equals(other.getLightWithStartEnd())
+        return name.equals(other.name)
+                && getLightWithStartEnd().equals(other.getLightWithStartEnd())
                 && getDarkWithStartEnd().equals(other.getDarkWithStartEnd());
     }
 

@@ -7,6 +7,7 @@ here as this API is developed.
 
 * [Documentation](https://royalur.github.io/RoyalUrJava/)
 
+
 ## 🚀 Example
 
 The following is a small example that shows the basics of creating
