@@ -17,7 +17,7 @@ import java.util.Set;
 public class AsebBoardShape extends BoardShape {
 
     /**
-     * The set of all tiles that exist on the Aseb board.
+     * The set of all tiles that exist on the board.
      */
     public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
             new AsebPathPair().getLight(),
@@ -25,7 +25,7 @@ public class AsebBoardShape extends BoardShape {
     );
 
     /**
-     * The set of rosette tiles that exist on the Aseb board.
+     * The set of rosette tiles that exist on the board.
      */
     public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
             new Tile(1, 1),

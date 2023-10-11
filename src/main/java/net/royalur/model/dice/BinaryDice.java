@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.random.RandomGenerator;
 
 /**
- * Rolls a number of binary dice and counts the result.
+ * Rolls a number of binary die and counts the result.
  */
 public class BinaryDice extends Dice<Roll> {
 

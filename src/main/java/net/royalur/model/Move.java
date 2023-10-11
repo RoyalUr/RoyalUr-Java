@@ -71,8 +71,6 @@ public class Move<P extends Piece> {
             @Nullable Tile to, @Nullable P toPiece,
             @Nullable P capturedPiece
     ) {
-        if (from == null && to == null)
-            throw new IllegalArgumentException("from and to cannot both be null");
         if ((from == null) ^ (fromPiece == null))
             throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
         if ((to == null) ^ (toPiece == null))
