@@ -55,14 +55,14 @@ public class BoardShape implements Named<Name> {
         if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
+        this.name = name;
+        this.tiles = Set.copyOf(tiles);
+        this.rosettes = Set.copyOf(rosettes);
+
         for (Tile rosette : rosettes) {
             if (!contains(rosette))
                 throw new IllegalArgumentException("Rosette " + rosette + " does not exist on the board");
         }
-
-        this.name = name;
-        this.tiles = Collections.unmodifiableSet(new HashSet<>(tiles));
-        this.rosettes = Collections.unmodifiableSet(new HashSet<>(rosettes));
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
