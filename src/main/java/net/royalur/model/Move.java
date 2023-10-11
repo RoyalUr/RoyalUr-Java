@@ -95,11 +95,27 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Determines whether this move is moving a piece on the board.
+     * @return Whether this move is moving a piece on the board.
+     */
+    public boolean hasSource() {
+        return source != null;
+    }
+
+    /**
      * Determines whether this move is moving a new piece onto the board.
      * @return Whether this move is moving a new piece onto the board.
      */
     public boolean isIntroducingPiece() {
         return source == null;
+    }
+
+    /**
+     * Determines whether this moves a piece to a destination on the board.
+     * @return Whether this moves a piece to a destination on the board.
+     */
+    public boolean hasDest() {
+        return dest != null;
     }
 
     /**
