@@ -21,25 +21,25 @@ public class Move<P extends Piece> {
      * The origin of the move. If this is {@code null}, it represents
      * moving a new piece onto the board.
      */
-    private final @Nullable Tile from;
+    private final @Nullable Tile source;
 
     /**
      * The piece on the board to be moved, or {@code null} if a new
      * piece is to be moved onto the board.
      */
-    private final @Nullable P fromPiece;
+    private final @Nullable P sourcePiece;
 
     /**
      * The destination of the move. If this is {@code null}, it represents
      * moving a piece off of the board.
      */
-    private final @Nullable Tile to;
+    private final @Nullable Tile dest;
 
     /**
      * The piece that will be placed at the destination of the move, or
      * {@code null} if moving a piece off of the board.
      */
-    private final @Nullable P toPiece;
+    private final @Nullable P destPiece;
 
     /**
      * The piece that will be captured by this move, or {@code null}
@@ -48,41 +48,41 @@ public class Move<P extends Piece> {
     private final @Nullable P capturedPiece;
 
     /**
-     * Creates a new move with origin {@code from} and destination {@code to}.
-     * If {@code from} is {@code null}, it represents moving a new piece onto
-     * the board. If {@code to} is {@code null}, it represents moving a piece
+     * Creates a new move with origin {@code source} and destination {@code dest}.
+     * If {@code source} is {@code null}, it represents moving a new piece onto
+     * the board. If {@code dest} is {@code null}, it represents moving a piece
      * off of the board.
      *
      * @param player    The player that is the instigator of this move.
-     * @param from      The origin of the move. If this is {@code null}, it represents
+     * @param source      The origin of the move. If this is {@code null}, it represents
      *                  moving a new piece onto the board.
-     * @param fromPiece The piece on the board to be moved, or {@code null} if a new
+     * @param sourcePiece The piece on the board to be moved, or {@code null} if a new
      *                  piece is to be moved onto the board.
-     * @param to        The destination of the move. If this is {@code null}, it represents
+     * @param dest        The destination of the move. If this is {@code null}, it represents
      *                  moving a piece off of the board.
-     * @param toPiece   The piece that will be placed at the destination of the move, or
+     * @param destPiece   The piece that will be placed at the destination of the move, or
      *                  {@code null} if moving a piece off of the board.
      * @param capturedPiece The piece that will be captured by this move, or {@code null}
      *                       if no piece would be captured by this move.
      */
     public Move(
             @Nonnull PlayerType player,
-            @Nullable Tile from, @Nullable P fromPiece,
-            @Nullable Tile to, @Nullable P toPiece,
+            @Nullable Tile source, @Nullable P sourcePiece,
+            @Nullable Tile dest, @Nullable P destPiece,
             @Nullable P capturedPiece
     ) {
-        if ((from == null) ^ (fromPiece == null))
-            throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
-        if ((to == null) ^ (toPiece == null))
-            throw new IllegalArgumentException("from and fromPiece must either be both null, or both non-null");
-        if (to == null && capturedPiece != null)
-            throw new IllegalArgumentException("Scoring moves cannot capture a piece");
+        if ((source == null) ^ (sourcePiece == null))
+            throw new IllegalArgumentException("source and sourcePiece must either be both null, or both non-null");
+        if ((dest == null) ^ (destPiece == null))
+            throw new IllegalArgumentException("source and sourcePiece must either be both null, or both non-null");
+        if (dest == null && capturedPiece != null)
+            throw new IllegalArgumentException("Moves without a destination cannot have captured a piece");
 
         this.player = player;
-        this.from = from;
-        this.to = to;
-        this.fromPiece = fromPiece;
-        this.toPiece = toPiece;
+        this.source = source;
+        this.dest = dest;
+        this.sourcePiece = sourcePiece;
+        this.destPiece = destPiece;
         this.capturedPiece = capturedPiece;
     }
 
@@ -99,7 +99,7 @@ public class Move<P extends Piece> {
      * @return Whether this move is moving a new piece onto the board.
      */
     public boolean isIntroducingPiece() {
-        return from == null;
+        return source == null;
     }
 
     /**
@@ -107,7 +107,7 @@ public class Move<P extends Piece> {
      * @return Whether this move is moving a piece off of the board.
      */
     public boolean isScoringPiece() {
-        return to == null;
+        return dest == null;
     }
 
     /**
@@ -125,7 +125,7 @@ public class Move<P extends Piece> {
      * @return Whether this move will land a piece on a rosette.
      */
     public boolean isLandingOnRosette(@Nonnull BoardShape shape) {
-        return to != null && shape.isRosette(to);
+        return dest != null && shape.isRosette(dest);
     }
 
     /**
@@ -134,10 +134,10 @@ public class Move<P extends Piece> {
      * @return The source tile of this move.
      */
     public @Nonnull Tile getSource() {
-        if (from == null)
+        if (source == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
-        return from;
+        return source;
     }
 
     /**
@@ -146,10 +146,10 @@ public class Move<P extends Piece> {
      * @return The source piece of this move.
      */
     public @Nonnull P getSourcePiece() {
-        if (fromPiece == null)
+        if (sourcePiece == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
-        return fromPiece;
+        return sourcePiece;
     }
 
     /**
@@ -158,10 +158,10 @@ public class Move<P extends Piece> {
      * @return The destination tile of this move.
      */
     public @Nonnull Tile getDest() {
-        if (to == null)
+        if (dest == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
-        return to;
+        return dest;
     }
 
     /**
@@ -170,10 +170,10 @@ public class Move<P extends Piece> {
      * @return The destination piece of this move.
      */
     public @Nonnull P getDestPiece() {
-        if (toPiece == null)
+        if (destPiece == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
-        return toPiece;
+        return destPiece;
     }
 
     /**
@@ -193,11 +193,11 @@ public class Move<P extends Piece> {
      * @param board The board to update by applying this move.
      */
     public void apply(@Nonnull Board<P> board) {
-        if (from != null) {
-            board.set(from, null);
+        if (source != null) {
+            board.set(source, null);
         }
-        if (to != null) {
-            board.set(to, toPiece);
+        if (dest != null) {
+            board.set(dest, destPiece);
         }
     }
 
@@ -230,8 +230,8 @@ public class Move<P extends Piece> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(from) ^ (31 * Objects.hashCode(fromPiece)) ^
-                (113 * Objects.hashCode(to)) ^ (149 * Objects.hashCode(toPiece)) ^
+        return Objects.hashCode(source) ^ (31 * Objects.hashCode(sourcePiece)) ^
+                (113 * Objects.hashCode(dest)) ^ (149 * Objects.hashCode(destPiece)) ^
                 (191 * Objects.hashCode(capturedPiece));
     }
 
@@ -241,8 +241,8 @@ public class Move<P extends Piece> {
             return false;
 
         Move<?> other = (Move<?>) obj;
-        return Objects.equals(from, other.from) && Objects.equals(fromPiece, other.fromPiece) &&
-                Objects.equals(to, other.to) && Objects.equals(toPiece, other.toPiece) &&
+        return Objects.equals(source, other.source) && Objects.equals(sourcePiece, other.sourcePiece) &&
+                Objects.equals(dest, other.dest) && Objects.equals(destPiece, other.destPiece) &&
                 Objects.equals(capturedPiece, other.capturedPiece);
     }
 }
