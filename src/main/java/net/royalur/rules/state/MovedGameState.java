@@ -94,7 +94,7 @@ public class MovedGameState<
             builder.append("moved their ")
                     .append(move.getSource())
                     .append(" piece to ")
-                    .append(move.capturesPiece() ? "capture " : "")
+                    .append(move.isCapture() ? "capture " : "")
                     .append(move.getDest())
                     .append(".");
         }

@@ -311,7 +311,7 @@ public class JsonNotation implements RGUNotation {
     ) throws IOException {
 
         // Metadata that may be useful for querying or analytics.
-        generator.writeBooleanField(MOVE_LANDS_ON_ROSETTE_KEY, move.isLandingOnRosette(rules.getBoardShape()));
+        generator.writeBooleanField(MOVE_LANDS_ON_ROSETTE_KEY, move.isDestRosette(rules.getBoardShape()));
 
         // Write the source piece being moved.
         if (!move.isIntroducingPiece()) {
@@ -338,7 +338,7 @@ public class JsonNotation implements RGUNotation {
         }
 
         // Write the captured piece.
-        if (move.capturesPiece()) {
+        if (move.isCapture()) {
             generator.writeObjectFieldStart(MOVE_CAPTURED_KEY);
             try {
                 writePiece(move.getDest(), move.getCapturedPiece(), rules, generator);

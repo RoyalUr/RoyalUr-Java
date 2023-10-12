@@ -1,6 +1,5 @@
 package net.royalur.rules.standard;
 
-import net.royalur.Game;
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
@@ -301,10 +300,10 @@ public class StandardRuleSet<
 
         if (rosettesGrantExtraRolls) {
             BoardShape boardShape = movedState.getBoard().getShape();
-            if (move.isLandingOnRosette(boardShape))
+            if (move.isDestRosette(boardShape))
                 return true;
         }
-        return capturesGrantExtraRolls && move.capturesPiece();
+        return capturesGrantExtraRolls && move.isCapture();
     }
 
     @Override
@@ -334,7 +333,7 @@ public class StandardRuleSet<
 
         // Apply the effects of the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
-        if (move.capturesPiece()) {
+        if (move.isCapture()) {
             otherPlayer = playerStateProvider.applyPiecesChange(otherPlayer, 1);
         }
 

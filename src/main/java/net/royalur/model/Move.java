@@ -130,7 +130,7 @@ public class Move<P extends Piece> {
      * Determines whether this move is capturing an existing piece on the board.
      * @return Whether this move is capturing an existing piece on the board.
      */
-    public boolean capturesPiece() {
+    public boolean isCapture() {
         return capturedPiece != null;
     }
 
@@ -140,12 +140,12 @@ public class Move<P extends Piece> {
      * @param shape The shape of the board.
      * @return Whether this move will land a piece on a rosette.
      */
-    public boolean isLandingOnRosette(@Nonnull BoardShape shape) {
+    public boolean isDestRosette(@Nonnull BoardShape shape) {
         return dest != null && shape.isRosette(dest);
     }
 
     /**
-     * Retrieves the source tile of this move. If there is no source tile, in the
+     * Gets the source tile of this move. If there is no source tile, in the
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source tile of this move.
      */
@@ -157,7 +157,7 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Retrieves the source piece of this move. If there is no source piece, in the
+     * Gets the source piece of this move. If there is no source piece, in the
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source piece of this move.
      */
@@ -169,7 +169,7 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Retrieves the destination tile of this move. If there is no destination tile,
+     * Gets the destination tile of this move. If there is no destination tile,
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination tile of this move.
      */
@@ -181,20 +181,20 @@ public class Move<P extends Piece> {
     }
 
     /**
-     * Retrieves the destination piece of this move. If there is no destination piece,
+     * Gets the destination piece of this move. If there is no destination piece,
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination piece of this move.
      */
     public @Nonnull P getDestPiece() {
         if (destPiece == null)
-            throw new IllegalStateException("This move has no source, as it is introducing a piece");
+            throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
         return destPiece;
     }
 
     /**
-     * Retrieves the piece that will be captured by this move. If there is no piece
-     * that will be displayed, this will throw an error.
+     * Gets the piece that will be captured by this move. If there is no piece
+     * that will be captured, this will throw an error.
      * @return The piece that will be captured by this move.
      */
     public @Nonnull P getCapturedPiece() {
@@ -237,7 +237,7 @@ public class Move<P extends Piece> {
         } else {
             builder.append("Move ").append(getSource()).append(" to ");
         }
-        if (capturesPiece()) {
+        if (isCapture()) {
             builder.append("capture ");
         }
         builder.append(getDest()).append(".");

@@ -176,12 +176,12 @@ public class RGN implements RGUNotation {
         to.encodeY(builder);
 
         // Record that a piece was captured.
-        if (move.capturesPiece()) {
+        if (move.isCapture()) {
             builder.append("x");
         }
 
         // Mark if a rosette was reached.
-        if (move.isLandingOnRosette(rules.getBoardShape())) {
+        if (move.isDestRosette(rules.getBoardShape())) {
             builder.append("+");
         }
     }
