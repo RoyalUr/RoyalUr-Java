@@ -263,7 +263,8 @@ public class Board<P extends Piece> {
 
             for (int iy = 0; iy < shape.getHeight(); ++iy) {
                 if (containsIndices(ix, iy)) {
-                    builder.append(Piece.toChar(getByIndices(ix, iy)));
+                    Piece piece = getByIndices(ix, iy);
+                    builder.append(Piece.toChar(piece));
                 } else if (includeOffBoardTiles) {
                     builder.append(' ');
                 }
