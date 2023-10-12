@@ -147,11 +147,6 @@ public class JsonNotation implements RGUNotation {
     public static final @Nonnull String PLAYER_SCORE_KEY = "score";
 
     /**
-     * The delimiter to use between columns in the encoded boards.
-     */
-    public static final char BOARD_COLUMN_DELIMITER = '\\';
-
-    /**
      * A factory to build generators to write the JSON.
      */
     private final @Nonnull JsonFactory jsonFactory;
@@ -230,7 +225,7 @@ public class JsonNotation implements RGUNotation {
             generator.writeStringField(STATE_LOSER_KEY, winState.getLoser().getTextName());
         }
 
-        generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString(BOARD_COLUMN_DELIMITER, false));
+        generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString("", false));
 
         // Write the states of the players.
         generator.writeObjectFieldStart(STATE_PLAYERS_KEY);

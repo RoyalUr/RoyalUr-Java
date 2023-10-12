@@ -169,7 +169,13 @@ public class Board<P extends Piece> {
      *         or else {@code null}.
      */
     public @Nullable P set(@Nonnull Tile tile, @Nullable P piece) {
-        return setByIndices(tile.getXIndex(), tile.getYIndex(), piece);
+        if (!contains(tile))
+            throw new IllegalArgumentException("There is no tile at " + tile);
+
+        int index = calcTileIndex(tile.getXIndex(), tile.getYIndex());
+        P previous = Cast.unsafeCast(pieces[index]);
+        pieces[index] = piece;
+        return previous;
     }
 
     /**
@@ -191,7 +197,6 @@ public class Board<P extends Piece> {
                     "There is no tile at indices (" + ix + ", " + iy + ")"
             );
         }
-
         int index = calcTileIndex(ix, iy);
         P previous = Cast.unsafeCast(pieces[index]);
         pieces[index] = piece;
@@ -211,19 +216,13 @@ public class Board<P extends Piece> {
      * @return The number of pieces on the board for the given player.
      */
     public int countPieces(@Nonnull PlayerType player) {
-        int totalPieces = 0;
-        for (int iy = 0; iy < height; ++iy) {
-            for (int ix = 0; ix < width; ++ix) {
-                if (!containsIndices(ix, iy))
-                    continue;
-
-                Piece piece = getByIndices(ix, iy);
-                if (piece != null && piece.getOwner() == player) {
-                    totalPieces += 1;
-                }
+        int pieceCount = 0;
+        for (Piece piece : this.pieces) {
+            if (piece != null && piece.getOwner() == player) {
+                pieceCount += 1;
             }
         }
-        return totalPieces;
+        return pieceCount;
     }
 
     @Override
@@ -250,12 +249,12 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Writes the contents of this board into a String, where each column is placed on new line.
+     * Writes the contents of this board into a String, where each column is separated by a delimiter.
      * @param columnDelimiter The delimiter to use to distinguish columns of the board.
      * @param includeOffBoardTiles Whether to include tiles that don't fall on the board as spaces.
      * @return A String representing the contents of this board.
      */
-    public @Nonnull String toString(char columnDelimiter, boolean includeOffBoardTiles) {
+    public @Nonnull String toString(String columnDelimiter, boolean includeOffBoardTiles) {
         StringBuilder builder = new StringBuilder();
         for (int ix = 0; ix < shape.getWidth(); ++ix) {
             if (ix > 0) {
@@ -275,6 +274,6 @@ public class Board<P extends Piece> {
 
     @Override
     public @Nonnull String toString() {
-        return toString('\n', true);
+        return toString("\n", true);
     }
 }
