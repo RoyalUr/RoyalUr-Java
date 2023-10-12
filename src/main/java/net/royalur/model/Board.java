@@ -126,17 +126,21 @@ public class Board<P extends Piece> {
     }
 
     /**
-     * Retrieves the piece on {@code tile}. Returns {@code null} if there
+     * Gets the piece on {@code tile}. Returns {@code null} if there
      * is no piece on the tile.
      * @param tile The tile to find the piece on.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
     public @Nullable P get(@Nonnull Tile tile) {
-        return getByIndices(tile.getXIndex(), tile.getYIndex());
+        if (!contains(tile))
+            throw new IllegalArgumentException("There is no tile at " + tile);
+
+        int index = calcTileIndex(tile.getXIndex(), tile.getYIndex());
+        return Cast.unsafeCast(pieces[index]);
     }
 
     /**
-     * Retrieves the piece on the tile at the indices ({@code ix}, {@code iy}),
+     * Gets the piece on the tile at the indices ({@code ix}, {@code iy}),
      * 0-based. Returns {@code null} if there is no piece on the tile.
      * @param ix The x-index of the tile to find the piece on.
      *           This coordinate is 0-based.

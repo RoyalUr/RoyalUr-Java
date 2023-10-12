@@ -83,4 +83,10 @@ public enum BoardType implements Name, BoardShapeFactory {
     public int getID() {
         return id;
     }
+
+    /**
+     * Create an instance of the board shape.
+     * @return The instance of the board shape.
+     */
+    public abstract @Nonnull BoardShape createBoardShape();
 }
