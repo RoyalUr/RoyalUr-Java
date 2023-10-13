@@ -2,14 +2,10 @@ package net.royalur;
 
 import net.royalur.agent.Agent;
 import net.royalur.agent.LikelihoodAgent;
-import net.royalur.agent.RandomAgent;
 import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
-import net.royalur.model.dice.DiceType;
 import net.royalur.model.dice.Roll;
-import net.royalur.model.path.MurrayPathPair;
-import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.standard.StandardRuleSet;
 import net.royalur.stats.GameStats;
@@ -83,24 +79,24 @@ public class RGUStatistics {
     ) {
         List<Supplier<Game<Piece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().finkel().build(),
-                () -> Game.builder().finkel().safeRosettes(false).build(),
-                () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
-                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
+//                () -> Game.builder().finkel().safeRosettes(false).build(),
+//                () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
+//                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
+//
+//                // Blitz
+//                () -> Game.builder()
+//                        .masters()
+//                        .startingPieceCount(5)
+//                        .safeRosettes(false)
+//                        .capturesGrantExtraRolls(true)
+//                        .build(),
 
-                // Blitz
-                () -> Game.builder()
-                        .masters()
-                        .startingPieceCount(5)
-                        .safeRosettes(false)
-                        .capturesGrantExtraRolls(true)
-                        .build(),
-
-                () -> Game.builder().masters().build(),
-                () -> Game.builder().masters().capturesGrantExtraRolls(true).build(),
-                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
-                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
-                () -> Game.builder().aseb().build(),
-                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
+                () -> Game.builder().masters().safeRosettes(true).build(),
+                () -> Game.builder().masters().safeRosettes(false).build()
+//                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
+//                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
+//                () -> Game.builder().aseb().build(),
+//                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
         );
         for (Supplier<Game<Piece, PlayerState, Roll>> gameGenerator : generators) {
             Game<Piece, PlayerState, Roll> sample = gameGenerator.get();
@@ -135,23 +131,48 @@ public class RGUStatistics {
             String timings = String.format(" (%.2f ms/game)", msPerTest);
             GameStatsSummary summary = GameStats.summarise(stats);
 
-            System.out.println(desc + timings + ":");
+            System.out.println("\n" + desc + timings + ":");
             for (GameStatsTarget target : GameStatsTarget.values()) {
-                double movesMean = summary.getMovesStatistic(target, SummaryStat.MEAN);
-                double movesStd = summary.getMovesStatistic(target, SummaryStat.STD_DEV);
-                double rollsMean = summary.getRollsStatistic(target, SummaryStat.MEAN);
-                double rollsStd = summary.getRollsStatistic(target, SummaryStat.STD_DEV);
-                System.out.printf(
-                        "%-15s%-19s%-19s%n",
+                System.out.println(String.join("\n* ", new String[] {
                         target.getName() + ":",
-                        ((int) movesMean) + " moves ± " + ((int) movesStd) + ",",
-                        ((int) rollsMean) + " rolls ± " + ((int) rollsStd)
-                );
+                        String.format(
+                                "turns: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
+                                summary.getTurnsStatistic(target, SummaryStat.MEAN),
+                                summary.getTurnsStatistic(target, SummaryStat.STD_DEV),
+                                summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_25),
+                                summary.getTurnsStatistic(target, SummaryStat.MEDIAN),
+                                summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_75)
+                        ),
+                        String.format(
+                                "moves: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
+                                summary.getMovesStatistic(target, SummaryStat.MEAN),
+                                summary.getMovesStatistic(target, SummaryStat.STD_DEV),
+                                summary.getMovesStatistic(target, SummaryStat.PERCENTILE_25),
+                                summary.getMovesStatistic(target, SummaryStat.MEDIAN),
+                                summary.getMovesStatistic(target, SummaryStat.PERCENTILE_75)
+                        ),
+                        String.format(
+                                "rolls: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
+                                summary.getRollsStatistic(target, SummaryStat.MEAN),
+                                summary.getRollsStatistic(target, SummaryStat.STD_DEV),
+                                summary.getRollsStatistic(target, SummaryStat.PERCENTILE_25),
+                                summary.getRollsStatistic(target, SummaryStat.MEDIAN),
+                                summary.getRollsStatistic(target, SummaryStat.PERCENTILE_75)
+                        ),
+                        String.format(
+                                "drama: %.1f ± %.1f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
+                                summary.getDramaStatistic(target, SummaryStat.MEAN),
+                                summary.getDramaStatistic(target, SummaryStat.STD_DEV),
+                                summary.getDramaStatistic(target, SummaryStat.PERCENTILE_25),
+                                summary.getDramaStatistic(target, SummaryStat.MEDIAN),
+                                summary.getDramaStatistic(target, SummaryStat.PERCENTILE_75)
+                        ),
+                }) + "\n\n");
             }
             double agent1WinPercentage = 100.0 * ((double) agent1Wins / tests);
             double agent2WinPercentage = 100.0 * ((double) agent2Wins / tests);
-            System.out.printf("Agent 1 won %.1f%% of games%n", agent1WinPercentage);
-            System.out.printf("Agent 2 won %.1f%% of games%n", agent2WinPercentage);
+            System.out.printf("Agent 1 won %.2f%% of games%n", agent1WinPercentage);
+            System.out.printf("Agent 2 won %.2f%% of games%n", agent2WinPercentage);
             System.out.println();
         }
     }
@@ -163,7 +184,7 @@ public class RGUStatistics {
     public static void main(String[] args) {
         new RGUStatistics().testAgentActions(
                 rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.0055f
+                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
                 ),
                 rules -> new LikelihoodAgent<>(
                         rules, new PiecesAdvancedUtilityFn(rules), 0.055f

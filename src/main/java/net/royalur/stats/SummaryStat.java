@@ -1,6 +1,7 @@
 package net.royalur.stats;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * A statistic that can be used to summarise a set of measurements.
@@ -25,12 +26,39 @@ public enum SummaryStat {
     /**
      * The standard deviation of all the measurements.
      */
-    STD_DEV;
+    STD_DEV,
+
+    /**
+     * The median of all measurements.
+     */
+    MEDIAN,
+
+    /**
+     * The 25th percentile of measurements.
+     */
+    PERCENTILE_25,
+
+    /**
+     * The 75th percentile of measurements.
+     */
+    PERCENTILE_75,
+    ;
 
     /**
      * Instantiate a statistic that can be used to summarise a set of measurements.
      */
     SummaryStat() {}
+
+    private static double calculatePercentile(@Nonnull int[] sortedMeasurements, double percentile) {
+        double index = (sortedMeasurements.length - 1) * percentile;
+        int belowIndex = (int) Math.floor(index);
+        int aboveIndex = (int) Math.ceil(index);
+
+        int below = sortedMeasurements[belowIndex];
+        int above = sortedMeasurements[aboveIndex];
+
+        return below + (above - below) * (index - belowIndex);
+    }
 
     /**
      * Computes all summary statistics for the measurements in {@code measurements}.
@@ -56,13 +84,21 @@ public enum SummaryStat {
         variance /= measurements.length;
         double stdDev = Math.sqrt(variance);
 
+        // Calculate the percentiles.
+        Arrays.sort(measurements);
+        double percentile25 = calculatePercentile(measurements, 0.25);
+        double median = calculatePercentile(measurements, 0.5);
+        double percentile75 = calculatePercentile(measurements, 0.75);
+
         // Add the statistics to an array of values.
-        double[] stats = new double[4];
-        assert stats.length == SummaryStat.values().length;
+        double[] stats = new double[SummaryStat.values().length];
         stats[SummaryStat.SUM.ordinal()] = sum;
         stats[SummaryStat.MEAN.ordinal()] = mean;
         stats[SummaryStat.VARIANCE.ordinal()] = variance;
         stats[SummaryStat.STD_DEV.ordinal()] = stdDev;
+        stats[SummaryStat.MEDIAN.ordinal()] = median;
+        stats[SummaryStat.PERCENTILE_25.ordinal()] = percentile25;
+        stats[SummaryStat.PERCENTILE_75.ordinal()] = percentile75;
         return stats;
     }
 }
