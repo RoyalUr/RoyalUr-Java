@@ -12,12 +12,10 @@ import net.royalur.model.shape.StandardBoardShape;
 import javax.annotation.Nonnull;
 
 /**
- * Settings for running games of the Royal Game of Ur.
- * This is built for convenience, and cannot represent all
- * possible combinations of rules that can be used to play
- * the Royal Game of Ur. If a more exotic set of rules is
- * desired, then you will need to construct your games
- * manually.
+ * Settings for running games of the Royal Game of Ur. This is built for
+ * convenience, and cannot represent all possible combinations of rules
+ * that can be used to play the Royal Game of Ur. If a more exotic set of
+ * rules is desired, then you will need to construct your games manually.
  */
 public class GameSettings<R extends Roll> {
 

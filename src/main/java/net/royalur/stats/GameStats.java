@@ -40,6 +40,11 @@ public class GameStats {
     /**
      * The number of times the lead player swapped during each game,
      * indexed by the ordinal of an element of {@link GameStatsTarget}.
+     * The lead player is defined by the player with the higher count
+     * of piece advancement. For the lead to have changed, the non-lead
+     * player must hold an advantage for 2 turns (e.g., gain an advantage
+     * on their turn, and then keep that advantage on their opponent's
+     * turn).
      */
     private final @Nonnull int[] drama;
 
@@ -261,18 +266,18 @@ public class GameStats {
                     if (lastMove.getTurnPlayer() != move.getTurnPlayer()) {
                         turns[GameStatsTarget.OVERALL.ordinal()] += 1;
                         turns[GameStatsTarget.get(player).ordinal()] += 1;
-                    }
 
-                    int currUtility = calculatePiecesAdvancedUtilityForLight(move);
-                    if (currUtility != 0) {
-                        PlayerType lead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
-                        if (currentLead != lead) {
-                            losingLeadTurns += 1;
-                            if (losingLeadTurns >= 2) {
-                                drama[GameStatsTarget.OVERALL.ordinal()] += 1;
-                                drama[GameStatsTarget.get(lead).ordinal()] += 1;
-                                currentLead = lead;
-                                losingLeadTurns = 0;
+                        int currUtility = calculatePiecesAdvancedUtilityForLight(move);
+                        if (currUtility != 0) {
+                            PlayerType lead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
+                            if (currentLead != lead) {
+                                losingLeadTurns += 1;
+                                if (losingLeadTurns >= 2) {
+                                    drama[GameStatsTarget.OVERALL.ordinal()] += 1;
+                                    drama[GameStatsTarget.get(lead).ordinal()] += 1;
+                                    currentLead = lead;
+                                    losingLeadTurns = 0;
+                                }
                             }
                         }
                     }

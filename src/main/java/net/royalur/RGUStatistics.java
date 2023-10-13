@@ -75,7 +75,8 @@ public class RGUStatistics {
                     StandardRuleSet<Piece, PlayerState, Roll>,
                     Agent<Piece, PlayerState, Roll>
             > agent2Generator,
-            int tests
+            int tests,
+            @Nonnull GameStatsTarget[] reportTargets
     ) {
         List<Supplier<Game<Piece, PlayerState, Roll>>> generators = List.of(
                 () -> Game.builder().finkel().build(),
@@ -132,7 +133,7 @@ public class RGUStatistics {
             GameStatsSummary summary = GameStats.summarise(stats);
 
             System.out.println("\n" + desc + timings + ":");
-            for (GameStatsTarget target : GameStatsTarget.values()) {
+            for (GameStatsTarget target : reportTargets) {
                 System.out.println(String.join("\n* ", new String[] {
                         target.getName() + ":",
                         String.format(
@@ -189,7 +190,8 @@ public class RGUStatistics {
                 rules -> new LikelihoodAgent<>(
                         rules, new PiecesAdvancedUtilityFn(rules), 0.055f
                 ),
-                1000
+                10_000,
+                new GameStatsTarget[] {GameStatsTarget.OVERALL}
         );
     }
 }
