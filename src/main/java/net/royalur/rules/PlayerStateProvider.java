@@ -6,7 +6,7 @@ import net.royalur.model.PlayerState;
 import javax.annotation.Nonnull;
 
 /**
- * Provides the manipulation of PlayerStates as a game progresses.
+ * An interface that provides the manipulation of PlayerStates as a game progresses.
  */
 public interface PlayerStateProvider<S extends PlayerState> {
 

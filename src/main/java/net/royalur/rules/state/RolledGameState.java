@@ -16,7 +16,7 @@ public class RolledGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends AbstractOngoingGameState<P, S, R> implements ActionGameState<P, S, R, ActionType> {
+> extends ActionGameState<P, S, R, ActionType> {
 
     /**
      * The roll that represents the number of places the player can move a piece.
@@ -47,14 +47,9 @@ public class RolledGameState<
             @Nonnull R roll,
             @Nonnull List<Move<P>> availableMoves
     ) {
-        super(board, lightPlayer, darkPlayer, turn);
+        super(board, lightPlayer, darkPlayer, turn, ActionType.ROLL);
         this.roll = roll;
         this.availableMoves = availableMoves;
-    }
-
-    @Override
-    public @Nonnull ActionType getActionType() {
-        return ActionType.ROLL;
     }
 
     /**

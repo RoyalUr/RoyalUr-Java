@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.random.RandomGenerator;
 
 /**
- * Creates rule sets to match game settings.
+ * Creates rule sets to match game settings.P
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  */

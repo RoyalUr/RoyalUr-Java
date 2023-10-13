@@ -15,7 +15,7 @@ public class MovedGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends AbstractOngoingGameState<P, S, R> implements ActionGameState<P, S, R, ActionType> {
+> extends ActionGameState<P, S, R, ActionType> {
 
     /**
      * The roll of the dice that was used for the move.
@@ -44,14 +44,9 @@ public class MovedGameState<
             @Nonnull R roll,
             @Nonnull Move<P> move
     ) {
-        super(board, lightPlayer, darkPlayer, turn);
+        super(board, lightPlayer, darkPlayer, turn, ActionType.MOVE);
         this.roll = roll;
         this.move = move;
-    }
-
-    @Override
-    public @Nonnull ActionType getActionType() {
-        return ActionType.MOVE;
     }
 
     /**

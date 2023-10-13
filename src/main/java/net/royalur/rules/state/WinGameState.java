@@ -15,7 +15,7 @@ public class WinGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends AbstractGameState<P, S, R> {
+> extends GameState<P, S, R> {
 
     /**
      * The player that won the game.
