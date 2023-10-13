@@ -15,7 +15,7 @@ public class WaitingForRollGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends PlayableGameState<P, S, R, ActionType> {
+> extends PlayableGameState<P, S, R> {
 
     /**
      * Instantiates a game state where the game is waiting for a player to roll the dice.
@@ -30,7 +30,7 @@ public class WaitingForRollGameState<
             @Nonnull S darkPlayer,
             @Nonnull PlayerType turn
     ) {
-        super(board, lightPlayer, darkPlayer, turn, ActionType.ROLL);
+        super(board, lightPlayer, darkPlayer, turn);
     }
 
     @Override

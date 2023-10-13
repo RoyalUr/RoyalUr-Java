@@ -9,7 +9,6 @@ import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
@@ -282,11 +281,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return The states that represent the actions that have been
      *         made so far in the game.
      */
-    public @Nonnull List<ActionGameState<P, S, R, ?>> getActionStates() {
+    public @Nonnull List<ActionGameState<P, S, R>> getActionStates() {
         return states.stream()
                 .filter(s -> s instanceof ActionGameState)
-                .map(s -> (ActionGameState<P, S, R, ?>) s)
-                .collect(Collectors.toUnmodifiableList());
+                .map(s -> (ActionGameState<P, S, R>) s)
+                .toList();
     }
 
     /**
@@ -319,10 +318,10 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * This will throw an error if the game is not in a playable state.
      * @return The playable state that the game is currently in.
      */
-    public @Nonnull PlayableGameState<P, S, R, ?> getCurrentPlayableState() {
+    public @Nonnull PlayableGameState<P, S, R> getCurrentPlayableState() {
         GameState<P, S, R> state = getCurrentState();
         if (state instanceof PlayableGameState)
-            return (PlayableGameState<P, S, R, ?>) state;
+            return (PlayableGameState<P, S, R>) state;
 
         throw new IllegalStateException("This game is not in a playable game state");
     }

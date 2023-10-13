@@ -214,9 +214,9 @@ public class RGN implements RGUNotation {
         StringBuilder turnBuilder = new StringBuilder();
         StringBuilder actionBuilder = new StringBuilder();
 
-        List<ActionGameState<P, S, R, ?>> states = game.getActionStates();
+        List<ActionGameState<P, S, R>> states = game.getActionStates();
         for (int index = 0; index < states.size(); ++index) {
-            ActionGameState<P, S, R, ?> actionState = states.get(index);
+            ActionGameState<P, S, R> actionState = states.get(index);
             RolledGameState<P, S, R> rollState = null;
             MovedGameState<P, S, R> moveState = null;
 

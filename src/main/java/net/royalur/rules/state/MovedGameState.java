@@ -15,7 +15,7 @@ public class MovedGameState<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> extends ActionGameState<P, S, R, ActionType> {
+> extends ActionGameState<P, S, R> {
 
     /**
      * The roll of the dice that was used for the move.
@@ -44,7 +44,7 @@ public class MovedGameState<
             @Nonnull R roll,
             @Nonnull Move<P> move
     ) {
-        super(board, lightPlayer, darkPlayer, turn, ActionType.MOVE);
+        super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
         this.move = move;
     }

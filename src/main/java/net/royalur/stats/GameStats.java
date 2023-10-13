@@ -249,7 +249,7 @@ public class GameStats {
 
         // Count all the rolls and moves.
         for (GameState<?, ?, ?> state : game.getStates()) {
-            if (!(state instanceof ActionGameState<?, ?, ?, ?> actionState))
+            if (!(state instanceof ActionGameState<?, ?, ?> actionState))
                 continue;
 
             PlayerType player = actionState.getTurnPlayer().getPlayer();

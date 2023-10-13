@@ -370,6 +370,17 @@ public class JsonNotation implements RGUNotation {
         }
     }
 
+    protected <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String getActionType(
+            @Nonnull ActionGameState<P, S, R> state
+    ) {
+        if (state instanceof MovedGameState<P,S,R>)
+            return "Move";
+        if (state instanceof RolledGameState<P,S,R>)
+            return "Roll";
+
+        throw new IllegalArgumentException("Unknown action type for given game state class: " + state.getClass());
+    }
+
     /**
      * Writes an action in a game to the JSON generator.
      * @param state The action game state to write.
@@ -380,12 +391,12 @@ public class JsonNotation implements RGUNotation {
      * @throws IOException If there is an error writing the JSON.
      */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writeAction(
-            @Nonnull ActionGameState<P, S, R, ?> state,
+            @Nonnull ActionGameState<P, S, R> state,
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(ACTION_TYPE_KEY, state.getActionType().getTextName());
+        generator.writeStringField(ACTION_TYPE_KEY, getActionType(state));
 
         if (state instanceof RolledGameState) {
             writeRolledAction(Cast.unsafeCast(state), rules, generator);
@@ -409,7 +420,7 @@ public class JsonNotation implements RGUNotation {
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        for (ActionGameState<P, S, R, ?> state : game.getActionStates()) {
+        for (ActionGameState<P, S, R> state : game.getActionStates()) {
             generator.writeStartObject();
             try {
                 writeAction(state, game.getRules(), generator);
