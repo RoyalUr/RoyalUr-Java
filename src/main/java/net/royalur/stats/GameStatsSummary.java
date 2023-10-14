@@ -36,6 +36,18 @@ public class GameStatsSummary {
     private final @Nonnull double[][] drama;
 
     /**
+     * Statistics about the number of turns that the winner held the lead in a game before winning.
+     * This array is indexed by the ordinal of an element of {@link SummaryStat}.
+     */
+    private final @Nonnull double[] turnsInLead;
+
+    /**
+     * Statistics about the percentage of turns that the winner held the lead in a game before winning.
+     * This array is indexed by the ordinal of an element of {@link SummaryStat}.
+     */
+    private final @Nonnull double[] percentInLead;
+
+    /**
      * Instantiates a summary of the statistics from several games.
      * @param rolls Statistics about the number of rolls performed in the summarised games.
      *              The first dimension of this array is indexed by the ordinal of an element of
@@ -53,17 +65,27 @@ public class GameStatsSummary {
      *              The first dimension of this array is indexed by the ordinal of an element of
      *              {@link GameStatsTarget}, and the second dimension is indexed by the ordinal of
      *              an element of {@link SummaryStat}.
+     * @param turnsInLead Statistics about the number of turns that the winner held the lead in a
+     *                    game before winning. This array is indexed by the ordinal of an element
+     *                    of {@link SummaryStat}.
+     * @param percentInLead Statistics about the percentage of turns that the winner held the lead in a
+     *                      game before winning. This array is indexed by the ordinal of an element
+     *                      of {@link SummaryStat}.
      */
     protected GameStatsSummary(
             @Nonnull double[][] rolls,
             @Nonnull double[][] moves,
             @Nonnull double[][] turns,
-            @Nonnull double[][] drama
+            @Nonnull double[][] drama,
+            @Nonnull double[] turnsInLead,
+            @Nonnull double[] percentInLead
     ) {
         this.rolls = rolls;
         this.moves = moves;
         this.turns = turns;
         this.drama = drama;
+        this.turnsInLead = turnsInLead;
+        this.percentInLead = percentInLead;
     }
 
     /**
@@ -107,6 +129,24 @@ public class GameStatsSummary {
     }
 
     /**
+     * Gets the value of the summary statistic {@code statistic} about turns in lead.
+     * @param statistic The summary statistic to retrieve.
+     * @return The value of the summary statistic {@code statistic} about turns in lead.
+     */
+    public double getTurnsInLeadStatistic(@Nonnull SummaryStat statistic) {
+        return turnsInLead[statistic.ordinal()];
+    }
+
+    /**
+     * Gets the value of the summary statistic {@code statistic} about percentage in lead.
+     * @param statistic The summary statistic to retrieve.
+     * @return The value of the summary statistic {@code statistic} about turns in lead.
+     */
+    public double getPercentInLeadStatistic(@Nonnull SummaryStat statistic) {
+        return percentInLead[statistic.ordinal()];
+    }
+
+    /**
      * Summarises the statistics from many games.
      * @param stats The game statistics to summarise.
      * @return The summarised statistics from many games.
@@ -117,7 +157,7 @@ public class GameStatsSummary {
         double[][] turns = new double[GameStatsTarget.values().length][];
         double[][] drama = new double[GameStatsTarget.values().length][];
 
-        int[] measurements = new int[stats.length];
+        double[] measurements = new double[stats.length];
         for (GameStatsTarget target : GameStatsTarget.values()) {
             // Summarise rolls.
             for (int index = 0; index < stats.length; ++index) {
@@ -143,6 +183,19 @@ public class GameStatsSummary {
             }
             drama[target.ordinal()] = SummaryStat.compute(measurements);
         }
-        return new GameStatsSummary(rolls, moves, turns, drama);
+
+        // Summarise turnsInLead.
+        for (int index = 0; index < stats.length; ++index) {
+            measurements[index] = stats[index].getTurnsInLead();
+        }
+        double[] turnsInLead = SummaryStat.compute(measurements);
+
+        // Summarise percentInLead.
+        for (int index = 0; index < stats.length; ++index) {
+            measurements[index] = stats[index].getPercentInLead();
+        }
+        double[] percentInLead = SummaryStat.compute(measurements);
+
+        return new GameStatsSummary(rolls, moves, turns, drama, turnsInLead, percentInLead);
     }
 }

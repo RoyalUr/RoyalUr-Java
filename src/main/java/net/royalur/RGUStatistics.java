@@ -14,6 +14,7 @@ import net.royalur.stats.GameStatsTarget;
 import net.royalur.stats.SummaryStat;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -134,41 +135,53 @@ public class RGUStatistics {
 
             System.out.println("\n" + desc + timings + ":");
             for (GameStatsTarget target : reportTargets) {
-                System.out.println(String.join("\n* ", new String[] {
-                        target.getName() + ":",
-                        String.format(
-                                "turns: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
-                                summary.getTurnsStatistic(target, SummaryStat.MEAN),
-                                summary.getTurnsStatistic(target, SummaryStat.STD_DEV),
-                                summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_25),
-                                summary.getTurnsStatistic(target, SummaryStat.MEDIAN),
-                                summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_75)
-                        ),
-                        String.format(
-                                "moves: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
-                                summary.getMovesStatistic(target, SummaryStat.MEAN),
-                                summary.getMovesStatistic(target, SummaryStat.STD_DEV),
-                                summary.getMovesStatistic(target, SummaryStat.PERCENTILE_25),
-                                summary.getMovesStatistic(target, SummaryStat.MEDIAN),
-                                summary.getMovesStatistic(target, SummaryStat.PERCENTILE_75)
-                        ),
-                        String.format(
-                                "rolls: %.0f ± %.0f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
-                                summary.getRollsStatistic(target, SummaryStat.MEAN),
-                                summary.getRollsStatistic(target, SummaryStat.STD_DEV),
-                                summary.getRollsStatistic(target, SummaryStat.PERCENTILE_25),
-                                summary.getRollsStatistic(target, SummaryStat.MEDIAN),
-                                summary.getRollsStatistic(target, SummaryStat.PERCENTILE_75)
-                        ),
-                        String.format(
-                                "drama: %.1f ± %.1f - Q1=%.1f, Q2=%.1f, Q3=%.1f",
-                                summary.getDramaStatistic(target, SummaryStat.MEAN),
-                                summary.getDramaStatistic(target, SummaryStat.STD_DEV),
-                                summary.getDramaStatistic(target, SummaryStat.PERCENTILE_25),
-                                summary.getDramaStatistic(target, SummaryStat.MEDIAN),
-                                summary.getDramaStatistic(target, SummaryStat.PERCENTILE_75)
-                        ),
-                }) + "\n\n");
+
+                List<String> reports = new ArrayList<>();
+                reports.add(String.format(
+                        "turns: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        summary.getTurnsStatistic(target, SummaryStat.MEAN),
+                        summary.getTurnsStatistic(target, SummaryStat.STD_DEV),
+                        summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_25),
+                        summary.getTurnsStatistic(target, SummaryStat.MEDIAN),
+                        summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_75)
+                ));
+                reports.add(String.format(
+                        "moves: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        summary.getMovesStatistic(target, SummaryStat.MEAN),
+                        summary.getMovesStatistic(target, SummaryStat.STD_DEV),
+                        summary.getMovesStatistic(target, SummaryStat.PERCENTILE_25),
+                        summary.getMovesStatistic(target, SummaryStat.MEDIAN),
+                        summary.getMovesStatistic(target, SummaryStat.PERCENTILE_75)
+                ));
+                reports.add(String.format(
+                        "rolls: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        summary.getRollsStatistic(target, SummaryStat.MEAN),
+                        summary.getRollsStatistic(target, SummaryStat.STD_DEV),
+                        summary.getRollsStatistic(target, SummaryStat.PERCENTILE_25),
+                        summary.getRollsStatistic(target, SummaryStat.MEDIAN),
+                        summary.getRollsStatistic(target, SummaryStat.PERCENTILE_75)
+                ));
+                reports.add(String.format(
+                        "drama: %.1f ± %.1f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        summary.getDramaStatistic(target, SummaryStat.MEAN),
+                        summary.getDramaStatistic(target, SummaryStat.STD_DEV),
+                        summary.getDramaStatistic(target, SummaryStat.PERCENTILE_25),
+                        summary.getDramaStatistic(target, SummaryStat.MEDIAN),
+                        summary.getDramaStatistic(target, SummaryStat.PERCENTILE_75)
+                ));
+
+                if (target == GameStatsTarget.OVERALL) {
+                    reports.add(String.format(
+                            "turns-in-lead: %.0f%% ± %.0f%% - Q1=%.0f%%, Q2=%.0f%%, Q3=%.0f%%",
+                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.MEAN),
+                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.STD_DEV),
+                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.PERCENTILE_25),
+                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.MEDIAN),
+                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.PERCENTILE_75)
+                    ));
+                }
+
+                System.out.println(target.getName() + ":\n* " + String.join("\n* ", reports) + "\n\n");
             }
             double agent1WinPercentage = 100.0 * ((double) agent1Wins / tests);
             double agent2WinPercentage = 100.0 * ((double) agent2Wins / tests);

@@ -49,14 +49,13 @@ public enum SummaryStat {
      */
     SummaryStat() {}
 
-    private static double calculatePercentile(@Nonnull int[] sortedMeasurements, double percentile) {
+    private static double calculatePercentile(@Nonnull double[] sortedMeasurements, double percentile) {
         double index = (sortedMeasurements.length - 1) * percentile;
         int belowIndex = (int) Math.floor(index);
         int aboveIndex = (int) Math.ceil(index);
 
-        int below = sortedMeasurements[belowIndex];
-        int above = sortedMeasurements[aboveIndex];
-
+        double below = sortedMeasurements[belowIndex];
+        double above = sortedMeasurements[aboveIndex];
         return below + (above - below) * (index - belowIndex);
     }
 
@@ -67,17 +66,17 @@ public enum SummaryStat {
      * @param measurements The measurements to summarise.
      * @return The summary statistics for the measurements in {@code measurements}.
      */
-    public static @Nonnull double[] compute(@Nonnull int[] measurements) {
+    public static @Nonnull double[] compute(@Nonnull double[] measurements) {
         // Calculate the sum and mean.
-        long sum = 0;
-        for (int measurement : measurements) {
+        double sum = 0;
+        for (double measurement : measurements) {
             sum += measurement;
         }
-        double mean = (double) sum / measurements.length;
+        double mean = sum / measurements.length;
 
         // Calculate the standard deviation.
         double variance = 0;
-        for (int measurement : measurements) {
+        for (double measurement : measurements) {
             double diff = measurement - mean;
             variance += diff * diff;
         }

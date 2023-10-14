@@ -49,6 +49,11 @@ public class GameStats {
     private final @Nonnull int[] drama;
 
     /**
+     * The number of turns that the winner held the lead before winning the game.
+     */
+    private final int turnsInLead;
+
+    /**
      * Instantiates statistics about a game of the Royal Game of Ur.
      * @param didLightWin Whether the light player won the game.
      * @param rolls The number of rolls performed in the game,
@@ -59,13 +64,16 @@ public class GameStats {
      *              indexed by the ordinal of an element of {@link GameStatsTarget}.
      * @param drama The number of times the lead player swapped during each game,
      *              indexed by the ordinal of an element of {@link GameStatsTarget}.
+     * @param turnsInLead The number of turns that the winner held the lead before
+     *                    winning the game.
      */
     protected GameStats(
             boolean didLightWin,
             @Nonnull int[] rolls,
             @Nonnull int[] moves,
             @Nonnull int[] turns,
-            @Nonnull int[] drama
+            @Nonnull int[] drama,
+            int turnsInLead
     ) {
         int targetCount = GameStatsTarget.values().length;
         if (rolls.length != targetCount) {
@@ -98,6 +106,7 @@ public class GameStats {
         this.moves = moves;
         this.turns = turns;
         this.drama = drama;
+        this.turnsInLead = turnsInLead;
     }
 
     /**
@@ -181,6 +190,22 @@ public class GameStats {
     }
 
     /**
+     * Gets the number of turns that the winner held the lead before winning.
+     * @return The number of turns that the winner held the lead before winning.
+     */
+    public int getTurnsInLead() {
+        return turnsInLead;
+    }
+
+    /**
+     * Gets the percentage of turns that the winner held the lead before winning.
+     * @return The percentage of turns that the winner held the lead before winning.
+     */
+    public double getPercentInLead() {
+        return (double) turnsInLead / getTurns(GameStatsTarget.OVERALL);
+    }
+
+    /**
      * Gets the total number of rolls performed by both players.
      * @return The total number of rolls performed by both players.
      */
@@ -246,6 +271,7 @@ public class GameStats {
         MovedGameState<?, ?, ?> lastMove = null;
         PlayerType currentLead = null;
         int losingLeadTurns = 0;
+        int turnsInLead = 0;
 
         // Count all the rolls and moves.
         for (GameState<?, ?, ?> state : game.getStates()) {
@@ -270,12 +296,14 @@ public class GameStats {
                         int currUtility = calculatePiecesAdvancedUtilityForLight(move);
                         if (currUtility != 0) {
                             PlayerType lead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
+                            turnsInLead += 1;
                             if (currentLead != lead) {
                                 losingLeadTurns += 1;
                                 if (losingLeadTurns >= 2) {
                                     drama[GameStatsTarget.OVERALL.ordinal()] += 1;
                                     drama[GameStatsTarget.get(lead).ordinal()] += 1;
                                     currentLead = lead;
+                                    turnsInLead = losingLeadTurns;
                                     losingLeadTurns = 0;
                                 }
                             }
@@ -289,6 +317,7 @@ public class GameStats {
                     double currUtility = calculatePiecesAdvancedUtilityForLight(move);
                     currentLead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
                     losingLeadTurns = 0;
+                    turnsInLead += 1;
                 }
 
                 lastMove = move;
@@ -296,7 +325,7 @@ public class GameStats {
         }
 
         // Create the statistics container.
-        return new GameStats(game.getWinner() == PlayerType.LIGHT, rolls, moves, turns, drama);
+        return new GameStats(game.getWinner() == PlayerType.LIGHT, rolls, moves, turns, drama, turnsInLead);
     }
 
     /**
