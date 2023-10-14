@@ -73,6 +73,6 @@ public class WaitingForMoveGameState<
     @Override
     public @Nonnull String describe() {
         return "Waiting for the " + getTurn().getTextName().toLowerCase()
-                + " player to make a move with their roll of " + roll + ".";
+                + " player to make a move with their roll of " + roll;
     }
 }

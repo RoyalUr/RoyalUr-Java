@@ -85,7 +85,6 @@ public class RolledGameState<
                 builder.append(", and all moves were blocked");
             }
         }
-        builder.append(".");
         return builder.toString();
     }
 }

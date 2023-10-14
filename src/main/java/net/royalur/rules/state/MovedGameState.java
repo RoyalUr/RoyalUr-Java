@@ -79,19 +79,16 @@ public class MovedGameState<
             builder.append("scored a newly introduced piece.");
         } else if (scoring) {
             builder.append("scored their ")
-                    .append(move.getSource())
-                    .append("piece.");
+                    .append(move.getSource());
         } else if (introducing) {
             builder.append("introduced a piece to ")
-                    .append(move.getDest())
-                    .append(".");
+                    .append(move.getDest());
         } else {
             builder.append("moved their ")
                     .append(move.getSource())
                     .append(" piece to ")
                     .append(move.isCapture() ? "capture " : "")
-                    .append(move.getDest())
-                    .append(".");
+                    .append(move.getDest());
         }
         return builder.toString();
     }
