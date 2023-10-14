@@ -66,7 +66,7 @@ public abstract class OngoingGameState<
     }
 
     /**
-     * Retrieves the state of the player that we are waiting on to interact with the game.
+     * Gets the state of the player that we are waiting on to interact with the game.
      * @return The state of the player that we are waiting on to interact with the game.
      */
     public @Nonnull S getTurnPlayer() {
@@ -74,7 +74,7 @@ public abstract class OngoingGameState<
     }
 
     /**
-     * Retrieves the state of the player that is waiting whilst the other player makes the
+     * Gets the state of the player that is waiting whilst the other player makes the
      * next interaction with the game.
      * @return The state of the player that is waiting for the other player to interact
      *         with the game.

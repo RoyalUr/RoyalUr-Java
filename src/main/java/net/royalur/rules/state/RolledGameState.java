@@ -49,7 +49,7 @@ public class RolledGameState<
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
-        this.availableMoves = availableMoves;
+        this.availableMoves = List.copyOf(availableMoves);
     }
 
     /**
@@ -72,15 +72,20 @@ public class RolledGameState<
 
     @Override
     public @Nonnull String describe() {
-        String noMoves = "";
+        StringBuilder builder = new StringBuilder();
+        builder.append("The ")
+                .append(getTurn().getTextName().toLowerCase())
+                .append(" player rolled ")
+                .append(roll);
+
         if (availableMoves.isEmpty()) {
             if (roll.value() == 0) {
-                noMoves = ", and had no moves";
+                builder.append(", and had no moves");
             } else {
-                noMoves = ", and all moves were blocked";
+                builder.append(", and all moves were blocked");
             }
         }
-        return "The " + getTurn().getTextName().toLowerCase() +
-                " player rolled " + roll + noMoves + ".";
+        builder.append(".");
+        return builder.toString();
     }
 }
