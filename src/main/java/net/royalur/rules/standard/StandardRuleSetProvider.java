@@ -27,11 +27,11 @@ public class StandardRuleSetProvider implements RuleSetProvider<Piece, PlayerSta
                 settings.getBoardShape(),
                 settings.getPaths(),
                 settings.getDice(),
+                pieceProvider,
+                stateProvider,
                 settings.areRosettesSafe(),
                 settings.doRosettesGrantExtraRolls(),
-                settings.doCapturesGrantExtraRolls(),
-                pieceProvider,
-                stateProvider
+                settings.doCapturesGrantExtraRolls()
         );
     }
 }

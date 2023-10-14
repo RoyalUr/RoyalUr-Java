@@ -28,22 +28,7 @@ public class StandardRuleSet<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
-> implements RuleSet<P, S, R> {
-
-    /**
-     * The shape of the game board.
-     */
-    private final @Nonnull BoardShape boardShape;
-
-    /**
-     * The paths that each player must take around the board.
-     */
-    private final @Nonnull PathPair paths;
-
-    /**
-     * The generator of dice that are used to generate dice rolls.
-     */
-    private final @Nonnull DiceFactory<R> diceFactory;
+> extends RuleSet<P, S, R> {
 
     /**
      * Whether rosette tiles are safe squares for pieces.
@@ -61,70 +46,35 @@ public class StandardRuleSet<
     private final boolean capturesGrantExtraRolls;
 
     /**
-     * Provides the manipulation of piece values.
-     */
-    private final @Nonnull PieceProvider<P> pieceProvider;
-
-    /**
-     * Provides the manipulation of player state values.
-     */
-    private final @Nonnull PlayerStateProvider<P, S> playerStateProvider;
-
-    /**
      * Instantiates a simple rule set for the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths The paths that the players must take around the board.
      * @param diceFactory The generator of dice that are used to generate dice rolls.
+     * @param pieceProvider Provides the manipulation of piece values.
+     * @param playerStateProvider Provides the manipulation of player states.
      * @param safeRosettes Whether rosette tiles are safe squares for pieces.
      * @param rosettesGrantExtraRolls Whether landing on rosette tiles gives an extra roll.
      * @param capturesGrantExtraRolls Whether capturing a piece gives an extra roll.
-     * @param pieceProvider Provides the manipulation of piece values.
-     * @param playerStateProvider Provides the manipulation of player states.
      */
     public StandardRuleSet(
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
             @Nonnull DiceFactory<R> diceFactory,
+            @Nonnull PieceProvider<P> pieceProvider,
+            @Nonnull PlayerStateProvider<P, S> playerStateProvider,
             boolean safeRosettes,
             boolean rosettesGrantExtraRolls,
-            boolean capturesGrantExtraRolls,
-            @Nonnull PieceProvider<P> pieceProvider,
-            @Nonnull PlayerStateProvider<P, S> playerStateProvider
+            boolean capturesGrantExtraRolls
     ) {
-        if (!boardShape.isCompatible(paths)) {
-            throw new IllegalArgumentException(
-                    "The " + paths.getName().getTextName() + " paths are not compatible with the " +
-                            boardShape.getName().getTextName() + " board shape"
-            );
-        }
-        this.boardShape = boardShape;
-        this.paths = paths;
-        this.diceFactory = diceFactory;
+        super(boardShape, paths, diceFactory, pieceProvider, playerStateProvider);
         this.safeRosettes = safeRosettes;
         this.rosettesGrantExtraRolls = rosettesGrantExtraRolls;
         this.capturesGrantExtraRolls = capturesGrantExtraRolls;
-        this.pieceProvider = pieceProvider;
-        this.playerStateProvider = playerStateProvider;
     }
 
     public @Nonnull FastGame createCompatibleFastGame() {
         int startingPieceCount = playerStateProvider.getStartingPieceCount();
         return new FastGame(this, startingPieceCount);
-    }
-
-    @Override
-    public @Nonnull BoardShape getBoardShape() {
-        return boardShape;
-    }
-
-    @Override
-    public @Nonnull PathPair getPaths() {
-        return paths;
-    }
-
-    @Override
-    public @Nonnull DiceFactory<R> getDiceFactory() {
-        return diceFactory;
     }
 
     @Override
@@ -140,16 +90,6 @@ public class StandardRuleSet<
     @Override
     public boolean doCapturesGrantExtraRolls() {
         return capturesGrantExtraRolls;
-    }
-
-    @Override
-    public @Nonnull PieceProvider<P> getPieceProvider() {
-        return pieceProvider;
-    }
-
-    @Override
-    public @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider() {
-        return playerStateProvider;
     }
 
     @Override

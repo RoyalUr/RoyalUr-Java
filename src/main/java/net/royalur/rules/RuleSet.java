@@ -21,65 +21,128 @@ import java.util.List;
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public interface RuleSet<
+public abstract class RuleSet<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
 > {
 
     /**
+     * The shape of the game board.
+     */
+    protected final @Nonnull BoardShape boardShape;
+
+    /**
+     * The paths that each player must take around the board.
+     */
+    protected final @Nonnull PathPair paths;
+
+    /**
+     * The generator of dice that are used to generate dice rolls.
+     */
+    protected final @Nonnull DiceFactory<R> diceFactory;
+
+    /**
+     * Provides the manipulation of piece values.
+     */
+    protected final @Nonnull PieceProvider<P> pieceProvider;
+
+    /**
+     * Provides the manipulation of player state values.
+     */
+    protected final @Nonnull PlayerStateProvider<P, S> playerStateProvider;
+
+    /**
+     * Instantiates a rule set for the Royal Game of Ur.
+     * @param boardShape The shape of the game board.
+     * @param paths The paths that the players must take around the board.
+     * @param diceFactory The generator of dice that are used to generate dice rolls.
+     * @param pieceProvider Provides the manipulation of piece values.
+     * @param playerStateProvider Provides the manipulation of player states.
+     */
+    protected RuleSet(
+            @Nonnull BoardShape boardShape,
+            @Nonnull PathPair paths,
+            @Nonnull DiceFactory<R> diceFactory,
+            @Nonnull PieceProvider<P> pieceProvider,
+            @Nonnull PlayerStateProvider<P, S> playerStateProvider
+    ) {
+        if (!boardShape.isCompatible(paths)) {
+            throw new IllegalArgumentException(
+                    "The " + paths.getName().getTextName() + " paths are not compatible with the " +
+                            boardShape.getName().getTextName() + " board shape"
+            );
+        }
+        this.boardShape = boardShape;
+        this.paths = paths;
+        this.diceFactory = diceFactory;
+        this.pieceProvider = pieceProvider;
+        this.playerStateProvider = playerStateProvider;
+    }
+
+    /**
      * Gets the shape of the board used in this rule set.
      * @return The shape of the game board.
      */
-    @Nonnull BoardShape getBoardShape();
+    public @Nonnull BoardShape getBoardShape() {
+        return boardShape;
+    }
 
     /**
      * Gets the paths that the players must take around the board.
      * @return The paths that players must take around the board.
      */
-    @Nonnull PathPair getPaths();
+    public @Nonnull PathPair getPaths() {
+        return paths;
+    }
 
     /**
      * Gets the generator of dice that are used to generate dice rolls.
      * @return The generator of dice that are used to generate dice rolls.
      */
-    @Nonnull DiceFactory<R> getDiceFactory();
-
-    /**
-     * Gets whether rosettes are considered safe squares in this rule set.
-     * @return Whether rosettes are considered safe squares in this rule set.
-     */
-    boolean areRosettesSafe();
-
-    /**
-     * Gets whether landing on rosette tiles grants an additional roll.
-     * @return Whether landing on rosette tiles grants an additional roll.
-     */
-    boolean doRosettesGrantExtraRolls();
-
-    /**
-     * Gets whether capturing a piece grants an additional roll.
-     * @return Whether capturing a piece grants an additional roll.
-     */
-    boolean doCapturesGrantExtraRolls();
+    public @Nonnull DiceFactory<R> getDiceFactory() {
+        return diceFactory;
+    }
 
     /**
      * Gets the provider of piece manipulations.
      * @return The provider of making piece changes.
      */
-    @Nonnull PieceProvider<P> getPieceProvider();
+    public @Nonnull PieceProvider<P> getPieceProvider() {
+        return pieceProvider;
+    }
 
     /**
      * Gets the provider of player state manipulations.
      * @return The provider of making player state changes.
      */
-    @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider();
+    public @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider() {
+        return playerStateProvider;
+    }
+
+    /**
+     * Gets whether rosettes are considered safe squares in this rule set.
+     * @return Whether rosettes are considered safe squares in this rule set.
+     */
+    public abstract boolean areRosettesSafe();
+
+    /**
+     * Gets whether landing on rosette tiles grants an additional roll.
+     * @return Whether landing on rosette tiles grants an additional roll.
+     */
+    public abstract boolean doRosettesGrantExtraRolls();
+
+    /**
+     * Gets whether capturing a piece grants an additional roll.
+     * @return Whether capturing a piece grants an additional roll.
+     */
+    public abstract boolean doCapturesGrantExtraRolls();
 
     /**
      * Generates the initial state for a game.
      * @return The initial state for a game.
      */
-    @Nonnull GameState<P, S, R> generateInitialGameState();
+    public abstract @Nonnull GameState<P, S, R> generateInitialGameState();
 
     /**
      * Finds all available moves from the current state of the board and the player,
@@ -89,8 +152,11 @@ public interface RuleSet<
      * @param roll The roll that was made. Must be non-zero.
      * @return A list of all the available moves from the position.
      */
-    @Nonnull List<Move<P>> findAvailableMoves(
-            @Nonnull Board<P> board, @Nonnull S player, @Nonnull R roll);
+    public abstract @Nonnull List<Move<P>> findAvailableMoves(
+            @Nonnull Board<P> board,
+            @Nonnull S player,
+            @Nonnull R roll
+    );
 
     /**
      * Applies {@code roll} to {@code state} to generate the new state of the
@@ -103,7 +169,7 @@ public interface RuleSet<
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    @Nonnull List<GameState<P, S, R>> applyRoll(
+    public abstract @Nonnull List<GameState<P, S, R>> applyRoll(
             @Nonnull WaitingForRollGameState<P, S, R> state,
             @Nonnull R roll
     );
@@ -122,15 +188,15 @@ public interface RuleSet<
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    @Nonnull List<GameState<P, S, R>> applyMove(
+    public abstract @Nonnull List<GameState<P, S, R>> applyMove(
             @Nonnull WaitingForMoveGameState<P, S, R> state,
             @Nonnull Move<P> move
     );
 
-    /*
+    /**
      * Creates a standard rule set that follows the given game settings.
      */
-    static <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R>
+    public static <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R>
     createStandard(@Nonnull GameSettings<R> settings) {
         return new StandardRuleSetProvider().create(settings, new GameMetadata());
     }

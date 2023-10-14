@@ -268,7 +268,7 @@ public class GameStats {
         int[] turns = new int[targetCount];
         int[] drama = new int[targetCount];
 
-        MovedGameState<?, ?, ?> lastMove = null;
+        ActionGameState<?, ?, ?> lastAction = null;
         PlayerType currentLead = null;
         int losingLeadTurns = 0;
         int turnsInLead = 0;
@@ -287,41 +287,41 @@ public class GameStats {
             } else if (actionState instanceof MovedGameState<?, ?, ?> move) {
                 moves[GameStatsTarget.OVERALL.ordinal()] += 1;
                 moves[GameStatsTarget.get(player).ordinal()] += 1;
+            }
 
-                if (lastMove != null) {
-                    if (lastMove.getTurnPlayer() != move.getTurnPlayer()) {
-                        turns[GameStatsTarget.OVERALL.ordinal()] += 1;
-                        turns[GameStatsTarget.get(player).ordinal()] += 1;
-
-                        int currUtility = calculatePiecesAdvancedUtilityForLight(move);
-                        if (currUtility != 0) {
-                            PlayerType lead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
-                            turnsInLead += 1;
-                            if (currentLead != lead) {
-                                losingLeadTurns += 1;
-                                if (losingLeadTurns >= 2) {
-                                    drama[GameStatsTarget.OVERALL.ordinal()] += 1;
-                                    drama[GameStatsTarget.get(lead).ordinal()] += 1;
-                                    currentLead = lead;
-                                    turnsInLead = losingLeadTurns;
-                                    losingLeadTurns = 0;
-                                }
-                            }
-                        }
-                    }
-
-                } else {
+            if (lastAction != null) {
+                if (lastAction.getTurnPlayer() != actionState.getTurnPlayer()) {
                     turns[GameStatsTarget.OVERALL.ordinal()] += 1;
                     turns[GameStatsTarget.get(player).ordinal()] += 1;
 
-                    double currUtility = calculatePiecesAdvancedUtilityForLight(move);
-                    currentLead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
-                    losingLeadTurns = 0;
-                    turnsInLead += 1;
+                    int currUtility = calculatePiecesAdvancedUtilityForLight(actionState);
+                    if (currUtility != 0) {
+                        PlayerType lead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
+                        turnsInLead += 1;
+                        if (currentLead != lead) {
+                            losingLeadTurns += 1;
+                            if (losingLeadTurns >= 2) {
+                                drama[GameStatsTarget.OVERALL.ordinal()] += 1;
+                                drama[GameStatsTarget.get(lead).ordinal()] += 1;
+                                currentLead = lead;
+                                turnsInLead = losingLeadTurns;
+                                losingLeadTurns = 0;
+                            }
+                        }
+                    }
                 }
 
-                lastMove = move;
+            } else {
+                turns[GameStatsTarget.OVERALL.ordinal()] += 1;
+                turns[GameStatsTarget.get(player).ordinal()] += 1;
+
+                double currUtility = calculatePiecesAdvancedUtilityForLight(actionState);
+                currentLead = (currUtility < 0 ? PlayerType.DARK : PlayerType.LIGHT);
+                losingLeadTurns = 0;
+                turnsInLead += 1;
             }
+
+            lastAction = actionState;
         }
 
         // Create the statistics container.

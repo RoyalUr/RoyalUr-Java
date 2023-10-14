@@ -172,7 +172,15 @@ public class RGUStatistics {
 
                 if (target == GameStatsTarget.OVERALL) {
                     reports.add(String.format(
-                            "turns-in-lead: %.0f%% ± %.0f%% - Q1=%.0f%%, Q2=%.0f%%, Q3=%.0f%%",
+                            "turns-in-lead: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                            summary.getTurnsInLeadStatistic(SummaryStat.MEAN),
+                            summary.getTurnsInLeadStatistic(SummaryStat.STD_DEV),
+                            summary.getTurnsInLeadStatistic(SummaryStat.PERCENTILE_25),
+                            summary.getTurnsInLeadStatistic(SummaryStat.MEDIAN),
+                            summary.getTurnsInLeadStatistic(SummaryStat.PERCENTILE_75)
+                    ));
+                    reports.add(String.format(
+                            "percent-in-lead: %.0f%% ± %.0f%% - Q1=%.0f%%, Q2=%.0f%%, Q3=%.0f%%",
                             100.0 * summary.getPercentInLeadStatistic(SummaryStat.MEAN),
                             100.0 * summary.getPercentInLeadStatistic(SummaryStat.STD_DEV),
                             100.0 * summary.getPercentInLeadStatistic(SummaryStat.PERCENTILE_25),
