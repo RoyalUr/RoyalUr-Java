@@ -133,7 +133,8 @@ public class StandardRuleSetTest {
         int[] fastBoard = fastGame.board.pieces;
         for (Tile tile : board.getShape().getTiles()) {
             Piece piece = board.get(tile);
-            int fastPiece = fastBoard[fastGame.board.calcTileIndex(tile)];
+            int fastIndex = fastGame.board.calcTileIndex(tile.getXIndex(), tile.getYIndex());
+            int fastPiece = fastBoard[fastIndex];
             if (piece == null) {
                 assertEquals(0, fastPiece);
             } else if (piece.getOwner() == PlayerType.LIGHT) {

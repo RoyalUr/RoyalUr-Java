@@ -284,7 +284,8 @@ public class StandardRuleSet<
                 state.getLightPlayer(),
                 state.getDarkPlayer(),
                 state.getTurn(),
-                roll
+                roll,
+                availableMoves
         ));
     }
 
