@@ -240,7 +240,7 @@ public class Move<P extends Piece> {
         if (isCapture()) {
             builder.append("capture ");
         }
-        builder.append(getDest()).append(".");
+        builder.append(getDest());
         return builder.toString();
     }
 
