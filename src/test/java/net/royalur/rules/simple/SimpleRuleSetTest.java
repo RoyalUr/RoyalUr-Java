@@ -1,4 +1,4 @@
-package net.royalur.rules.standard;
+package net.royalur.rules.simple;
 
 import net.royalur.Game;
 import net.royalur.TestUtils;
@@ -7,8 +7,8 @@ import net.royalur.model.dice.*;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.path.PathType;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.fast.FastGame;
-import net.royalur.rules.standard.fast.FastMoveList;
+import net.royalur.rules.simple.fast.FastGame;
+import net.royalur.rules.simple.fast.FastMoveList;
 import net.royalur.rules.state.GameState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StandardRuleSetTest {
+public class SimpleRuleSetTest {
 
     public static class NamedGameSettings {
         public final String name;
@@ -82,15 +82,15 @@ public class StandardRuleSetTest {
         GameSettings<Roll> invalidFinkel = GameSettings.FINKEL.withPaths(PathType.ASEB);
 
         // They should just fail when creating a rule set.
-        assertThrows(IllegalArgumentException.class, () -> RuleSet.createStandard(invalidAseb));
-        assertThrows(IllegalArgumentException.class, () -> RuleSet.createStandard(invalidFinkel));
+        assertThrows(IllegalArgumentException.class, () -> RuleSet.createSimple(invalidAseb));
+        assertThrows(IllegalArgumentException.class, () -> RuleSet.createSimple(invalidFinkel));
     }
 
     @ParameterizedTest
     @ArgumentsSource(StandardGameSettingsProvider.class)
     public void testFindAvailableMoves_IntroducingPieces(NamedGameSettings nrs) {
         GameSettings<Roll> settings = nrs.settings;
-        StandardRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
+        SimpleRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createSimple(settings);
         GameState<Piece, PlayerState, Roll> initialState = rules.generateInitialGameState();
         Board<Piece> board = initialState.getBoard();
         PlayerState light = initialState.getLightPlayer();
@@ -110,7 +110,7 @@ public class StandardRuleSetTest {
                                 new Piece(player, roll - 1),
                                 null
                         )),
-                        rules.findAvailableMoves(board, playerState, BasicRoll.of(roll))
+                        rules.findAvailableMoves(board, playerState, SimpleRoll.of(roll))
                 );
             }
         }
@@ -159,7 +159,7 @@ public class StandardRuleSetTest {
     @ArgumentsSource(StandardGameSettingsProvider.class)
     public void testFastGameIsCompliant(NamedGameSettings nrs) {
         GameSettings<Roll> settings = nrs.settings;
-        StandardRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createStandard(settings);
+        SimpleRuleSet<Piece, PlayerState, Roll> rules = RuleSet.createSimple(settings);
 
         int tests = 100;
         Random moveChoiceRandom = new Random(43);

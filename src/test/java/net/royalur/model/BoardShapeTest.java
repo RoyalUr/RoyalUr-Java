@@ -148,7 +148,7 @@ public class BoardShapeTest {
     }
 
     @Test
-    public void testBasicProperties() {
+    public void testBaseProperties() {
         BoardShape standard = new StandardBoardShape();
         assertEquals(3, standard.getWidth());
         assertEquals(8, standard.getHeight());

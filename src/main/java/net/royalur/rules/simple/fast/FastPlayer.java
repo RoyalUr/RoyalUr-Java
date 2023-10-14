@@ -1,4 +1,4 @@
-package net.royalur.rules.standard.fast;
+package net.royalur.rules.simple.fast;
 
 import net.royalur.model.PlayerState;
 import net.royalur.model.PlayerType;

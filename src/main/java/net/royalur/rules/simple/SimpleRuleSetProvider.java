@@ -1,4 +1,4 @@
-package net.royalur.rules.standard;
+package net.royalur.rules.simple;
 
 import net.royalur.GameMetadata;
 import net.royalur.model.GameSettings;
@@ -10,20 +10,20 @@ import net.royalur.rules.*;
 import javax.annotation.Nonnull;
 
 /**
- * A provider that creates standard rule sets.
+ * A provider that creates simple rule sets.
  */
-public class StandardRuleSetProvider implements RuleSetProvider<Piece, PlayerState> {
+public class SimpleRuleSetProvider implements RuleSetProvider<Piece, PlayerState> {
 
     @Override
-    public <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R> create(
+    public <R extends Roll> @Nonnull SimpleRuleSet<Piece, PlayerState, R> create(
             @Nonnull GameSettings<R> settings,
             @Nonnull GameMetadata metadata
     ) {
-        BasicPieceProvider pieceProvider = new BasicPieceProvider();
-        BasicPlayerStateProvider stateProvider = new BasicPlayerStateProvider(
+        SimplePieceProvider pieceProvider = new SimplePieceProvider();
+        SimplePlayerStateProvider stateProvider = new SimplePlayerStateProvider(
                 settings.getStartingPieceCount()
         );
-        return new StandardRuleSet<>(
+        return new SimpleRuleSet<>(
                 settings.getBoardShape(),
                 settings.getPaths(),
                 settings.getDice(),

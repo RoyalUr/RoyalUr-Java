@@ -6,8 +6,8 @@ import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
-import net.royalur.rules.standard.StandardRuleSet;
-import net.royalur.rules.standard.StandardRuleSetProvider;
+import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.WaitingForMoveGameState;
 import net.royalur.rules.state.WaitingForRollGameState;
@@ -194,10 +194,10 @@ public abstract class RuleSet<
     );
 
     /**
-     * Creates a standard rule set that follows the given game settings.
+     * Creates a simple rule set that follows the given game settings.
      */
-    public static <R extends Roll> @Nonnull StandardRuleSet<Piece, PlayerState, R>
-    createStandard(@Nonnull GameSettings<R> settings) {
-        return new StandardRuleSetProvider().create(settings, new GameMetadata());
+    public static <R extends Roll> @Nonnull SimpleRuleSet<Piece, PlayerState, R>
+    createSimple(@Nonnull GameSettings<R> settings) {
+        return new SimpleRuleSetProvider().create(settings, new GameMetadata());
     }
 }

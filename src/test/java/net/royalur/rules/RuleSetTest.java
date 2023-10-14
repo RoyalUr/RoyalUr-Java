@@ -40,11 +40,11 @@ public class RuleSetTest {
             return Stream.of(
                     Arguments.of(new NamedRuleSet<>(
                             "Standard-Finkel",
-                            RuleSet.createStandard(GameSettings.FINKEL)
+                            RuleSet.createSimple(GameSettings.FINKEL)
                     )),
                     Arguments.of(new NamedRuleSet<>(
                             "Standard-Aseb",
-                            RuleSet.createStandard(GameSettings.ASEB)
+                            RuleSet.createSimple(GameSettings.ASEB)
                     ))
             );
         }

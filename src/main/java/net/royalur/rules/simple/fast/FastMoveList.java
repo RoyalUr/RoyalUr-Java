@@ -1,4 +1,4 @@
-package net.royalur.rules.standard.fast;
+package net.royalur.rules.simple.fast;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;

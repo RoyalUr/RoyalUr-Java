@@ -7,7 +7,7 @@ import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.StandardRuleSet;
+import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -41,22 +41,22 @@ public class RGUStatistics {
     private @Nonnull GameStats testAgentActions(
             @Nonnull Supplier<Game<Piece, PlayerState, Roll>> gameGenerator,
             @Nonnull Function<
-                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    SimpleRuleSet<Piece, PlayerState, Roll>,
                     Agent<Piece, PlayerState, Roll>
             > lightAgentGenerator,
             @Nonnull Function<
-                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    SimpleRuleSet<Piece, PlayerState, Roll>,
                     Agent<Piece, PlayerState, Roll>
             > darkAgentGenerator
     ) {
 
         Game<Piece, PlayerState, Roll> game = gameGenerator.get();
         RuleSet<Piece, PlayerState, Roll> rules = game.getRules();
-        if (!(rules instanceof StandardRuleSet<Piece, PlayerState, Roll> standardRules))
-            throw new IllegalArgumentException("Game does not use standard rules");
+        if (!(rules instanceof SimpleRuleSet<Piece, PlayerState, Roll> simpleRules))
+            throw new IllegalArgumentException("Game does not use simple rules");
 
-        Agent<Piece, PlayerState, Roll> light = lightAgentGenerator.apply(standardRules);
-        Agent<Piece, PlayerState, Roll> dark = darkAgentGenerator.apply(standardRules);
+        Agent<Piece, PlayerState, Roll> light = lightAgentGenerator.apply(simpleRules);
+        Agent<Piece, PlayerState, Roll> dark = darkAgentGenerator.apply(simpleRules);
         Agent.playAutonomously(game, light, dark);
         return GameStats.gather(game);
     }
@@ -69,11 +69,11 @@ public class RGUStatistics {
      */
     public void testAgentActions(
             @Nonnull Function<
-                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    SimpleRuleSet<Piece, PlayerState, Roll>,
                     Agent<Piece, PlayerState, Roll>
             > agent1Generator,
             @Nonnull Function<
-                    StandardRuleSet<Piece, PlayerState, Roll>,
+                    SimpleRuleSet<Piece, PlayerState, Roll>,
                     Agent<Piece, PlayerState, Roll>
             > agent2Generator,
             int tests,

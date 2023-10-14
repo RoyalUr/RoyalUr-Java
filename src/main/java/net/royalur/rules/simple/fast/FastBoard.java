@@ -1,4 +1,4 @@
-package net.royalur.rules.standard.fast;
+package net.royalur.rules.simple.fast;
 
 import net.royalur.model.Board;
 import net.royalur.model.Piece;
@@ -9,7 +9,7 @@ import net.royalur.model.shape.BoardShape;
 import javax.annotation.Nonnull;
 
 /**
- * The board of a standard game that is optimised for speed.
+ * The board of a simple game that is optimised for speed.
  * This speed comes at the cost of error checking and convenience.
  */
 public class FastBoard {

@@ -58,7 +58,7 @@ public class GameTest {
     }
 
     @RepeatedTest(3)
-    public void testStandardBellGameRandom() {
+    public void testSimpleBellGameRandom() {
         Game<Piece, PlayerState, Roll> game = Game.createFinkel();
         RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
@@ -73,7 +73,7 @@ public class GameTest {
     }
 
     @RepeatedTest(3)
-    public void testStandardMastersGameRandom() {
+    public void testSimpleMastersGameRandom() {
         Game<Piece, PlayerState, Roll> game = Game.builder().masters().build();
         RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
@@ -88,7 +88,7 @@ public class GameTest {
     }
 
     @RepeatedTest(3)
-    public void testStandardSkiriukGameRandom() {
+    public void testSimpleSkiriukGameRandom() {
         Game<Piece, PlayerState, Roll> game = Game.builder().finkel().paths(new SkiriukPathPair()).build();
         RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();
@@ -103,7 +103,7 @@ public class GameTest {
     }
 
     @RepeatedTest(3)
-    public void testStandardMurrayGameRandom() {
+    public void testSimpleMurrayGameRandom() {
         Game<Piece, PlayerState, Roll> game = Game.builder().finkel().paths(new MurrayPathPair()).build();
         RandomAgent<Piece, PlayerState, Roll> light = new RandomAgent<>();
         RandomAgent<Piece, PlayerState, Roll> dark = new RandomAgent<>();

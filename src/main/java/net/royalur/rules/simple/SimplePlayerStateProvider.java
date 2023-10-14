@@ -1,15 +1,16 @@
-package net.royalur.rules;
+package net.royalur.rules.simple;
 
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
+import net.royalur.rules.PlayerStateProvider;
 
 import javax.annotation.Nonnull;
 
 /**
- * Provides new instances of, and manipulations to, standard player states.
+ * Provides new instances of, and manipulations to, simple player states.
  */
-public class BasicPlayerStateProvider implements PlayerStateProvider<Piece, PlayerState> {
+public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, PlayerState> {
 
     /**
      * The number of pieces that each player starts with.
@@ -17,10 +18,10 @@ public class BasicPlayerStateProvider implements PlayerStateProvider<Piece, Play
     private final int startingPieceCount;
 
     /**
-     * Creates a new standard player state provider.
+     * Creates a new simple player state provider.
      * @param startingPieceCount The number of pieces that each player starts with.
      */
-    public BasicPlayerStateProvider(int startingPieceCount) {
+    public SimplePlayerStateProvider(int startingPieceCount) {
         if (startingPieceCount <= 0)
             throw new IllegalArgumentException("startingPieces must be at least 1, not " + startingPieceCount);
 

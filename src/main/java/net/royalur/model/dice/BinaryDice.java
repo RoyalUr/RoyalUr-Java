@@ -68,6 +68,6 @@ public class BinaryDice extends Dice<Roll> {
         if (value < 0 || value > getMaxRollValue())
             throw new IllegalArgumentException("This dice cannot roll " + value);
 
-        return BasicRoll.of(value);
+        return SimpleRoll.of(value);
     }
 }

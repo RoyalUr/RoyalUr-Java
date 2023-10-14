@@ -1,4 +1,4 @@
-package net.royalur.rules.standard.fast;
+package net.royalur.rules.simple.fast;
 
 import net.royalur.Game;
 import net.royalur.model.Piece;
@@ -6,13 +6,13 @@ import net.royalur.model.PlayerState;
 import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.standard.StandardRuleSet;
+import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * A standard game that is optimised for speed.
+ * A simple game that is optimised for speed.
  * This speed comes at the cost of error checking,
  * convenience, and tracking of game history.
  */
@@ -32,7 +32,7 @@ public class FastGame {
     public boolean isFinished;
 
     public FastGame(
-            @Nonnull StandardRuleSet<
+            @Nonnull SimpleRuleSet<
                     ? extends Piece,
                     ? extends PlayerState,
                     ? extends Roll

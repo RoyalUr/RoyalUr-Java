@@ -1,4 +1,4 @@
-package net.royalur.rules.standard;
+package net.royalur.rules.simple;
 
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
@@ -8,7 +8,7 @@ import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.PieceProvider;
 import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.fast.FastGame;
+import net.royalur.rules.simple.fast.FastGame;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
@@ -18,13 +18,12 @@ import java.util.List;
 
 /**
  * The most common, simplified, rules of the Royal Game of Ur.
- * Any piece with a valid move can be moved. Rosettes give another
- * turn and are safe squares.
+ * This still allows a large range of custom rules.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  * @param <R> The type of rolls that may be made.
  */
-public class StandardRuleSet<
+public class SimpleRuleSet<
         P extends Piece,
         S extends PlayerState,
         R extends Roll
@@ -56,7 +55,7 @@ public class StandardRuleSet<
      * @param rosettesGrantExtraRolls Whether landing on rosette tiles gives an extra roll.
      * @param capturesGrantExtraRolls Whether capturing a piece gives an extra roll.
      */
-    public StandardRuleSet(
+    public SimpleRuleSet(
             @Nonnull BoardShape boardShape,
             @Nonnull PathPair paths,
             @Nonnull DiceFactory<R> diceFactory,

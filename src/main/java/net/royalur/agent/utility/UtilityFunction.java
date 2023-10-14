@@ -2,7 +2,7 @@ package net.royalur.agent.utility;
 
 import net.royalur.name.Name;
 import net.royalur.name.Named;
-import net.royalur.rules.standard.fast.FastGame;
+import net.royalur.rules.simple.fast.FastGame;
 
 import javax.annotation.Nonnull;
 

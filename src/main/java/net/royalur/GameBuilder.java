@@ -201,8 +201,8 @@ public class GameBuilder<
     }
 
     /**
-     * Generates a standard rule set to match the settings in this builder.
-     * @return A standard rule set to match the settings in this builder.
+     * Generates a simple rule set to match the settings in this builder.
+     * @return A simple rule set to match the settings in this builder.
      */
     public @Nonnull RuleSet<P, S, R> buildRules() {
         return ruleSetProvider.create(gameSettings, new GameMetadata());

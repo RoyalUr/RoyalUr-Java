@@ -4,7 +4,7 @@ import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.StandardRuleSetProvider;
+import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
@@ -498,11 +498,11 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * Creates a builder to assist in constructing games with custom settings.
      */
     public static @Nonnull GameBuilder<Piece, PlayerState, Roll> builder() {
-        return new GameBuilder<>(GameSettings.FINKEL, new StandardRuleSetProvider());
+        return new GameBuilder<>(GameSettings.FINKEL, new SimpleRuleSetProvider());
     }
 
     /**
-     * Creates a standard game with custom settings.
+     * Creates a simple game with custom settings.
      * @param settings The settings to use for the game.
      * @return A game with custom settings.
      */
@@ -512,7 +512,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Creates a standard game that follows the rules proposed by Irving Finkel.
+     * Creates a simple game that follows the rules proposed by Irving Finkel.
      * This uses the simple rules, the standard board shape, Bell's path, safe
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
@@ -522,7 +522,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Creates a standard game that follows the rules proposed by James Masters.
+     * Creates a simple game that follows the rules proposed by James Masters.
      * This uses the simple rules, the standard board shape, Bell's path, unsafe
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.

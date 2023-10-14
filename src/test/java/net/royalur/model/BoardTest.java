@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoardTest {
 
     @Test
-    public void testBasicProperties() {
+    public void testBaseProperties() {
         Board<Piece> standard = new Board<>(new StandardBoardShape());
         assertEquals(3, standard.getWidth());
         assertEquals(8, standard.getHeight());

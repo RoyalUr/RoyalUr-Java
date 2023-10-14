@@ -5,9 +5,9 @@ import net.royalur.agent.utility.UtilityFunction;
 import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.standard.StandardRuleSet;
-import net.royalur.rules.standard.fast.FastGame;
-import net.royalur.rules.standard.fast.FastMoveList;
+import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.fast.FastGame;
+import net.royalur.rules.simple.fast.FastMoveList;
 import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ public class LikelihoodAgent<
     /**
      * The rules used for games given to this agent.
      */
-    private final @Nonnull StandardRuleSet<P, S, R> rules;
+    private final @Nonnull SimpleRuleSet<P, S, R> rules;
 
     /**
      * The utility function to use to evaluate game states.
@@ -67,7 +67,7 @@ public class LikelihoodAgent<
      *                            sequence of rolls to further depth.
      */
     public LikelihoodAgent(
-            @Nonnull StandardRuleSet<P, S, R> rules,
+            @Nonnull SimpleRuleSet<P, S, R> rules,
             @Nonnull UtilityFunction utilityFunction,
             float likelihoodThreshold
     ) {

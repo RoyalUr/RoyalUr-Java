@@ -5,7 +5,7 @@ import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.name.TextName;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.standard.fast.FastGame;
+import net.royalur.rules.simple.fast.FastGame;
 
 import javax.annotation.Nonnull;
 
