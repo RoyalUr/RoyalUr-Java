@@ -76,7 +76,7 @@ public class RolledGameState<
         builder.append("The ")
                 .append(getTurn().getTextName().toLowerCase())
                 .append(" player rolled ")
-                .append(roll);
+                .append(roll.value());
 
         if (availableMoves.isEmpty()) {
             if (roll.value() == 0) {

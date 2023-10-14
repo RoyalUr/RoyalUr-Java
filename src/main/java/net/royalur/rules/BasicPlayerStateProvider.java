@@ -1,5 +1,6 @@
 package net.royalur.rules;
 
+import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 
@@ -8,7 +9,7 @@ import javax.annotation.Nonnull;
 /**
  * Provides new instances of, and manipulations to, standard player states.
  */
-public class BasicPlayerStateProvider implements PlayerStateProvider<PlayerState> {
+public class BasicPlayerStateProvider implements PlayerStateProvider<Piece, PlayerState> {
 
     /**
      * The number of pieces that each player starts with.
@@ -37,20 +38,29 @@ public class BasicPlayerStateProvider implements PlayerStateProvider<PlayerState
     }
 
     @Override
-    public @Nonnull PlayerState applyPiecesChange(PlayerState playerState, int pieces) {
+    public @Nonnull PlayerState applyPieceIntroduced(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
         return new PlayerState(
                 playerState.getPlayer(),
-                playerState.getPieceCount() + pieces,
+                playerState.getPieceCount() - 1,
                 playerState.getScore()
         );
     }
 
     @Override
-    public @Nonnull PlayerState applyScoreChange(PlayerState playerState, int pieces) {
+    public @Nonnull PlayerState applyPieceCaptured(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
+        return new PlayerState(
+                playerState.getPlayer(),
+                playerState.getPieceCount() + 1,
+                playerState.getScore()
+        );
+    }
+
+    @Override
+    public @Nonnull PlayerState applyPieceScored(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
         return new PlayerState(
                 playerState.getPlayer(),
                 playerState.getPieceCount(),
-                playerState.getScore() + pieces
+                playerState.getScore() + 1
         );
     }
 }

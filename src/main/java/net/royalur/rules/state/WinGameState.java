@@ -50,7 +50,7 @@ public class WinGameState<
     }
 
     /**
-     * Retrieves the player that won the game.
+     * Gets the player that won the game.
      * @return The player that won the game.
      */
     public @Nonnull PlayerType getWinner() {
@@ -58,7 +58,7 @@ public class WinGameState<
     }
 
     /**
-     * Retrieves the player that lost the game.
+     * Gets the player that lost the game.
      * @return The player that lost the game.
      */
     public @Nonnull PlayerType getLoser() {
@@ -66,7 +66,7 @@ public class WinGameState<
     }
 
     /**
-     * Retrieves the state of the player that won the game.
+     * Gets the state of the player that won the game.
      * @return The state of the player that won the game.
      */
     public S getWinningPlayer() {
@@ -74,7 +74,7 @@ public class WinGameState<
     }
 
     /**
-     * Retrieves the state of the player that lost the game.
+     * Gets the state of the player that lost the game.
      * @return The state of the player that lost the game.
      */
     public S getLosingPlayer() {

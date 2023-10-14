@@ -22,9 +22,9 @@ public interface PieceProvider<P extends Piece> {
 
     /**
      * Generates a piece that has been moved from another tile on the board.
-     * @param fromPiece The piece that will be moved.
+     * @param originPiece The piece that will be moved.
      * @param newPathIndex The destination index of the piece in the player's path.
      * @return The new piece to be placed on the board.
      */
-    @Nonnull P createMoved(@Nonnull P fromPiece, int newPathIndex);
+    @Nonnull P createMoved(@Nonnull P originPiece, int newPathIndex);
 }

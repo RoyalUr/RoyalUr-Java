@@ -68,7 +68,7 @@ public class StandardRuleSet<
     /**
      * Provides the manipulation of player state values.
      */
-    private final @Nonnull PlayerStateProvider<S> playerStateProvider;
+    private final @Nonnull PlayerStateProvider<P, S> playerStateProvider;
 
     /**
      * Instantiates a simple rule set for the Royal Game of Ur.
@@ -89,7 +89,7 @@ public class StandardRuleSet<
             boolean rosettesGrantExtraRolls,
             boolean capturesGrantExtraRolls,
             @Nonnull PieceProvider<P> pieceProvider,
-            @Nonnull PlayerStateProvider<S> playerStateProvider
+            @Nonnull PlayerStateProvider<P, S> playerStateProvider
     ) {
         if (!boardShape.isCompatible(paths)) {
             throw new IllegalArgumentException(
@@ -148,7 +148,7 @@ public class StandardRuleSet<
     }
 
     @Override
-    public @Nonnull PlayerStateProvider<S> getPlayerStateProvider() {
+    public @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider() {
         return playerStateProvider;
     }
 
@@ -326,16 +326,19 @@ public class StandardRuleSet<
         // Apply the move to the player that made the move.
         S turnPlayer = state.getTurnPlayer();
         if (move.isIntroducingPiece()) {
-            turnPlayer = playerStateProvider.applyPiecesChange(turnPlayer, -1);
+            P introducedPiece = move.getDestPiece();
+            turnPlayer = playerStateProvider.applyPieceIntroduced(turnPlayer, introducedPiece);
         }
         if (move.isScoringPiece()) {
-            turnPlayer = playerStateProvider.applyScoreChange(turnPlayer, 1);
+            P scoredPiece = move.getSourcePiece();
+            turnPlayer = playerStateProvider.applyPieceScored(turnPlayer, scoredPiece);
         }
 
         // Apply the effects of the move to the other player.
         S otherPlayer = state.getWaitingPlayer();
         if (move.isCapture()) {
-            otherPlayer = playerStateProvider.applyPiecesChange(otherPlayer, 1);
+            P capturedPiece = move.getCapturedPiece();
+            otherPlayer = playerStateProvider.applyPieceCaptured(otherPlayer, capturedPiece);
         }
 
         // Determine which player is which.

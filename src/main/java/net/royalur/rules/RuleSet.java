@@ -73,7 +73,7 @@ public interface RuleSet<
      * Gets the provider of player state manipulations.
      * @return The provider of making player state changes.
      */
-    @Nonnull PlayerStateProvider<S> getPlayerStateProvider();
+    @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider();
 
     /**
      * Generates the initial state for a game.
