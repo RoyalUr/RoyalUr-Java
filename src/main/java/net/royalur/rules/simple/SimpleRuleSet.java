@@ -8,7 +8,7 @@ import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.PieceProvider;
 import net.royalur.rules.PlayerStateProvider;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.simple.fast.FastGame;
+import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nonnull;
@@ -71,9 +71,9 @@ public class SimpleRuleSet<
         this.capturesGrantExtraRolls = capturesGrantExtraRolls;
     }
 
-    public @Nonnull FastGame createCompatibleFastGame() {
+    public @Nonnull FastSimpleGame createCompatibleFastGame() {
         int startingPieceCount = playerStateProvider.getStartingPieceCount();
-        return new FastGame(this, startingPieceCount);
+        return new FastSimpleGame(this, startingPieceCount);
     }
 
     @Override

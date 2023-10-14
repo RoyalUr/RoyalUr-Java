@@ -6,8 +6,8 @@ import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.simple.SimpleRuleSet;
-import net.royalur.rules.simple.fast.FastGame;
-import net.royalur.rules.simple.fast.FastMoveList;
+import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
@@ -46,13 +46,13 @@ public class LikelihoodAgent<
      * Game objects used to hold the state of games
      * while exploring the game tree.
      */
-    private @Nonnull FastGame[] gameHolders;
+    private @Nonnull FastSimpleGame[] gameHolders;
 
     /**
      * Move lists used to hold available moves while
      * exploring the game tree.
      */
-    private @Nonnull FastMoveList[] moveListHolders;
+    private @Nonnull FastSimpleMoveList[] moveListHolders;
 
     /**
      * Dice used to hold the state of dice while exploring
@@ -74,8 +74,8 @@ public class LikelihoodAgent<
         this.rules = rules;
         this.utilityFunction = utilityFunction;
         this.likelihoodThreshold = likelihoodThreshold;
-        this.gameHolders = new FastGame[0];
-        this.moveListHolders = new FastMoveList[0];
+        this.gameHolders = new FastSimpleGame[0];
+        this.moveListHolders = new FastSimpleMoveList[0];
         this.diceHolders = Cast.unsafeCast(new Dice[0]);
     }
 
@@ -84,7 +84,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for storing the state of a game.
      */
-    private @Nonnull FastGame getGameHolder(int depth) {
+    private @Nonnull FastSimpleGame getGameHolder(int depth) {
         if (depth >= gameHolders.length) {
             int newLength = Math.max(4, gameHolders.length * 2);
             while (depth >= newLength) {
@@ -104,7 +104,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for storing available moves.
      */
-    private @Nonnull FastMoveList getMoveListHolder(int depth) {
+    private @Nonnull FastSimpleMoveList getMoveListHolder(int depth) {
         if (depth >= moveListHolders.length) {
             int newLength = Math.max(4, moveListHolders.length * 2);
             while (depth >= newLength) {
@@ -113,7 +113,7 @@ public class LikelihoodAgent<
             int previousLength = moveListHolders.length;
             moveListHolders = Arrays.copyOf(moveListHolders, newLength);
             for (int index = previousLength; index < newLength; ++index) {
-                moveListHolders[index] = new FastMoveList();
+                moveListHolders[index] = new FastSimpleMoveList();
             }
         }
         return moveListHolders[depth];
@@ -141,8 +141,8 @@ public class LikelihoodAgent<
     }
 
     private float calculateBestMoveUtility(
-            @Nonnull FastGame precedingGame,
-            @Nonnull FastMoveList availableMoves,
+            @Nonnull FastSimpleGame precedingGame,
+            @Nonnull FastSimpleMoveList availableMoves,
             @Nonnull Dice<R> dice,
             float likelihood,
             int depth
@@ -155,7 +155,7 @@ public class LikelihoodAgent<
         int[] moves = availableMoves.moves;
         int moveCount = availableMoves.moveCount;
 
-        FastGame game = getGameHolder(depth);
+        FastSimpleGame game = getGameHolder(depth);
 
         for (int moveIndex = 0; moveIndex < moveCount; ++moveIndex) {
             game.copyFrom(precedingGame);
@@ -175,7 +175,7 @@ public class LikelihoodAgent<
      }
 
     private float calculateProbabilityWeightedUtility(
-            @Nonnull FastGame precedingGame,
+            @Nonnull FastSimpleGame precedingGame,
             @Nonnull Dice<R> precedingDice,
             float likelihood,
             int depth
@@ -188,8 +188,8 @@ public class LikelihoodAgent<
         float utility = 0.0f;
         float[] probabilities = precedingDice.getRollProbabilities();
 
-        FastGame game = getGameHolder(depth);
-        FastMoveList moveList = getMoveListHolder(depth);
+        FastSimpleGame game = getGameHolder(depth);
+        FastSimpleMoveList moveList = getMoveListHolder(depth);
         Dice<R> dice = getDiceHolder(depth);
 
         for (int roll = 0; roll < probabilities.length; ++roll) {
@@ -239,7 +239,7 @@ public class LikelihoodAgent<
         Move<P> bestMove = null;
         float bestUtility = 0.0f;
 
-        FastGame gameHolder = getGameHolder(0);
+        FastSimpleGame gameHolder = getGameHolder(0);
         Dice<R> diceHolder = getDiceHolder(0);
         for (Move<P> move : moves) {
             Game<P, S, R> newGame = game.copy();

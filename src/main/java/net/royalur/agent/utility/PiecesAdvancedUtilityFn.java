@@ -5,7 +5,7 @@ import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.name.TextName;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.simple.fast.FastGame;
+import net.royalur.rules.simple.fast.FastSimpleGame;
 
 import javax.annotation.Nonnull;
 
@@ -30,7 +30,7 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction {
     }
 
     @Override
-    public float scoreGameStateForLight(@Nonnull FastGame game) {
+    public float scoreGameStateForLight(@Nonnull FastSimpleGame game) {
         float utility = (game.light.score - game.dark.score) * scoredPieceUtility;
         int[] boardPieces = game.board.pieces;
         for (int boardPiece : boardPieces) {

@@ -2,7 +2,7 @@ package net.royalur.agent.utility;
 
 import net.royalur.name.Name;
 import net.royalur.name.Named;
-import net.royalur.rules.simple.fast.FastGame;
+import net.royalur.rules.simple.fast.FastSimpleGame;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +36,7 @@ public abstract class UtilityFunction implements Named<Name> {
      * @param game The game to evaluate.
      * @return A utility value for light in the given state.
      */
-    public abstract float scoreGameStateForLight(@Nonnull FastGame game);
+    public abstract float scoreGameStateForLight(@Nonnull FastSimpleGame game);
 
     /**
      * Scores the state of the game numerically, where a positive
@@ -45,7 +45,7 @@ public abstract class UtilityFunction implements Named<Name> {
      * @param game The game to evaluate.
      * @return A utility value for the current player of the game.
      */
-    public float scoreGame(@Nonnull FastGame game) {
+    public float scoreGame(@Nonnull FastSimpleGame game) {
         float lightUtility = scoreGameStateForLight(game);
         return game.isLightTurn ? lightUtility : -lightUtility;
     }

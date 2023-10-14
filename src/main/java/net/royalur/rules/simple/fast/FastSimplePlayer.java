@@ -5,7 +5,7 @@ import net.royalur.model.PlayerType;
 
 import javax.annotation.Nonnull;
 
-public class FastPlayer {
+public class FastSimplePlayer {
 
     /**
      * The tile indices of each tile on the path for this player.
@@ -22,7 +22,7 @@ public class FastPlayer {
     public int pieces;
     public int score;
 
-    public FastPlayer(@Nonnull int[] path, boolean isLight) {
+    public FastSimplePlayer(@Nonnull int[] path, boolean isLight) {
         this.path = path;
         this.sign = (isLight ? 1 : -1);
         this.isLight = isLight;
@@ -30,7 +30,7 @@ public class FastPlayer {
         this.score = 0;
     }
 
-    public void copyFrom(@Nonnull FastPlayer other) {
+    public void copyFrom(@Nonnull FastSimplePlayer other) {
         if (sign != other.sign)
             throw new IllegalArgumentException("Different player!");
 

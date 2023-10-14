@@ -7,8 +7,8 @@ import net.royalur.model.dice.*;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.path.PathType;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.simple.fast.FastGame;
-import net.royalur.rules.simple.fast.FastMoveList;
+import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.rules.state.GameState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -118,7 +118,7 @@ public class SimpleRuleSetTest {
 
     private static void assertGamesMatch(
             @Nonnull Game<Piece, PlayerState, Roll> game,
-            @Nonnull FastGame fastGame
+            @Nonnull FastSimpleGame fastGame
     ) {
         assertEquals(game.isFinished(), fastGame.isFinished);
         if (game.isFinished()) {
@@ -163,8 +163,8 @@ public class SimpleRuleSetTest {
 
         int tests = 100;
         Random moveChoiceRandom = new Random(43);
-        FastGame fastGame = rules.createCompatibleFastGame();
-        FastMoveList moveList = new FastMoveList();
+        FastSimpleGame fastGame = rules.createCompatibleFastGame();
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
         Dice<Roll> dice = rules.getDiceFactory().createDice();
 
         for (int test = 0; test < tests; ++test) {

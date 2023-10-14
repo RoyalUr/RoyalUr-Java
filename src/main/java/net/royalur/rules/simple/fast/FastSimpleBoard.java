@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * The board of a simple game that is optimised for speed.
  * This speed comes at the cost of error checking and convenience.
  */
-public class FastBoard {
+public class FastSimpleBoard {
 
     public final @Nonnull BoardShape shape;
     public final int width;
@@ -27,7 +27,7 @@ public class FastBoard {
     public final @Nonnull int[] pieces;
     public final @Nonnull int[] rosetteTiles;
 
-    public FastBoard(@Nonnull BoardShape shape) {
+    public FastSimpleBoard(@Nonnull BoardShape shape) {
         this.shape = shape;
         this.width = shape.getWidth();
         this.height = shape.getHeight();
@@ -42,7 +42,7 @@ public class FastBoard {
         }
     }
 
-    public void copyFrom(@Nonnull FastBoard other) {
+    public void copyFrom(@Nonnull FastSimpleBoard other) {
         System.arraycopy(other.pieces, 0, pieces, 0, pieces.length);
     }
 

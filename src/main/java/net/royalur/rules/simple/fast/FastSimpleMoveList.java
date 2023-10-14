@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * A list of moves that may be reused without allocating memory.
  */
-public class FastMoveList {
+public class FastSimpleMoveList {
 
     /**
      * Path indices of tiles to move. -1 represents introducing a piece.
@@ -16,12 +16,12 @@ public class FastMoveList {
 
     public int moveCount;
 
-    public FastMoveList(int initialCapacity) {
+    public FastSimpleMoveList(int initialCapacity) {
         this.moves = new int[initialCapacity];
 
     }
 
-    public FastMoveList() {
+    public FastSimpleMoveList() {
         this(8);
     }
 

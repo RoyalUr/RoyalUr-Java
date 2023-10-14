@@ -16,22 +16,22 @@ import java.util.List;
  * This speed comes at the cost of error checking,
  * convenience, and tracking of game history.
  */
-public class FastGame {
+public class FastSimpleGame {
 
     public final boolean areRosettesSafe;
     public final boolean rosettesGrantExtraRoll;
     public final boolean capturesGrantExtraRoll;
     public final int startingPieceCount;
 
-    public final @Nonnull FastBoard board;
-    public final @Nonnull FastPlayer light;
-    public final @Nonnull FastPlayer dark;
+    public final @Nonnull FastSimpleBoard board;
+    public final @Nonnull FastSimplePlayer light;
+    public final @Nonnull FastSimplePlayer dark;
 
     public boolean isLightTurn;
     public int rollValue;
     public boolean isFinished;
 
-    public FastGame(
+    public FastSimpleGame(
             @Nonnull SimpleRuleSet<
                     ? extends Piece,
                     ? extends PlayerState,
@@ -43,28 +43,28 @@ public class FastGame {
         this.rosettesGrantExtraRoll = rules.doRosettesGrantExtraRolls();
         this.capturesGrantExtraRoll = rules.doCapturesGrantExtraRolls();
         this.startingPieceCount = startingPieceCount;
-        this.board = new FastBoard(rules.getBoardShape());
+        this.board = new FastSimpleBoard(rules.getBoardShape());
 
         int[] lightPath = tilesToIndices(board, rules.getPaths().getLight());
         int[] darkPath = tilesToIndices(board, rules.getPaths().getDark());
 
-        this.light = new FastPlayer(lightPath, true);
-        this.dark = new FastPlayer(darkPath, false);
+        this.light = new FastSimplePlayer(lightPath, true);
+        this.dark = new FastSimplePlayer(darkPath, false);
 
         this.isLightTurn = true;
         this.rollValue = -1;
         this.isFinished = false;
     }
 
-    public @Nonnull FastPlayer getPlayer(boolean isLight) {
+    public @Nonnull FastSimplePlayer getPlayer(boolean isLight) {
         return isLight ? light : dark;
     }
 
-    public @Nonnull FastPlayer getTurnPlayer() {
+    public @Nonnull FastSimplePlayer getTurnPlayer() {
         return getPlayer(isLightTurn);
     }
 
-    public void copyFrom(@Nonnull FastGame other) {
+    public void copyFrom(@Nonnull FastSimpleGame other) {
         board.copyFrom(other.board);
         light.copyFrom(other.light);
         dark.copyFrom(other.dark);
@@ -113,14 +113,14 @@ public class FastGame {
     /**
      * Populates {@code moveList} with all available moves in the current state of the game.
      */
-    public void findAvailableMoves(@Nonnull FastMoveList moveList) {
+    public void findAvailableMoves(@Nonnull FastSimpleMoveList moveList) {
         moveList.clear();
 
         int rollValue = this.rollValue;
         if (rollValue < 0)
             throw new IllegalStateException("No roll has been made");
 
-        FastPlayer turnPlayer = getTurnPlayer();
+        FastSimplePlayer turnPlayer = getTurnPlayer();
         int turnPlayerSign = turnPlayer.sign;
         int[] path = turnPlayer.path;
         int[] boardPieces = board.pieces;
@@ -171,7 +171,7 @@ public class FastGame {
         }
     }
 
-    public void applyRoll(int rollValue, @Nonnull FastMoveList moveList) {
+    public void applyRoll(int rollValue, @Nonnull FastSimpleMoveList moveList) {
         if (this.rollValue >= 0)
             throw new IllegalStateException("A roll has already been made");
 
@@ -206,7 +206,7 @@ public class FastGame {
         // We are using the roll now, so clear it.
         this.rollValue = -1;
 
-        FastPlayer turnPlayer = this.getTurnPlayer();
+        FastSimplePlayer turnPlayer = this.getTurnPlayer();
         int turnPlayerSign = turnPlayer.sign;
         int[] path = turnPlayer.path;
         int[] boardPieces = this.board.pieces;
@@ -250,7 +250,7 @@ public class FastGame {
     }
 
     private static @Nonnull int[] tilesToIndices(
-            @Nonnull FastBoard board,
+            @Nonnull FastSimpleBoard board,
             @Nonnull List<Tile> tiles
     ) {
         int[] indices = new int[tiles.size()];
