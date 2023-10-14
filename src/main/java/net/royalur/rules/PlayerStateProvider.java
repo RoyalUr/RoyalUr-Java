@@ -29,7 +29,7 @@ public interface PlayerStateProvider<
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
-     * but after the given piece was introduced to the board.
+     * with the given piece introduced to the board.
      * @param playerState The player state to modify the pieces of.
      * @param piece The piece that was introduced to the board.
      * @return A new player state after the given piece was introduced to the board.
@@ -38,7 +38,7 @@ public interface PlayerStateProvider<
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
-     * but after the given piece was captured.
+     * with the given piece captured.
      * @param playerState The player state to modify the pieces of.
      * @param piece The piece that was captured.
      * @return A new player state after the given piece was captured.
@@ -47,7 +47,7 @@ public interface PlayerStateProvider<
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
-     * but after the new piece was scored.
+     * with the given piece scored.
      * @param playerState The player state to modify the score of.
      * @param piece The piece that was scored.
      * @return A new player state with the given new piece scored.
