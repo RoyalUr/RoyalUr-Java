@@ -1,6 +1,6 @@
 package net.royalur.rules;
 
-import net.royalur.GameMetadata;
+import net.royalur.model.GameMetadata;
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
@@ -161,7 +161,7 @@ public abstract class RuleSet<
      * Applies {@code roll} to {@code state} to generate the new state of the
      * game. Multiple game states may be returned to include information game
      * states for maintaining history. However, the latest or highest-index
-     * game state will represent the state of the game after the move was made.
+     * game state will represent the state of the game after the roll was made.
      * @param state The current state of the game.
      * @param roll The roll that the player made.
      * @return A list of new game states after the given move was made. The
@@ -179,8 +179,7 @@ public abstract class RuleSet<
      * states for maintaining history. However, the latest or highest-index
      * game state will represent the state of the game after the move was made.
      * <p>
-     * This method does not check that the given move is a valid move
-     * from the current game state.
+     * This method does not check that the given move is valid.
      * @param state The current state of the game.
      * @param move The move that the player chose to make from this position.
      * @return A list of new game states after the given move was made. The

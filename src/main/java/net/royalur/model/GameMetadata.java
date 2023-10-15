@@ -1,4 +1,4 @@
-package net.royalur;
+package net.royalur.model;
 
 import net.royalur.rules.RuleSet;
 

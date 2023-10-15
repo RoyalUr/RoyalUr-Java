@@ -1,18 +1,15 @@
 package net.royalur.rules;
 
-import net.royalur.GameMetadata;
+import net.royalur.model.GameMetadata;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.Map;
-import java.util.random.RandomGenerator;
 
 /**
- * Creates rule sets to match game settings.P
+ * Creates rule sets to match game settings.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
  */

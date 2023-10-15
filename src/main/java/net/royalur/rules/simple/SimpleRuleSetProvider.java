@@ -1,6 +1,6 @@
 package net.royalur.rules.simple;
 
-import net.royalur.GameMetadata;
+import net.royalur.model.GameMetadata;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
