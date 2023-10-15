@@ -138,54 +138,56 @@ public class RGUStatistics {
 
                 List<String> reports = new ArrayList<>();
                 reports.add(String.format(
-                        "turns: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        "turns: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f, range=[%.0f, %.0f]",
                         summary.getTurnsStatistic(target, SummaryStat.MEAN),
                         summary.getTurnsStatistic(target, SummaryStat.STD_DEV),
                         summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_25),
                         summary.getTurnsStatistic(target, SummaryStat.MEDIAN),
-                        summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_75)
+                        summary.getTurnsStatistic(target, SummaryStat.PERCENTILE_75),
+                        summary.getTurnsStatistic(target, SummaryStat.MIN),
+                        summary.getTurnsStatistic(target, SummaryStat.MAX)
                 ));
                 reports.add(String.format(
-                        "moves: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        "moves: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f, range=[%.0f, %.0f]",
                         summary.getMovesStatistic(target, SummaryStat.MEAN),
                         summary.getMovesStatistic(target, SummaryStat.STD_DEV),
                         summary.getMovesStatistic(target, SummaryStat.PERCENTILE_25),
                         summary.getMovesStatistic(target, SummaryStat.MEDIAN),
-                        summary.getMovesStatistic(target, SummaryStat.PERCENTILE_75)
+                        summary.getMovesStatistic(target, SummaryStat.PERCENTILE_75),
+                        summary.getMovesStatistic(target, SummaryStat.MIN),
+                        summary.getMovesStatistic(target, SummaryStat.MAX)
                 ));
                 reports.add(String.format(
-                        "rolls: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        "rolls: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f, range=[%.0f, %.0f]",
                         summary.getRollsStatistic(target, SummaryStat.MEAN),
                         summary.getRollsStatistic(target, SummaryStat.STD_DEV),
                         summary.getRollsStatistic(target, SummaryStat.PERCENTILE_25),
                         summary.getRollsStatistic(target, SummaryStat.MEDIAN),
-                        summary.getRollsStatistic(target, SummaryStat.PERCENTILE_75)
+                        summary.getRollsStatistic(target, SummaryStat.PERCENTILE_75),
+                        summary.getRollsStatistic(target, SummaryStat.MIN),
+                        summary.getRollsStatistic(target, SummaryStat.MAX)
                 ));
                 reports.add(String.format(
-                        "drama: %.1f ± %.1f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                        "drama: %.1f ± %.1f - Q1=%.0f, Q2=%.0f, Q3=%.0f, range=[%.0f, %.0f]",
                         summary.getDramaStatistic(target, SummaryStat.MEAN),
                         summary.getDramaStatistic(target, SummaryStat.STD_DEV),
                         summary.getDramaStatistic(target, SummaryStat.PERCENTILE_25),
                         summary.getDramaStatistic(target, SummaryStat.MEDIAN),
-                        summary.getDramaStatistic(target, SummaryStat.PERCENTILE_75)
+                        summary.getDramaStatistic(target, SummaryStat.PERCENTILE_75),
+                        summary.getDramaStatistic(target, SummaryStat.MIN),
+                        summary.getDramaStatistic(target, SummaryStat.MAX)
                 ));
 
                 if (target == GameStatsTarget.OVERALL) {
                     reports.add(String.format(
-                            "turns-in-lead: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f",
+                            "turns-in-lead: %.0f ± %.0f - Q1=%.0f, Q2=%.0f, Q3=%.0f, range=[%.0f, %.0f]",
                             summary.getTurnsInLeadStatistic(SummaryStat.MEAN),
                             summary.getTurnsInLeadStatistic(SummaryStat.STD_DEV),
                             summary.getTurnsInLeadStatistic(SummaryStat.PERCENTILE_25),
                             summary.getTurnsInLeadStatistic(SummaryStat.MEDIAN),
-                            summary.getTurnsInLeadStatistic(SummaryStat.PERCENTILE_75)
-                    ));
-                    reports.add(String.format(
-                            "percent-in-lead: %.0f%% ± %.0f%% - Q1=%.0f%%, Q2=%.0f%%, Q3=%.0f%%",
-                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.MEAN),
-                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.STD_DEV),
-                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.PERCENTILE_25),
-                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.MEDIAN),
-                            100.0 * summary.getPercentInLeadStatistic(SummaryStat.PERCENTILE_75)
+                            summary.getTurnsInLeadStatistic(SummaryStat.PERCENTILE_75),
+                            summary.getTurnsInLeadStatistic(SummaryStat.MIN),
+                            summary.getTurnsInLeadStatistic(SummaryStat.MAX)
                     ));
                 }
 

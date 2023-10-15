@@ -145,12 +145,11 @@ public abstract class RuleSet<
     public abstract @Nonnull GameState<P, S, R> generateInitialGameState();
 
     /**
-     * Finds all available moves from the current state of the board and the player,
-     * and the roll that they made of the dice.
+     * Finds all available moves from the given state.
      * @param board The current state of the board.
      * @param player The current state of the player.
      * @param roll The roll that was made. Must be non-zero.
-     * @return A list of all the available moves from the position.
+     * @return A list of all the available moves from the given state.
      */
     public abstract @Nonnull List<Move<P>> findAvailableMoves(
             @Nonnull Board<P> board,

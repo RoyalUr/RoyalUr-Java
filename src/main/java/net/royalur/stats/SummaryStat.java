@@ -9,6 +9,16 @@ import java.util.Arrays;
 public enum SummaryStat {
 
     /**
+     * The minimum of all the measurements.
+     */
+    MIN,
+
+    /**
+     * The maximum of all the measurements.
+     */
+    MAX,
+
+    /**
      * The sum of all the measurements.
      */
     SUM,
@@ -67,6 +77,17 @@ public enum SummaryStat {
      * @return The summary statistics for the measurements in {@code measurements}.
      */
     public static @Nonnull double[] compute(@Nonnull double[] measurements) {
+        if (measurements.length == 0)
+            throw new IllegalArgumentException("No measurements provided");
+
+        // Calculate the min and max.
+        double min = measurements[0];
+        double max = measurements[0];
+        for (double measurement : measurements) {
+            min = Math.min(min, measurement);
+            max = Math.max(max, measurement);
+        }
+
         // Calculate the sum and mean.
         double sum = 0;
         for (double measurement : measurements) {
@@ -91,6 +112,8 @@ public enum SummaryStat {
 
         // Add the statistics to an array of values.
         double[] stats = new double[SummaryStat.values().length];
+        stats[SummaryStat.MIN.ordinal()] = min;
+        stats[SummaryStat.MAX.ordinal()] = max;
         stats[SummaryStat.SUM.ordinal()] = sum;
         stats[SummaryStat.MEAN.ordinal()] = mean;
         stats[SummaryStat.VARIANCE.ordinal()] = variance;
