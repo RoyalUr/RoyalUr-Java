@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The most common, simplified, rules of the Royal Game of Ur.
+ * The most common, simple, rules of the Royal Game of Ur.
  * This still allows a large range of custom rules.
  * @param <P> The type of pieces that are stored on the board.
  * @param <S> The type of state that is stored for each player.
@@ -128,17 +128,15 @@ public class SimpleRuleSet<
         }
 
         // Check for pieces on the board that can be moved to another tile on the board.
-        for (int index = -1; index < path.size() - roll.value(); ++index) {
+        for (int pathIndex = -1; pathIndex < path.size() - roll.value(); ++pathIndex) {
 
             Tile tile;
             P piece;
-            if (index >= 0) {
+            if (pathIndex >= 0) {
                 // Move a piece on the board.
-                tile = path.get(index);
+                tile = path.get(pathIndex);
                 piece = board.get(tile);
-                if (piece == null)
-                    continue;
-                if (piece.getOwner() != playerType || piece.getPathIndex() != index)
+                if (piece == null || piece.getOwner() != playerType || piece.getPathIndex() != pathIndex)
                     continue;
 
             } else if (player.getPieceCount() > 0) {
@@ -151,7 +149,7 @@ public class SimpleRuleSet<
             }
 
             // Check if the destination is free.
-            int destPathIndex = index + roll.value();
+            int destPathIndex = pathIndex + roll.value();
             Tile dest = path.get(destPathIndex);
             P destPiece = board.get(dest);
             if (destPiece != null)  {
@@ -159,14 +157,14 @@ public class SimpleRuleSet<
                 if (destPiece.getOwner() == playerType)
                     continue;
 
-                // Can't capture pieces on rosettes if they are safe.
-                if (safeRosettes && board.getShape().isRosette(dest))
+                // Can't capture pieces on rosettes if they are safe
+                if (safeRosettes && boardShape.isRosette(dest))
                     continue;
             }
 
             // Generate the move.
             P movedPiece;
-            if (index >= 0) {
+            if (pathIndex >= 0) {
                 movedPiece = pieceProvider.createMoved(piece, destPathIndex);
             } else {
                 movedPiece = pieceProvider.createIntroduced(playerType, destPathIndex);
@@ -195,18 +193,7 @@ public class SimpleRuleSet<
                 availableMoves
         );
 
-        // Swap turn when rolling a zero.
-        if (roll.value() == 0) {
-            PlayerType newTurn = state.getTurn().getOtherPlayer();
-            return List.of(rolledState, new WaitingForRollGameState<>(
-                    state.getBoard(),
-                    state.getLightPlayer(),
-                    state.getDarkPlayer(),
-                    newTurn
-            ));
-        }
-
-        // Determine if the player has no available moves.
+        // Swap turn when the player has no available moves.
         if (availableMoves.isEmpty()) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
             return List.of(rolledState, new WaitingForRollGameState<>(
@@ -229,20 +216,17 @@ public class SimpleRuleSet<
     }
 
     /**
-     * Determines whether the move represent by {@code movedState}
+     * Determines whether the move represented by {@code movedState}
      * should grant another roll to the player that made the move.
      * @param movedState The state representing a move.
      * @return Whether the player that made the move should be granted
      *         another roll.
      */
-    public boolean shouldGrantRoll(@Nonnull MovedGameState<P, S, R> movedState) {
+    public boolean shouldGrantExtraRoll(@Nonnull MovedGameState<P, S, R> movedState) {
         Move<P> move = movedState.getMove();
+        if (rosettesGrantExtraRolls && move.isDestRosette(boardShape))
+            return true;
 
-        if (rosettesGrantExtraRolls) {
-            BoardShape boardShape = movedState.getBoard().getShape();
-            if (move.isDestRosette(boardShape))
-                return true;
-        }
         return capturesGrantExtraRolls && move.isCapture();
     }
 
@@ -294,7 +278,7 @@ public class SimpleRuleSet<
         }
 
         // Determine whose turn it will be in the next state.
-        PlayerType nextTurn = (shouldGrantRoll(movedState) ? turn : turn.getOtherPlayer());
+        PlayerType nextTurn = (shouldGrantExtraRoll(movedState) ? turn : turn.getOtherPlayer());
         return List.of(movedState, new WaitingForRollGameState<>(
                 board, lightPlayer, darkPlayer, nextTurn
         ));
