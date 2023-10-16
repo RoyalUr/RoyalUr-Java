@@ -375,8 +375,8 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Gets the state of the board in the current state of the game.
-     * @return The state of the board in the current state of the game.
+     * Gets the current state of the board.
+     * @return The current state of the board.
      */
     public @Nonnull Board<P> getBoard() {
         return getCurrentState().getBoard();
@@ -399,6 +399,15 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
+     * Gets the current state of the player {@code player}.
+     * @param player The player to get the state of.
+     * @return The state of the player {@code player}.
+     */
+    public @Nonnull S getPlayer(@Nonnull PlayerType player) {
+        return getCurrentState().getPlayer(player);
+    }
+
+    /**
      * Gets the player who can make the next interaction with the game.
      * @return The player who can make the next interaction with the game.
      */
@@ -413,7 +422,13 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      *         or the winner of the game if it is finished.
      */
     public @Nonnull PlayerType getTurnOrWinner() {
-        return isFinished() ? getWinner() : getTurn();
+        if (isPlayable())
+            return getTurn();
+
+        if (isFinished())
+            return getWinner();
+
+        throw new IllegalStateException("The game is not in a playable or won state");
     }
 
     /**
