@@ -44,6 +44,11 @@ public enum SummaryStat {
     MEDIAN,
 
     /**
+     * The 5th percentile of measurements.
+     */
+    PERCENTILE_5,
+
+    /**
      * The 25th percentile of measurements.
      */
     PERCENTILE_25,
@@ -52,6 +57,11 @@ public enum SummaryStat {
      * The 75th percentile of measurements.
      */
     PERCENTILE_75,
+
+    /**
+     * The 95th percentile of measurements.
+     */
+    PERCENTILE_95,
     ;
 
     /**
@@ -106,9 +116,11 @@ public enum SummaryStat {
 
         // Calculate the percentiles.
         Arrays.sort(measurements);
+        double percentile5 = calculatePercentile(measurements, 0.05);
         double percentile25 = calculatePercentile(measurements, 0.25);
         double median = calculatePercentile(measurements, 0.5);
         double percentile75 = calculatePercentile(measurements, 0.75);
+        double percentile95 = calculatePercentile(measurements, 0.95);
 
         // Add the statistics to an array of values.
         double[] stats = new double[SummaryStat.values().length];
@@ -119,8 +131,10 @@ public enum SummaryStat {
         stats[SummaryStat.VARIANCE.ordinal()] = variance;
         stats[SummaryStat.STD_DEV.ordinal()] = stdDev;
         stats[SummaryStat.MEDIAN.ordinal()] = median;
+        stats[SummaryStat.PERCENTILE_5.ordinal()] = percentile5;
         stats[SummaryStat.PERCENTILE_25.ordinal()] = percentile25;
         stats[SummaryStat.PERCENTILE_75.ordinal()] = percentile75;
+        stats[SummaryStat.PERCENTILE_95.ordinal()] = percentile95;
         return stats;
     }
 }
