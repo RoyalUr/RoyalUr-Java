@@ -6,6 +6,8 @@ import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
+import net.royalur.model.path.MurrayPathPair;
+import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.stats.GameStats;
@@ -87,18 +89,18 @@ public class RGUStatistics {
 //                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
 //
 //                // Blitz
-//                () -> Game.builder()
-//                        .masters()
-//                        .startingPieceCount(5)
-//                        .safeRosettes(false)
-//                        .capturesGrantExtraRolls(true)
-//                        .build(),
+                () -> Game.builder()
+                        .masters()
+                        .startingPieceCount(5)
+                        .safeRosettes(false)
+                        .capturesGrantExtraRolls(true)
+                        .build(),
 
                 () -> Game.builder().masters().safeRosettes(true).build(),
-                () -> Game.builder().masters().safeRosettes(false).build()
-//                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
-//                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
-//                () -> Game.builder().aseb().build(),
+                () -> Game.builder().masters().safeRosettes(false).build(),
+                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
+                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
+                () -> Game.builder().aseb().build()
 //                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
         );
 

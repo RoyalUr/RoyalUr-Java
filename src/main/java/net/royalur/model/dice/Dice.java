@@ -96,6 +96,7 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
 
     /**
      * Generates a roll with value {@code value} using this dice.
+     * This does not update the state of the dice.
      * @param value The value of the dice to be rolled.
      * @return A roll with value {@code value} of this dice.
      */
@@ -107,5 +108,15 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
      */
     public @Nonnull R roll() {
         return generateRoll(rollValue());
+    }
+
+    /**
+     * Generates a roll with value {@code value} using this dice.
+     * @param value The value of the dice to be rolled.
+     * @return A roll with value {@code value} of this dice.
+     */
+    public @Nonnull R roll(int value) {
+        recordRoll(value);
+        return generateRoll(value);
     }
 }

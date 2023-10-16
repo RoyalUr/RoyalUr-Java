@@ -1,5 +1,6 @@
 package net.royalur.model;
 
+import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 
 import javax.annotation.Nonnull;
@@ -157,6 +158,15 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Gets the source tile of this move, including off the board tiles when introducing a piece.
+     * @param paths The paths around the board that this move follows.
+     * @return The source tile of this move, including off the board tiles when introducing a piece.
+     */
+    public @Nonnull Tile getSource(@Nonnull PathPair paths) {
+        return source != null ? source : paths.getStart(player);
+    }
+
+    /**
      * Gets the source piece of this move. If there is no source piece, in the
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source piece of this move.
@@ -178,6 +188,15 @@ public class Move<P extends Piece> {
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
         return dest;
+    }
+
+    /**
+     * Gets the destination tile of this move, including off the board tiles when scoring a piece.
+     * @param paths The paths around the board that this move follows.
+     * @return The destination tile of this move, including off the board tiles when scoring a piece.
+     */
+    public @Nonnull Tile getDest(@Nonnull PathPair paths) {
+        return dest != null ? dest : paths.getEnd(player);
     }
 
     /**
