@@ -158,22 +158,22 @@ public class GameMetadata {
 
     /**
      * Initialises metadata for a new game.
-     * @param rules The rules used for the game.
+     * @param settings The settings used for the game.
      */
-    public void initialiseForNewGame(@Nonnull RuleSet<?, ?, ?> rules) {
+    public void initialiseForNewGame(@Nonnull GameSettings<?> settings) {
         setStartTime(ZonedDateTime.now());
     }
 
     /**
      * Creates and initialises metadata for a new game.
-     * @param rules The rules used for the game.
+     * @param settings The settings used for the game.
      * @return Metadata for a new game.
      */
     public static @Nonnull GameMetadata createForNewGame(
-            @Nonnull RuleSet<?, ?, ?> rules
+            @Nonnull GameSettings<?> settings
     ) {
         GameMetadata metadata = new GameMetadata();
-        metadata.initialiseForNewGame(rules);
+        metadata.initialiseForNewGame(settings);
         return metadata;
     }
 }

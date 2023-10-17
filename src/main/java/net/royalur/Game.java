@@ -70,7 +70,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     public Game(@Nonnull RuleSet<P, S, R> rules) {
         this(
                 rules,
-                GameMetadata.createForNewGame(rules),
+                GameMetadata.createForNewGame(rules.getSettings()),
                 List.of(rules.generateInitialGameState())
         );
     }
@@ -502,27 +502,27 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      */
     public static <R extends Roll> @Nonnull Game<Piece, PlayerState, R>
     create(GameSettings<R> settings) {
-        return builder().settings(settings).build();
+        return builder().replaceSettings(settings).build();
     }
 
     /**
-     * Creates a simple game that follows the rules proposed by Irving Finkel.
+     * Creates a game that follows the rules proposed by Irving Finkel.
      * This uses the simple rules, the standard board shape, Bell's path, safe
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createFinkel() {
-        return builder().finkel().build();
+        return create(GameSettings.FINKEL);
     }
 
     /**
-     * Creates a simple game that follows the rules proposed by James Masters.
+     * Creates a game that follows the rules proposed by James Masters.
      * This uses the simple rules, the standard board shape, Bell's path, unsafe
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createMasters() {
-        return builder().masters().build();
+        return create(GameSettings.MASTERS);
     }
 
     /**
@@ -531,6 +531,6 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * @return A game of Aseb.
      */
     public static @Nonnull Game<Piece, PlayerState, Roll> createAseb() {
-        return builder().aseb().build();
+        return create(GameSettings.ASEB);
     }
 }

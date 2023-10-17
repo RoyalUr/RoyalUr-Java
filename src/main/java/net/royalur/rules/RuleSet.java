@@ -81,6 +81,22 @@ public abstract class RuleSet<
     }
 
     /**
+     * Get the settings used for this rule set.
+     * @return The settings used for this rule set.
+     */
+    public @Nonnull GameSettings<R> getSettings() {
+        return new GameSettings<>(
+                boardShape,
+                paths,
+                diceFactory,
+                playerStateProvider.getStartingPieceCount(),
+                areRosettesSafe(),
+                doRosettesGrantExtraRolls(),
+                doCapturesGrantExtraRolls()
+        );
+    }
+
+    /**
      * Gets the shape of the board used in this rule set.
      * @return The shape of the game board.
      */
