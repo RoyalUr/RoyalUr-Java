@@ -89,7 +89,7 @@ can also be created and used instead.
 - Aseb.
 
 <p align="center">
-  <img alt="Supported Board Shapes" height="350" src="BoardShapes.png" />
+  <img alt="Supported Board Shapes" height="350" src="res/board_shapes.png" />
 </p>
 
 **Paths:**
@@ -100,7 +100,7 @@ can also be created and used instead.
 - Aseb path proposed by Murray.
 
 <p align="center">
-  <img alt="Supported Paths" height="350" src="Paths.png" />
+  <img alt="Supported Paths" height="350" src="res/paths.png" />
 </p>
 
 **Dice:**
