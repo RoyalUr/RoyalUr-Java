@@ -2,15 +2,31 @@
 
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
 
+### What is The Royal Game of Ur?
+
 The Royal Game of Ur is one of the longest-living games in history, with evidence
 of it being enjoyed by people who lived over 5,000 years ago!
 This library aims to bring this ancient board game into the modern age by supporting
 digital versions of the game, statistical analysis of its rules, and the use
-of AI to play the game.
+of AI to play the game. A board used to play The Royal Game of Ur is shown below,
+which was excavated by Sir Leonard Woolley in the 1930s.
+It is currently on display at the British Museum!
+
+<p align="center">
+  <img alt="British Museum game board excavated by Sir Leonard Woolley" height="300" src="docs/res/bm_board.png" />
+</p>
+<p align="center">
+  Photo of an excavated board of the Royal Game of Ur that is dated to 2500 BC.<br/>
+  © The Trustees of the British Museum.
+</p>
+
+### Resources
 
 * [Read the documentation.](https://royalur.github.io/RoyalUrJava/)
 
 * Prefer Python to Java? [Check out RoyalUr-Python.](https://github.com/RoyalUr/RoyalUr-Python)
+
+* [Play The Royal Game of Ur on RoyalUr.net.](https://royalur.net/)
 
 
 # 🚀 Example
