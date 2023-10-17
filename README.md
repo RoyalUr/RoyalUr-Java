@@ -1,14 +1,19 @@
-# 🎲 RoyalUr Java
+# 🎲 RoyalUr-Java
 
-This project provides a Java API for the play and analysis of games
-of the Royal Game of Ur. This API is designed to support many rule
-sets of the Royal Game of Ur. More documentation will be added
-here as this API is developed.
+This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
 
-* [Documentation](https://royalur.github.io/RoyalUrJava/)
+The Royal Game of Ur is one of the longest-living games in history, with evidence
+of it being enjoyed by people who lived over 5,000 years ago!
+This library aims to bring this ancient board game into the modern age by supporting
+digital versions of the game, statistical analysis of its rules, and the use
+of AI to play the game.
+
+* [Read the documentation.](https://royalur.github.io/RoyalUrJava/)
+
+* Prefer Python to Java? [Check out RoyalUr-Python.](https://github.com/RoyalUr/RoyalUr-Python)
 
 
-## 🚀 Example
+# 🚀 Example
 
 The following is a small example that shows the basics of creating
 a game, autonomously playing through it by making random moves,
@@ -61,30 +66,31 @@ building the source code using Maven. We plan to release the
 library into the central library as well, but we have had
 issues with that process that we still need to work out.
 You can manually install from the source code by running
-`maven install` in the root directory of the source code.
+`mvn install` in the root directory of the source code.
 
-# 📜 Supported Rule Sets
+# 📜 Supported Rulesets
 
-This library supports a wide range of rule sets for the
-Royal Game of Ur, although we are looking to add more.
+This library supports a wide range of rulesets for the
+Royal Game of Ur. You may use standard sets of rules that
+are commonly played, or create your own custom rulesets.
 
-**Rule Sets:**
-- Rules used on RoyalUr.net.
+**Provided Rulesets:**
 - Rules proposed by Irving Finkel (simple version).
 - Rules proposed by James Masters.
-- Rules for Aseb (using different game board).
+- Rules for Aseb (using a different game board).
 
-## Custom Rule Sets
+# ⚙️ Custom Rulesets
 
-The rule sets are created by selecting several components
-that make up the rules. This includes selecting the board
+The rulesets are created by selecting several component pieces
+that make up the ruleset. This includes selecting the board
 shape, the path that pieces take around the board, the
-dice that are used, and other features of the rules. The
-provided components are given below, but new components
-can also be created and used instead.
+dice that are used, alongside other features such as whether
+rosette tiles are safe from capture. The provided values of
+these components are given below, but new values can also be
+created and used instead (e.g., for a new path around the board).
 
 **Board Shapes:**
-- Royal Game of Ur.
+- Standard Royal Game of Ur.
 - Aseb.
 
 <p align="center">
@@ -111,8 +117,10 @@ can also be created and used instead.
 **Features:**
 - Number of starting pieces for each player.
 - Whether rosettes are safe tiles.
+- Whether landing on a rosette grants an extra roll.
+- Whether capturing a piece grants an extra roll.
 
 
 # 📝 License
-This library is licensed under the MIT license. Read the
-license [here](LICENSE).
+This library is licensed under the MIT license.
+[Read the license here.](LICENSE)
