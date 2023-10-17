@@ -1,4 +1,4 @@
-# 🎲 RoyalUr-Java
+![RoyalUr-Java Logo](docs/res/banner.png)
 
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
 
