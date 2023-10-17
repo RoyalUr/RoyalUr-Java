@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="RoyalUr-Java Logo" height="230" src="docs/res/banner.png" />
+  <img alt="RoyalUr-Java Logo" height="180" src="docs/res/banner.png" />
 </p>
 
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
