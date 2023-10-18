@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="RoyalUr-Java Logo" height="180" src="docs/res/banner.png" />
+  <img alt="RoyalUr-Java Logo" width="485" src="docs/res/banner.png" />
 </p>
 
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
@@ -15,7 +15,7 @@ which was excavated by Sir Leonard Woolley in the 1930s.
 It is currently on display at the British Museum!
 
 <p align="center">
-  <img alt="British Museum game board excavated by Sir Leonard Woolley" height="300" src="docs/res/bm_board.png" />
+  <img alt="British Museum game board excavated by Sir Leonard Woolley" width="610" src="docs/res/bm_board.png" />
 </p>
 <p align="center">
   Photo of an excavated board of the Royal Game of Ur that is dated to 2500 BC.<br/>
@@ -31,6 +31,15 @@ It is currently on display at the British Museum!
 * [Play The Royal Game of Ur on RoyalUr.net.](https://royalur.net/)
 
 * If you want to delve deeper, join us to discuss the game by [joining our Discord!](https://discord.gg/HBP83J4qHV)
+
+
+# 🔧 Installation
+Currently, the RoyalUr-Java library is only available through
+building the source code using Maven. We plan to release the
+library into the central library as well, but we have had
+issues with that process that we still need to work out.
+You can manually install from the source code by running
+`mvn install` in the root directory of the source code.
 
 
 # 🚀 Example
@@ -80,14 +89,6 @@ Light: Score a piece from A7
 Light won the game!
 ```
 
-# 🔧 Installation
-Currently, the RoyalUr-Java library is only available through
-building the source code using Maven. We plan to release the
-library into the central library as well, but we have had
-issues with that process that we still need to work out.
-You can manually install from the source code by running
-`mvn install` in the root directory of the source code.
-
 # 📜 Supported Rulesets
 
 This library supports a wide range of rulesets for the
@@ -114,7 +115,7 @@ created and used instead (e.g., for a new path around the board).
 - Aseb.
 
 <p align="center">
-  <img alt="Supported Board Shapes" height="350" src="docs/res/board_shapes.png" />
+  <img alt="Supported Board Shapes" width="241" src="docs/res/board_shapes.png" />
 </p>
 
 **Paths:**
@@ -125,7 +126,7 @@ created and used instead (e.g., for a new path around the board).
 - Aseb path proposed by Murray.
 
 <p align="center">
-  <img alt="Supported Paths" height="350" src="docs/res/paths.png" />
+  <img alt="Supported Paths" width="500" src="docs/res/paths.png" />
 </p>
 
 **Dice:**
