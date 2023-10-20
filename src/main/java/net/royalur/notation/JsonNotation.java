@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +26,7 @@ import java.util.Map;
  * Game of Ur into JSON for serialisation. This notation
  * has been created to be read by machines, not humans.
  */
-public class JsonNotation implements RGUNotation {
+public class JsonNotation implements Notation {
 
     /**
      * The latest version of the JSON notation. If any breaking changes
@@ -37,7 +38,7 @@ public class JsonNotation implements RGUNotation {
     /**
      * The key in the JSON for the version of the notation.
      */
-    public static final @Nonnull String VERSION_KEY = "notation-version";
+    public static final @Nonnull String VERSION_KEY = "notation_version";
 
     /**
      * The key in the JSON for the metadata of the game.
@@ -45,29 +46,54 @@ public class JsonNotation implements RGUNotation {
     public static final @Nonnull String METADATA_KEY = "metadata";
 
     /**
-     * The key in the JSON for the list of actions played in the game.
-     */
-    public static final @Nonnull String ACTIONS_KEY = "actions";
-
-    /**
      * The key in the JSON for the list of states in the game.
      */
     public static final @Nonnull String STATES_KEY = "states";
 
     /**
-     * The key in the JSON for the type of an action.
+     * The key in the JSON for the type of state.
      */
-    public static final @Nonnull String ACTION_TYPE_KEY = "type";
+    public static final @Nonnull String STATE_TYPE_KEY = "type";
+
+    /**
+     * Represents states of type {@link RolledGameState}.
+     */
+    public static final @Nonnull String STATE_TYPE_ROLLED = "rolled";
+
+    /**
+     * Represents states of type {@link MovedGameState}.
+     */
+    public static final @Nonnull String STATE_TYPE_MOVED = "moved";
+
+    /**
+     * Represents states of type {@link WaitingForRollGameState}.
+     */
+    public static final @Nonnull String STATE_TYPE_WAITING_FOR_ROLL = "waiting_for_roll";
+
+    /**
+     * Represents states of type {@link WaitingForMoveGameState}.
+     */
+    public static final @Nonnull String STATE_TYPE_WAITING_FOR_MOVE = "waiting_for_move";
+
+    /**
+     * Represents states of type {@link WinGameState}.
+     */
+    public static final @Nonnull String STATE_TYPE_WIN = "win";
 
     /**
      * The key in the JSON for the value of a roll that was made.
      */
-    public static final @Nonnull String ACTION_ROLL_KEY = "roll";
+    public static final @Nonnull String ROLL_KEY = "roll";
+
+    /**
+     * The key in the JSON for the value of a roll.
+     */
+    public static final @Nonnull String ROLL_VALUE_KEY = "value";
 
     /**
      * The key in the JSON for a move that was made.
      */
-    public static final @Nonnull String ACTION_MOVE_KEY = "move";
+    public static final @Nonnull String MOVE_KEY = "move";
 
     /**
      * The key in the JSON for the source piece of a move.
@@ -83,6 +109,18 @@ public class JsonNotation implements RGUNotation {
      * The key in the JSON for the captured piece of a move.
      */
     public static final @Nonnull String MOVE_CAPTURED_KEY = "captured";
+
+    /**
+     * The key in the JSON for the light player, and
+     * the value used to represent the light player.
+     */
+    public static final @Nonnull String LIGHT_CODE = "light";
+
+    /**
+     * The key in the JSON for the dark player, and
+     * the value used to represent the dark player.
+     */
+    public static final @Nonnull String DARK_CODE = "dark";
 
     /**
      * The key in the JSON for the owner of a piece.
@@ -102,16 +140,6 @@ public class JsonNotation implements RGUNotation {
     public static final @Nonnull String PIECE_INDEX_KEY = "index";
 
     /**
-     * The key in the JSON for the source tile of a move.
-     */
-    public static final @Nonnull String MOVE_LANDS_ON_ROSETTE_KEY = "rosette";
-
-    /**
-     * The key in the JSON for whether the state represents a won game.
-     */
-    public static final @Nonnull String STATE_WON_KEY = "is_won";
-
-    /**
      * The key in the JSON for the player whose turn it is in a state.
      */
     public static final @Nonnull String STATE_TURN_KEY = "turn";
@@ -120,11 +148,6 @@ public class JsonNotation implements RGUNotation {
      * The key in the JSON for the player that won the game.
      */
     public static final @Nonnull String STATE_WINNER_KEY = "winner";
-
-    /**
-     * The key in the JSON for the player that lost the game.
-     */
-    public static final @Nonnull String STATE_LOSER_KEY = "loser";
 
     /**
      * The key in the JSON for the contents of the board in a game state.
@@ -182,18 +205,16 @@ public class JsonNotation implements RGUNotation {
         this(PathType.FACTORIES, BoardType.FACTORIES);
     }
 
-    /**
-     * Writes the state of a player to the JSON generator.
-     * @param playerState The state of the player to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
+    protected @Nonnull String getPlayerTypeCode(@Nonnull PlayerType player) {
+        return switch (player) {
+            case LIGHT -> LIGHT_CODE;
+            case DARK -> DARK_CODE;
+        };
+    }
+
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writePlayerState(
-            @Nonnull S playerState,
             @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull S playerState,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
@@ -201,118 +222,38 @@ public class JsonNotation implements RGUNotation {
         generator.writeNumberField(PLAYER_SCORE_KEY, playerState.getScore());
     }
 
-    /**
-     * Writes the state of a game to the JSON generator.
-     * @param state The game state to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeState(
-            @Nonnull GameState<P, S, R> state,
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeRoll(
             @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull R roll,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeBooleanField(STATE_WON_KEY, state instanceof WinGameState);
-
-        if (state instanceof OngoingGameState<P, S, R> ongoingState) {
-            generator.writeStringField(STATE_TURN_KEY, ongoingState.getTurn().getTextName());
-        } else if (state instanceof WinGameState<P, S, R> winState) {
-            generator.writeStringField(STATE_WINNER_KEY, winState.getWinner().getTextName());
-            generator.writeStringField(STATE_LOSER_KEY, winState.getLoser().getTextName());
-        }
-
-        generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString("", false));
-
-        // Write the states of the players.
-        generator.writeObjectFieldStart(STATE_PLAYERS_KEY);
-        try {
-            // Light player.
-            generator.writeObjectFieldStart(PlayerType.LIGHT.getTextName());
-            try {
-                writePlayerState(state.getLightPlayer(), rules, generator);
-            } finally {
-                generator.writeEndObject();
-            }
-
-            // Dark player.
-            generator.writeObjectFieldStart(PlayerType.DARK.getTextName());
-            try {
-                writePlayerState(state.getDarkPlayer(), rules, generator);
-            } finally {
-                generator.writeEndObject();
-            }
-        } finally {
-            generator.writeEndObject();
-        }
+        generator.writeNumberField(ROLL_VALUE_KEY, roll.value());
     }
 
-    /**
-     * Writes a roll that was taken in a game to the JSON generator.
-     * @param state The roll game state to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeRolledAction(
-            @Nonnull RolledGameState<P, S, R> state,
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull JsonGenerator generator
-    ) throws IOException {
-
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value());
-    }
-
-    /**
-     * Writes a piece that is to be moved, or that is on a board, to the JSON generator.
-     * @param tile The tile that the piece is on.
-     * @param piece The piece to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writePiece(
+            @Nonnull RuleSet<P, S, R> rules,
             @Nonnull Tile tile,
             @Nonnull P piece,
-            @Nonnull RuleSet<P, S, R> rules,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(PIECE_OWNER_KEY, piece.getOwner().getTextName());
+        generator.writeStringField(PIECE_OWNER_KEY, getPlayerTypeCode(piece.getOwner()));
         generator.writeStringField(PIECE_TILE_KEY, tile.toString());
         generator.writeNumberField(PIECE_INDEX_KEY, piece.getPathIndex());
     }
 
-    /**
-     * Writes a move that was made in a game to the JSON generator.
-     * @param move The move to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writeMove(
-            @Nonnull Move<P> move,
             @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull Move<P> move,
             @Nonnull JsonGenerator generator
     ) throws IOException {
-
-        // Metadata that may be useful for querying or analytics.
-        generator.writeBooleanField(MOVE_LANDS_ON_ROSETTE_KEY, move.isDestRosette(rules.getBoardShape()));
 
         // Write the source piece being moved.
         if (!move.isIntroducingPiece()) {
             generator.writeObjectFieldStart(MOVE_SOURCE_KEY);
             try {
-                writePiece(move.getSource(), move.getSourcePiece(), rules, generator);
+                writePiece(rules, move.getSource(), move.getSourcePiece(), generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -324,7 +265,7 @@ public class JsonNotation implements RGUNotation {
         if (!move.isScoringPiece()) {
             generator.writeObjectFieldStart(MOVE_DEST_KEY);
             try {
-                writePiece(move.getDest(), move.getDestPiece(), rules, generator);
+                writePiece(rules, move.getDest(), move.getDestPiece(), generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -336,7 +277,7 @@ public class JsonNotation implements RGUNotation {
         if (move.isCapture()) {
             generator.writeObjectFieldStart(MOVE_CAPTURED_KEY);
             try {
-                writePiece(move.getDest(), move.getCapturedPiece(), rules, generator);
+                writePiece(rules, move.getDest(), move.getCapturedPiece(), generator);
             } finally {
                 generator.writeEndObject();
             }
@@ -345,99 +286,187 @@ public class JsonNotation implements RGUNotation {
         }
     }
 
-    /**
-     * Writes a move action that was made in a game to the JSON generator.
-     * @param state The action game state to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeMovedAction(
-            @Nonnull MovedGameState<P, S, R> state,
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeRolledState(
             @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull RolledGameState<P, S, R> state,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeNumberField(ACTION_ROLL_KEY, state.getRoll().value());
-
-        generator.writeObjectFieldStart(ACTION_MOVE_KEY);
+        generator.writeObjectFieldStart(ROLL_KEY);
         try {
-            writeMove(state.getMove(), rules, generator);
+            writeRoll(rules, state.getRoll(), generator);
         } finally {
             generator.writeEndObject();
         }
     }
 
-    protected <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String getActionType(
-            @Nonnull ActionGameState<P, S, R> state
-    ) {
-        if (state instanceof MovedGameState<P,S,R>)
-            return "Move";
-        if (state instanceof RolledGameState<P,S,R>)
-            return "Roll";
-
-        throw new IllegalArgumentException("Unknown action type for given game state class: " + state.getClass());
-    }
-
-    /**
-     * Writes an action in a game to the JSON generator.
-     * @param state The action game state to write.
-     * @param rules The rules of the game.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeAction(
-            @Nonnull ActionGameState<P, S, R> state,
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeMovedState(
             @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull MovedGameState<P, S, R> state,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(ACTION_TYPE_KEY, getActionType(state));
+        generator.writeObjectFieldStart(ROLL_KEY);
+        try {
+            writeRoll(rules, state.getRoll(), generator);
+        } finally {
+            generator.writeEndObject();
+        }
 
-        if (state instanceof RolledGameState) {
-            writeRolledAction(Cast.unsafeCast(state), rules, generator);
-        } else if (state instanceof MovedGameState) {
-            writeMovedAction(Cast.unsafeCast(state), rules, generator);
+        generator.writeObjectFieldStart(MOVE_KEY);
+        try {
+            writeMove(rules, state.getMove(), generator);
+        } finally {
+            generator.writeEndObject();
+        }
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeActionState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull ActionGameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        if (state instanceof RolledGameState<P, S, R> rolledState) {
+            writeRolledState(rules, rolledState, generator);
+
+        } else if (state instanceof MovedGameState<P, S, R> movedState) {
+            writeMovedState(rules, movedState, generator);
+
         } else {
             throw new IllegalArgumentException("Unknown action game state type " + state.getClass());
         }
     }
 
-    /**
-     * Writes the actions of the game to the JSON generator.
-     * @param game The game to write the actions of.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeActions(
-            @Nonnull Game<P, S, R> game,
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeWaitingForRollState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull WaitingForRollGameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) {
+
+        // Nothing to do.
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeWaitingForMoveState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull WaitingForMoveGameState<P, S, R> state,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        for (ActionGameState<P, S, R> state : game.getActionStates()) {
-            generator.writeStartObject();
-            try {
-                writeAction(state, game.getRules(), generator);
-            } finally {
-                generator.writeEndObject();
-            }
+        generator.writeObjectFieldStart(ROLL_KEY);
+        try {
+            writeRoll(rules, state.getRoll(), generator);
+        } finally {
+            generator.writeEndObject();
         }
     }
 
-    /**
-     * Writes the landmark states of the game to the JSON generator.
-     * @param game The game to write the states of.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writePlayableState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull PlayableGameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        if (state instanceof WaitingForRollGameState<P, S, R> waitingForRollState) {
+            writeWaitingForRollState(rules, waitingForRollState, generator);
+
+        } else if (state instanceof WaitingForMoveGameState<P, S, R> waitingForMoveState) {
+            writeWaitingForMoveState(rules, waitingForMoveState, generator);
+
+        } else {
+            throw new IllegalArgumentException("Unknown playable game state type " + state.getClass());
+        }
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeOngoingState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull OngoingGameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        generator.writeStringField(STATE_TURN_KEY, getPlayerTypeCode(state.getTurn()));
+
+        if (state instanceof ActionGameState<P, S, R> actionState) {
+            writeActionState(rules, actionState, generator);
+
+        } else if (state instanceof PlayableGameState<P, S, R> playableState) {
+            writePlayableState(rules, playableState, generator);
+
+        } else {
+            throw new IllegalArgumentException("Unknown ongoing game state type " + state.getClass());
+        }
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeWinState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull WinGameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        generator.writeStringField(STATE_WINNER_KEY, getPlayerTypeCode(state.getWinner()));
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String getStateType(
+            @Nonnull GameState<P, S, R> state
+    ) {
+
+        if (state instanceof RolledGameState)
+            return STATE_TYPE_ROLLED;
+        if (state instanceof MovedGameState)
+            return STATE_TYPE_MOVED;
+        if (state instanceof WaitingForRollGameState)
+            return STATE_TYPE_WAITING_FOR_ROLL;
+        if (state instanceof WaitingForMoveGameState)
+            return STATE_TYPE_WAITING_FOR_MOVE;
+        if (state instanceof WinGameState)
+            return STATE_TYPE_WIN;
+
+        throw new IllegalArgumentException("Unknown game state type " + state.getClass());
+    }
+
+    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeState(
+            @Nonnull RuleSet<P, S, R> rules,
+            @Nonnull GameState<P, S, R> state,
+            @Nonnull JsonGenerator generator
+    ) throws IOException {
+
+        generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
+        generator.writeStringField(STATE_BOARD_KEY, state.getBoard().toString("", false));
+
+        // Write the states of the players.
+        generator.writeObjectFieldStart(STATE_PLAYERS_KEY);
+        try {
+            // Light player.
+            generator.writeObjectFieldStart(LIGHT_CODE);
+            try {
+                writePlayerState(rules, state.getLightPlayer(), generator);
+            } finally {
+                generator.writeEndObject();
+            }
+
+            // Dark player.
+            generator.writeObjectFieldStart(DARK_CODE);
+            try {
+                writePlayerState(rules, state.getDarkPlayer(), generator);
+            } finally {
+                generator.writeEndObject();
+            }
+        } finally {
+            generator.writeEndObject();
+        }
+
+        // Write more detailed information about each state.
+        if (state instanceof OngoingGameState<P, S, R> ongoingState) {
+            writeOngoingState(rules, ongoingState, generator);
+
+        } else if (state instanceof WinGameState<P, S, R> winState) {
+            writeWinState(rules, winState, generator);
+
+        } else {
+            throw new IllegalArgumentException("Unknown game state type " + state.getClass());
+        }
+    }
+
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writeStates(
             @Nonnull Game<P, S, R> game,
             @Nonnull JsonGenerator generator
@@ -446,39 +475,23 @@ public class JsonNotation implements RGUNotation {
         for (GameState<P, S, R> state : game.getLandmarkStates()) {
             generator.writeStartObject();
             try {
-                writeState(state, game.getRules(), generator);
+                writeState(game.getRules(), state, generator);
             } finally {
                 generator.writeEndObject();
             }
         }
     }
 
-    /**
-     * Writes the metadata of the game to the JSON generator.
-     * @param game The game to write the metadata of.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void writeMetadata(
-            @Nonnull Game<P, S, R> game,
+    protected void writeMetadata(
+            @Nonnull GameMetadata metadata,
             @Nonnull JsonGenerator generator
     ) throws IOException {
 
-        for (Map.Entry<String, String> entry : game.getMetadata().getAll().entrySet()) {
+        for (Map.Entry<String, String> entry : metadata.getAll().entrySet()) {
             generator.writeStringField(entry.getKey(), entry.getValue());
         }
     }
 
-    /**
-     * Writes the game to the JSON generator.
-     * @param game The game to write.
-     * @param <P> The type of pieces in the game.
-     * @param <S> The type of player state stored in the game.
-     * @param <R> The type of roll made in the game.
-     * @throws IOException If there is an error writing the JSON.
-     */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void writeGame(
             @Nonnull Game<P, S, R> game,
             @Nonnull JsonGenerator generator
@@ -490,17 +503,9 @@ public class JsonNotation implements RGUNotation {
         // Write the metadata of the game.
         generator.writeObjectFieldStart(METADATA_KEY);
         try {
-            writeMetadata(game, generator);
+            writeMetadata(game.getMetadata(), generator);
         } finally {
             generator.writeEndObject();
-        }
-
-        // Write the actions taken in the game.
-        generator.writeArrayFieldStart(ACTIONS_KEY);
-        try {
-            writeActions(game, generator);
-        } finally {
-            generator.writeEndArray();
         }
 
         // Write the states in the game.

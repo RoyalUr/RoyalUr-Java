@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  * should check the specific notation you are considering to
  * determine the information that it is able to save.
  */
-public interface RGUNotation {
+public interface Notation {
 
     /**
      * Encodes the given game, {@code game}, into text.

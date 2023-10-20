@@ -28,7 +28,7 @@ import java.util.Map;
  * contributors from the Royal Game of Ur Discord server:
  * Diego Raposo, Monomino, Sachertorte, kapfab, and Raph.
  */
-public class RGN implements RGUNotation {
+public class RGN implements Notation {
 
     /**
      * The default maximum length for lines in RGN that
