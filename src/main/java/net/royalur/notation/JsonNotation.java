@@ -12,13 +12,11 @@ import net.royalur.model.shape.BoardType;
 import net.royalur.name.NameMap;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
-import net.royalur.util.Cast;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -134,8 +132,6 @@ public class JsonNotation implements Notation {
 
     /**
      * The key in the JSON for the index of a piece on its path.
-     * This is only used for pieces that have an index stored with
-     * them, such as {@link Piece}.
      */
     public static final @Nonnull String PIECE_INDEX_KEY = "index";
 
