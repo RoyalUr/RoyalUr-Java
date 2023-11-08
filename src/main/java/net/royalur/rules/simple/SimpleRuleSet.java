@@ -95,8 +95,8 @@ public class SimpleRuleSet<
     public @Nonnull GameState<P, S, R> generateInitialGameState() {
         return new WaitingForRollGameState<>(
                 new Board<>(boardShape),
-                playerStateProvider.create(PlayerType.LIGHT),
-                playerStateProvider.create(PlayerType.DARK),
+                playerStateProvider.createStartingState(PlayerType.LIGHT),
+                playerStateProvider.createStartingState(PlayerType.DARK),
                 PlayerType.LIGHT
         );
     }
@@ -282,5 +282,50 @@ public class SimpleRuleSet<
         return List.of(movedState, new WaitingForRollGameState<>(
                 board, lightPlayer, darkPlayer, nextTurn
         ));
+    }
+
+    @Override
+    public @Nonnull List<GameState<P, S, R>> selectLandmarkStates(
+            @Nonnull List<GameState<P, S, R>> states
+    ) {
+        List<GameState<P, S, R>> landmarkStates = new ArrayList<>();
+        boolean seenAction = false;
+        for (int index = states.size() - 1; index >= 0; --index) {
+            GameState<P, S, R> state = states.get(index);
+
+            // We always want to include the last action that was made in the game.
+            if (state instanceof ActionGameState && !seenAction) {
+                landmarkStates.add(state);
+                seenAction = true;
+                continue;
+            }
+
+            // Moves are important.
+            if (state instanceof MovedGameState) {
+                landmarkStates.add(state);
+                continue;
+            }
+
+            // Include rolls that do not have a move state that describes them.
+            if (state instanceof RolledGameState<P, S, R> rolledState
+                    && rolledState.getAvailableMoves().isEmpty()) {
+
+                landmarkStates.add(state);
+                continue;
+            }
+
+            // Always include the initial state and the current state.
+            if (index == 0 || index == states.size() - 1) {
+                landmarkStates.add(state);
+            }
+        }
+
+        // We loop in reverse-order, so correct that.
+        Collections.reverse(landmarkStates);
+
+        if (!(landmarkStates.get(0) instanceof PlayableGameState))
+            throw new RuntimeException("Sanity check failed: The first landmark state should be playable");
+
+        return landmarkStates;
     }
 }

@@ -184,14 +184,7 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
      * to recreate everything that happened in the game so far.
      */
     public @Nonnull List<GameState<P, S, R>> getLandmarkStates() {
-        List<GameState<P, S, R>> landmarkStates = new ArrayList<>();
-        for (int index = 0; index < states.size(); ++index) {
-            GameState<P, S, R> state = states.get(index);
-            if (state instanceof MovedGameState || index == states.size() - 1) {
-                landmarkStates.add(state);
-            }
-        }
-        return Collections.unmodifiableList(landmarkStates);
+        return rules.selectLandmarkStates(states);
     }
 
     /**

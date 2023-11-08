@@ -13,6 +13,11 @@ import javax.annotation.Nonnull;
 public interface PieceProvider<P extends Piece> {
 
     /**
+     * Generate a piece on the board.
+     */
+    @Nonnull P create(@Nonnull PlayerType owner, int pathIndex);
+
+    /**
      * Generates a new piece to be introduced to the board.
      * @param owner The owner of the new piece.
      * @param newPathIndex The destination index of the piece in the player's path.

@@ -12,6 +12,11 @@ import javax.annotation.Nonnull;
 public class SimplePieceProvider implements PieceProvider<Piece> {
 
     @Override
+    public @Nonnull Piece create(@Nonnull PlayerType owner, int pathIndex) {
+        return new Piece(owner, pathIndex);
+    }
+
+    @Override
     public @Nonnull Piece createIntroduced(@Nonnull PlayerType owner, int newPathIndex) {
         return new Piece(owner, newPathIndex);
     }

@@ -28,7 +28,9 @@ import java.util.Map;
  * contributors from the Royal Game of Ur Discord server:
  * Diego Raposo, Monomino, Sachertorte, kapfab, and Raph.
  */
-public class RGN implements Notation {
+public class RGN<
+    P extends Piece, S extends PlayerState, R extends Roll
+> implements Notation<P, S, R> {
 
     /**
      * The default maximum length for lines in RGN that
@@ -187,9 +189,7 @@ public class RGN implements Notation {
     }
 
     @Override
-    public <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull String
-    encodeGame(@Nonnull Game<P, S, R> game) {
-
+    public @Nonnull String encodeGame(@Nonnull Game<P, S, R> game) {
         StringBuilder builder = new StringBuilder();
 
         // Encode the metadata.
@@ -314,9 +314,7 @@ public class RGN implements Notation {
     }
 
     @Override
-    public <P extends Piece, S extends PlayerState, R extends Roll> @Nonnull Game<P, S, R>
-    decodeGame(@Nonnull RuleSet<P, S, R> rules, @Nonnull String encoded) {
-
+    public @Nonnull Game<P, S, R> decodeGame(@Nonnull String encoded) {
         throw new UnsupportedOperationException("TODO");
     }
 }

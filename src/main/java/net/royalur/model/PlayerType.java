@@ -38,6 +38,12 @@ public enum PlayerType implements Name {
     private final char character;
 
     /**
+     * A constant character representing the player,
+     * stored in a string.
+     */
+    private final @Nonnull String characterString;
+
+    /**
      * Instantiates a type of player.
      * @param id A fixed numerical identifier to represent this player.
      * @param name An English name for this player.
@@ -47,6 +53,7 @@ public enum PlayerType implements Name {
         this.id = id;
         this.name = name;
         this.character = character;
+        this.characterString = Character.toString(character);
     }
 
     @Override
@@ -69,8 +76,17 @@ public enum PlayerType implements Name {
      * This character will never change.
      * @return A constant character representing the player.
      */
-    public char getCharacter() {
+    public char getChar() {
         return character;
+    }
+
+    /**
+     * Gets a constant character representing the player.
+     * This character will never change.
+     * @return A constant character representing the player.
+     */
+    public @Nonnull String getCharStr() {
+        return characterString;
     }
 
     /**
@@ -87,11 +103,23 @@ public enum PlayerType implements Name {
     /**
      * Converts {@code player} to a single character that can be used
      * to textually represent a piece.
-     *
      * @param player The player or {@code null} to convert to a character.
      * @return The character representing {@code player}.
      */
     public static char toChar(@Nullable PlayerType player) {
         return player != null ? player.character : '.';
+    }
+
+    /**
+     * Finds the player associated with the given character.
+     * @param character The character associated with a player.
+     * @return The player associated with the given character.
+     */
+    public static @Nonnull PlayerType getByChar(char character) {
+        for (PlayerType player : values()) {
+            if (player.character == character)
+                return player;
+        }
+        throw new IllegalArgumentException("Unknown player character '" + character + "'");
     }
 }

@@ -208,6 +208,17 @@ public abstract class RuleSet<
     );
 
     /**
+     * Selects only the states that are required to reproduce
+     * exactly what happened in a game using this rule set.
+     * This is used to reduce the amount of information saved
+     * during serialisation.
+     * @param states All the states in a game.
+     */
+    public abstract @Nonnull List<GameState<P, S, R>> selectLandmarkStates(
+            @Nonnull List<GameState<P, S, R>> states
+    );
+
+    /**
      * Creates a simple rule set that follows the given game settings.
      */
     public static <R extends Roll> @Nonnull SimpleRuleSet<Piece, PlayerState, R>

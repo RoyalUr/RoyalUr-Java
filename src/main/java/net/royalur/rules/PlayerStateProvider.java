@@ -21,11 +21,20 @@ public interface PlayerStateProvider<
     int getStartingPieceCount();
 
     /**
+     * Generates a state for the {@code player} player.
+     * @param player The player to create the starting state for.
+     * @param pieces The number of pieces the player has yet to play.
+     * @param score The number of pieces the player has scored.
+     * @return A player state for the player {@code player}.
+     */
+    @Nonnull S create(@Nonnull PlayerType player, int pieces, int score);
+
+    /**
      * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
-     * @return A player state for the player {@code player} with name {@code name}.
+     * @return A player state for the player {@code player}.
      */
-    @Nonnull S create(@Nonnull PlayerType player);
+    @Nonnull S createStartingState(@Nonnull PlayerType player);
 
     /**
      * Generates a new player state that is a copy of {@code playerState},

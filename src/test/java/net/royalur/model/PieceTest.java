@@ -11,14 +11,14 @@ public class PieceTest {
         Piece light = new Piece(PlayerType.LIGHT, 1);
         Piece dark = new Piece(PlayerType.DARK, 1);
 
-        assertEquals(PlayerType.LIGHT.getCharacter(), Piece.toChar(light));
-        assertEquals(PlayerType.DARK.getCharacter(), Piece.toChar(dark));
+        assertEquals(PlayerType.LIGHT.getChar(), Piece.toChar(light));
+        assertEquals(PlayerType.DARK.getChar(), Piece.toChar(dark));
 
         light = new Piece(PlayerType.LIGHT, 2);
         dark = new Piece(PlayerType.DARK, 2);
 
-        assertEquals(PlayerType.LIGHT.getCharacter(), Piece.toChar(light));
-        assertEquals(PlayerType.DARK.getCharacter(), Piece.toChar(dark));
+        assertEquals(PlayerType.LIGHT.getChar(), Piece.toChar(light));
+        assertEquals(PlayerType.DARK.getChar(), Piece.toChar(dark));
 
         assertEquals(PlayerType.toChar(null), Piece.toChar(null));
     }

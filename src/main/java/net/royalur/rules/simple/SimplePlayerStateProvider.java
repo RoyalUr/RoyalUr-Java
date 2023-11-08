@@ -34,7 +34,12 @@ public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, Pla
     }
 
     @Override
-    public @Nonnull PlayerState create(@Nonnull PlayerType player) {
+    public @Nonnull PlayerState create(@Nonnull PlayerType player, int pieces, int score) {
+        return new PlayerState(player, pieces, score);
+    }
+
+    @Override
+    public @Nonnull PlayerState createStartingState(@Nonnull PlayerType player) {
         return new PlayerState(player, startingPieceCount, 0);
     }
 
