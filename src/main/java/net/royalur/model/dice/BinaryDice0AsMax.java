@@ -46,7 +46,7 @@ public class BinaryDice0AsMax extends BinaryDice {
     }
 
     @Override
-    public float[] getRollProbabilities() {
+    public @Nonnull float[] getRollProbabilities() {
         return rollProbabilities;
     }
 

@@ -58,7 +58,7 @@ public class BinaryDice extends Dice<Roll> {
     }
 
     @Override
-    public float[] getRollProbabilities() {
+    public @Nonnull float[] getRollProbabilities() {
         return rollProbabilities;
     }
 
