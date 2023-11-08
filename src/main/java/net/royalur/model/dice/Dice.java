@@ -4,7 +4,6 @@ import net.royalur.name.Name;
 import net.royalur.name.Named;
 
 import javax.annotation.Nonnull;
-import java.util.random.RandomGenerator;
 
 /**
  * A generator of dice rolls.
@@ -18,19 +17,12 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
     private final @Nonnull Name name;
 
     /**
-     * The source of randomness used to generate dice rolls.
-     */
-    private final @Nonnull RandomGenerator random;
-
-    /**
      * Instantiates this dice with {@code random} as the source
      * of randomness to generate dice rolls.
      * @param name The name of this dice.
-     * @param random The source of randomness used to generate dice rolls.
      */
-    public Dice(@Nonnull Name name, @Nonnull RandomGenerator random) {
+    public Dice(@Nonnull Name name) {
         this.name = name;
-        this.random = random;
     }
 
     /**
@@ -56,14 +48,6 @@ public abstract class Dice<R extends Roll> implements Named<Name> {
     @Override
     public @Nonnull Name getName() {
         return name;
-    }
-
-    /**
-     * Gets the source of randomness that is used to generate dice rolls.
-     * @return The source of randomness that is used to generate dice rolls.
-     */
-    public @Nonnull RandomGenerator getRandom() {
-        return random;
     }
 
     /**

@@ -16,6 +16,11 @@ public class BinaryDice extends Dice<Roll> {
     private final int numDie;
 
     /**
+     * The source of randomness to use to generate dice rolls.
+     */
+    private final @Nonnull RandomGenerator random;
+
+    /**
      * The probability of rolling each value with these dice.
      */
     private final float[] rollProbabilities;
@@ -28,13 +33,14 @@ public class BinaryDice extends Dice<Roll> {
      * @param numDie The number of binary dice to roll.
      */
     public BinaryDice(@Nonnull Name name, @Nonnull RandomGenerator random, int numDie) {
-        super(name, random);
+        super(name);
         if (numDie <= 0)
             throw new IllegalArgumentException("numDie must be at least 1");
         if (numDie >= 31)
             throw new IllegalArgumentException("numDie must be less than 32");
 
         this.numDie = numDie;
+        this.random = random;
         this.rollProbabilities = new float[numDie + 1];
 
         // Binomial Distribution
@@ -59,7 +65,7 @@ public class BinaryDice extends Dice<Roll> {
     @Override
     public int rollValue() {
         // Each generated bit represents a roll of a D2 dice.
-        int bits = getRandom().nextInt(1 << numDie);
+        int bits = random.nextInt(1 << numDie);
         return Integer.bitCount(bits);
     }
 
