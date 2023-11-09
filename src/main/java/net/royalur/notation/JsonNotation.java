@@ -242,6 +242,31 @@ public class JsonNotation<
      * @param pathPairs The paths that can be parsed in this notation.
      * @param boardShapes The board shapes that can be parsed in this notation.
      * @param dice The dice that can be parsed in this notation.
+     * @param ruleSetProvider The provider to create rule sets from game settings.
+     * @param jsonFactory A factory to build generators to write the JSON.
+     */
+    public JsonNotation(
+            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
+            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
+            @Nonnull NameMap<?, ? extends DiceFactory<R>> dice,
+            @Nonnull RuleSetProvider<P, S> ruleSetProvider,
+            @Nonnull JsonFactory jsonFactory
+    ) {
+        this.boardShapes = boardShapes;
+        this.pathPairs = pathPairs;
+        this.dice = dice;
+        this.ruleSetProvider = ruleSetProvider;
+        this.jsonFactory = jsonFactory;
+        this.objectMapper = new ObjectMapper(jsonFactory);
+        this.helper = new JsonHelper();
+    }
+
+    /**
+     * Instantiates the JSON notation to encode and decode games.
+     * @param pathPairs The paths that can be parsed in this notation.
+     * @param boardShapes The board shapes that can be parsed in this notation.
+     * @param dice The dice that can be parsed in this notation.
+     * @param ruleSetProvider The provider to create rule sets from game settings.
      */
     public JsonNotation(
             @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
@@ -249,13 +274,7 @@ public class JsonNotation<
             @Nonnull NameMap<?, ? extends DiceFactory<R>> dice,
             @Nonnull RuleSetProvider<P, S> ruleSetProvider
     ) {
-        this.boardShapes = boardShapes;
-        this.pathPairs = pathPairs;
-        this.dice = dice;
-        this.ruleSetProvider = ruleSetProvider;
-        this.jsonFactory = JsonFactory.builder().build();
-        this.objectMapper = new ObjectMapper(jsonFactory);
-        this.helper = new JsonHelper();
+        this(boardShapes, pathPairs, dice, ruleSetProvider, JsonFactory.builder().build());
     }
 
     public static @Nonnull JsonNotation<Piece, PlayerState, Roll> createSimple() {
