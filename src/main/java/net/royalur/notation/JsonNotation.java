@@ -80,7 +80,7 @@ public class JsonNotation<
     /**
      * The key in the JSON for game setting of the starting piece count.
      */
-    public static final @Nonnull String STARTING_PIECE_COUNT_KEY = "starting_piece_count";
+    public static final @Nonnull String STARTING_PIECE_COUNT_KEY = "start_pieces";
 
     /**
      * The key in the JSON for the game setting of whether rosettes are safe.
@@ -90,12 +90,12 @@ public class JsonNotation<
     /**
      * The key in the JSON for the game setting of whether rosettes grant extra rolls.
      */
-    public static final @Nonnull String ROSETTES_GRANT_EXTRA_ROLLS_KEY = "rosettes_grant_extra_rolls";
+    public static final @Nonnull String ROSETTES_GRANT_EXTRA_ROLLS_KEY = "rosettes_grant_rolls";
 
     /**
      * The key in the JSON for the game setting of whether rosettes grant extra rolls.
      */
-    public static final @Nonnull String CAPTURES_GRANT_EXTRA_ROLLS_KEY = "captures_grant_extra_rolls";
+    public static final @Nonnull String CAPTURES_GRANT_EXTRA_ROLLS_KEY = "captures_grant_rolls";
 
     /**
      * The key in the JSON for the initial state of the board and players.
@@ -115,22 +115,22 @@ public class JsonNotation<
     /**
      * Represents states of type {@link RolledGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_ROLLED = "rolled";
+    public static final @Nonnull String STATE_TYPE_ROLLED = "roll";
 
     /**
      * Represents states of type {@link MovedGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_MOVED = "moved";
+    public static final @Nonnull String STATE_TYPE_MOVED = "move";
 
     /**
      * Represents states of type {@link WaitingForRollGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_WAITING_FOR_ROLL = "waiting_for_roll";
+    public static final @Nonnull String STATE_TYPE_WAITING_FOR_ROLL = "wait4roll";
 
     /**
      * Represents states of type {@link WaitingForMoveGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_WAITING_FOR_MOVE = "waiting_for_move";
+    public static final @Nonnull String STATE_TYPE_WAITING_FOR_MOVE = "wait4move";
 
     /**
      * Represents states of type {@link WinGameState}.
@@ -155,12 +155,12 @@ public class JsonNotation<
     /**
      * The key in the JSON for the source piece of a move.
      */
-    public static final @Nonnull String MOVE_SOURCE_KEY = "source";
+    public static final @Nonnull String MOVE_SOURCE_KEY = "src";
 
     /**
      * The key in the JSON for the destination piece of a move.
      */
-    public static final @Nonnull String MOVE_DEST_KEY = "destination";
+    public static final @Nonnull String MOVE_DEST_KEY = "dest";
 
     /**
      * The key in the JSON for the captured piece of a move.
@@ -170,7 +170,7 @@ public class JsonNotation<
     /**
      * The key in the JSON for the moves that are available in a state.
      */
-    public static final @Nonnull String AVAILABLE_MOVES_KEY = "available_moves";
+    public static final @Nonnull String AVAILABLE_MOVES_KEY = "moves";
 
     /**
      * The key in the JSON for the owner of a piece.
@@ -531,32 +531,6 @@ public class JsonNotation<
     ) throws IOException {
 
         generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
-
-        generator.writeObjectFieldStart(BOARD_KEY);
-        try {
-            writeBoard(generator, state.getBoard());
-        } finally {
-            generator.writeEndObject();
-        }
-
-        generator.writeObjectFieldStart(PLAYERS_KEY);
-        try {
-            generator.writeObjectFieldStart(PlayerType.LIGHT.getCharStr());
-            try {
-                writePlayerState(generator, state.getLightPlayer());
-            } finally {
-                generator.writeEndObject();
-            }
-
-            generator.writeObjectFieldStart(PlayerType.DARK.getCharStr());
-            try {
-                writePlayerState(generator, state.getDarkPlayer());
-            } finally {
-                generator.writeEndObject();
-            }
-        } finally {
-            generator.writeEndObject();
-        }
 
         if (state instanceof OngoingGameState<P, S, R> ongoingState) {
             writeOngoingState(generator, ongoingState);
