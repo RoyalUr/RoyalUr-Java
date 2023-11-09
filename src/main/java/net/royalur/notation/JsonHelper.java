@@ -169,6 +169,21 @@ public class JsonHelper {
         return value.intValue();
     }
 
+    public long readLong(
+            @Nonnull ObjectNode json,
+            @Nonnull String key
+    ) {
+        JsonNode value = readNumber(json, key);
+        JsonParser.NumberType numberType = value.numberType();
+        if (numberType != JsonParser.NumberType.INT && numberType != JsonParser.NumberType.LONG) {
+            throw new JsonTypeError(
+                    "Expected " + key + " to be an integer or a long, " +
+                            "not " + value.numberType().name().toLowerCase()
+            );
+        }
+        return value.longValue();
+    }
+
     public boolean readBool(
             @Nonnull ObjectNode json,
             @Nonnull String key
