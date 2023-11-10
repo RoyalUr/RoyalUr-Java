@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * Contains type checking helper methods for retrieving JSON values,
@@ -89,6 +88,23 @@ public class JsonHelper {
         return (ArrayNode) value;
     }
 
+    public @Nullable ArrayNode readNullableArray(
+            @Nonnull ObjectNode json,
+            @Nonnull String key
+    ) {
+        JsonNode value = readValue(json, key);
+        if (value.isNull())
+            return null;
+
+        if (!(value instanceof ArrayNode)) {
+            throw new JsonTypeError(
+                    "Expected " + key + " to be a dictionary, " +
+                            "not " + value.getNodeType().name().toLowerCase()
+            );
+        }
+        return (ArrayNode) value;
+    }
+
     public @Nonnull JsonNode readArrayEntry(
             @Nonnull ArrayNode json,
             int index
@@ -122,6 +138,23 @@ public class JsonHelper {
             throw new JsonTypeError(
                     "Expected " + key + " to be a string, " +
                     "not " + value.getNodeType().name().toLowerCase()
+            );
+        }
+        return value.textValue();
+    }
+
+    public @Nullable String readNullableString(
+            @Nonnull ObjectNode json,
+            @Nonnull String key
+    ) {
+        JsonNode value = readValue(json, key);
+        if (value.isNull())
+            return null;
+
+        if (!value.isTextual()) {
+            throw new JsonTypeError(
+                    "Expected " + key + " to be a string, " +
+                            "not " + value.getNodeType().name().toLowerCase()
             );
         }
         return value.textValue();
