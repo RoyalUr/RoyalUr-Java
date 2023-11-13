@@ -217,6 +217,42 @@ public class JsonHelper {
         return value.longValue();
     }
 
+    public float readFloat(
+            @Nonnull ObjectNode json,
+            @Nonnull String key
+    ) {
+        JsonNode value = readNumber(json, key);
+        JsonParser.NumberType numberType = value.numberType();
+        if (numberType != JsonParser.NumberType.INT
+                && numberType != JsonParser.NumberType.FLOAT) {
+
+            throw new JsonTypeError(
+                    "Expected " + key + " to be representable as a float, " +
+                            "not " + value.numberType().name().toLowerCase()
+            );
+        }
+        return value.floatValue();
+    }
+
+    public double readDouble(
+            @Nonnull ObjectNode json,
+            @Nonnull String key
+    ) {
+        JsonNode value = readNumber(json, key);
+        JsonParser.NumberType numberType = value.numberType();
+        if (numberType != JsonParser.NumberType.INT
+                && numberType != JsonParser.NumberType.LONG
+                && numberType != JsonParser.NumberType.FLOAT
+                && numberType != JsonParser.NumberType.DOUBLE) {
+
+            throw new JsonTypeError(
+                    "Expected " + key + " to be representable as a double, " +
+                            "not " + value.numberType().name().toLowerCase()
+            );
+        }
+        return value.floatValue();
+    }
+
     public boolean readBool(
             @Nonnull ObjectNode json,
             @Nonnull String key
