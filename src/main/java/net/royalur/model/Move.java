@@ -146,6 +146,15 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Gets the source tile of this move, or else returns null if there
+     * is no source piece, in the case where a new piece is moved onto the board.
+     * @return The source tile of this move, or null.
+     */
+    public @Nullable Tile getSourceOrNull() {
+        return source;
+    }
+
+    /**
      * Gets the source tile of this move. If there is no source tile, in the
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source tile of this move.
@@ -167,6 +176,15 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Gets the source piece of this move, or null if there is no source
+     * piece, in the case where a new piece is moved onto the board.
+     * @return The source piece of this move, or null.
+     */
+    public @Nullable P getSourcePieceOrNull() {
+        return sourcePiece;
+    }
+
+    /**
      * Gets the source piece of this move. If there is no source piece, in the
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source piece of this move.
@@ -176,6 +194,15 @@ public class Move<P extends Piece> {
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
         return sourcePiece;
+    }
+
+    /**
+     * Gets the destination tile of this move, or else returns null if there
+     * is no destination piece, in the case where a piece is moved off the board.
+     * @return The destination tile of this move, or null.
+     */
+    public @Nullable Tile getDestOrNull() {
+        return dest;
     }
 
     /**
@@ -200,6 +227,18 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Gets the destination piece of this move, or null if there is no
+     * destination piece, in the case where a piece is moved off the board.
+     * @return The destination piece of this move, or null.
+     */
+    public @Nullable P getDestPieceOrNull() {
+        if (destPiece == null)
+            throw new IllegalStateException("This move has no destination, as it is scoring a piece");
+
+        return destPiece;
+    }
+
+    /**
      * Gets the destination piece of this move. If there is no destination piece,
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination piece of this move.
@@ -209,6 +248,15 @@ public class Move<P extends Piece> {
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
         return destPiece;
+    }
+
+    /**
+     * Gets the piece that will be captured by this move, or null
+     * if there is no piece that will be captured.
+     * @return The piece that will be captured by this move, or null.
+     */
+    public @Nullable P getCapturedPieceOrNull() {
+        return capturedPiece;
     }
 
     /**

@@ -337,20 +337,20 @@ public class Game<P extends Piece, S extends PlayerState, R extends Roll> {
     }
 
     /**
-     * Moves the piece on tile {@code tile}, and updates the state of the game.
-     * @param tile The tile where the piece to be moved resides.
+     * Moves the piece on the given source tile, and updates the state of the game.
+     * @param sourceTile The tile where the piece to be moved resides.
      */
-    public void makeMove(@Nonnull Tile tile) {
+    public void makeMove(@Nonnull Tile sourceTile) {
         WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
         PathPair paths = rules.getPaths();
         for (Move<P> move : findAvailableMoves()) {
-            if (!move.getSource(paths).equals(tile))
+            if (!move.getSource(paths).equals(sourceTile))
                 continue;
 
             makeMove(move);
             return;
         }
-        throw new IllegalStateException("There is no available move from " + tile);
+        throw new IllegalStateException("There is no available move from " + sourceTile);
     }
 
     /**
