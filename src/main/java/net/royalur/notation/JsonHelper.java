@@ -8,12 +8,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.math.BigDecimal;
 
 /**
  * Contains type checking helper methods for retrieving JSON values,
  * as Jackson doesn't support that for some reason.
  */
 public class JsonHelper {
+
+    public static final double MAX_FLOAT_READ_EPSILON = 0.01;
+    public static final BigDecimal MAX_DOUBLE_READ_EPSILON = new BigDecimal("0.01");
 
     public static class JsonReadError extends RuntimeException {
         public JsonReadError(@Nonnull String message) {
@@ -193,12 +197,11 @@ public class JsonHelper {
             @Nonnull String key
     ) {
         JsonNode value = readNumber(json, key);
-        if (value.numberType() != JsonParser.NumberType.INT) {
-            throw new JsonTypeError(
-                "Expected " + key + " to be an integer, " +
-                "not " + value.numberType().name().toLowerCase()
-            );
-        }
+        if (value.isFloatingPointNumber())
+            throw new JsonTypeError("Expected " + key + " to be an integer");
+        if (!value.canConvertToInt())
+            throw new JsonTypeError("Expected " + key + " to be representable as an int");
+
         return value.intValue();
     }
 
@@ -207,13 +210,11 @@ public class JsonHelper {
             @Nonnull String key
     ) {
         JsonNode value = readNumber(json, key);
-        JsonParser.NumberType numberType = value.numberType();
-        if (numberType != JsonParser.NumberType.INT && numberType != JsonParser.NumberType.LONG) {
-            throw new JsonTypeError(
-                    "Expected " + key + " to be an integer or a long, " +
-                            "not " + value.numberType().name().toLowerCase()
-            );
-        }
+        if (value.isFloatingPointNumber())
+            throw new JsonTypeError("Expected " + key + " to be an integer");
+        if (!value.canConvertToLong())
+            throw new JsonTypeError("Expected " + key + " to be representable as a long");
+
         return value.longValue();
     }
 
@@ -222,16 +223,19 @@ public class JsonHelper {
             @Nonnull String key
     ) {
         JsonNode value = readNumber(json, key);
-        JsonParser.NumberType numberType = value.numberType();
-        if (numberType != JsonParser.NumberType.INT
-                && numberType != JsonParser.NumberType.FLOAT) {
+        float valueFloat = value.floatValue();
+        if (value.isFloat())
+            return valueFloat;
 
+        double valueDouble = value.doubleValue();
+        double epsilon = valueDouble - valueFloat;
+        if (Math.abs(epsilon) > MAX_FLOAT_READ_EPSILON) {
             throw new JsonTypeError(
                     "Expected " + key + " to be representable as a float, " +
-                            "not " + value.numberType().name().toLowerCase()
+                    "but could not represent " + value.asText() + " accurately enough"
             );
         }
-        return value.floatValue();
+        return valueFloat;
     }
 
     public double readDouble(
@@ -239,18 +243,19 @@ public class JsonHelper {
             @Nonnull String key
     ) {
         JsonNode value = readNumber(json, key);
-        JsonParser.NumberType numberType = value.numberType();
-        if (numberType != JsonParser.NumberType.INT
-                && numberType != JsonParser.NumberType.LONG
-                && numberType != JsonParser.NumberType.FLOAT
-                && numberType != JsonParser.NumberType.DOUBLE) {
+        double valueDouble = value.doubleValue();
+        if (value.isDouble() || value.isFloat() || value.isInt())
+            return valueDouble;
 
+        BigDecimal valueBigDecimal = value.decimalValue();
+        BigDecimal epsilon = valueBigDecimal.subtract(new BigDecimal(valueDouble));
+        if (epsilon.abs().compareTo(MAX_DOUBLE_READ_EPSILON) > 0) {
             throw new JsonTypeError(
                     "Expected " + key + " to be representable as a double, " +
-                            "not " + value.numberType().name().toLowerCase()
+                    "but could not represent " + value.asText() + " accurately enough"
             );
         }
-        return value.floatValue();
+        return valueDouble;
     }
 
     public boolean readBool(
