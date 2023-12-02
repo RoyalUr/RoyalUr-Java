@@ -10,6 +10,7 @@ import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.StandardBoardShape;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Settings for running games of the Royal Game of Ur. This is built for
@@ -306,5 +307,20 @@ public class GameSettings<R extends Roll> {
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
         );
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !obj.getClass().equals(getClass()))
+            return false;
+
+        GameSettings<?> other = (GameSettings<?>) obj;
+        return boardShape.equals(other.boardShape)
+                && paths.equals(other.paths)
+                && diceFactory.equals(other.diceFactory)
+                && startingPieceCount == other.startingPieceCount
+                && safeRosettes == other.safeRosettes
+                && rosettesGrantExtraRolls == other.rosettesGrantExtraRolls
+                && capturesGrantExtraRolls == other.capturesGrantExtraRolls;
     }
 }

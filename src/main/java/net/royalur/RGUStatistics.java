@@ -83,24 +83,24 @@ public class RGUStatistics {
     ) {
 
         List<Supplier<Game<Piece, PlayerState, Roll>>> generators = List.of(
-                () -> Game.builder().finkel().build(),
+                () -> Game.builder().finkel().build()//,
 //                () -> Game.builder().finkel().safeRosettes(false).build(),
 //                () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
 //                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
 //
 //                // Blitz
-                () -> Game.builder()
-                        .masters()
-                        .startingPieceCount(5)
-                        .safeRosettes(false)
-                        .capturesGrantExtraRolls(true)
-                        .build(),
-
-                () -> Game.builder().masters().safeRosettes(true).build(),
-                () -> Game.builder().masters().safeRosettes(false).build(),
-                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
-                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
-                () -> Game.builder().aseb().build()
+//                () -> Game.builder()
+//                        .masters()
+//                        .startingPieceCount(5)
+//                        .safeRosettes(false)
+//                        .capturesGrantExtraRolls(true)
+//                        .build(),
+//
+//                () -> Game.builder().masters().safeRosettes(true).build(),
+//                () -> Game.builder().masters().safeRosettes(false).build(),
+//                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
+//                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
+//                () -> Game.builder().aseb().build()
 //                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
         );
 
@@ -225,7 +225,17 @@ public class RGUStatistics {
                 rules -> new LikelihoodAgent<>(
                         rules, new PiecesAdvancedUtilityFn(rules), 0.055f
                 ),
-                10_000,
+                2,//10_000,
+                new GameStatsTarget[] {GameStatsTarget.OVERALL}
+        );
+        new RGUStatistics().testAgentActions(
+                rules -> new LikelihoodAgent<>(
+                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
+                ),
+                rules -> new LikelihoodAgent<>(
+                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
+                ),
+                100,//10_000,
                 new GameStatsTarget[] {GameStatsTarget.OVERALL}
         );
     }

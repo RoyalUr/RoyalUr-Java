@@ -29,7 +29,7 @@ public enum PlayerType implements Name {
     /**
      * An English name for this player, capitalised.
      */
-    private final String name;
+    private final @Nonnull String name;
 
     /**
      * A constant character representing the player.
@@ -49,7 +49,7 @@ public enum PlayerType implements Name {
      * @param name An English name for this player.
      * @param character A fixed character to represent this player.
      */
-    PlayerType(int id, String name, char character) {
+    PlayerType(int id, @Nonnull String name, char character) {
         this.id = id;
         this.name = name;
         this.character = character;
