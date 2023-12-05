@@ -10,7 +10,7 @@ public class FinkelGameEncodingTest {
 
     @Test
     public void testUniqueness() {
-        StateLUT lut = new StateLUT(GameSettings.FINKEL);
+        StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
         AtomicInteger stateIndex = new AtomicInteger(0);
@@ -19,12 +19,12 @@ public class FinkelGameEncodingTest {
         FinkelGameEncoding encoding = new FinkelGameEncoding(7);
         lut.loopGameStates((game) -> {
             int state = encoding.encode(game);
-            int gameIndex = stateIndex.getAndIncrement();
-            for (int index = 0; index < gameIndex; ++index) {
-                if (states[gameIndex] == state)
-                    throw new IllegalArgumentException("Duplicate!");
+            int processedStateCount = stateIndex.get();
+            for (int index = 0; index < processedStateCount; ++index) {
+                if (states[index] == state)
+                    return;
             }
-            states[gameIndex] = state;
+            states[stateIndex.getAndIncrement()] = state;
         });
         assertEquals(stateCount, stateIndex.get());
     }

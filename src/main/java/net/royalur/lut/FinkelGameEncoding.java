@@ -11,12 +11,25 @@ import java.util.List;
 public class FinkelGameEncoding {
 
     private final int[] middleLaneCompression;
+    private final int middleLaneBits;
 
     public FinkelGameEncoding(int startingPieceCount) {
         if (startingPieceCount > 7)
             throw new IllegalArgumentException("startingPieceCount > 7 not supported");
 
         this.middleLaneCompression = generateMiddleLaneCompression(startingPieceCount);
+
+        int maxCompressed = 0;
+        for (int compressed : middleLaneCompression) {
+            maxCompressed = Math.max(maxCompressed, compressed);
+        }
+        int bits = 1;
+        while (maxCompressed > (1 << bits)) {
+            bits += 1;
+        }
+        this.middleLaneBits = bits;
+        if (middleLaneBits > 13)
+            throw new IllegalStateException("Exceeded capacity for encoding the middle lane");
     }
 
     private static int[] generateMiddleLaneCompression(int startingPieceCount) {
@@ -60,26 +73,28 @@ public class FinkelGameEncoding {
     }
 
     private int encodeMiddleLane(@Nonnull FastSimpleBoard board) {
-        int rawState = 0;
+        int state = 0;
         for (int index = 0; index < 8; ++index) {
             int piece = board.pieces[board.calcTileIndex(1, index)];
             int occupant = (piece == 0 ? 0 : (piece < 0 ? 1 : 2));
-            rawState |= occupant << (2 * index);
+            state |= occupant << (2 * index);
         }
-        return middleLaneCompression[rawState];
+        return middleLaneCompression[state];
     }
 
     private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
-        int rawState = 0;
-        for (int index = 0; index < 8; ++index) {
-            if (index == 4 || index == 5)
-                continue;
+        int state = 0;
+        for (int index = 0; index < 6; ++index) {
+            int boardY = index;
+            if (index >= 4) {
+                boardY += 2;
+            }
 
-            int piece = board.pieces[board.calcTileIndex(boardX, index)];
+            int piece = board.pieces[board.calcTileIndex(boardX, boardY)];
             int occupant = (piece == 0 ? 0 : 1);
-            rawState |= occupant << index;
+            state |= occupant << index;
         }
-        return middleLaneCompression[rawState];
+        return state;
     }
 
     private int encodeBoard(@Nonnull FastSimpleBoard board) {
@@ -99,7 +114,7 @@ public class FinkelGameEncoding {
         state |= isLightTurn;
         state |= lightPieces << 1;
         state |= darkPieces << 4;
-        state |= darkPieces << 7;
+        state |= board << 7;
         return state;
     }
 }
