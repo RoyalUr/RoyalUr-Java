@@ -79,7 +79,11 @@ public class FinkelGameEncoding {
             int occupant = (piece == 0 ? 0 : (piece < 0 ? 1 : 2));
             state |= occupant << (2 * index);
         }
-        return middleLaneCompression[state];
+        int compressed = middleLaneCompression[state];
+        if (compressed == -1)
+            throw new IllegalArgumentException("Illegal board state!");
+
+        return compressed;
     }
 
     private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
