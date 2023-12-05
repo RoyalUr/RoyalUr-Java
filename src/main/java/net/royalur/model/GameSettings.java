@@ -60,6 +60,19 @@ public class GameSettings<R extends Roll> {
     );
 
     /**
+     * The settings used for Blitz.
+     */
+    public static final @Nonnull GameSettings<Roll> BLITZ = new GameSettings<>(
+            new StandardBoardShape(),
+            new MastersPathPair(),
+            DiceType.FOUR_BINARY,
+            5,
+            false,
+            true,
+            true
+    );
+
+    /**
      * The shape of the game board.
      */
     private final @Nonnull BoardShape boardShape;

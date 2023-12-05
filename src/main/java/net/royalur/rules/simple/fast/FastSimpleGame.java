@@ -1,12 +1,8 @@
 package net.royalur.rules.simple.fast;
 
 import net.royalur.Game;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.PlayerType;
-import net.royalur.model.Tile;
+import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
-import net.royalur.rules.simple.SimpleRuleSet;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -31,22 +27,15 @@ public class FastSimpleGame {
     public int rollValue;
     public boolean isFinished;
 
-    public FastSimpleGame(
-            @Nonnull SimpleRuleSet<
-                    ? extends Piece,
-                    ? extends PlayerState,
-                    ? extends Roll
-            > rules,
-            int startingPieceCount
-    ) {
-        this.areRosettesSafe = rules.areRosettesSafe();
-        this.rosettesGrantExtraRoll = rules.doRosettesGrantExtraRolls();
-        this.capturesGrantExtraRoll = rules.doCapturesGrantExtraRolls();
-        this.startingPieceCount = startingPieceCount;
-        this.board = new FastSimpleBoard(rules.getBoardShape());
+    public FastSimpleGame(@Nonnull GameSettings<?> settings) {
+        this.areRosettesSafe = settings.areRosettesSafe();
+        this.rosettesGrantExtraRoll = settings.doRosettesGrantExtraRolls();
+        this.capturesGrantExtraRoll = settings.doCapturesGrantExtraRolls();
+        this.startingPieceCount = settings.getStartingPieceCount();
+        this.board = new FastSimpleBoard(settings.getBoardShape());
 
-        int[] lightPath = tilesToIndices(board, rules.getPaths().getLight());
-        int[] darkPath = tilesToIndices(board, rules.getPaths().getDark());
+        int[] lightPath = tilesToIndices(board, settings.getPaths().getLight());
+        int[] darkPath = tilesToIndices(board, settings.getPaths().getDark());
 
         this.light = new FastSimplePlayer(lightPath, true);
         this.dark = new FastSimplePlayer(darkPath, false);

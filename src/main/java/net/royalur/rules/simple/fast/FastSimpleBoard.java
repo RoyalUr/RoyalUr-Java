@@ -7,6 +7,7 @@ import net.royalur.model.Tile;
 import net.royalur.model.shape.BoardShape;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * The board of a simple game that is optimised for speed.
@@ -40,6 +41,10 @@ public class FastSimpleBoard {
                     tile.getXIndex(), tile.getYIndex()
             );
         }
+    }
+
+    public void clear() {
+        Arrays.fill(pieces, 0);
     }
 
     public void copyFrom(@Nonnull FastSimpleBoard other) {

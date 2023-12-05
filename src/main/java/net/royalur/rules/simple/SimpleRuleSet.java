@@ -73,7 +73,7 @@ public class SimpleRuleSet<
 
     public @Nonnull FastSimpleGame createCompatibleFastGame() {
         int startingPieceCount = playerStateProvider.getStartingPieceCount();
-        return new FastSimpleGame(this, startingPieceCount);
+        return new FastSimpleGame(this.getSettings());
     }
 
     @Override
