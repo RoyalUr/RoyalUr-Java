@@ -12,7 +12,12 @@ import java.util.NoSuchElementException;
  */
 public class BigMap implements Iterable<BigMap.Entry> {
 
-    public static final int DEFAULT_ENTRIES_PER_CHUNK = 128 * 1024;
+    public static final int DEFAULT_ENTRIES_PER_CHUNK = 16 * 1024;
+
+    public static ArrayBufferBuilder LONG = ArrayBuffer.LongArrayBuffer::new;
+    public static ArrayBufferBuilder INT = ArrayBuffer.IntArrayBuffer::new;
+    public static ArrayBufferBuilder SHORT = ArrayBuffer.ShortArrayBuffer::new;
+    public static ArrayBufferBuilder BYTE = ArrayBuffer.ByteArrayBuffer::new;
 
     private final int entriesPerChunk;
     private final ArrayBufferBuilder keyBufferBuilder;
@@ -94,6 +99,12 @@ public class BigMap implements Iterable<BigMap.Entry> {
         return null;
     }
 
+    public void sort() {
+        for (Chunk chunk : chunks) {
+            chunk.sort();
+        }
+    }
+
     @Override
     public @Nonnull Iterator<Entry> iterator() {
         return new BigMapIterator();
@@ -108,8 +119,17 @@ public class BigMap implements Iterable<BigMap.Entry> {
         private final ArrayBuffer keyBuffer;
         private final ArrayBuffer valueBuffer;
         private int entryCount = 0;
+
+        /**
+         * Unsigned.
+         */
         private Long keyLowerBound = null;
+
+        /**
+         * Unsigned.
+         */
         private Long keyUpperBound = null;
+
         private boolean knownSorted = true;
 
         public Chunk() {
@@ -139,43 +159,42 @@ public class BigMap implements Iterable<BigMap.Entry> {
             checkCapacityForPut();
             int index = entryCount;
             entryCount += 1;
-            set(index, key, value);
+            keyBuffer.set(index, key);
+            valueBuffer.set(index, value);
+            moveIntoPlace(index);
         }
 
         public void put(long key, long value) {
             checkCapacityForPut();
             int index = entryCount;
             entryCount += 1;
-            set(index, key, value);
+            keyBuffer.set(index, key);
+            valueBuffer.set(index, value);
+            moveIntoPlace(index);
         }
 
-        private void updateStatisticsAfterSet(long key) {
-            if (keyLowerBound == null || key < keyLowerBound) {
-                keyLowerBound = key;
+        private void moveIntoPlace(int index) {
+            long currentValue = keyBuffer.getLong(index);
+            for (int j = index; j > 0; j--) {
+                if (Long.compareUnsigned(currentValue, keyBuffer.getLong(j - 1)) >= 0)
+                    break;
+
+                swap(j, j - 1);
             }
-            if (keyUpperBound == null || key > keyUpperBound) {
-                keyUpperBound = key;
-            }
-            knownSorted = false;
-        }
-
-        public void set(int entryIndex, int key, int value) {
-            keyBuffer.set(entryIndex, value);
-            valueBuffer.set(entryIndex, value);
-            updateStatisticsAfterSet(key);
-        }
-
-        public void set(int entryIndex, long key, long value) {
-            keyBuffer.set(entryIndex, value);
-            valueBuffer.set(entryIndex, value);
-            updateStatisticsAfterSet(key);
+            keyLowerBound = keyBuffer.getLong(0);
+            keyUpperBound = keyBuffer.getLong(entryCount - 1);
+            knownSorted = true;
         }
 
         public int indexOfKey(long key) {
             if (entryCount == 0 || key < keyLowerBound || key > keyUpperBound)
                 return -1;
 
-            return keyBuffer.indexOf(key, 0, entryCount);
+            if (knownSorted) {
+                return keyBuffer.indexOfBinarySearch(key, 0, entryCount);
+            } else {
+                return keyBuffer.indexOf(key, 0, entryCount);
+            }
         }
 
         public long getValueLong(int index) {
@@ -198,6 +217,32 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
             entry.key = keyBuffer.getLong(index);
             entry.value = valueBuffer.getLong(index);
+        }
+
+        public void sort() {
+            if (knownSorted)
+                return;
+
+            for (int i = 1; i < entryCount; i++) {
+                long currentValue = keyBuffer.getLong(i);
+                for (int j = i; j > 0; j--) {
+                    if (Long.compareUnsigned(currentValue, keyBuffer.getLong(j - 1)) >= 0)
+                        break;
+
+                    swap(j, j - 1);
+                }
+            }
+            knownSorted = true;
+            keyLowerBound = keyBuffer.getLong(0);
+            keyUpperBound = keyBuffer.getLong(entryCount - 1);
+        }
+
+        private void swap(int index1, int index2) {
+            if (index1 == index2)
+                return;
+
+            keyBuffer.swap(index1, index2);
+            valueBuffer.swap(index1, index2);
         }
     }
 

@@ -7,7 +7,6 @@ import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 

@@ -5,6 +5,8 @@ package net.royalur.lut;
  */
 public abstract class ArrayBuffer {
 
+    private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
+
     private final int capacity;
 
     public ArrayBuffer(int capacity) {
@@ -38,6 +40,28 @@ public abstract class ArrayBuffer {
     public abstract int indexOf(short value, int startIndex, int endIndex);
 
     public abstract int indexOf(byte value, int startIndex, int endIndex);
+
+    /**
+     * Expects the buffer to be sorted in unsigned ascending order.
+     */
+    public abstract int indexOfBinarySearch(long value, int startIndex, int endIndex);
+
+    /**
+     * Expects the buffer to be sorted in unsigned ascending order.
+     */
+    public abstract int indexOfBinarySearch(int value, int startIndex, int endIndex);
+
+    /**
+     * Expects the buffer to be sorted in unsigned ascending order.
+     */
+    public abstract int indexOfBinarySearch(short value, int startIndex, int endIndex);
+
+    /**
+     * Expects the buffer to be sorted in unsigned ascending order.
+     */
+    public abstract int indexOfBinarySearch(byte value, int startIndex, int endIndex);
+
+    public abstract void swap(int index1, int index2);
 
     public static class LongArrayBuffer extends ArrayBuffer {
         private final long[] buffer;
@@ -110,6 +134,47 @@ public abstract class ArrayBuffer {
         @Override
         public int indexOf(byte value, int startIndex, int endIndex) {
             return indexOf(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(long value, int startIndex, int endIndex) {
+            int lower = startIndex;
+            int upper = endIndex;
+            while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
+                int middleIndex = lower + (upper - lower) / 2;
+                long current = buffer[middleIndex];
+                if (current == value)
+                    return middleIndex;
+
+                if (Long.compareUnsigned(current, value) > 0) {
+                    upper = middleIndex;
+                } else {
+                    lower = middleIndex + 1;
+                }
+            }
+            return indexOf(value, lower, upper);
+        }
+
+        @Override
+        public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Integer.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(short value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Short.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public void swap(int index1, int index2) {
+            long temp = buffer[index1];
+            buffer[index1] = buffer[index2];
+            buffer[index2] = temp;
         }
     }
 
@@ -192,6 +257,48 @@ public abstract class ArrayBuffer {
         @Override
         public int indexOf(byte value, int startIndex, int endIndex) {
             return indexOf(Byte.toUnsignedInt(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(long value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((int) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
+            int lower = startIndex;
+            int upper = endIndex;
+            while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
+                int middleIndex = lower + (upper - lower) / 2;
+                int current = buffer[middleIndex];
+                if (current == value)
+                    return middleIndex;
+
+                if (Integer.compareUnsigned(current, value) > 0) {
+                    upper = middleIndex;
+                } else {
+                    lower = middleIndex + 1;
+                }
+            }
+            return indexOf(value, lower, upper);
+        }
+
+        @Override
+        public int indexOfBinarySearch(short value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Short.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public void swap(int index1, int index2) {
+            int temp = buffer[index1];
+            buffer[index1] = buffer[index2];
+            buffer[index2] = temp;
         }
     }
 
@@ -278,6 +385,49 @@ public abstract class ArrayBuffer {
         public int indexOf(byte value, int startIndex, int endIndex) {
             return indexOf((short) Byte.toUnsignedInt(value), startIndex, endIndex);
         }
+
+        @Override
+        public int indexOfBinarySearch(long value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((short) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((short) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(short value, int startIndex, int endIndex) {
+            int lower = startIndex;
+            int upper = endIndex;
+            while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
+                int middleIndex = lower + (upper - lower) / 2;
+                short current = buffer[middleIndex];
+                if (current == value)
+                    return middleIndex;
+
+                if (Short.compareUnsigned(current, value) > 0) {
+                    upper = middleIndex;
+                } else {
+                    lower = middleIndex + 1;
+                }
+            }
+            return indexOf(value, lower, upper);
+        }
+
+        @Override
+        public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
+            return indexOfBinarySearch(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public void swap(int index1, int index2) {
+            short temp = buffer[index1];
+            buffer[index1] = buffer[index2];
+            buffer[index2] = temp;
+        }
     }
 
     public static class ByteArrayBuffer extends ArrayBuffer {
@@ -363,6 +513,50 @@ public abstract class ArrayBuffer {
                     return index;
             }
             return -1;
+        }
+
+        @Override
+        public int indexOfBinarySearch(long value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((byte) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((byte) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(short value, int startIndex, int endIndex) {
+            checkValue(value);
+            return indexOfBinarySearch((byte) value, startIndex, endIndex);
+        }
+
+        @Override
+        public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
+            int lower = startIndex;
+            int upper = endIndex;
+            while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
+                int middleIndex = lower + (upper - lower) / 2;
+                byte current = buffer[middleIndex];
+                if (current == value)
+                    return middleIndex;
+
+                if (Byte.compareUnsigned(current, value) > 0) {
+                    upper = middleIndex;
+                } else {
+                    lower = middleIndex + 1;
+                }
+            }
+            return indexOf(value, lower, upper);
+        }
+
+        @Override
+        public void swap(int index1, int index2) {
+            byte temp = buffer[index1];
+            buffer[index1] = buffer[index2];
+            buffer[index2] = temp;
         }
     }
 }
