@@ -86,12 +86,16 @@ public class FinkelGameEncoding {
 
     private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
         int state = 0;
+        int baseBitIndex = (boardX == 0 ? 0 : 3);
         for (int index = 0; index < 6; ++index) {
             int boardY = index;
+            int bitIndex = baseBitIndex + index * 4;
             if (index >= 4) {
                 boardY += 2;
+                baseBitIndex += 4;
             }
 
+            int boardIndex = board.calcTileIndex(boardX, boardY);
             int piece = board.pieces[board.calcTileIndex(boardX, boardY)];
             int occupant = (piece == 0 ? 0 : 1);
             state |= occupant << index;
@@ -103,7 +107,7 @@ public class FinkelGameEncoding {
         int leftLane = encodeSideLane(board, 0);
         int rightLane = encodeSideLane(board, 2);
         int middleLane = encodeMiddleLane(board);
-        return leftLane | (rightLane << 6) | (middleLane << 12);
+        return rightLane | (middleLane << 6) | (leftLane << 19);
     }
 
     public int encode(@Nonnull FastSimpleGame game) {

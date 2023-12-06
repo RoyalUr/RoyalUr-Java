@@ -73,11 +73,21 @@ public class StateLUT {
 
         this.nextBoardIndices = new int[area];
         for (int index = 0; index < area; ++index) {
-            int nextBoardIndex = index;
+            int nextX = index % width;
+            int nextY = index / width;
             do {
-                nextBoardIndex += 1;
-            } while (nextBoardIndex < area && (tileFlags[nextBoardIndex] & OCCUPANTS_MASK) == 1);
-            nextBoardIndices[index] = nextBoardIndex;
+                nextY += 1;
+                if (nextY >= height) {
+                    nextX += 1;
+                    nextY = 0;
+                }
+            } while (nextX < width && (tileFlags[nextX + width * nextY] & OCCUPANTS_MASK) == 1);
+
+            int nextIndex = nextX + width * nextY;
+            if (nextX >= width) {
+                nextIndex = area;
+            }
+            nextBoardIndices[index] = nextIndex;
         }
     }
 
