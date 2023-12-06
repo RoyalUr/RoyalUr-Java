@@ -11,7 +11,6 @@ import java.util.List;
 public class FinkelGameEncoding {
 
     private final int[] middleLaneCompression;
-    private final int middleLaneBits;
 
     public FinkelGameEncoding(int startingPieceCount) {
         if (startingPieceCount > 7)
@@ -27,9 +26,8 @@ public class FinkelGameEncoding {
         while (maxCompressed > (1 << bits)) {
             bits += 1;
         }
-        this.middleLaneBits = bits;
-        if (middleLaneBits > 13)
-            throw new IllegalStateException("Exceeded capacity for encoding the middle lane");
+        if (bits != 13)
+            throw new IllegalStateException("Expected the middle lane to take 13 bits");
     }
 
     private static int[] generateMiddleLaneCompression(int startingPieceCount) {
@@ -115,10 +113,10 @@ public class FinkelGameEncoding {
         int board = encodeBoard(game.board);
 
         int state = 0;
-        state |= isLightTurn;
-        state |= lightPieces << 1;
-        state |= darkPieces << 4;
-        state |= board << 7;
+        state |= board;
+        state |= darkPieces << 25;
+        state |= lightPieces << 28;
+        state |= isLightTurn << 31;
         return state;
     }
 }
