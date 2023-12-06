@@ -13,19 +13,21 @@ public class FinkelGameEncodingTest {
         StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
-        AtomicInteger stateIndex = new AtomicInteger(0);
-        int[] states = new int[stateCount];
+        BigMap states = new BigMap(
+                ArrayBufferBuilder.INT,
+                ArrayBufferBuilder.BYTE
+        );
 
         FinkelGameEncoding encoding = new FinkelGameEncoding(7);
         lut.loopGameStates((game) -> {
             int state = encoding.encode(game);
-            int processedStateCount = stateIndex.get();
-            for (int index = 0; index < processedStateCount; ++index) {
-                if (states[index] == state)
-                    return;
-            }
-            states[stateIndex.getAndIncrement()] = state;
+
+            Integer value = states.getInt(state);
+            if (value != null)
+                return;
+
+            states.put(state, 0);
         });
-        assertEquals(stateCount, stateIndex.get());
+        assertEquals(stateCount, states.getEntryCount());
     }
 }
