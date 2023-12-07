@@ -24,7 +24,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
     private final int entriesPerChunk;
     private final ArrayBufferBuilder keyBufferBuilder;
     private final ArrayBufferBuilder valueBufferBuilder;
-    private final List<ChunkSet> chunks;
+    private final List<ChunkSet> chunkSets;
 
     public BigMap(
             ArrayBufferBuilder keyBufferBuilder,
@@ -34,7 +34,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
         this.entriesPerChunk = entriesPerChunk;
         this.keyBufferBuilder = keyBufferBuilder;
         this.valueBufferBuilder = valueBufferBuilder;
-        this.chunks = new ArrayList<>();
+        this.chunkSets = new ArrayList<>();
     }
 
     public BigMap(
@@ -46,7 +46,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
     public int getEntryCount() {
         int count = 0;
-        for (ChunkSet set : chunks) {
+        for (ChunkSet set : chunkSets) {
             count += set.getEntryCount();
         }
         return count;
@@ -54,7 +54,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
     public int getChunkCount() {
         int count = 0;
-        for (ChunkSet set : chunks) {
+        for (ChunkSet set : chunkSets) {
             count += set.getChunkCount();
         }
         return count;
@@ -120,43 +120,43 @@ public class BigMap implements Iterable<BigMap.Entry> {
     }
 
     private ChunkSet getNextChunkSetForPut() {
-        if (chunks.isEmpty()) {
-            chunks.add(allocateChunkSet(1));
+        if (chunkSets.isEmpty()) {
+            chunkSets.add(allocateChunkSet(1));
         }
 
-        ChunkSet last = chunks.get(chunks.size() - 1);
+        ChunkSet last = chunkSets.get(chunkSets.size() - 1);
         if (!last.isFull())
             return last;
 
         // Merge sort full chunks!
-        while (chunks.size() >= 2) {
-            int size = chunks.size();
-            ChunkSet set1 = chunks.get(size - 1);
-            ChunkSet set2 = chunks.get(size - 2);
+        while (chunkSets.size() >= 2) {
+            int size = chunkSets.size();
+            ChunkSet set1 = chunkSets.get(size - 1);
+            ChunkSet set2 = chunkSets.get(size - 2);
             if (set1.getChunkCount() != set2.getChunkCount())
                 break;
 
             ChunkSet sorted = mergeSortedChunkSets(set1, set2);
-            chunks.remove(size - 1);
-            chunks.remove(size - 2);
-            chunks.add(sorted);
+            chunkSets.remove(size - 1);
+            chunkSets.remove(size - 2);
+            chunkSets.add(sorted);
         }
 
         // Add a new chunk.
         ChunkSet next = allocateChunkSet(1);
-        chunks.add(next);
+        chunkSets.add(next);
         return next;
     }
 
     public void sort() {
-        while (chunks.size() >= 2) {
-            int size = chunks.size();
-            ChunkSet set1 = chunks.get(size - 1);
-            ChunkSet set2 = chunks.get(size - 2);
+        while (chunkSets.size() >= 2) {
+            int size = chunkSets.size();
+            ChunkSet set1 = chunkSets.get(size - 1);
+            ChunkSet set2 = chunkSets.get(size - 2);
             ChunkSet sorted = mergeSortedChunkSets(set1, set2);
-            chunks.remove(size - 1);
-            chunks.remove(size - 2);
-            chunks.add(sorted);
+            chunkSets.remove(size - 1);
+            chunkSets.remove(size - 2);
+            chunkSets.add(sorted);
         }
     }
 
@@ -169,7 +169,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
     }
 
     public @Nullable Integer getInt(int key) {
-        for (ChunkSet chunkSet : chunks) {
+        for (ChunkSet chunkSet : chunkSets) {
             Integer value = chunkSet.getInt(key);
             if (value != null)
                 return value;
@@ -178,7 +178,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
     }
 
     public @Nullable Long getLong(long key) {
-        for (ChunkSet chunkSet : chunks) {
+        for (ChunkSet chunkSet : chunkSets) {
             Long value = chunkSet.getLong(key);
             if (value != null)
                 return value;
@@ -187,8 +187,8 @@ public class BigMap implements Iterable<BigMap.Entry> {
     }
 
     private void loopChunks(Consumer<Chunk> chunkConsumer) {
-        for (ChunkSet chunkSet : chunks) {
-            for (Chunk chunk : chunkSet.chunkSet) {
+        for (ChunkSet chunkSet : chunkSets) {
+            for (Chunk chunk : chunkSet.chunks) {
                 chunkConsumer.accept(chunk);
             }
         }
@@ -206,7 +206,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
                 }
             });
         });
-        return  (double) overlappingChunks.get() / chunks.size();
+        return  (double) overlappingChunks.get() / chunkSets.size();
     }
 
     @Override
@@ -221,39 +221,39 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
         private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 8;
 
-        private final Chunk[] chunkSet;
+        private final Chunk[] chunks;
         private int emptyChunkIndex = 0;
 
-        public ChunkSet(Chunk[] chunkSet) {
-            if (chunkSet.length == 0)
+        public ChunkSet(Chunk[] chunks) {
+            if (chunks.length == 0)
                 throw new IllegalArgumentException("No chunks");
 
-            this.chunkSet = chunkSet;
+            this.chunks = chunks;
         }
 
         public int getChunkCount() {
-            return chunkSet.length;
+            return chunks.length;
         }
 
         public Chunk getChunk(int index) {
-            return chunkSet[index];
+            return chunks[index];
         }
 
         private @Nullable Chunk getNextChunkWithSpace() {
-            if (emptyChunkIndex >= chunkSet.length)
+            if (emptyChunkIndex >= chunks.length)
                 return null;
 
-            Chunk lastChunk = chunkSet[emptyChunkIndex];
+            Chunk lastChunk = chunks[emptyChunkIndex];
             if (!lastChunk.isFull())
                 return lastChunk;
 
             Chunk chunk;
             do {
                 emptyChunkIndex += 1;
-                if (emptyChunkIndex >= chunkSet.length)
+                if (emptyChunkIndex >= chunks.length)
                     return null;
 
-                chunk = chunkSet[emptyChunkIndex];
+                chunk = chunks[emptyChunkIndex];
             } while (chunk.isFull());
 
             return chunk;
@@ -288,26 +288,26 @@ public class BigMap implements Iterable<BigMap.Entry> {
         public long getKeyLong(int index) {
             int chunkIndex = index / entriesPerChunk;
             int entryIndex = index - chunkIndex * entriesPerChunk;
-            return chunkSet[chunkIndex].getKeyLong(entryIndex);
+            return chunks[chunkIndex].getKeyLong(entryIndex);
         }
 
         public int getValueInt(int index) {
             int chunkIndex = index / entriesPerChunk;
             int entryIndex = index - chunkIndex * entriesPerChunk;
-            return chunkSet[chunkIndex].getValueInt(entryIndex);
+            return chunks[chunkIndex].getValueInt(entryIndex);
         }
 
         public long getValueLong(int index) {
             int chunkIndex = index / entriesPerChunk;
             int entryIndex = index - chunkIndex * entriesPerChunk;
-            return chunkSet[chunkIndex].getValueLong(entryIndex);
+            return chunks[chunkIndex].getValueLong(entryIndex);
         }
 
         private @Nullable Integer getIntLinearSearch(int key, int startIndex, int endIndex) {
             long keyUnsigned = Integer.toUnsignedLong(key);
 
             for (int index = startIndex; index < endIndex; ++index) {
-                Chunk chunk = chunkSet[index];
+                Chunk chunk = chunks[index];
                 if (chunk.mayContain(keyUnsigned)) {
                     int entryIndex = chunk.indexOfKey(key);
                     return entryIndex >= 0 ? chunk.getValueInt(entryIndex) : null;
@@ -318,7 +318,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
         private @Nullable Long getLongLinearSearch(long key, int startIndex, int endIndex) {
             for (int index = startIndex; index < endIndex; ++index) {
-                Chunk chunk = chunkSet[index];
+                Chunk chunk = chunks[index];
                 if (chunk.mayContain(key)) {
                     int entryIndex = chunk.indexOfKey(key);
                     return entryIndex >= 0 ? chunk.getValueLong(entryIndex) : null;
@@ -331,10 +331,10 @@ public class BigMap implements Iterable<BigMap.Entry> {
             long keyUnsigned = Integer.toUnsignedLong(key);
 
             int lower = 0;
-            int upper = chunkSet.length;
+            int upper = chunks.length;
             while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
                 int middleIndex = lower + (upper - lower) / 2;
-                Chunk current = chunkSet[middleIndex];
+                Chunk current = chunks[middleIndex];
                 if (current.mayContain(keyUnsigned))
                     return current.getInt(key);
 
@@ -349,10 +349,10 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
         public @Nullable Long getLong(long key) {
             int lower = 0;
-            int upper = chunkSet.length;
+            int upper = chunks.length;
             while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
                 int middleIndex = lower + (upper - lower) / 2;
-                Chunk current = chunkSet[middleIndex];
+                Chunk current = chunks[middleIndex];
                 if (current.mayContain(key))
                     return current.getLong(key);
 
@@ -519,15 +519,15 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
         @Override
         public boolean hasNext() {
-            return setIndex < chunks.size();
+            return setIndex < chunkSets.size();
         }
 
         @Override
         public Entry next() {
-            if (setIndex >= chunks.size())
+            if (setIndex >= chunkSets.size())
                 throw new NoSuchElementException();
 
-            ChunkSet chunkSet = chunks.get(setIndex);
+            ChunkSet chunkSet = chunkSets.get(setIndex);
             Chunk chunk = chunkSet.getChunk(chunkIndex);
             chunk.get(entryIndex, entry);
 

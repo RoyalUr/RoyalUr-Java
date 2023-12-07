@@ -69,14 +69,17 @@ public class FinkelGameEncodingTest {
 
     @Test
     public void testPopulate() {
-        StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(4));
+        GameSettings<?> settings = GameSettings.FINKEL.withStartingPieceCount(7);
+        StateLUT lut = new StateLUT(settings);
         int stateCount = lut.countStates();
 
         BigMap states = new BigMap(
                 BigMap.INT,
                 BigMap.INT
         );
-        FinkelGameEncoding encoding = new FinkelGameEncoding(7);
+        FinkelGameEncoding encoding = new FinkelGameEncoding(
+                settings.getStartingPieceCount()
+        );
 
         long start1 = System.currentTimeMillis();
         lut.loopGameStates((game) -> {
@@ -86,7 +89,8 @@ public class FinkelGameEncodingTest {
         long duration1MS = System.currentTimeMillis() - start1;
         System.out.println(
                 "Population took " + duration1MS + " ms "
-                        + "for " + states.getEntryCount() + " entries"
+                        + "for " + states.getEntryCount() + " entries "
+                        + "with " + states.getChunkCount() + " chunks"
         );
         assertEquals(stateCount, states.getEntryCount());
 
