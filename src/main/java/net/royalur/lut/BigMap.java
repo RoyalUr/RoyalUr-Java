@@ -6,13 +6,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * A big binary map with keys and values packed together.
  */
 public class BigMap implements Iterable<BigMap.Entry> {
 
-    public static final int DEFAULT_ENTRIES_PER_CHUNK = 16 * 1024;
+    public static final int DEFAULT_ENTRIES_PER_CHUNK = 32  * 1024;
 
     public static ArrayBufferBuilder LONG = ArrayBuffer.LongArrayBuffer::new;
     public static ArrayBufferBuilder INT = ArrayBuffer.IntArrayBuffer::new;
@@ -22,7 +24,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
     private final int entriesPerChunk;
     private final ArrayBufferBuilder keyBufferBuilder;
     private final ArrayBufferBuilder valueBufferBuilder;
-    private final List<Chunk> chunks;
+    private final List<ChunkSet> chunks;
 
     public BigMap(
             ArrayBufferBuilder keyBufferBuilder,
@@ -43,71 +45,283 @@ public class BigMap implements Iterable<BigMap.Entry> {
     }
 
     public int getEntryCount() {
-        if (chunks.isEmpty())
-            return 0;
-
-        int chunkCount = chunks.size();
-        Chunk lastChunk = chunks.get(chunkCount - 1);
-        return entriesPerChunk * (chunkCount - 1) + lastChunk.getEntryCount();
+        int count = 0;
+        for (ChunkSet set : chunks) {
+            count += set.getEntryCount();
+        }
+        return count;
     }
 
-    private Chunk getNextChunkForPut() {
+    public int getChunkCount() {
+        int count = 0;
+        for (ChunkSet set : chunks) {
+            count += set.getChunkCount();
+        }
+        return count;
+    }
+
+    private ChunkSet allocateChunkSet(int chunkCount) {
+        Chunk[] chunkSet = new Chunk[chunkCount];
+        for (int index = 0; index < chunkCount; ++index) {
+            chunkSet[index] = new Chunk();
+        }
+        return new ChunkSet(chunkSet);
+    }
+
+    private ChunkSet mergeSortedChunkSets(ChunkSet input1, ChunkSet input2) {
+        int chunkCount = input1.getChunkCount() + input2.getChunkCount();
+        ChunkSet output = allocateChunkSet(chunkCount);
+
+        int chunk1Size = input1.getEntryCount();
+        int chunk2Size = input2.getEntryCount();
+
+        int index1 = 0;
+        int index2 = 0;
+        long key1 = input1.getKeyLong(index1);
+        long key2 = input2.getKeyLong(index2);
+        int outputSize = chunk1Size + chunk2Size;
+
+        for (int outputIndex = 0; outputIndex < outputSize; ++outputIndex) {
+            if (Long.compareUnsigned(key1, key2) <= 0) {
+                long value = input1.getValueLong(index1);
+                output.put(key1, value);
+
+                index1 += 1;
+                if (index1 >= chunk1Size)
+                    break;
+
+                key1 = input1.getKeyLong(index1);
+
+            } else {
+                long value = input2.getValueLong(index2);
+                output.put(key2, value);
+
+                index2 += 1;
+                if (index2 >= chunk2Size)
+                    break;
+
+                key2 = input2.getKeyLong(index2);
+            }
+        }
+
+        while (index1 < chunk1Size) {
+            long key = input1.getKeyLong(index1);
+            long value = input1.getValueLong(index1);
+            index1 += 1;
+            output.put(key, value);
+        }
+        while (index2 < chunk2Size) {
+            long key = input2.getKeyLong(index2);
+            long value = input2.getValueLong(index2);
+            index2 += 1;
+            output.put(key, value);
+        }
+        return output;
+    }
+
+    private ChunkSet getNextChunkSetForPut() {
         if (chunks.isEmpty()) {
-            chunks.add(new Chunk());
+            chunks.add(allocateChunkSet(1));
         }
 
-        Chunk lastChunk = chunks.get(chunks.size() - 1);
-        if (!lastChunk.isFull())
-            return lastChunk;
+        ChunkSet last = chunks.get(chunks.size() - 1);
+        if (!last.isFull())
+            return last;
 
-        Chunk chunk = new Chunk();
-        chunks.add(chunk);
-        return chunk;
-    }
+        // Merge sort full chunks!
+        while (chunks.size() >= 2) {
+            int size = chunks.size();
+            ChunkSet set1 = chunks.get(size - 1);
+            ChunkSet set2 = chunks.get(size - 2);
+            if (set1.getChunkCount() != set2.getChunkCount())
+                break;
 
-    public void put(int key, int value) {
-        getNextChunkForPut().put(key, value);
-    }
-
-    public void put(long key, long value) {
-        getNextChunkForPut().put(key, value);
-    }
-
-    public @Nullable Integer getInt(int key) {
-        return getInt(Integer.toUnsignedLong(key));
-    }
-
-    public @Nullable Integer getInt(long key) {
-        for (Chunk chunk : chunks) {
-            int entryIndex = chunk.indexOfKey(key);
-            if (entryIndex >= 0)
-                return chunk.getValueInt(entryIndex);
+            ChunkSet sorted = mergeSortedChunkSets(set1, set2);
+            chunks.remove(size - 1);
+            chunks.remove(size - 2);
+            chunks.add(sorted);
         }
-        return null;
-    }
 
-    public @Nullable Long getLong(int key) {
-        return getLong(Integer.toUnsignedLong(key));
-    }
-
-    public @Nullable Long getLong(long key) {
-        for (Chunk chunk : chunks) {
-            int entryIndex = chunk.indexOfKey(key);
-            if (entryIndex >= 0)
-                return chunk.getValueLong(entryIndex);
-        }
-        return null;
+        // Add a new chunk.
+        ChunkSet next = allocateChunkSet(1);
+        chunks.add(next);
+        return next;
     }
 
     public void sort() {
-        for (Chunk chunk : chunks) {
-            chunk.sort();
+        while (chunks.size() >= 2) {
+            int size = chunks.size();
+            ChunkSet set1 = chunks.get(size - 1);
+            ChunkSet set2 = chunks.get(size - 2);
+            ChunkSet sorted = mergeSortedChunkSets(set1, set2);
+            chunks.remove(size - 1);
+            chunks.remove(size - 2);
+            chunks.add(sorted);
         }
+    }
+
+    public void put(int key, int value) {
+        getNextChunkSetForPut().put(key, value);
+    }
+
+    public void put(long key, long value) {
+        getNextChunkSetForPut().put(key, value);
+    }
+
+    public @Nullable Integer getInt(int key) {
+        for (ChunkSet chunkSet : chunks) {
+            Integer value = chunkSet.getInt(key);
+            if (value != null)
+                return value;
+        }
+        return null;
+    }
+
+    public @Nullable Long getLong(long key) {
+        for (ChunkSet chunkSet : chunks) {
+            Long value = chunkSet.getLong(key);
+            if (value != null)
+                return value;
+        }
+        return null;
+    }
+
+    private void loopChunks(Consumer<Chunk> chunkConsumer) {
+        for (ChunkSet chunkSet : chunks) {
+            for (Chunk chunk : chunkSet.chunkSet) {
+                chunkConsumer.accept(chunk);
+            }
+        }
+    }
+
+    public double getOverlapsPerChunk() {
+        AtomicInteger overlappingChunks = new AtomicInteger(0);
+        loopChunks((chunk1) -> {
+            loopChunks((chunk2) -> {
+                if (chunk1 == chunk2)
+                    return;
+
+                if (chunk1.overlaps(chunk2)) {
+                    overlappingChunks.incrementAndGet();
+                }
+            });
+        });
+        return  (double) overlappingChunks.get() / chunks.size();
     }
 
     @Override
     public @Nonnull Iterator<Entry> iterator() {
         return new BigMapIterator();
+    }
+
+    /**
+     * Manages a set of sorted chunks.
+     */
+    private class ChunkSet {
+
+        private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 8;
+
+        private final Chunk[] chunkSet;
+        private int emptyChunkIndex = 0;
+
+        public ChunkSet(Chunk[] chunkSet) {
+            if (chunkSet.length == 0)
+                throw new IllegalArgumentException("No chunks");
+
+            this.chunkSet = chunkSet;
+        }
+
+        public int getChunkCount() {
+            return chunkSet.length;
+        }
+
+        public Chunk getChunk(int index) {
+            return chunkSet[index];
+        }
+
+        private @Nullable Chunk getNextChunkWithSpace() {
+            if (emptyChunkIndex >= chunkSet.length)
+                return null;
+
+            // Quicker check.
+            Chunk lastChunk = chunkSet[emptyChunkIndex];
+            if (!lastChunk.isFull())
+                return lastChunk;
+
+            // Longer check.
+            Chunk chunk;
+            do {
+                emptyChunkIndex += 1;
+                if (emptyChunkIndex >= chunkSet.length)
+                    return null;
+
+                chunk = chunkSet[emptyChunkIndex];
+            } while (chunk.isFull());
+
+            return chunk;
+        }
+
+        private Chunk getNextChunkForPut() {
+            Chunk chunk = getNextChunkWithSpace();
+            if (chunk == null)
+                throw new IllegalStateException("ChunkSet is full!");
+
+            return chunk;
+        }
+
+        public boolean isFull() {
+            return getNextChunkWithSpace() == null;
+        }
+
+        public int getEntryCount() {
+            Chunk lastChunk = getNextChunkWithSpace();
+            int lastEntryCount = (lastChunk == null ? 0 : lastChunk.getEntryCount());
+            return emptyChunkIndex * entriesPerChunk + lastEntryCount;
+        }
+
+        public void put(int key, int value) {
+            getNextChunkForPut().put(key, value);
+        }
+
+        public void put(long key, long value) {
+            getNextChunkForPut().put(key, value);
+        }
+
+        public long getKeyLong(int index) {
+            int chunkIndex = index / entriesPerChunk;
+            int entryIndex = index - chunkIndex * entriesPerChunk;
+            return chunkSet[chunkIndex].getKeyLong(entryIndex);
+        }
+
+        public int getValueInt(int index) {
+            int chunkIndex = index / entriesPerChunk;
+            int entryIndex = index - chunkIndex * entriesPerChunk;
+            return chunkSet[chunkIndex].getValueInt(entryIndex);
+        }
+
+        public long getValueLong(int index) {
+            int chunkIndex = index / entriesPerChunk;
+            int entryIndex = index - chunkIndex * entriesPerChunk;
+            return chunkSet[chunkIndex].getValueLong(entryIndex);
+        }
+
+        public @Nullable Integer getInt(int key) {
+            for (Chunk chunk : chunkSet) {
+                int entryIndex = chunk.indexOfKey(key);
+                if (entryIndex >= 0)
+                    return chunk.getValueInt(entryIndex);
+            }
+            return null;
+        }
+
+        public @Nullable Long getLong(long key) {
+            for (Chunk chunk : chunkSet) {
+                int entryIndex = chunk.indexOfKey(key);
+                if (entryIndex >= 0)
+                    return chunk.getValueLong(entryIndex);
+            }
+            return null;
+        }
     }
 
     /**
@@ -119,23 +333,17 @@ public class BigMap implements Iterable<BigMap.Entry> {
         private final ArrayBuffer keyBuffer;
         private final ArrayBuffer valueBuffer;
         private int entryCount = 0;
-
-        /**
-         * Unsigned.
-         */
-        private Long keyLowerBound = null;
-
-        /**
-         * Unsigned.
-         */
-        private Long keyUpperBound = null;
-
-        private boolean knownSorted = true;
+        private long minValue = 0;
+        private long maxValue = 0;
 
         public Chunk() {
             this.entryCapacity = entriesPerChunk;
             this.keyBuffer = keyBufferBuilder.create(entryCapacity);
             this.valueBuffer = valueBufferBuilder.create(entryCapacity);
+        }
+
+        public void clear() {
+            entryCount = 0;
         }
 
         public int getEntryCapacity() {
@@ -155,13 +363,28 @@ public class BigMap implements Iterable<BigMap.Entry> {
                 throw new IllegalStateException("Chunk is full!");
         }
 
+        private void updateStatistics() {
+            minValue = keyBuffer.getLong(0);
+            maxValue = keyBuffer.getLong(entryCount - 1);
+        }
+
+        public long getMinValue() {
+            return minValue;
+        }
+
+        public long getMaxValue() {
+            return maxValue;
+        }
+
         public void put(int key, int value) {
             checkCapacityForPut();
             int index = entryCount;
             entryCount += 1;
             keyBuffer.set(index, key);
+            int targetIndex = keyBuffer.moveIntoSortedPlace(index);
             valueBuffer.set(index, value);
-            moveIntoPlace(index);
+            valueBuffer.moveIntoPlace(index, targetIndex);
+            updateStatistics();
         }
 
         public void put(long key, long value) {
@@ -169,32 +392,30 @@ public class BigMap implements Iterable<BigMap.Entry> {
             int index = entryCount;
             entryCount += 1;
             keyBuffer.set(index, key);
+            int targetIndex = keyBuffer.moveIntoSortedPlace(index);
             valueBuffer.set(index, value);
-            moveIntoPlace(index);
+            valueBuffer.moveIntoPlace(index, targetIndex);
+            updateStatistics();
         }
 
-        private void moveIntoPlace(int index) {
-            long currentValue = keyBuffer.getLong(index);
-            for (int j = index; j > 0; j--) {
-                if (Long.compareUnsigned(currentValue, keyBuffer.getLong(j - 1)) >= 0)
-                    break;
+        public boolean overlaps(Chunk other) {
+            return Long.compareUnsigned(getMinValue(), other.getMaxValue()) <= 0
+                    && Long.compareUnsigned(getMaxValue(), other.getMinValue()) >= 0;
+        }
 
-                swap(j, j - 1);
-            }
-            keyLowerBound = keyBuffer.getLong(0);
-            keyUpperBound = keyBuffer.getLong(entryCount - 1);
-            knownSorted = true;
+        public int indexOfKey(int key) {
+            return keyBuffer.indexOfBinarySearch(key, 0, entryCount);
         }
 
         public int indexOfKey(long key) {
-            if (entryCount == 0 || key < keyLowerBound || key > keyUpperBound)
-                return -1;
+            return keyBuffer.indexOfBinarySearch(key, 0, entryCount);
+        }
 
-            if (knownSorted) {
-                return keyBuffer.indexOfBinarySearch(key, 0, entryCount);
-            } else {
-                return keyBuffer.indexOf(key, 0, entryCount);
-            }
+        public long getKeyLong(int index) {
+            if (index < 0 || index >= entryCount)
+                throw new IndexOutOfBoundsException();
+
+            return keyBuffer.getLong(index);
         }
 
         public long getValueLong(int index) {
@@ -219,24 +440,6 @@ public class BigMap implements Iterable<BigMap.Entry> {
             entry.value = valueBuffer.getLong(index);
         }
 
-        public void sort() {
-            if (knownSorted)
-                return;
-
-            for (int i = 1; i < entryCount; i++) {
-                long currentValue = keyBuffer.getLong(i);
-                for (int j = i; j > 0; j--) {
-                    if (Long.compareUnsigned(currentValue, keyBuffer.getLong(j - 1)) >= 0)
-                        break;
-
-                    swap(j, j - 1);
-                }
-            }
-            knownSorted = true;
-            keyLowerBound = keyBuffer.getLong(0);
-            keyUpperBound = keyBuffer.getLong(entryCount - 1);
-        }
-
         private void swap(int index1, int index2) {
             if (index1 == index2)
                 return;
@@ -253,27 +456,33 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
     public class BigMapIterator implements Iterator<Entry> {
 
+        private int setIndex = 0;
         private int chunkIndex = 0;
         private int entryIndex = 0;
         private final @Nonnull Entry entry = new Entry();
 
         @Override
         public boolean hasNext() {
-            return chunkIndex < chunks.size();
+            return setIndex < chunks.size();
         }
 
         @Override
         public Entry next() {
-            if (chunkIndex >= chunks.size())
+            if (setIndex >= chunks.size())
                 throw new NoSuchElementException();
 
-            Chunk chunk = chunks.get(chunkIndex);
-            Entry entry = this.entry;
+            ChunkSet chunkSet = chunks.get(setIndex);
+            Chunk chunk = chunkSet.getChunk(chunkIndex);
             chunk.get(entryIndex, entry);
 
             if (entryIndex + 1 >= chunk.entryCount) {
                 entryIndex = 0;
-                chunkIndex += 1;
+                if (chunkIndex + 1 >= chunkSet.getChunkCount()) {
+                    chunkIndex = 0;
+                    setIndex += 1;
+                } else {
+                    chunkIndex += 1;
+                }
             } else {
                 entryIndex += 1;
             }

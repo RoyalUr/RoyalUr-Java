@@ -61,6 +61,16 @@ public abstract class ArrayBuffer {
      */
     public abstract int indexOfBinarySearch(byte value, int startIndex, int endIndex);
 
+    /**
+     * Returns the final index that the value was moved to.
+     */
+    public abstract int moveIntoSortedPlace(int index);
+
+    /**
+     * Moves the value to targetIndex, and shifts all values in between.
+     */
+    public abstract void moveIntoPlace(int index, int targetIndex);
+
     public abstract void swap(int index1, int index2);
 
     public static class LongArrayBuffer extends ArrayBuffer {
@@ -168,6 +178,30 @@ public abstract class ArrayBuffer {
         @Override
         public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
             return indexOfBinarySearch(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int moveIntoSortedPlace(int index) {
+            long value = buffer[index];
+            for (int targetIndex = index; targetIndex > 0; targetIndex--) {
+                long compareValue = buffer[targetIndex - 1];
+                if (Long.compareUnsigned(value, compareValue) >= 0) {
+                    buffer[targetIndex] = value;
+                    return targetIndex;
+                }
+                buffer[targetIndex] = compareValue;
+            }
+            buffer[0] = value;
+            return 0;
+        }
+
+        @Override
+        public void moveIntoPlace(int index, int targetIndex) {
+            long value = buffer[index];
+            for (int moveIndex = index; moveIndex > targetIndex; moveIndex--) {
+                buffer[moveIndex] = buffer[moveIndex - 1];
+            }
+            buffer[targetIndex] = value;
         }
 
         @Override
@@ -292,6 +326,30 @@ public abstract class ArrayBuffer {
         @Override
         public int indexOfBinarySearch(byte value, int startIndex, int endIndex) {
             return indexOfBinarySearch(Byte.toUnsignedLong(value), startIndex, endIndex);
+        }
+
+        @Override
+        public int moveIntoSortedPlace(int index) {
+            int value = buffer[index];
+            for (int targetIndex = index; targetIndex > 0; targetIndex--) {
+                int compareValue = buffer[targetIndex - 1];
+                if (Integer.compareUnsigned(value, compareValue) >= 0) {
+                    buffer[targetIndex] = value;
+                    return targetIndex;
+                }
+                buffer[targetIndex] = compareValue;
+            }
+            buffer[0] = value;
+            return 0;
+        }
+
+        @Override
+        public void moveIntoPlace(int index, int targetIndex) {
+            int value = buffer[index];
+            for (int moveIndex = index; moveIndex > targetIndex; moveIndex--) {
+                buffer[moveIndex] = buffer[moveIndex - 1];
+            }
+            buffer[targetIndex] = value;
         }
 
         @Override
@@ -423,6 +481,30 @@ public abstract class ArrayBuffer {
         }
 
         @Override
+        public int moveIntoSortedPlace(int index) {
+            short value = buffer[index];
+            for (int targetIndex = index; targetIndex > 0; targetIndex--) {
+                short compareValue = buffer[targetIndex - 1];
+                if (Short.compareUnsigned(value, compareValue) >= 0) {
+                    buffer[targetIndex] = value;
+                    return targetIndex;
+                }
+                buffer[targetIndex] = compareValue;
+            }
+            buffer[0] = value;
+            return 0;
+        }
+
+        @Override
+        public void moveIntoPlace(int index, int targetIndex) {
+            short value = buffer[index];
+            for (int moveIndex = index; moveIndex > targetIndex; moveIndex--) {
+                buffer[moveIndex] = buffer[moveIndex - 1];
+            }
+            buffer[targetIndex] = value;
+        }
+
+        @Override
         public void swap(int index1, int index2) {
             short temp = buffer[index1];
             buffer[index1] = buffer[index2];
@@ -550,6 +632,30 @@ public abstract class ArrayBuffer {
                 }
             }
             return indexOf(value, lower, upper);
+        }
+
+        @Override
+        public int moveIntoSortedPlace(int index) {
+            byte value = buffer[index];
+            for (int targetIndex = index; targetIndex > 0; targetIndex--) {
+                byte compareValue = buffer[targetIndex - 1];
+                if (Byte.compareUnsigned(value, compareValue) >= 0) {
+                    buffer[targetIndex] = value;
+                    return targetIndex;
+                }
+                buffer[targetIndex] = compareValue;
+            }
+            buffer[0] = value;
+            return 0;
+        }
+
+        @Override
+        public void moveIntoPlace(int index, int targetIndex) {
+            byte value = buffer[index];
+            for (int moveIndex = index; moveIndex > targetIndex; moveIndex--) {
+                buffer[moveIndex] = buffer[moveIndex - 1];
+            }
+            buffer[targetIndex] = value;
         }
 
         @Override
