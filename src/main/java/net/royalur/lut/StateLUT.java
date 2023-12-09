@@ -113,9 +113,6 @@ public class StateLUT {
         for (int isLightTurn = 0; isLightTurn <= 1; ++isLightTurn) {
             for (int lightPieces = 0; lightPieces <= pieceCount; ++lightPieces) {
                 for (int darkPieces = 0; darkPieces <= pieceCount; ++darkPieces) {
-                    if (lightPieces == 0 && darkPieces == 0)
-                        continue;
-
                     // Reset the game.
                     game.board.clear();
                     game.isLightTurn = (isLightTurn == 1);

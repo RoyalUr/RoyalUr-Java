@@ -1,9 +1,17 @@
 package net.royalur.lut;
 
+import net.royalur.Game;
 import net.royalur.model.GameSettings;
 import static org.junit.jupiter.api.Assertions.*;
+
+import net.royalur.model.Piece;
+import net.royalur.model.PlayerState;
+import net.royalur.model.dice.Dice;
+import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FinkelGameEncodingTest {
@@ -72,6 +80,7 @@ public class FinkelGameEncodingTest {
         GameSettings<?> settings = GameSettings.FINKEL.withStartingPieceCount(7);
         StateLUT lut = new StateLUT(settings);
         int stateCount = lut.countStates();
+        System.out.println("Counted " + stateCount + " states");
 
         BigMap states = new BigMap(
                 BigMap.INT,
@@ -125,5 +134,31 @@ public class FinkelGameEncodingTest {
         long duration3MS = System.currentTimeMillis() - start3;
         System.out.println("Check took " + duration3MS + " ms");
         assertEquals(stateCount, unsortedHits.get());
+
+        long start4 = System.currentTimeMillis();
+        Game<Piece, PlayerState, ?> initialGame = Game.create(settings);
+        Dice<?> dice = initialGame.getDice();
+        Random random = new Random();
+        FastSimpleGame game = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        int seenStates = 0;
+        for (int gameNo = 0; gameNo < 100000; ++gameNo) {
+            game.copyFrom(initialGame);
+            while (!game.isFinished) {
+                if (game.isWaitingForRoll()) {
+                    game.applyRoll(dice.rollValue(), moveList);
+                } else {
+                    game.applyMove(moveList.moves[random.nextInt(moveList.moveCount)]);
+                    int state = encoding.encode(game);
+                    seenStates += 1;
+                    Integer value = states.getInt(state);
+                    if (value == null) {
+                        fail("State could not be found in map!");
+                    }
+                }
+            }
+        }
+        long duration4MS = System.currentTimeMillis() - start4;
+        System.out.println("Gameplay verification took " + duration4MS + " ms for " + seenStates + " states");
     }
 }
