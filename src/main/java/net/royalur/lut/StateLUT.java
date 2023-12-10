@@ -9,6 +9,9 @@ import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -20,6 +23,8 @@ import java.util.function.Consumer;
  */
 public class StateLUT {
 
+    private static final @Nonnull DecimalFormat MS_DURATION = new DecimalFormat("#,###");
+
     private static final int OCCUPANTS_MASK = 0b11;
     private static final int LIGHT_ONLY_FLAG = 0b100;
     private static final int LIGHT_PATH_INDEX_SHIFT = 3;
@@ -27,16 +32,18 @@ public class StateLUT {
     private static final int DARK_PATH_INDEX_SHIFT = 8;
     private static final int DARK_PATH_INDEX_MASK = 0b11111;
 
-    private final GameSettings<?> settings;
-    private final BoardShape shape;
-    private final PathPair paths;
+    private final @Nonnull GameSettings<?> settings;
+    private final @Nonnull BoardShape shape;
+    private final @Nonnull PathPair paths;
     private final int width;
     private final int height;
     private final int area;
     private final int[] tileFlags;
     private final int[] nextBoardIndices;
 
-    public StateLUT(GameSettings<?> settings) {
+    private @Nullable BigEntryStore stateValues;
+
+    public StateLUT(@Nonnull GameSettings<?> settings) {
         this.settings = settings;
         this.shape = settings.getBoardShape();
         this.paths = settings.getPaths();
@@ -94,10 +101,6 @@ public class StateLUT {
             }
             nextBoardIndices[index] = nextIndex;
         }
-    }
-
-    public void compress() {
-
     }
 
     public int countStates() {
@@ -187,31 +190,139 @@ public class StateLUT {
         }
     }
 
-    public static void main(String[] args) {
-        DecimalFormat msFormatter = new DecimalFormat("#,###");
+    public static void main(String[] args) throws IOException {
         GameSettings<?> settings = GameSettings.FINKEL;
-        StateLUT finkel = new StateLUT(settings);
+        StateLUT lut = new StateLUT(settings);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
-        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
 
-        // Starting state.
-        long start1 = System.nanoTime();
-        finkel.loopGameStates((game) -> {
-            int key = encoding.encode(game);
-            float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
-            states.addEntry(key, Float.floatToRawIntBits(score));
-        });
-        double duration1Ms = (System.nanoTime() - start1) / 1e6;
-        System.out.println("Population took " + msFormatter.format(duration1Ms) + " ms");
+        File outputFile = new File("./finkel.rgu");
+        BigEntryStore states = lut.readStateStore(encoding, outputFile);
+        lut.iterate(settings, encoding, states, outputFile);
+    }
 
-        long start2 = System.nanoTime();
-        double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
-        states.sort();
-        double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
-        double duration2Ms = (System.nanoTime() - start2) / 1e6;
-        System.out.println("Sort took " + msFormatter.format(duration2Ms) + " ms");
+    private void writeStateStore(
+            @Nonnull BigEntryStore states,
+            @Nonnull File outputFile
+    ) throws IOException {
 
-        // Iterate!
+        long start = System.nanoTime();
+        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+            states.write(fos.getChannel());
+        }
+        double durationMs = (System.nanoTime() - start) / 1e6;
+        System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
+    }
+
+    private @Nonnull BigEntryStore readStateStore(
+            @Nonnull FinkelGameEncoding encoding,
+            @Nonnull File outputFile
+    ) throws IOException {
+
+        BigEntryStore states;
+
+        if (outputFile.exists()) {
+            // Read the populated map.
+            System.out.println("Reading cached map...");
+            long start1 = System.nanoTime();
+            try (FileInputStream fis = new FileInputStream(outputFile)) {
+                states = BigEntryStore.read(fis.getChannel());
+
+                if (states.getKeyType() != ValueType.INT)
+                    throw new IOException("Expected int keys");
+                if (states.getValueType() != ValueType.INT)
+                    throw new IOException("Expected int values");
+            }
+            double duration1Ms = (System.nanoTime() - start1) / 1e6;
+            System.out.println("Read took " + MS_DURATION.format(duration1Ms) + " ms");
+
+        } else {
+            System.out.println("Populating map...");
+
+            // Populate the map.
+            states = new BigEntryStore(ValueType.INT, ValueType.INT);
+
+            long start1 = System.nanoTime();
+            loopGameStates((game) -> {
+                int key = encoding.encode(game);
+                float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
+                states.addEntry(key, Float.floatToRawIntBits(score));
+            });
+            double duration1Ms = (System.nanoTime() - start1) / 1e6;
+            System.out.println("Population took " + MS_DURATION.format(duration1Ms) + " ms");
+
+            long start2 = System.nanoTime();
+            double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
+            states.sort();
+            double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
+            double duration2Ms = (System.nanoTime() - start2) / 1e6;
+            System.out.println("Sort took " + MS_DURATION.format(duration2Ms) + " ms");
+
+            writeStateStore(states, outputFile);
+        }
+        return states;
+    }
+
+    private float iterateState(
+            @Nonnull FastSimpleGame game,
+            @Nonnull FinkelGameEncoding encoding,
+            @Nonnull BigEntryStore states,
+            float[] probabilities,
+            @Nonnull FastSimpleGame rollGame,
+            @Nonnull FastSimpleGame moveGame,
+            @Nonnull FastSimpleMoveList moveList
+    ) {
+        int key = encoding.encode(game);
+
+        float newValue = 0.0f;
+        for (int roll = 0; roll <= 4; ++roll) {
+            float prob = probabilities[roll];
+
+            rollGame.copyFrom(game);
+            rollGame.applyRoll(roll, moveList);
+
+            float bestValue;
+            if (rollGame.isWaitingForMove()) {
+                bestValue = (rollGame.isLightTurn ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY);
+
+                for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                    moveGame.copyFrom(rollGame);
+                    moveGame.applyMove(moveList.moves[moveIndex]);
+                    int moveKey = encoding.encode(moveGame);
+                    Integer moveValueBits = states.getInt(moveKey);
+                    if (moveValueBits == null)
+                        throw new NullPointerException(Integer.toBinaryString(moveKey));
+
+                    float moveValue = Float.intBitsToFloat(moveValueBits);
+
+                    if (rollGame.isLightTurn) {
+                        bestValue = Math.max(bestValue, moveValue);
+                    } else {
+                        bestValue = Math.min(bestValue, moveValue);
+                    }
+                }
+            } else {
+                int rollKey = encoding.encode(rollGame);
+                Integer rollValueBits = states.getInt(rollKey);
+                if (rollValueBits == null)
+                    throw new NullPointerException(Integer.toBinaryString(rollKey));
+
+                bestValue = Float.intBitsToFloat(rollValueBits);
+            }
+            newValue += prob * bestValue;
+        }
+
+        int lastValueBits = states.updateEntry(key, Float.floatToRawIntBits(newValue));
+        float lastValue = Float.intBitsToFloat(lastValueBits);
+        return Math.abs(lastValue - newValue);
+    }
+
+    public void iterate(
+            @Nonnull GameSettings<?> settings,
+            @Nonnull FinkelGameEncoding encoding,
+            @Nonnull BigEntryStore states,
+            @Nonnull File outputFile
+    ) throws IOException {
+
         AtomicReference<Float> maxChange = new AtomicReference<>(0f);
         FastSimpleGame rollGame = new FastSimpleGame(settings);
         FastSimpleGame moveGame = new FastSimpleGame(settings);
@@ -222,12 +333,12 @@ public class StateLUT {
         for (int minScore = 6; minScore >= 0; --minScore) {
             for (int maxScore = 6; maxScore >= minScore; --maxScore) {
                 do {
-                    long start3 = System.nanoTime();
+                    long start = System.nanoTime();
                     maxChange.set(0.0f);
 
                     int minScoreThreshold = minScore;
                     int maxScoreThreshold = maxScore;
-                    finkel.loopGameStates((game) -> {
+                    loopGameStates((game) -> {
                         if (game.isFinished)
                             return;
                         if (Math.min(game.light.score, game.dark.score) != minScoreThreshold)
@@ -235,58 +346,47 @@ public class StateLUT {
                         if (Math.max(game.light.score, game.dark.score) != maxScoreThreshold)
                             return;
 
-                        int key = encoding.encode(game);
-
-                        float newValue = 0.0f;
-                        for (int roll = 0; roll <= 4; ++roll) {
-                            float prob = probabilities[roll];
-
-                            rollGame.copyFrom(game);
-                            rollGame.applyRoll(roll, moveList);
-
-                            float bestValue;
-                            if (rollGame.isWaitingForMove()) {
-                                bestValue = (rollGame.isLightTurn ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY);
-
-                                for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
-                                    moveGame.copyFrom(rollGame);
-                                    moveGame.applyMove(moveList.moves[moveIndex]);
-                                    int moveKey = encoding.encode(moveGame);
-                                    float moveValue = Float.intBitsToFloat(states.getInt(moveKey));
-
-                                    if (rollGame.isLightTurn) {
-                                        bestValue = Math.max(bestValue, moveValue);
-                                    } else {
-                                        bestValue = Math.min(bestValue, moveValue);
-                                    }
-                                }
-                            } else {
-                                int rollKey = encoding.encode(rollGame);
-                                bestValue = Float.intBitsToFloat(states.getInt(rollKey));
-                            }
-                            newValue += prob * bestValue;
-                        }
-
-                        int lastValueBits = states.updateEntry(key, Float.floatToRawIntBits(newValue));
-                        float lastValue = Float.intBitsToFloat(lastValueBits);
-
-                        float difference = Math.abs(lastValue - newValue);
-                        float currentMaxDifference = maxChange.get();
-                        if (difference > currentMaxDifference) {
+                        float difference = iterateState(
+                                game, encoding, states, probabilities,
+                                rollGame, moveGame, moveList
+                        );
+                        if (difference > maxChange.get()) {
                             maxChange.set(difference);
                         }
                     });
-                    double duration3Ms = (System.nanoTime() - start3) / 1e6;
+                    double durationMs = (System.nanoTime() - start) / 1e6;
                     System.out.printf(
                             "%d. scores = [%d, %d], max diff = %.3f (%s ms)\n",
                             iteration + 1,
                             minScoreThreshold, maxScoreThreshold,
                             maxChange.get(),
-                            msFormatter.format(duration3Ms)
+                            MS_DURATION.format(durationMs)
                     );
                     iteration += 1;
+
+                    if (iteration % 10 == 0) {
+                        writeStateStore(states, outputFile);
+                    }
                 } while (maxChange.get() > 0.01f);
             }
         }
+
+        writeStateStore(states, outputFile);
+
+        System.out.println();
+        System.out.println("Finished progressive value iteration!");
+        System.out.println("Starting full value iteration for 10 steps...");
+        for (int index = 0; index < 10; ++index) {
+            long start = System.nanoTime();
+
+            double durationMs = (System.nanoTime() - start) / 1e6;
+            System.out.printf(
+                    "%d. max diff = %.3f (%s ms)\n",
+                    index + 1,
+                    maxChange.get(),
+                    MS_DURATION.format(durationMs)
+            );
+        }
+        writeStateStore(states, outputFile);
     }
 }

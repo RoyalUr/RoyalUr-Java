@@ -1,7 +1,11 @@
 package net.royalur.lut.store;
 
+import net.royalur.lut.DataSink;
+import net.royalur.lut.DataSource;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 
 /**
  * Manages a set of sorted chunks.
@@ -186,5 +190,23 @@ public class ChunkSet {
     public @Nullable Long getLong(long key) {
         Chunk chunk = getPossibleChunk(key);
         return chunk == null ? null : chunk.getLong(key);
+    }
+
+    public void write(@Nonnull DataSink output) throws IOException {
+        output.write((outputBuffer) -> {
+            outputBuffer.putInt(emptyChunkIndex);
+            outputBuffer.putLong(lastKeyAdded);
+        });
+        for (Chunk chunk : chunks) {
+            chunk.write(output);
+        }
+    }
+
+    public void read(@Nonnull DataSource input) throws IOException {
+        emptyChunkIndex = input.readInt();
+        lastKeyAdded = input.readLong();
+        for (Chunk chunk : chunks) {
+            chunk.read(input);
+        }
     }
 }

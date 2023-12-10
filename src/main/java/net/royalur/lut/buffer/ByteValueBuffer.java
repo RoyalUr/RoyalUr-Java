@@ -1,5 +1,11 @@
 package net.royalur.lut.buffer;
 
+import net.royalur.lut.DataSink;
+import net.royalur.lut.DataSource;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+
 public class ByteValueBuffer extends ValueBuffer {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
@@ -152,5 +158,19 @@ public class ByteValueBuffer extends ValueBuffer {
             buffer[moveIndex] = buffer[moveIndex - 1];
         }
         buffer[targetIndex] = value;
+    }
+
+    @Override
+    public void writeContents(@Nonnull DataSink output) throws IOException {
+        output.write((outputBuffer) -> {
+            outputBuffer.put(buffer);
+        });
+    }
+
+    @Override
+    public void readContents(@Nonnull DataSource input) throws IOException {
+        for (int index = 0; index < buffer.length; ++index) {
+            buffer[index] = input.readByte();
+        }
     }
 }

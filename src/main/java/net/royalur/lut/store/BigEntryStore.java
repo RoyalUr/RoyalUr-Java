@@ -1,9 +1,14 @@
 package net.royalur.lut.store;
 
+import net.royalur.lut.DataSink;
+import net.royalur.lut.DataSource;
 import net.royalur.lut.buffer.ValueType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -236,6 +241,67 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
             });
         });
         return  (double) overlappingChunks.get() / chunkSets.size();
+    }
+
+    public void write(@Nonnull FileChannel channel) throws IOException {
+        int maxBytesPerKeyOrValue = Math.max(keyType.getByteCount(), valueType.getByteCount());
+        int requiredBytes = Math.max(1024, entriesPerChunk * maxBytesPerKeyOrValue);
+        DataSink output = new DataSink.FileDataSink(
+                channel,
+                ByteBuffer.allocateDirect(requiredBytes)
+        );
+        write(output);
+    }
+
+    public void write(@Nonnull DataSink output) throws IOException {
+        output.write((buffer) -> {
+            buffer.putInt(keyType.ordinal());
+            buffer.putInt(valueType.ordinal());
+            buffer.putInt(entriesPerChunk);
+        });
+        writeContents(output);
+    }
+
+    public void writeContents(@Nonnull DataSink output) throws IOException {
+        output.write((buffer) -> {
+            buffer.putInt(chunkSets.size());
+            for (ChunkSet set : chunkSets) {
+                buffer.putInt(set.getChunkCount());
+            }
+        });
+
+        for (ChunkSet set : chunkSets) {
+            set.write(output);
+        }
+    }
+
+    public static @Nonnull BigEntryStore read(@Nonnull FileChannel channel) throws IOException {
+        ByteBuffer workingBuffer = ByteBuffer.allocateDirect(1024 * 1024);
+        DataSource input = new DataSource.FileDataSource(channel, workingBuffer);
+        return read(input);
+    }
+
+    public static @Nonnull BigEntryStore read(@Nonnull DataSource input) throws IOException {
+        ValueType keyType = ValueType.values()[input.readInt()];
+        ValueType valueType = ValueType.values()[input.readInt()];
+        int entriesPerChunk = input.readInt();
+        BigEntryStore store = new BigEntryStore(keyType, valueType, entriesPerChunk);
+        store.readContents(input);
+        return store;
+    }
+
+    public void readContents(@Nonnull DataSource input) throws IOException {
+        if (!chunkSets.isEmpty())
+            throw new IllegalStateException("Can only read into an empty store");
+
+        int chunkSetCount = input.readInt();
+        for (int index = 0; index < chunkSetCount; ++index) {
+            int chunkCount = input.readInt();
+            chunkSets.add(allocateChunkSet(chunkCount));
+        }
+        for (ChunkSet set : chunkSets) {
+            set.read(input);
+        }
     }
 
     @Override

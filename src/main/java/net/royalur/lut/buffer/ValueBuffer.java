@@ -1,6 +1,10 @@
 package net.royalur.lut.buffer;
 
+import net.royalur.lut.DataSink;
+import net.royalur.lut.DataSource;
+
 import javax.annotation.Nonnull;
+import java.io.*;
 
 /**
  * Stores binary values and provides efficient methods to manipulate it.
@@ -76,4 +80,8 @@ public abstract class ValueBuffer {
      * Moves the value to targetIndex, and shifts all values in between.
      */
     public abstract void moveIntoPlace(int index, int targetIndex);
+
+    public abstract void writeContents(@Nonnull DataSink output) throws IOException;
+
+    public abstract void readContents(@Nonnull DataSource input) throws IOException;
 }

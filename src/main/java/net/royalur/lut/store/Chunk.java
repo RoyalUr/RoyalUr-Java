@@ -1,9 +1,12 @@
 package net.royalur.lut.store;
 
+import net.royalur.lut.DataSink;
+import net.royalur.lut.DataSource;
 import net.royalur.lut.buffer.ValueBuffer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 /**
@@ -144,5 +147,23 @@ public class Chunk {
 
         entry.key = keyBuffer.getLong(index);
         entry.value = valueBuffer.getLong(index);
+    }
+
+    public void write(@Nonnull DataSink output) throws IOException {
+        output.write((outputBuffer) -> {
+            outputBuffer.putInt(entryCount);
+            outputBuffer.putLong(minValue);
+            outputBuffer.putLong(maxValue);
+        });
+        keyBuffer.writeContents(output);
+        valueBuffer.writeContents(output);
+    }
+
+    public void read(@Nonnull DataSource input) throws IOException {
+        entryCount = input.readInt();
+        minValue = input.readLong();
+        maxValue = input.readLong();
+        keyBuffer.readContents(input);
+        valueBuffer.readContents(input);
     }
 }
