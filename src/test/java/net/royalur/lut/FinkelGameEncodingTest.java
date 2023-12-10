@@ -1,6 +1,7 @@
 package net.royalur.lut;
 
 import net.royalur.Game;
+import net.royalur.lut.buffer.ValueType;
 import net.royalur.model.GameSettings;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,10 +22,7 @@ public class FinkelGameEncodingTest {
         StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
-        BigMap states = new BigMap(
-                BigMap.INT,
-                BigMap.BYTE
-        );
+        BigMap states = new BigMap(ValueType.INT, ValueType.BYTE);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
@@ -82,10 +80,7 @@ public class FinkelGameEncodingTest {
         int stateCount = lut.countStates();
         System.out.println("Counted " + stateCount + " states");
 
-        BigMap states = new BigMap(
-                BigMap.INT,
-                BigMap.INT
-        );
+        BigMap states = new BigMap(ValueType.INT, ValueType.INT);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
@@ -158,10 +153,5 @@ public class FinkelGameEncodingTest {
         }
         long duration4MS = System.currentTimeMillis() - start4;
         System.out.println("Gameplay verification took " + duration4MS + " ms for " + seenStates + " states");
-    }
-
-    @Test
-    public void wtfMemory() {
-        StateLUT.main(new String[0]);
     }
 }

@@ -1,5 +1,6 @@
 package net.royalur.lut;
 
+import net.royalur.lut.buffer.ValueType;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
@@ -190,7 +191,7 @@ public class StateLUT {
         GameSettings<?> settings = GameSettings.FINKEL;
         StateLUT finkel = new StateLUT(settings);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
-        BigMap states = new BigMap(BigMap.INT, BigMap.INT);
+        BigMap states = new BigMap(ValueType.INT, ValueType.INT);
 
         // Starting state.
         long start1 = System.nanoTime();

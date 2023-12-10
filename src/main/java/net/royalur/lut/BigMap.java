@@ -1,5 +1,8 @@
 package net.royalur.lut;
 
+import net.royalur.lut.buffer.ValueBuffer;
+import net.royalur.lut.buffer.ValueType;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,32 +19,24 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
     public static final int DEFAULT_ENTRIES_PER_CHUNK = 8 * 1024;
 
-    public static ArrayBufferBuilder LONG = ArrayBuffer.LongArrayBuffer::new;
-    public static ArrayBufferBuilder INT = ArrayBuffer.IntArrayBuffer::new;
-    public static ArrayBufferBuilder SHORT = ArrayBuffer.ShortArrayBuffer::new;
-    public static ArrayBufferBuilder BYTE = ArrayBuffer.ByteArrayBuffer::new;
-
     private final int entriesPerChunk;
-    private final ArrayBufferBuilder keyBufferBuilder;
-    private final ArrayBufferBuilder valueBufferBuilder;
+    private final ValueType keyType;
+    private final ValueType valueType;
     private final List<ChunkSet> chunkSets;
 
     public BigMap(
-            ArrayBufferBuilder keyBufferBuilder,
-            ArrayBufferBuilder valueBufferBuilder,
+            ValueType keyType,
+            ValueType valueType,
             int entriesPerChunk
     ) {
         this.entriesPerChunk = entriesPerChunk;
-        this.keyBufferBuilder = keyBufferBuilder;
-        this.valueBufferBuilder = valueBufferBuilder;
+        this.keyType = keyType;
+        this.valueType = valueType;
         this.chunkSets = new ArrayList<>();
     }
 
-    public BigMap(
-            ArrayBufferBuilder keyBufferBuilder,
-            ArrayBufferBuilder valueBufferBuilder
-    ) {
-        this(keyBufferBuilder, valueBufferBuilder, DEFAULT_ENTRIES_PER_CHUNK);
+    public BigMap(ValueType keyType, ValueType valueType) {
+        this(keyType, valueType, DEFAULT_ENTRIES_PER_CHUNK);
     }
 
     public int getEntryCount() {
@@ -391,16 +386,16 @@ public class BigMap implements Iterable<BigMap.Entry> {
     private class Chunk {
 
         private final int entryCapacity;
-        private final ArrayBuffer keyBuffer;
-        private final ArrayBuffer valueBuffer;
+        private final ValueBuffer keyBuffer;
+        private final ValueBuffer valueBuffer;
         private int entryCount = 0;
         private long minValue = 0;
         private long maxValue = 0;
 
         public Chunk() {
             this.entryCapacity = entriesPerChunk;
-            this.keyBuffer = keyBufferBuilder.create(entryCapacity);
-            this.valueBuffer = valueBufferBuilder.create(entryCapacity);
+            this.keyBuffer = keyType.create(entryCapacity);
+            this.valueBuffer = valueType.create(entryCapacity);
         }
 
         public void clear() {
@@ -521,14 +516,6 @@ public class BigMap implements Iterable<BigMap.Entry> {
 
             entry.key = keyBuffer.getLong(index);
             entry.value = valueBuffer.getLong(index);
-        }
-
-        private void swap(int index1, int index2) {
-            if (index1 == index2)
-                return;
-
-            keyBuffer.swap(index1, index2);
-            valueBuffer.swap(index1, index2);
         }
     }
 
