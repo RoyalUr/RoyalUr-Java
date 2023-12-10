@@ -17,13 +17,13 @@ public abstract class ArrayBuffer {
         return capacity;
     }
 
-    public abstract void set(int index, long value);
+    public abstract long set(int index, long value);
 
-    public abstract void set(int index, int value);
+    public abstract int set(int index, int value);
 
-    public abstract void set(int index, short value);
+    public abstract short set(int index, short value);
 
-    public abstract void set(int index, byte value);
+    public abstract byte set(int index, byte value);
 
     public abstract long getLong(int index);
 
@@ -82,23 +82,25 @@ public abstract class ArrayBuffer {
         }
 
         @Override
-        public void set(int index, long value) {
+        public long set(int index, long value) {
+            long lastValue = buffer[index];
             buffer[index] = value;
+            return lastValue;
         }
 
         @Override
-        public void set(int index, int value) {
-            set(index, (long) value);
+        public int set(int index, int value) {
+            throw new UnsupportedOperationException("This is a long array");
         }
 
         @Override
-        public void set(int index, short value) {
-            set(index, (long) value);
+        public short set(int index, short value) {
+            throw new UnsupportedOperationException("This is a long array");
         }
 
         @Override
-        public void set(int index, byte value) {
-            set(index, (long) value);
+        public byte set(int index, byte value) {
+            throw new UnsupportedOperationException("This is a long array");
         }
 
         @Override
@@ -227,24 +229,27 @@ public abstract class ArrayBuffer {
         }
 
         @Override
-        public void set(int index, long value) {
+        public long set(int index, long value) {
             checkValue(value);
-            set(index, (int) value);
+            int lastValue = set(index, (int) value);
+            return Integer.toUnsignedLong(lastValue);
         }
 
         @Override
-        public void set(int index, int value) {
+        public int set(int index, int value) {
+            int lastValue = buffer[index];
             buffer[index] = value;
+            return lastValue;
         }
 
         @Override
-        public void set(int index, short value) {
-            set(index, (int) value);
+        public short set(int index, short value) {
+            throw new UnsupportedOperationException("This is an int array");
         }
 
         @Override
-        public void set(int index, byte value) {
-            set(index, (int) value);
+        public byte set(int index, byte value) {
+            throw new UnsupportedOperationException("This is an int array");
         }
 
         @Override
@@ -259,12 +264,12 @@ public abstract class ArrayBuffer {
 
         @Override
         public short getShort(int index) {
-            throw new UnsupportedOperationException("This is a long buffer");
+            throw new UnsupportedOperationException("This is an int buffer");
         }
 
         @Override
         public byte getByte(int index) {
-            throw new UnsupportedOperationException("This is a long buffer");
+            throw new UnsupportedOperationException("This is an int buffer");
         }
 
         @Override
@@ -375,26 +380,29 @@ public abstract class ArrayBuffer {
         }
 
         @Override
-        public void set(int index, long value) {
+        public long set(int index, long value) {
             checkValue(value);
-            set(index, (short) value);
+            short lastValue = set(index, (short) value);
+            return Short.toUnsignedLong(lastValue);
         }
 
         @Override
-        public void set(int index, int value) {
+        public int set(int index, int value) {
             checkValue(value);
-            set(index, (short) value);
+            short lastValue = set(index, (short) value);
+            return Short.toUnsignedInt(lastValue);
         }
 
         @Override
-        public void set(int index, short value) {
-            checkValue(value);
+        public short set(int index, short value) {
+            short lastValue = buffer[index];
             buffer[index] = value;
+            return lastValue;
         }
 
         @Override
-        public void set(int index, byte value) {
-            set(index, (short) value);
+        public byte set(int index, byte value) {
+            throw new UnsupportedOperationException("This is a short buffer");
         }
 
         @Override
@@ -414,7 +422,7 @@ public abstract class ArrayBuffer {
 
         @Override
         public byte getByte(int index) {
-            throw new UnsupportedOperationException("This is a long buffer");
+            throw new UnsupportedOperationException("This is a short buffer");
         }
 
         @Override
@@ -527,26 +535,31 @@ public abstract class ArrayBuffer {
         }
 
         @Override
-        public void set(int index, long value) {
+        public long set(int index, long value) {
             checkValue(value);
-            set(index, (byte) value);
+            byte lastValue = set(index, (byte) value);
+            return Byte.toUnsignedLong(lastValue);
         }
 
         @Override
-        public void set(int index, int value) {
+        public int set(int index, int value) {
             checkValue(value);
-            set(index, (byte) value);
+            byte lastValue = set(index, (byte) value);
+            return Byte.toUnsignedInt(lastValue);
         }
 
         @Override
-        public void set(int index, short value) {
+        public short set(int index, short value) {
             checkValue(value);
-            set(index, (byte) value);
+            byte lastValue = set(index, (byte) value);
+            return (short) Byte.toUnsignedInt(lastValue);
         }
 
         @Override
-        public void set(int index, byte value) {
+        public byte set(int index, byte value) {
+            byte lastValue = buffer[index];
             buffer[index] = value;
+            return lastValue;
         }
 
         @Override

@@ -12,11 +12,8 @@ public class FinkelGameEncoding {
 
     private final int[] middleLaneCompression;
 
-    public FinkelGameEncoding(int startingPieceCount) {
-        if (startingPieceCount > 7)
-            throw new IllegalArgumentException("startingPieceCount > 7 not supported");
-
-        this.middleLaneCompression = generateMiddleLaneCompression(startingPieceCount);
+    public FinkelGameEncoding() {
+        this.middleLaneCompression = generateMiddleLaneCompression();
 
         int maxCompressed = 0;
         for (int compressed : middleLaneCompression) {
@@ -30,12 +27,12 @@ public class FinkelGameEncoding {
             throw new IllegalStateException("Expected the middle lane to take 13 bits");
     }
 
-    private static int[] generateMiddleLaneCompression(int startingPieceCount) {
+    private static int[] generateMiddleLaneCompression() {
         int[] middleLaneCompression = new int[0xffff];
         Arrays.fill(middleLaneCompression, -1);
 
         List<Integer> states = new ArrayList<>();
-        addMiddleLaneStates(states, 0, startingPieceCount, startingPieceCount, 0);
+        addMiddleLaneStates(states, 0, 7, 7, 0);
         for (int index = 0; index < states.size(); ++index) {
             int state = states.get(index);
             middleLaneCompression[state] = index;
@@ -117,10 +114,10 @@ public class FinkelGameEncoding {
         int board = encodeBoard(game.board);
 
         int state = 0;
-        state |= board;
-        state |= darkPieces << 25;
-        state |= lightPieces << 28;
-        state |= isLightTurn << 31;
+        state |= isLightTurn;
+        state |= board << 1;
+        state |= darkPieces << 26;
+        state |= lightPieces << 29;
         return state;
     }
 }

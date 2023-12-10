@@ -5,9 +5,12 @@ import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -110,19 +113,16 @@ public class StateLUT {
         FastSimpleGame game = new FastSimpleGame(settings);
         int pieceCount = settings.getStartingPieceCount();
 
-        for (int isLightTurn = 0; isLightTurn <= 1; ++isLightTurn) {
-            for (int lightPieces = 0; lightPieces <= pieceCount; ++lightPieces) {
-                for (int darkPieces = 0; darkPieces <= pieceCount; ++darkPieces) {
-                    // Reset the game.
-                    game.board.clear();
-                    game.isLightTurn = (isLightTurn == 1);
-                    game.light.pieces = lightPieces;
-                    game.light.score = pieceCount - lightPieces;
-                    game.dark.pieces = darkPieces;
-                    game.dark.score = pieceCount - darkPieces;
+        for (int lightPieces = 0; lightPieces <= pieceCount; ++lightPieces) {
+            for (int darkPieces = 0; darkPieces <= pieceCount; ++darkPieces) {
+                // Reset the game.
+                game.board.clear();
+                game.light.pieces = lightPieces;
+                game.light.score = pieceCount - lightPieces;
+                game.dark.pieces = darkPieces;
+                game.dark.score = pieceCount - darkPieces;
 
-                    loopBoardStates(gameConsumer, game, 0);
-                }
+                loopBoardStates(gameConsumer, game, 0);
             }
         }
     }
@@ -168,7 +168,17 @@ public class StateLUT {
 
             if (nextBoardIndex >= area) {
                 game.isFinished = (newLightScore == pieceCount || newDarkScore == pieceCount);
-                gameConsumer.accept(game);
+
+                for (int isLightTurn = 0; isLightTurn <= 1; ++isLightTurn) {
+                    // When the game is finished, the winner must have all pieces scored!
+                    if (isLightTurn == 0 && newLightScore == pieceCount)
+                        continue;
+                    if (isLightTurn == 1 && newDarkScore == pieceCount)
+                        continue;
+
+                    game.isLightTurn = (isLightTurn == 1);
+                    gameConsumer.accept(game);
+                }
             } else {
                 loopBoardStates(gameConsumer, game, nextBoardIndex);
             }
@@ -176,28 +186,105 @@ public class StateLUT {
     }
 
     public static void main(String[] args) {
-        for (int startingPieces = 1; startingPieces <= 7; ++startingPieces) {
-            System.out.println("Finkel with " + startingPieces + " starting pieces");
-            StateLUT finkel = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(startingPieces));
-            System.out.println("  " + finkel.countStates() + " states");
+        DecimalFormat msFormatter = new DecimalFormat("#,###");
+        GameSettings<?> settings = GameSettings.FINKEL;
+        StateLUT finkel = new StateLUT(settings);
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        BigMap states = new BigMap(BigMap.INT, BigMap.INT);
+
+        // Starting state.
+        long start1 = System.nanoTime();
+        finkel.loopGameStates((game) -> {
+            int key = encoding.encode(game);
+            float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
+            states.put(key, Float.floatToRawIntBits(score));
+        });
+        double duration1Ms = (System.nanoTime() - start1) / 1e6;
+        System.out.println("Population took " + msFormatter.format(duration1Ms) + " ms");
+
+        long start2 = System.nanoTime();
+        double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
+        states.sort();
+        double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
+        double duration2Ms = (System.nanoTime() - start2) / 1e6;
+        System.out.println("Sort took " + msFormatter.format(duration2Ms) + " ms");
+
+        // Iterate!
+        AtomicReference<Float> maxChange = new AtomicReference<>(0f);
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+
+        int iteration = 0;
+        for (int minScore = 6; minScore >= 0; --minScore) {
+            for (int maxScore = 6; maxScore >= minScore; --maxScore) {
+                do {
+                    long start3 = System.nanoTime();
+                    maxChange.set(0.0f);
+
+                    int minScoreThreshold = minScore;
+                    int maxScoreThreshold = maxScore;
+                    finkel.loopGameStates((game) -> {
+                        if (game.isFinished)
+                            return;
+                        if (Math.min(game.light.score, game.dark.score) != minScoreThreshold)
+                            return;
+                        if (Math.max(game.light.score, game.dark.score) != maxScoreThreshold)
+                            return;
+
+                        int key = encoding.encode(game);
+
+                        float newValue = 0.0f;
+                        for (int roll = 0; roll <= 4; ++roll) {
+                            float prob = probabilities[roll];
+
+                            rollGame.copyFrom(game);
+                            rollGame.applyRoll(roll, moveList);
+
+                            float bestValue;
+                            if (rollGame.isWaitingForMove()) {
+                                bestValue = (rollGame.isLightTurn ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY);
+
+                                for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                                    moveGame.copyFrom(rollGame);
+                                    moveGame.applyMove(moveList.moves[moveIndex]);
+                                    int moveKey = encoding.encode(moveGame);
+                                    float moveValue = Float.intBitsToFloat(states.getInt(moveKey));
+
+                                    if (rollGame.isLightTurn) {
+                                        bestValue = Math.max(bestValue, moveValue);
+                                    } else {
+                                        bestValue = Math.min(bestValue, moveValue);
+                                    }
+                                }
+                            } else {
+                                int rollKey = encoding.encode(rollGame);
+                                bestValue = Float.intBitsToFloat(states.getInt(rollKey));
+                            }
+                            newValue += prob * bestValue;
+                        }
+
+                        int lastValueBits = states.set(key, Float.floatToRawIntBits(newValue));
+                        float lastValue = Float.intBitsToFloat(lastValueBits);
+
+                        float difference = Math.abs(lastValue - newValue);
+                        float currentMaxDifference = maxChange.get();
+                        if (difference > currentMaxDifference) {
+                            maxChange.set(difference);
+                        }
+                    });
+                    double duration3Ms = (System.nanoTime() - start3) / 1e6;
+                    System.out.printf(
+                            "%d. scores = [%d, %d], max diff = %.3f (%s ms)\n",
+                            iteration + 1,
+                            minScoreThreshold, maxScoreThreshold,
+                            maxChange.get(),
+                            msFormatter.format(duration3Ms)
+                    );
+                    iteration += 1;
+                } while (maxChange.get() > 0.01f);
+            }
         }
-
-        System.out.println("Aseb");
-        StateLUT aseb = new StateLUT(GameSettings.ASEB);
-        System.out.println(
-                "  " + aseb.countStates() + " states"
-        );
-
-        System.out.println("Masters");
-        StateLUT masters = new StateLUT(GameSettings.MASTERS);
-        System.out.println(
-                "  " + masters.countStates() + " states"
-        );
-
-        System.out.println("Blitz");
-        StateLUT blitz = new StateLUT(GameSettings.BLITZ);
-        System.out.println(
-                "  " + blitz.countStates() + " states"
-        );
     }
 }

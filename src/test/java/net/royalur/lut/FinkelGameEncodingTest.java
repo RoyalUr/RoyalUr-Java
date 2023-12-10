@@ -25,7 +25,7 @@ public class FinkelGameEncodingTest {
                 BigMap.INT,
                 BigMap.BYTE
         );
-        FinkelGameEncoding encoding = new FinkelGameEncoding(7);
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
         lut.loopGameStates((game) -> {
@@ -77,7 +77,7 @@ public class FinkelGameEncodingTest {
 
     @Test
     public void testPopulate() {
-        GameSettings<?> settings = GameSettings.FINKEL.withStartingPieceCount(7);
+        GameSettings<?> settings = GameSettings.FINKEL.withStartingPieceCount(3);
         StateLUT lut = new StateLUT(settings);
         int stateCount = lut.countStates();
         System.out.println("Counted " + stateCount + " states");
@@ -86,9 +86,7 @@ public class FinkelGameEncodingTest {
                 BigMap.INT,
                 BigMap.INT
         );
-        FinkelGameEncoding encoding = new FinkelGameEncoding(
-                settings.getStartingPieceCount()
-        );
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
         lut.loopGameStates((game) -> {
@@ -160,5 +158,10 @@ public class FinkelGameEncodingTest {
         }
         long duration4MS = System.currentTimeMillis() - start4;
         System.out.println("Gameplay verification took " + duration4MS + " ms for " + seenStates + " states");
+    }
+
+    @Test
+    public void wtfMemory() {
+        StateLUT.main(new String[0]);
     }
 }

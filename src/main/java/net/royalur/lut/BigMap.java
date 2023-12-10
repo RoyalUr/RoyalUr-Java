@@ -168,6 +168,19 @@ public class BigMap implements Iterable<BigMap.Entry> {
         getNextChunkSetForPut().put(key, value);
     }
 
+    /**
+     * Returns the last value.
+     * Requires that the map has been sorted.
+     */
+    public int set(int key, int value) {
+        for (ChunkSet chunkSet : chunkSets) {
+            Chunk chunk = chunkSet.getPossibleChunk(key);
+            if (chunk != null)
+                return chunk.set(key, value);
+        }
+        throw new NoSuchElementException();
+    }
+
     public @Nullable Integer getInt(int key) {
         for (ChunkSet chunkSet : chunkSets) {
             Integer value = chunkSet.getInt(key);
@@ -303,31 +316,27 @@ public class BigMap implements Iterable<BigMap.Entry> {
             return chunks[chunkIndex].getValueLong(entryIndex);
         }
 
-        private @Nullable Integer getIntLinearSearch(int key, int startIndex, int endIndex) {
+        private @Nullable Chunk getPossibleChunkLinearSearch(int key, int startIndex, int endIndex) {
             long keyUnsigned = Integer.toUnsignedLong(key);
 
             for (int index = startIndex; index < endIndex; ++index) {
                 Chunk chunk = chunks[index];
-                if (chunk.mayContain(keyUnsigned)) {
-                    int entryIndex = chunk.indexOfKey(key);
-                    return entryIndex >= 0 ? chunk.getValueInt(entryIndex) : null;
-                }
+                if (chunk.mayContain(keyUnsigned))
+                    return chunk;
             }
             return null;
         }
 
-        private @Nullable Long getLongLinearSearch(long key, int startIndex, int endIndex) {
+        private @Nullable Chunk getPossibleChunkLinearSearch(long key, int startIndex, int endIndex) {
             for (int index = startIndex; index < endIndex; ++index) {
                 Chunk chunk = chunks[index];
-                if (chunk.mayContain(key)) {
-                    int entryIndex = chunk.indexOfKey(key);
-                    return entryIndex >= 0 ? chunk.getValueLong(entryIndex) : null;
-                }
+                if (chunk.mayContain(key))
+                    return chunk;
             }
             return null;
         }
 
-        public @Nullable Integer getInt(int key) {
+        public @Nullable Chunk getPossibleChunk(int key) {
             long keyUnsigned = Integer.toUnsignedLong(key);
 
             int lower = 0;
@@ -336,7 +345,7 @@ public class BigMap implements Iterable<BigMap.Entry> {
                 int middleIndex = lower + (upper - lower) / 2;
                 Chunk current = chunks[middleIndex];
                 if (current.mayContain(keyUnsigned))
-                    return current.getInt(key);
+                    return current;
 
                 if (Long.compareUnsigned(current.maxValue, keyUnsigned) > 0) {
                     upper = middleIndex;
@@ -344,17 +353,17 @@ public class BigMap implements Iterable<BigMap.Entry> {
                     lower = middleIndex + 1;
                 }
             }
-            return getIntLinearSearch(key, lower, upper);
+            return getPossibleChunkLinearSearch(key, lower, upper);
         }
 
-        public @Nullable Long getLong(long key) {
+        public @Nullable Chunk getPossibleChunk(long key) {
             int lower = 0;
             int upper = chunks.length;
             while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
                 int middleIndex = lower + (upper - lower) / 2;
                 Chunk current = chunks[middleIndex];
                 if (current.mayContain(key))
-                    return current.getLong(key);
+                    return current;
 
                 if (Long.compareUnsigned(current.maxValue, key) > 0) {
                     upper = middleIndex;
@@ -362,7 +371,17 @@ public class BigMap implements Iterable<BigMap.Entry> {
                     lower = middleIndex + 1;
                 }
             }
-            return getLongLinearSearch(key, lower, upper);
+            return getPossibleChunkLinearSearch(key, lower, upper);
+        }
+
+        public @Nullable Integer getInt(int key) {
+            Chunk chunk = getPossibleChunk(key);
+            return chunk == null ? null : chunk.getInt(key);
+        }
+
+        public @Nullable Long getLong(long key) {
+            Chunk chunk = getPossibleChunk(key);
+            return chunk == null ? null : chunk.getLong(key);
         }
     }
 
@@ -465,6 +484,14 @@ public class BigMap implements Iterable<BigMap.Entry> {
         public @Nullable Long getLong(long key) {
             int entryIndex = indexOfKey(key);
             return entryIndex >= 0 ? valueBuffer.getLong(entryIndex) : null;
+        }
+
+        public int set(int key, int value) {
+            int entryIndex = indexOfKey(key);
+            if (entryIndex < 0)
+                throw new NoSuchElementException();
+
+            return valueBuffer.set(entryIndex, value);
         }
 
         public long getKeyLong(int index) {
