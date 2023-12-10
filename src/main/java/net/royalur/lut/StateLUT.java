@@ -1,6 +1,7 @@
 package net.royalur.lut;
 
 import net.royalur.lut.buffer.ValueType;
+import net.royalur.lut.store.BigEntryStore;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
@@ -191,14 +192,14 @@ public class StateLUT {
         GameSettings<?> settings = GameSettings.FINKEL;
         StateLUT finkel = new StateLUT(settings);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
-        BigMap states = new BigMap(ValueType.INT, ValueType.INT);
+        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
 
         // Starting state.
         long start1 = System.nanoTime();
         finkel.loopGameStates((game) -> {
             int key = encoding.encode(game);
             float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
-            states.put(key, Float.floatToRawIntBits(score));
+            states.addEntry(key, Float.floatToRawIntBits(score));
         });
         double duration1Ms = (System.nanoTime() - start1) / 1e6;
         System.out.println("Population took " + msFormatter.format(duration1Ms) + " ms");
@@ -266,7 +267,7 @@ public class StateLUT {
                             newValue += prob * bestValue;
                         }
 
-                        int lastValueBits = states.set(key, Float.floatToRawIntBits(newValue));
+                        int lastValueBits = states.updateEntry(key, Float.floatToRawIntBits(newValue));
                         float lastValue = Float.intBitsToFloat(lastValueBits);
 
                         float difference = Math.abs(lastValue - newValue);

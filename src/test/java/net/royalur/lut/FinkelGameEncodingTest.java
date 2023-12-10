@@ -2,6 +2,7 @@ package net.royalur.lut;
 
 import net.royalur.Game;
 import net.royalur.lut.buffer.ValueType;
+import net.royalur.lut.store.BigEntryStore;
 import net.royalur.model.GameSettings;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +23,7 @@ public class FinkelGameEncodingTest {
         StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
-        BigMap states = new BigMap(ValueType.INT, ValueType.BYTE);
+        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.BYTE);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
@@ -33,7 +34,7 @@ public class FinkelGameEncodingTest {
             if (value != null)
                 return;
 
-            states.put(state, 0);
+            states.addEntry(state, 0);
         });
         long duration1MS = System.currentTimeMillis() - start1;
         System.out.println("Population took " + duration1MS + " ms");
@@ -80,13 +81,13 @@ public class FinkelGameEncodingTest {
         int stateCount = lut.countStates();
         System.out.println("Counted " + stateCount + " states");
 
-        BigMap states = new BigMap(ValueType.INT, ValueType.INT);
+        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
         lut.loopGameStates((game) -> {
             int state = encoding.encode(game);
-            states.put(state, state);
+            states.addEntry(state, state);
         });
         long duration1MS = System.currentTimeMillis() - start1;
         System.out.println(
