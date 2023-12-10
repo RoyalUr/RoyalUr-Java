@@ -8,7 +8,7 @@ public class ShortValueBuffer extends ValueBuffer {
     private final short[] buffer;
 
     public ShortValueBuffer(int capacity) {
-        super(capacity);
+        super(ValueType.SHORT, capacity);
         this.buffer = new short[capacity];
     }
 

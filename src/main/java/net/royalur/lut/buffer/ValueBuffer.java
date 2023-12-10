@@ -1,14 +1,22 @@
 package net.royalur.lut.buffer;
 
+import javax.annotation.Nonnull;
+
 /**
  * Stores binary values and provides efficient methods to manipulate it.
  */
 public abstract class ValueBuffer {
 
+    private final @Nonnull ValueType type;
     private final int capacity;
 
-    public ValueBuffer(int capacity) {
+    public ValueBuffer(@Nonnull ValueType type, int capacity) {
+        this.type = type;
         this.capacity = capacity;
+    }
+
+    public @Nonnull ValueType getType() {
+        return type;
     }
 
     public int getCapacity() {

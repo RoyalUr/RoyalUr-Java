@@ -8,7 +8,7 @@ public class IntValueBuffer extends ValueBuffer {
     private final int[] buffer;
 
     public IntValueBuffer(int capacity) {
-        super(capacity);
+        super(ValueType.INT, capacity);
         this.buffer = new int[capacity];
     }
 

@@ -7,7 +7,7 @@ public class LongValueBuffer extends ValueBuffer {
     private final long[] buffer;
 
     public LongValueBuffer(int capacity) {
-        super(capacity);
+        super(ValueType.LONG, capacity);
         this.buffer = new long[capacity];
     }
 

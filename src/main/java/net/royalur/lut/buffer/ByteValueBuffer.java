@@ -8,7 +8,7 @@ public class ByteValueBuffer extends ValueBuffer {
     private final byte[] buffer;
 
     public ByteValueBuffer(int capacity) {
-        super(capacity);
+        super(ValueType.BYTE, capacity);
         this.buffer = new byte[capacity];
     }
 
