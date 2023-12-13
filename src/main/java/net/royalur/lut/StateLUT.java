@@ -1,11 +1,13 @@
 package net.royalur.lut;
 
+import net.royalur.Game;
 import net.royalur.lut.buffer.ValueType;
 import net.royalur.lut.store.BigEntryStore;
-import net.royalur.model.GameSettings;
-import net.royalur.model.Tile;
+import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
+import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
@@ -40,8 +42,6 @@ public class StateLUT {
     private final int area;
     private final int[] tileFlags;
     private final int[] nextBoardIndices;
-
-    private @Nullable BigEntryStore stateValues;
 
     public StateLUT(@Nonnull GameSettings<?> settings) {
         this.settings = settings;
@@ -196,8 +196,12 @@ public class StateLUT {
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         File outputFile = new File("./finkel.rgu");
-        BigEntryStore states = lut.readStateStore(encoding, outputFile);
-        lut.iterate(settings, encoding, states, outputFile);
+        BigEntryStore states = lut.readOrPopulateStateStore(encoding, outputFile);
+
+        FastSimpleGame game = new FastSimpleGame(settings);
+        game.copyFrom(new Game<>(new SimpleRuleSetProvider().create(settings, new GameMetadata())));
+        System.out.println(Float.intBitsToFloat(states.getInt(encoding.encode(game))));
+//        lut.iterate(settings, encoding, states, outputFile);
     }
 
     private void writeStateStore(
@@ -213,52 +217,49 @@ public class StateLUT {
         System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
     }
 
-    private @Nonnull BigEntryStore readStateStore(
+    public @Nonnull BigEntryStore readStateStore(@Nonnull File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            BigEntryStore states = BigEntryStore.read(fis.getChannel());
+
+            if (states.getKeyType() != ValueType.INT)
+                throw new IOException("Expected int keys");
+            if (states.getValueType() != ValueType.INT)
+                throw new IOException("Expected int values");
+
+            return states;
+        }
+    }
+
+    public @Nonnull BigEntryStore readOrPopulateStateStore(
             @Nonnull FinkelGameEncoding encoding,
-            @Nonnull File outputFile
+            @Nonnull File file
     ) throws IOException {
 
-        BigEntryStore states;
+        if (file.exists())
+            return readStateStore(file);
 
-        if (outputFile.exists()) {
-            // Read the populated map.
-            System.out.println("Reading cached map...");
-            long start1 = System.nanoTime();
-            try (FileInputStream fis = new FileInputStream(outputFile)) {
-                states = BigEntryStore.read(fis.getChannel());
+        System.out.println("Populating map...");
 
-                if (states.getKeyType() != ValueType.INT)
-                    throw new IOException("Expected int keys");
-                if (states.getValueType() != ValueType.INT)
-                    throw new IOException("Expected int values");
-            }
-            double duration1Ms = (System.nanoTime() - start1) / 1e6;
-            System.out.println("Read took " + MS_DURATION.format(duration1Ms) + " ms");
+        // Populate the map.
+        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
 
-        } else {
-            System.out.println("Populating map...");
+        long start1 = System.nanoTime();
+        loopGameStates((game) -> {
+            int key = encoding.encode(game);
+            float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
+            states.addEntry(key, Float.floatToRawIntBits(score));
+        });
+        double duration1Ms = (System.nanoTime() - start1) / 1e6;
+        System.out.println("Population took " + MS_DURATION.format(duration1Ms) + " ms");
 
-            // Populate the map.
-            states = new BigEntryStore(ValueType.INT, ValueType.INT);
+        long start2 = System.nanoTime();
+        double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
+        states.sort();
+        double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
+        double duration2Ms = (System.nanoTime() - start2) / 1e6;
+        System.out.println("Sort took " + MS_DURATION.format(duration2Ms) + " ms");
 
-            long start1 = System.nanoTime();
-            loopGameStates((game) -> {
-                int key = encoding.encode(game);
-                float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
-                states.addEntry(key, Float.floatToRawIntBits(score));
-            });
-            double duration1Ms = (System.nanoTime() - start1) / 1e6;
-            System.out.println("Population took " + MS_DURATION.format(duration1Ms) + " ms");
-
-            long start2 = System.nanoTime();
-            double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
-            states.sort();
-            double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
-            double duration2Ms = (System.nanoTime() - start2) / 1e6;
-            System.out.println("Sort took " + MS_DURATION.format(duration2Ms) + " ms");
-
-            writeStateStore(states, outputFile);
-        }
+        writeStateStore(states, file);
         return states;
     }
 
@@ -378,7 +379,19 @@ public class StateLUT {
         System.out.println("Starting full value iteration for 10 steps...");
         for (int index = 0; index < 10; ++index) {
             long start = System.nanoTime();
+            maxChange.set(0.0f);
+            loopGameStates((game) -> {
+                if (game.isFinished)
+                    return;
 
+                float difference = iterateState(
+                        game, encoding, states, probabilities,
+                        rollGame, moveGame, moveList
+                );
+                if (difference > maxChange.get()) {
+                    maxChange.set(difference);
+                }
+            });
             double durationMs = (System.nanoTime() - start) / 1e6;
             System.out.printf(
                     "%d. max diff = %.3f (%s ms)\n",

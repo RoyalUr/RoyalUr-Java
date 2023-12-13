@@ -1,13 +1,15 @@
 package net.royalur;
 
 import net.royalur.agent.Agent;
+import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.LikelihoodAgent;
 import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
+import net.royalur.lut.StateLUT;
+import net.royalur.lut.store.BigEntryStore;
+import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
-import net.royalur.model.path.MurrayPathPair;
-import net.royalur.model.path.SkiriukPathPair;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.stats.GameStats;
@@ -16,6 +18,8 @@ import net.royalur.stats.GameStatsTarget;
 import net.royalur.stats.SummaryStat;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -125,6 +129,8 @@ public class RGUStatistics {
             GameStats[] stats = new GameStats[tests];
             int agent1Wins = 0;
             int agent2Wins = 0;
+            int lightWins = 0;
+            int darkWins = 0;
             long start = System.nanoTime();
             for (int test = 0; test < tests; ++test) {
                 boolean swap = (test % 2 == 0);
@@ -138,6 +144,11 @@ public class RGUStatistics {
                     agent1Wins += 1;
                 } else {
                     agent2Wins += 1;
+                }
+                if (gameStats.didLightWin()) {
+                    lightWins += 1;
+                } else {
+                    darkWins += 1;
                 }
             }
             long nanosPerTest = (System.nanoTime() - start) / tests;
@@ -207,8 +218,13 @@ public class RGUStatistics {
             }
             double agent1WinPercentage = 100.0 * ((double) agent1Wins / tests);
             double agent2WinPercentage = 100.0 * ((double) agent2Wins / tests);
+            double lightWinPercentage = 100.0 * ((double) lightWins / tests);
+            double darkWinPercentage = 100.0 * ((double) darkWins / tests);
             System.out.printf("Agent 1 won %.2f%% of games%n", agent1WinPercentage);
             System.out.printf("Agent 2 won %.2f%% of games%n", agent2WinPercentage);
+            System.out.println();
+            System.out.printf("Light won %.2f%% of games%n", lightWinPercentage);
+            System.out.printf("Dark won %.2f%% of games%n", darkWinPercentage);
             System.out.println();
         }
     }
@@ -217,25 +233,14 @@ public class RGUStatistics {
      * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
      * @param args Ignored.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        StateLUT lut = new StateLUT(GameSettings.FINKEL);
+        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+
         new RGUStatistics().testAgentActions(
-                rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
-                ),
-                rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
-                ),
-                2,//10_000,
-                new GameStatsTarget[] {GameStatsTarget.OVERALL}
-        );
-        new RGUStatistics().testAgentActions(
-                rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
-                ),
-                rules -> new LikelihoodAgent<>(
-                        rules, new PiecesAdvancedUtilityFn(rules), 0.055f
-                ),
-                100,//10_000,
+                rules -> new FinkelLUTAgent<>(states),
+                rules -> new LikelihoodAgent<>(rules, new PiecesAdvancedUtilityFn(rules), 0.00025f),
+                1,
                 new GameStatsTarget[] {GameStatsTarget.OVERALL}
         );
     }
