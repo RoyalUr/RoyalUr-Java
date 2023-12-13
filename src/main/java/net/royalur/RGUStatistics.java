@@ -239,8 +239,8 @@ public class RGUStatistics {
 
         new RGUStatistics().testAgentActions(
                 rules -> new FinkelLUTAgent<>(states),
-                rules -> new LikelihoodAgent<>(rules, new PiecesAdvancedUtilityFn(rules), 0.00025f),
-                1,
+                rules -> new FinkelLUTAgent<>(states),
+                1000,
                 new GameStatsTarget[] {GameStatsTarget.OVERALL}
         );
     }
