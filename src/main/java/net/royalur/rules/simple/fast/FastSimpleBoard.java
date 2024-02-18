@@ -97,4 +97,28 @@ public class FastSimpleBoard {
         }
         return false;
     }
+
+    public String toString(String linePrefix) {
+        StringBuilder builder = new StringBuilder();
+        for (int ix = 0; ix < shape.getWidth(); ++ix) {
+            builder.append(linePrefix);
+            for (int iy = 0; iy < shape.getHeight(); ++iy) {
+                Tile tile = Tile.fromIndices(ix, iy);
+                if (!shape.contains(tile)) {
+                    builder.append(" ");
+                    continue;
+                }
+
+                int piece = get(calcTileIndex(ix, iy));
+                builder.append(piece < 0 ? "D" : (piece > 0 ? "L" : "-"));
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString("");
+    }
 }

@@ -251,6 +251,29 @@ public class Move<P extends Piece> {
     }
 
     /**
+     * Gets the index of the source piece in the path, or -1 if there is no source piece.
+     * @return The index of the source piece in the path.
+     */
+    public int getSourceIndex() {
+        if (sourcePiece == null)
+            return -1;
+
+        return sourcePiece.getPathIndex();
+    }
+
+    /**
+     * Gets the index of the destination piece in the path.
+     * @param paths The paths used for this move.
+     * @return The index of the destination piece in the path.
+     */
+    public int getDestIndex(@Nonnull PathPair paths) {
+        if (destPiece == null)
+            return paths.get(player).size();
+
+        return destPiece.getPathIndex();
+    }
+
+    /**
      * Gets the piece that will be captured by this move, or null
      * if there is no piece that will be captured.
      * @return The piece that will be captured by this move, or null.

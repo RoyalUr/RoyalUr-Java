@@ -46,4 +46,9 @@ public class FastSimplePlayer {
         this.pieces = state.getPieceCount();
         this.score = state.getScore();
     }
+
+    @Override
+    public String toString() {
+        return "{p=" + pieces + ", s=" + score + "}";
+    }
 }

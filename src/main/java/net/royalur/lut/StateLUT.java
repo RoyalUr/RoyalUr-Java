@@ -4,7 +4,6 @@ import net.royalur.Game;
 import net.royalur.lut.buffer.ValueType;
 import net.royalur.lut.store.BigEntryStore;
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
@@ -12,13 +11,13 @@ import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A lookup table based upon game states.
@@ -104,13 +103,21 @@ public class StateLUT {
     }
 
     public int countStates() {
+        return countStates(game -> true);
+    }
+
+    public int countStates(Function<FastSimpleGame, Boolean> gameFilter) {
         if (settings.getStartingPieceCount() > 7)
             throw new IllegalStateException("Starting piece count > 7 is not supported");
         if (shape.getTiles().size() >= 27)
             throw new IllegalArgumentException("Board area too big");
 
         AtomicLong stateCount = new AtomicLong();
-        loopGameStates((game) -> stateCount.incrementAndGet());
+        loopGameStates((game) -> {
+            if (gameFilter.apply(game)) {
+                stateCount.incrementAndGet();
+            }
+        });
         return Math.toIntExact(stateCount.get());
     }
 
@@ -172,16 +179,19 @@ public class StateLUT {
             game.dark.score = newDarkScore;
 
             if (nextBoardIndex >= area) {
-                game.isFinished = (newLightScore == pieceCount || newDarkScore == pieceCount);
+                boolean lightWon = (newLightScore >= pieceCount);
+                boolean darkWon = (newDarkScore >= pieceCount);
+                game.isFinished = (lightWon || darkWon);
 
-                for (int isLightTurn = 0; isLightTurn <= 1; ++isLightTurn) {
+                for (int turn = 0; turn <= 1; ++turn) {
                     // When the game is finished, the winner must have all pieces scored!
-                    if (isLightTurn == 0 && newLightScore == pieceCount)
+                    boolean isLightTurn = (turn == 1);
+                    if (!isLightTurn && lightWon)
                         continue;
-                    if (isLightTurn == 1 && newDarkScore == pieceCount)
+                    if (isLightTurn && darkWon)
                         continue;
 
-                    game.isLightTurn = (isLightTurn == 1);
+                    game.isLightTurn = isLightTurn;
                     gameConsumer.accept(game);
                 }
             } else {
@@ -200,7 +210,7 @@ public class StateLUT {
 
         FastSimpleGame game = new FastSimpleGame(settings);
         game.copyFrom(new Game<>(new SimpleRuleSetProvider().create(settings, new GameMetadata())));
-        System.out.println(Float.intBitsToFloat(states.getInt(encoding.encode(game))));
+        System.out.println(states.getAndUnwrapFloat(encoding.encode(game)));
 //        lut.iterate(settings, encoding, states, outputFile);
     }
 

@@ -202,6 +202,14 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
         throw new NoSuchElementException();
     }
 
+    public float getAndUnwrapFloat(int key) {
+        Integer floatBits = getInt(key);
+        if (floatBits == null)
+            throw new NullPointerException("No entry for given key: " + key);
+
+        return Float.intBitsToFloat(floatBits);
+    }
+
     public @Nullable Integer getInt(int key) {
         for (ChunkSet chunkSet : chunkSets) {
             Integer value = chunkSet.getInt(key);

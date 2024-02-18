@@ -2,8 +2,8 @@ package net.royalur;
 
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
-import net.royalur.agent.LikelihoodAgent;
-import net.royalur.agent.utility.PiecesAdvancedUtilityFn;
+import net.royalur.agent.GreedyAgent;
+import net.royalur.lut.FinkelGameEncoding;
 import net.royalur.lut.StateLUT;
 import net.royalur.lut.store.BigEntryStore;
 import net.royalur.model.GameSettings;
@@ -12,6 +12,8 @@ import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -20,8 +22,15 @@ import net.royalur.stats.SummaryStat;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -220,13 +229,275 @@ public class RGUStatistics {
             double agent2WinPercentage = 100.0 * ((double) agent2Wins / tests);
             double lightWinPercentage = 100.0 * ((double) lightWins / tests);
             double darkWinPercentage = 100.0 * ((double) darkWins / tests);
-            System.out.printf("Agent 1 won %.2f%% of games%n", agent1WinPercentage);
-            System.out.printf("Agent 2 won %.2f%% of games%n", agent2WinPercentage);
+            System.out.printf("Agent 1 won %.4f%% of games%n", agent1WinPercentage);
+            System.out.printf("Agent 2 won %.4f%% of games%n", agent2WinPercentage);
             System.out.println();
-            System.out.printf("Light won %.2f%% of games%n", lightWinPercentage);
-            System.out.printf("Dark won %.2f%% of games%n", darkWinPercentage);
+            System.out.printf("Light won %.4f%% of games%n", lightWinPercentage);
+            System.out.printf("Dark won %.4f%% of games%n", darkWinPercentage);
             System.out.println();
         }
+    }
+
+    public void testMoveStats(
+            GameSettings<Roll> settings,
+            StateLUT lut,
+            BigEntryStore states,
+            Function<FastSimpleGame, Boolean> gameFilter
+    ) {
+        long start = System.nanoTime();
+
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
+
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+
+        AtomicInteger maxMoves = new AtomicInteger(0);
+        AtomicLong maxMovesStateCount = new AtomicLong(0);
+        FastSimpleGame maxMovesState = new FastSimpleGame(settings);
+
+        AtomicInteger highestWinChance = new AtomicInteger(Float.floatToIntBits(-1.0f));
+        FastSimpleGame highestWinChanceGame = new FastSimpleGame(settings);
+        AtomicInteger lowestWinChance = new AtomicInteger(Float.floatToIntBits(101.0f));
+        FastSimpleGame lowestWinChanceGame = new FastSimpleGame(settings);
+
+        AtomicLong[] moveCounts = new AtomicLong[settings.getStartingPieceCount() + 1];
+        for (int index = 0; index < moveCounts.length; ++index) {
+            moveCounts[index] = new AtomicLong(0);
+        }
+
+        AtomicLong totalMoves = new AtomicLong();
+        AtomicLong introducingMoves = new AtomicLong();
+        AtomicLong scoringMoves = new AtomicLong();
+        AtomicLong capturingMoves = new AtomicLong();
+        AtomicLong grantExtraRollMoves = new AtomicLong();
+
+        BigDecimal bigZero = new BigDecimal("0", MathContext.DECIMAL128);
+        AtomicReference<BigDecimal> overallMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> introducingMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> scoringMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> capturingMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> grantExtraRollMoveScoreSum = new AtomicReference<>(bigZero);
+
+        AtomicReference<BigDecimal> overallRelMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> introducingRelMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> scoringRelMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> capturingRelMoveScoreSum = new AtomicReference<>(bigZero);
+        AtomicReference<BigDecimal> grantExtraRollRelMoveScoreSum = new AtomicReference<>(bigZero);
+
+        System.out.println("Processing game states...");
+        long totalGameStates = lut.countStates(gameFilter);
+        AtomicLong stateCount = new AtomicLong(0);
+
+        lut.loopGameStates(game -> {
+            if (game.isFinished || !gameFilter.apply(game))
+                return;
+
+            long currentStateCount = stateCount.incrementAndGet();
+            if (currentStateCount % 10000000L == 0) {
+                System.out.printf("* %.2f%% (%d / %d)%n", 100.0 * currentStateCount / totalGameStates, currentStateCount, totalGameStates);
+            }
+
+            float baseScore = (100f + states.getAndUnwrapFloat(encoding.encode(game))) / 2f;
+
+            if (baseScore > Float.intBitsToFloat(highestWinChance.get())) {
+                highestWinChance.set(Float.floatToIntBits(baseScore));
+                highestWinChanceGame.copyFrom(game);
+            }
+            if (baseScore < Float.intBitsToFloat(lowestWinChance.get())) {
+                lowestWinChance.set(Float.floatToIntBits(baseScore));
+                lowestWinChanceGame.copyFrom(game);
+            }
+
+            for (int roll = 0; roll <= 4; ++roll) {
+                rollGame.copyFrom(game);
+                rollGame.applyRoll(roll, moveList);
+
+                int moveScoreMul = (rollGame.isLightTurn ? 1 : -1);
+
+                int currentMaxMoves = maxMoves.get();
+                if (moveList.moveCount > currentMaxMoves) {
+                    maxMoves.set(moveList.moveCount);
+                    maxMovesStateCount.set(1);
+                    maxMovesState.copyFrom(rollGame);
+                } else if (moveList.moveCount == currentMaxMoves) {
+                    maxMovesStateCount.incrementAndGet();
+                }
+
+                moveCounts[moveList.moveCount].incrementAndGet();
+
+                int[] moveStatuses = new int[moveList.moveCount];
+                float[] moveNewScores = new float[moveList.moveCount];
+
+                for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                    int move = moveList.moves[moveIndex];
+                    moveGame.copyFrom(rollGame);
+                    int moveStatus = moveGame.applyMove(move);
+
+                    float newScore = (100f + states.getAndUnwrapFloat(encoding.encode(moveGame))) / 2f;
+                    float moveScoreFloat = (newScore - baseScore) * moveScoreMul;
+                    BigDecimal moveScore = new BigDecimal(moveScoreFloat, MathContext.DECIMAL128);
+
+                    moveStatuses[moveIndex] = moveStatus;
+                    moveNewScores[moveIndex] = newScore;
+
+                    totalMoves.incrementAndGet();
+                    overallMoveScoreSum.set(overallMoveScoreSum.get().add(moveScore));
+                    if (FastSimpleGame.didMoveIntroducePiece(moveStatus)) {
+                        introducingMoves.incrementAndGet();
+                        introducingMoveScoreSum.set(introducingMoveScoreSum.get().add(moveScore));
+                    }
+                    if (FastSimpleGame.didMoveScorePiece(moveStatus)) {
+                        scoringMoves.incrementAndGet();
+                        scoringMoveScoreSum.set(scoringMoveScoreSum.get().add(moveScore));
+                    }
+                    if (FastSimpleGame.didMoveCapturePiece(moveStatus)) {
+                        capturingMoves.incrementAndGet();
+                        capturingMoveScoreSum.set(capturingMoveScoreSum.get().add(moveScore));
+                    }
+                    if (FastSimpleGame.didMoveGrantExtraRoll(moveStatus)) {
+                        grantExtraRollMoves.incrementAndGet();
+                        grantExtraRollMoveScoreSum.set(grantExtraRollMoveScoreSum.get().add(moveScore));
+                    }
+                }
+
+                if (moveList.moveCount >= 2) {
+                    float[] sortedMoveNewScores = Arrays.copyOf(moveNewScores, moveNewScores.length);
+                    Arrays.sort(sortedMoveNewScores);
+
+                    int mid = (sortedMoveNewScores.length - 1) / 2;
+                    float medianNewScore;
+
+                    if (sortedMoveNewScores.length % 2 == 0) {
+                        medianNewScore = (sortedMoveNewScores[mid] + sortedMoveNewScores[mid + 1]) / 2.0f;
+                    } else {
+                        medianNewScore = sortedMoveNewScores[mid];
+                    }
+
+                    for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                        int moveStatus = moveStatuses[moveIndex];
+                        float moveScoreFloat = (moveNewScores[moveIndex] - medianNewScore) * moveScoreMul;
+                        BigDecimal moveScore = new BigDecimal(moveScoreFloat, MathContext.DECIMAL128);
+
+                        overallRelMoveScoreSum.set(overallRelMoveScoreSum.get().add(moveScore));
+                        if (FastSimpleGame.didMoveIntroducePiece(moveStatus)) {
+                            introducingRelMoveScoreSum.set(introducingRelMoveScoreSum.get().add(moveScore));
+                        }
+                        if (FastSimpleGame.didMoveScorePiece(moveStatus)) {
+                            scoringRelMoveScoreSum.set(scoringRelMoveScoreSum.get().add(moveScore));
+                        }
+                        if (FastSimpleGame.didMoveCapturePiece(moveStatus)) {
+                            capturingRelMoveScoreSum.set(capturingRelMoveScoreSum.get().add(moveScore));
+                        }
+                        if (FastSimpleGame.didMoveGrantExtraRoll(moveStatus)) {
+                            grantExtraRollRelMoveScoreSum.set(grantExtraRollRelMoveScoreSum.get().add(moveScore));
+                        }
+                    }
+                }
+            }
+        });
+        System.out.println("Done!");
+        System.out.println();
+
+        double durationSeconds = (System.nanoTime() - start) / 1e9d;
+
+        System.out.printf("Evaluated %d moves in %.2f seconds%n", totalMoves.get(), durationSeconds);
+        System.out.printf("* %.1f%% of moves introduced a piece (%d)%n", 100.0 * introducingMoves.get() / totalMoves.get(), introducingMoves.get());
+        System.out.printf("* %.1f%% of moves scored a piece (%d)%n", 100.0 * scoringMoves.get() / totalMoves.get(), scoringMoves.get());
+        System.out.printf("* %.1f%% of moves captured a piece (%d)%n", 100.0 * capturingMoves.get() / totalMoves.get(), capturingMoves.get());
+        System.out.printf("* %.1f%% of moves granted an extra roll (%d)%n", 100.0 * grantExtraRollMoves.get() / totalMoves.get(), grantExtraRollMoves.get());
+
+        BigDecimal overallMoveScore = overallMoveScoreSum.get().divide(BigDecimal.valueOf(totalMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal introducingMoveScore = introducingMoveScoreSum.get().divide(BigDecimal.valueOf(introducingMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal scoringMoveScore = scoringMoveScoreSum.get().divide(BigDecimal.valueOf(scoringMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal capturingMoveScore = capturingMoveScoreSum.get().divide(BigDecimal.valueOf(capturingMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal grantExtraRollMoveScore = grantExtraRollMoveScoreSum.get().divide(BigDecimal.valueOf(grantExtraRollMoves.get()), RoundingMode.HALF_UP);
+
+        System.out.println();
+        System.out.println("Changes to win percentage after moves:");
+        System.out.printf("* %+f%% for all moves%n", overallMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves introducing a piece%n", introducingMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves scoring a piece%n", scoringMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves capturing a piece%n", capturingMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves granting an extra roll%n", grantExtraRollMoveScore.doubleValue());
+
+        BigDecimal overallRelMoveScore = overallRelMoveScoreSum.get().divide(BigDecimal.valueOf(totalMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal introducingRelMoveScore = introducingRelMoveScoreSum.get().divide(BigDecimal.valueOf(introducingMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal scoringRelMoveScore = scoringRelMoveScoreSum.get().divide(BigDecimal.valueOf(scoringMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal capturingRelMoveScore = capturingRelMoveScoreSum.get().divide(BigDecimal.valueOf(capturingMoves.get()), RoundingMode.HALF_UP);
+        BigDecimal grantExtraRollRelMoveScore = grantExtraRollRelMoveScoreSum.get().divide(BigDecimal.valueOf(grantExtraRollMoves.get()), RoundingMode.HALF_UP);
+
+        System.out.println();
+        System.out.println("Changes to win percentage after moves relative to the median change:");
+        System.out.printf("* %+f%% for all moves%n", overallRelMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves introducing a piece%n", introducingRelMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves scoring a piece%n", scoringRelMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves capturing a piece%n", capturingRelMoveScore.doubleValue());
+        System.out.printf("* %+f%% for moves granting an extra roll%n", grantExtraRollRelMoveScore.doubleValue());
+
+        System.out.println();
+        System.out.printf("Max moves from a position = %d for %d positions%n", maxMoves.get(), maxMovesStateCount.get());
+        System.out.println("Example position = " + maxMovesState);
+
+        System.out.println();
+        System.out.printf("Highest win chance = %.2f%%%n", Float.intBitsToFloat(highestWinChance.get()));
+        System.out.println("Example position = " + highestWinChanceGame);
+
+        System.out.println();
+        System.out.printf("Lowest win chance = %.2f%%%n", Float.intBitsToFloat(lowestWinChance.get()));
+        System.out.println("Example position = " + lowestWinChanceGame);
+
+        System.out.println();
+        System.out.printf("Move counts:%n");
+        for (int moveCount = 0; moveCount < moveCounts.length; ++moveCount) {
+            long frequency = moveCounts[moveCount].get();
+            System.out.printf("* %d moves from %d states%n", moveCount, frequency);
+        }
+    }
+
+    private static void runOverallMoveStatsTests() throws IOException {
+        GameSettings<Roll> settings = GameSettings.FINKEL;
+        StateLUT lut = new StateLUT(settings);
+        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+
+        RGUStatistics statistics = new RGUStatistics();
+        statistics.testMoveStats(settings, lut, states, (game) -> true);
+    }
+
+    private static void runBucketedMoveStatsTests(int buckets) throws IOException {
+        GameSettings<Roll> settings = GameSettings.FINKEL;
+        StateLUT lut = new StateLUT(settings);
+        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        RGUStatistics statistics = new RGUStatistics();
+        for (int bucket = 0; bucket < buckets; ++bucket) {
+            float min = bucket * 100.0f / buckets;
+            float max = (bucket + 1) * 100.0f / buckets;
+
+            System.out.printf("=========================%n");
+            System.out.printf("     %.0f%% -> %.0f%%%n", min, max);
+            System.out.printf("=========================%n");
+            statistics.testMoveStats(settings, lut, states, (game) -> {
+                float score = (100f + states.getAndUnwrapFloat(encoding.encode(game))) / 2f;
+                score *= (game.isLightTurn ? 1 : -1);
+                return score >= min && score <= max;
+            });
+        }
+    }
+
+    private static void runGames() throws IOException {
+        GameSettings<Roll> settings = GameSettings.FINKEL;
+        StateLUT lut = new StateLUT(settings);
+        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+
+        RGUStatistics statistics = new RGUStatistics();
+        statistics.testAgentActions(
+                rules -> new GreedyAgent<>(),
+                rules -> new FinkelLUTAgent<>(states),
+                1000_000,
+                GameStatsTarget.values()
+        );
     }
 
     /**
@@ -234,14 +505,8 @@ public class RGUStatistics {
      * @param args Ignored.
      */
     public static void main(String[] args) throws IOException {
-        StateLUT lut = new StateLUT(GameSettings.FINKEL);
-        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
-
-        new RGUStatistics().testAgentActions(
-                rules -> new FinkelLUTAgent<>(states),
-                rules -> new FinkelLUTAgent<>(states),
-                1000,
-                new GameStatsTarget[] {GameStatsTarget.OVERALL}
-        );
+//        runMoveStatsTests();
+        runBucketedMoveStatsTests(10);
+//        runGames();
     }
 }

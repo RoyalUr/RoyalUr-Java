@@ -14,6 +14,11 @@ import java.util.List;
  */
 public class FastSimpleGame {
 
+    public static final int MOVE_STATUS_INTRODUCED = 0x01;
+    public static final int MOVE_STATUS_SCORED = 0x02;
+    public static final int MOVE_STATUS_CAPTURED = 0x04;
+    public static final int MOVE_STATUS_GRANTED_EXTRA_ROLL = 0x08;
+
     public final boolean areRosettesSafe;
     public final boolean rosettesGrantExtraRoll;
     public final boolean capturesGrantExtraRoll;
@@ -187,10 +192,12 @@ public class FastSimpleGame {
         return capturesGrantExtraRoll && capturedPiece != 0;
     }
 
-    public void applyMove(int pathIndex) {
+    public int applyMove(int pathIndex) {
         int rollValue = this.rollValue;
         if (rollValue < 0)
             throw new IllegalStateException("No roll has been made");
+
+        int resultStatus = 0;
 
         // We are using the roll now, so clear it.
         this.rollValue = -1;
@@ -208,6 +215,7 @@ public class FastSimpleGame {
         } else {
             // Introducing a piece to the board.
             turnPlayer.pieces -= 1;
+            resultStatus |= MOVE_STATUS_INTRODUCED;
         }
 
         int destPathIndex = pathIndex + rollValue;
@@ -220,22 +228,43 @@ public class FastSimpleGame {
             capturedPiece = boardPieces[destTileIndex];
             if (capturedPiece != 0) {
                 getPlayer(capturedPiece > 0).pieces += 1;
+                resultStatus |= MOVE_STATUS_CAPTURED;
             }
             boardPieces[destTileIndex] = turnPlayerSign * (destPathIndex + 1);
 
         } else {
             // Scoring a piece.
             turnPlayer.score += 1;
+            resultStatus |= MOVE_STATUS_SCORED;
             if (turnPlayer.score >= startingPieceCount) {
                 isFinished = true;
-                return;
+                return resultStatus;
             }
         }
 
         // Determine whose turn it should be.
         if (!shouldGrantRoll(destTileIndex, capturedPiece)) {
             isLightTurn = !isLightTurn;
+        } else {
+            resultStatus |= MOVE_STATUS_GRANTED_EXTRA_ROLL;
         }
+        return resultStatus;
+    }
+
+    public static boolean didMoveIntroducePiece(int moveStatus) {
+        return (moveStatus & MOVE_STATUS_INTRODUCED) != 0;
+    }
+
+    public static boolean didMoveScorePiece(int moveStatus) {
+        return (moveStatus & MOVE_STATUS_SCORED) != 0;
+    }
+
+    public static boolean didMoveCapturePiece(int moveStatus) {
+        return (moveStatus & MOVE_STATUS_CAPTURED) != 0;
+    }
+
+    public static boolean didMoveGrantExtraRoll(int moveStatus) {
+        return (moveStatus & MOVE_STATUS_GRANTED_EXTRA_ROLL) != 0;
     }
 
     private static @Nonnull int[] tilesToIndices(
@@ -248,5 +277,26 @@ public class FastSimpleGame {
             indices[index] = board.calcTileIndex(tile.getXIndex(), tile.getYIndex());
         }
         return indices;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
+        if (!isFinished) {
+            builder.append("  ").append(isLightTurn ? "light's turn" : "dark's turn").append(",\n");
+        } else {
+            builder.append("  ").append(isLightTurn ? "light won" : "dark won").append(",\n");
+        }
+        if (rollValue >= 0) {
+            builder.append("  rolled ").append(rollValue).append(",\n");
+        } else {
+            builder.append("  waiting for roll,\n");
+        }
+        builder.append("  ").append("light: ").append(light).append(",\n");
+        builder.append("  ").append("dark: ").append(dark).append(",\n");
+        builder.append("  ").append("board:\n").append(board.toString("    "));
+        builder.append("}");
+        return builder.toString();
     }
 }
