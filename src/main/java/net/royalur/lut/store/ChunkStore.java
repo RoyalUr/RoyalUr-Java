@@ -1,12 +1,6 @@
 package net.royalur.lut.store;
 
-import net.royalur.lut.Lut;
 import net.royalur.lut.buffer.ValueType;
-import net.royalur.model.GameSettings;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
-import net.royalur.notation.JsonNotation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -271,8 +265,11 @@ public class ChunkStore implements Iterable<ChunkStore.Entry> {
             for (Chunk chunk : set.getChunks()) {
                 for (int chunkIndex = 0; chunkIndex < chunk.getEntryCount(); ++chunkIndex) {
                     long key = chunk.getKeyLong(chunkIndex);
+                    if ((key & 1) == 1) // Skip states where it is dark's turn.
+                        continue;
+
                     long value = chunk.getValueLong(chunkIndex);
-                    result.addEntryWithoutSorting(key, value);
+                    result.addEntryWithoutSorting(key >> 1, value);
                 }
             }
         }

@@ -13,7 +13,6 @@ import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import javax.annotation.Nonnull;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
