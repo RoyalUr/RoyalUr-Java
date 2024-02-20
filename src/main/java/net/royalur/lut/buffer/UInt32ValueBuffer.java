@@ -6,15 +6,15 @@ import net.royalur.lut.store.DataSource;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class Int32ValueBuffer extends IntValueBuffer {
+public class UInt32ValueBuffer extends IntValueBuffer {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
 
     private static final long INT_MASK = (1L << 32) - 1;
     private final int[] buffer;
 
-    public Int32ValueBuffer(int capacity) {
-        super(ValueType.INT32, capacity);
+    public UInt32ValueBuffer(int capacity) {
+        super(ValueType.UINT32, capacity);
         this.buffer = new int[capacity];
     }
 

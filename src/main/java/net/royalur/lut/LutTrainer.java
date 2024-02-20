@@ -240,9 +240,9 @@ public class LutTrainer {
         try (FileInputStream fis = new FileInputStream(file)) {
             ChunkStore states = ChunkStore.read(fis.getChannel());
 
-            if (states.getKeyType() != ValueType.INT32)
+            if (states.getKeyType() != ValueType.UINT32)
                 throw new IOException("Expected int keys");
-            if (states.getValueType() != ValueType.INT32)
+            if (states.getValueType() != ValueType.UINT32)
                 throw new IOException("Expected int values");
 
             return states;
@@ -260,7 +260,7 @@ public class LutTrainer {
         System.out.println("Populating map...");
 
         // Populate the map.
-        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT32);
+        ChunkStore states = new ChunkStore(ValueType.UINT32, ValueType.UINT32);
 
         long start1 = System.nanoTime();
         loopGameStates((game) -> {

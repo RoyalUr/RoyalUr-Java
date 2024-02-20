@@ -23,7 +23,7 @@ public class FinkelGameEncodingTest {
         LutTrainer lut = new LutTrainer(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
-        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT8);
+        ChunkStore states = new ChunkStore(ValueType.UINT32, ValueType.UINT8);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
@@ -81,7 +81,7 @@ public class FinkelGameEncodingTest {
         int stateCount = lut.countStates();
         System.out.println("Counted " + stateCount + " states");
 
-        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT32);
+        ChunkStore states = new ChunkStore(ValueType.UINT32, ValueType.UINT32);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();

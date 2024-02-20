@@ -10,14 +10,14 @@ public class BigEntryStoreTest {
 
     @Test
     public void testPutGetNegative() {
-        ChunkStore map = new ChunkStore(ValueType.INT32, ValueType.INT32, 2);
+        ChunkStore map = new ChunkStore(ValueType.UINT32, ValueType.UINT32, 2);
         map.addEntry(-1, 0);
         assertEquals(0, map.getInt(-1));
     }
 
     @Test
     public void testPutGet() {
-        ChunkStore map = new ChunkStore(ValueType.INT32, ValueType.INT32, 2);
+        ChunkStore map = new ChunkStore(ValueType.UINT32, ValueType.UINT32, 2);
         assertEquals(0, map.getEntryCount());
 
         map.addEntry(5, 3);
@@ -41,7 +41,7 @@ public class BigEntryStoreTest {
 
     @Test
     public void testSort() {
-        ChunkStore map = new ChunkStore(ValueType.INT32, ValueType.INT32, 2);
+        ChunkStore map = new ChunkStore(ValueType.UINT32, ValueType.UINT32, 2);
         assertEquals(0, map.getEntryCount());
 
         map.addEntry(5, 3);

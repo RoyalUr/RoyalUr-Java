@@ -4,10 +4,10 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 public enum ValueType {
-    INT64(1, Int64ValueBuffer::new, true, false, 8),
-    INT32(2, Int32ValueBuffer::new, true, false, 4),
-    INT16(3, Int16ValueBuffer::new, true, false, 2),
-    INT8(4, Int8ValueBuffer::new, true, false, 1),
+    UINT64(1, UInt64ValueBuffer::new, true, false, 8),
+    UINT32(2, UInt32ValueBuffer::new, true, false, 4),
+    UINT16(3, UInt16ValueBuffer::new, true, false, 2),
+    UINT8(4, UInt8ValueBuffer::new, true, false, 1),
     FLOAT64(5, Float64ValueBuffer::new, false, true, 8),
     FLOAT32(6, Float32ValueBuffer::new, false, true, 4);
 
