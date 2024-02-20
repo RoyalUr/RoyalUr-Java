@@ -95,7 +95,7 @@ public class Chunk {
         updateStatistics();
     }
 
-    public void addEntryWithoutSorting(long key, long value) {
+    public void addEntryWithoutSorting(long key, double value) {
         if (entryCount >= entryCapacity)
             throw new IllegalStateException("Chunk is full!");
 

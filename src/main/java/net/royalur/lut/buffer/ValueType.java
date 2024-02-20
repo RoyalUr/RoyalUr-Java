@@ -9,7 +9,8 @@ public enum ValueType {
     UINT16(3, UInt16ValueBuffer::new, true, false, 2),
     UINT8(4, UInt8ValueBuffer::new, true, false, 1),
     FLOAT64(5, Float64ValueBuffer::new, false, true, 8),
-    FLOAT32(6, Float32ValueBuffer::new, false, true, 4);
+    FLOAT32(6, Float32ValueBuffer::new, false, true, 4),
+    PERCENT16(7, Percent16ValueBuffer::new, false, true, 2);
 
     private final int id;
     private final @Nonnull Function<Integer, ValueBuffer> builderFn;

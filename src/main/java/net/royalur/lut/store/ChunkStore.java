@@ -255,7 +255,8 @@ public class ChunkStore implements Iterable<ChunkStore.Entry> {
      * Creates a single chunk that contains all the keys and all the entries from this store.
      */
     public Chunk toSingleChunk() {
-        Chunk result = new Chunk(getEntryCount(), keyType, valueType);
+        // TODO: This method is deeply flawed, but is just temporary
+        Chunk result = new Chunk(getEntryCount(), keyType, ValueType.PERCENT16);
 
         sort();
         if (chunkSets.size() > 1)
@@ -268,8 +269,9 @@ public class ChunkStore implements Iterable<ChunkStore.Entry> {
                     if ((key & 1) == 1) // Skip states where it is dark's turn.
                         continue;
 
-                    long value = chunk.getValueLong(chunkIndex);
-                    result.addEntryWithoutSorting(key >> 1, value);
+                    int valueInt = chunk.getValueInt(chunkIndex);
+                    float value = Float.intBitsToFloat(valueInt);
+                    result.addEntryWithoutSorting(key >> 1, (100.0 + value) / 2.0);
                 }
             }
         }
