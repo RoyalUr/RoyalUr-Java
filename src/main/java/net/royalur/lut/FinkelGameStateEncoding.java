@@ -109,14 +109,10 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
 
     @Override
     public long encodeGameState(@Nonnull FastSimpleGame game) {
-        int lightPieces = game.light.pieces;
-        int darkPieces = game.dark.pieces;
-        int board = encodeBoard(game.board);
-
         int state = 0;
-        state |= board;
-        state |= darkPieces << 25;
-        state |= lightPieces << 28;
+        state |= encodeBoard(game.board);
+        state |= game.dark.pieces << 25;
+        state |= game.light.pieces << 28;
         return state;
     }
 }

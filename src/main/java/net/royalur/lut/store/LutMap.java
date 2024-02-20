@@ -36,7 +36,11 @@ public class LutMap {
     }
 
     public int indexOfKey(int lowerKey) {
-        return keyBuffer.indexOfBinarySearch(lowerKey, 0, entryCount);
+        int index = keyBuffer.indexOfBinarySearch(lowerKey, 0, entryCount);
+        if (index == -1)
+            throw new IllegalArgumentException("Could not find key: " + Integer.toHexString(lowerKey));
+
+        return index;
     }
 
     public long getLong(int lowerKey) {

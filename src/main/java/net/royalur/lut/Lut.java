@@ -1,5 +1,6 @@
 package net.royalur.lut;
 
+import net.royalur.lut.buffer.Float32ValueBuffer;
 import net.royalur.lut.buffer.FloatValueBuffer;
 import net.royalur.lut.buffer.Percent16ValueBuffer;
 import net.royalur.lut.buffer.UInt32ValueBuffer;
@@ -208,13 +209,14 @@ public class Lut<R extends Roll> {
         int mapCount = source.readInt();
         int[] mapEntryCounts = new int[mapCount];
         UInt32ValueBuffer[] mapKeyBuffers = new UInt32ValueBuffer[mapCount];
-        Percent16ValueBuffer[] mapValueBuffers = new Percent16ValueBuffer[mapCount];
+        FloatValueBuffer[] mapValueBuffers = new FloatValueBuffer[mapCount];
 
         for (int index = 0; index < mapCount; ++index) {
             int entryCount = source.readInt();
             mapEntryCounts[index] = entryCount;
             mapKeyBuffers[index] = new UInt32ValueBuffer(entryCount);
-            mapValueBuffers[index] = new Percent16ValueBuffer(entryCount);
+            // TODO
+            mapValueBuffers[index] = new Float32ValueBuffer(entryCount);// new Percent16ValueBuffer(entryCount);
         }
         for (int index = 0; index < mapCount; ++index) {
             mapKeyBuffers[index].readContents(source);
