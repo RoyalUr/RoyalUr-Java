@@ -12,15 +12,15 @@ import java.nio.ByteBuffer;
  */
 public abstract class ValueBuffer {
 
-    private final @Nonnull ValueType type;
+    private final ValueType type;
     private final int capacity;
 
-    public ValueBuffer(@Nonnull ValueType type, int capacity) {
+    public ValueBuffer(ValueType type, int capacity) {
         this.type = type;
         this.capacity = capacity;
     }
 
-    public @Nonnull ValueType getType() {
+    public ValueType getType() {
         return type;
     }
 
@@ -58,10 +58,18 @@ public abstract class ValueBuffer {
     public abstract void moveIntoPlace(int index, int targetIndex);
 
     public abstract void writeContents(
-            @Nonnull DataSink output, int startIndex, int endIndex
+            DataSink output, int startIndex, int endIndex
     ) throws IOException;
 
     public abstract void readContents(
-            @Nonnull DataSource input, int startIndex, int endIndex
+            DataSource input, int startIndex, int endIndex
     ) throws IOException;
+    
+    public void writeContents(DataSink output) throws IOException {
+        writeContents(output, 0, capacity);
+    }
+
+    public void readContents(DataSource input) throws IOException {
+        readContents(input, 0, capacity);
+    }
 }

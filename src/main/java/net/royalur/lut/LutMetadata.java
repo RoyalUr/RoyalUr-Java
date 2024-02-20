@@ -23,33 +23,22 @@ import java.util.Set;
  */
 public class LutMetadata<R extends Roll> {
 
-    private static final String AUTHOR_KEY = "author";
     private static final String GAME_SETTINGS_KEY = "game_settings";
-    private static final Set<String> RESERVED_KEYS = Set.of(AUTHOR_KEY, GAME_SETTINGS_KEY);
+    private static final Set<String> RESERVED_KEYS = Set.of(GAME_SETTINGS_KEY);
 
-    private final String author;
     private final GameSettings<R> gameSettings;
     private final Map<String, JsonNode> additionalMetadata;
 
     public LutMetadata(
-            String author,
             GameSettings<R> gameSettings,
             Map<String, JsonNode> additionalMetadata
     ) {
-        this.author = author;
         this.gameSettings = gameSettings;
         this.additionalMetadata = new HashMap<>(additionalMetadata);
     }
 
-    public LutMetadata(
-            String author,
-            GameSettings<R> gameSettings
-    ) {
-        this(author, gameSettings, Collections.emptyMap());
-    }
-
-    public String getAuthor() {
-        return author;
+    public LutMetadata(GameSettings<R> gameSettings) {
+        this(gameSettings, Collections.emptyMap());
     }
 
     public GameSettings<R> getGameSettings() {
@@ -94,7 +83,6 @@ public class LutMetadata<R extends Roll> {
             JsonGenerator generator
     ) throws IOException {
 
-        generator.writeStringField(AUTHOR_KEY, author);
         notation.writeGameSettings(generator, gameSettings);
 
         for (Map.Entry<String, JsonNode> entry : additionalMetadata.entrySet()) {
@@ -126,20 +114,16 @@ public class LutMetadata<R extends Roll> {
             JsonNotation<?, ?, R> notation,
             ObjectNode json
     ) {
-        String author = JsonHelper.readString(json, AUTHOR_KEY);
-
         ObjectNode gameSettingsJson = JsonHelper.readDict(json, GAME_SETTINGS_KEY);
         GameSettings<R> gameSettings = notation.readGameSettings(gameSettingsJson);
 
         Map<String, JsonNode> additionalMetadata = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : json.properties()) {
-            if (entry.getKey().equals(AUTHOR_KEY))
-                continue;
-            if (entry.getKey().equals(GAME_SETTINGS_KEY))
+            if (RESERVED_KEYS.contains(entry.getKey()))
                 continue;
 
             additionalMetadata.put(entry.getKey(), entry.getValue());
         }
-        return new LutMetadata<>(author, gameSettings, additionalMetadata);
+        return new LutMetadata<>(gameSettings, additionalMetadata);
     }
 }

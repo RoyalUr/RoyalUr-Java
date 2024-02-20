@@ -1,10 +1,16 @@
 package net.royalur.lut;
 
-import net.royalur.lut.store.Chunk;
+import net.royalur.lut.buffer.FloatValueBuffer;
+import net.royalur.lut.buffer.Percent16ValueBuffer;
+import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
 import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
+import net.royalur.rules.simple.fast.FastSimpleBoard;
+import net.royalur.rules.simple.fast.FastSimpleGame;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -13,15 +19,93 @@ import java.nio.charset.StandardCharsets;
 
 public class Lut<R extends Roll> {
 
+    private final GameStateEncoding encoding;
     private final LutMetadata<R> metadata;
-    private final Chunk entries;
+    private final LutMap[] maps;
+    private final FastSimpleGame tempGame;
 
     public Lut(
+            GameStateEncoding encoding,
             LutMetadata<R> metadata,
-            Chunk entries
+            LutMap[] maps
     ) {
+        this.encoding = encoding;
         this.metadata = metadata;
-        this.entries = entries;
+        this.maps = maps;
+        this.tempGame = new FastSimpleGame(metadata.getGameSettings());
+    }
+
+    public GameStateEncoding getGameStateEncoding() {
+        return encoding;
+    }
+
+    public LutMetadata<R> getMetadata() {
+        return metadata;
+    }
+
+    public LutMap getMap(int upperKey) {
+        return maps[upperKey];
+    }
+
+    private static void reversePlayers(FastSimpleGame input, FastSimpleGame output) {
+        output.isLightTurn = !input.isLightTurn;
+        output.isFinished = input.isFinished;
+        output.rollValue = input.rollValue;
+        output.dark.score = input.light.score;
+        output.dark.pieces = input.light.pieces;
+        output.light.score = input.dark.score;
+        output.light.pieces = input.dark.pieces;
+
+        FastSimpleBoard inputBoard = input.board;
+        FastSimpleBoard outputBoard = output.board;
+
+        int width = input.board.width;
+        int height = input.board.height;
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int fromIndex = inputBoard.calcTileIndex(x, y);
+                int toIndex = outputBoard.calcTileIndex(width - x - 1, y);
+                outputBoard.set(toIndex, -1 * inputBoard.get(fromIndex));
+            }
+        }
+    }
+
+    private long calcSymmetricalKey(FastSimpleGame game) {
+        FastSimpleGame keyGame = game;
+        if (game.isLightTurn) {
+            reversePlayers(game, tempGame);
+            keyGame = tempGame;
+        }
+        return encoding.encodeGameState(keyGame);
+    }
+
+    /**
+     * Assumes that the game is using symmetrical paths.
+     */
+    public double getLightWinPercent(FastSimpleGame game) {
+        long key = calcSymmetricalKey(game);
+        int upperKey = GameStateEncoding.calcUpperKey(key);
+        int lowerKey = GameStateEncoding.calcLowerKey(key);
+        double winPercent = maps[upperKey].getDouble(lowerKey);
+        return (game.isLightTurn ? winPercent : 100.0 - winPercent);
+    }
+
+    public double updateLightWinPercent(FastSimpleGame game, double winPercent) {
+        if (!game.isLightTurn) {
+            throw new IllegalArgumentException(
+                    "Only game states where it is the light player's turn are supported by this method"
+            );
+        }
+        long key = encoding.encodeGameState(game);
+        int upperKey = GameStateEncoding.calcUpperKey(key);
+        int lowerKey = GameStateEncoding.calcLowerKey(key);
+        return maps[upperKey].set(lowerKey, winPercent);
+    }
+
+    public void write(JsonNotation<?, ?, R> notation, File file) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            write(notation, fos.getChannel());
+        }
     }
 
     public void write(JsonNotation<?, ?, R> notation, FileChannel channel) throws IOException {
@@ -29,6 +113,18 @@ public class Lut<R extends Roll> {
         outputBuffer.order(ByteOrder.BIG_ENDIAN);
         DataSink output = new DataSink.FileDataSink(channel, outputBuffer);
         write(notation, output);
+    }
+
+    private static Percent16ValueBuffer convertToPercent16(FloatValueBuffer buffer) {
+        if (buffer instanceof Percent16ValueBuffer)
+            return (Percent16ValueBuffer) buffer;
+
+        int capacity = buffer.getCapacity();
+        Percent16ValueBuffer newBuffer = new Percent16ValueBuffer(capacity);
+        for (int index = 0; index < capacity; ++index) {
+            newBuffer.set(index, buffer.getDouble(index));
+        }
+        return newBuffer;
     }
 
     public void write(JsonNotation<?, ?, R> notation, DataSink output) throws IOException {
@@ -42,11 +138,19 @@ public class Lut<R extends Roll> {
         });
 
         output.write(buffer -> {
-            buffer.putInt(entries.getKeyType().ordinal());
-            buffer.putInt(entries.getValueType().ordinal());
-            buffer.putInt(entries.getEntryCount());
+            buffer.putInt(maps.length);
+            for (LutMap map : maps) {
+                buffer.putInt(map.getEntryCount());
+            }
         });
-        entries.writeKeys(output);
-        entries.writeValues(output);
+
+        for (LutMap map : maps) {
+            map.getKeyBuffer().writeContents(output);
+        }
+        for (LutMap map : maps) {
+            FloatValueBuffer buffer = map.getValueBuffer();
+            Percent16ValueBuffer percentBuffer = convertToPercent16(buffer);
+            percentBuffer.writeContents(output);
+        }
     }
 }

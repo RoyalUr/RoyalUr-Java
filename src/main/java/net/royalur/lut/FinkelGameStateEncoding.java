@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FinkelGameEncoding {
+public class FinkelGameStateEncoding implements GameStateEncoding {
 
     private final int[] middleLaneCompression;
 
-    public FinkelGameEncoding() {
+    public FinkelGameStateEncoding() {
         this.middleLaneCompression = generateMiddleLaneCompression();
 
         int maxCompressed = 0;
@@ -41,7 +41,7 @@ public class FinkelGameEncoding {
     }
 
     private static void addMiddleLaneStates(
-            @Nonnull List<Integer> states, int state, int lightPieces, int darkPieces, int index
+            List<Integer> states, int state, int lightPieces, int darkPieces, int index
     ) {
         int nextIndex = index + 1;
         for (int occupant = 0; occupant < 3; ++occupant) {
@@ -67,7 +67,7 @@ public class FinkelGameEncoding {
         }
     }
 
-    private int encodeMiddleLane(@Nonnull FastSimpleBoard board) {
+    private int encodeMiddleLane(FastSimpleBoard board) {
         int state = 0;
         for (int index = 0; index < 8; ++index) {
             int piece = board.pieces[board.calcTileIndex(1, index)];
@@ -81,7 +81,7 @@ public class FinkelGameEncoding {
         return compressed;
     }
 
-    private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
+    private int encodeSideLane(FastSimpleBoard board, int boardX) {
         int state = 0;
         int baseBitIndex = (boardX == 0 ? 0 : 3);
         for (int index = 0; index < 6; ++index) {
@@ -100,24 +100,24 @@ public class FinkelGameEncoding {
         return state;
     }
 
-    private int encodeBoard(@Nonnull FastSimpleBoard board) {
+    private int encodeBoard(FastSimpleBoard board) {
         int leftLane = encodeSideLane(board, 0);
         int rightLane = encodeSideLane(board, 2);
         int middleLane = encodeMiddleLane(board);
         return rightLane | (middleLane << 6) | (leftLane << 19);
     }
 
-    public int encode(@Nonnull FastSimpleGame game) {
+    @Override
+    public long encodeGameState(FastSimpleGame game) {
         int isLightTurn = game.isLightTurn ? 1 : 0;
         int lightPieces = game.light.pieces;
         int darkPieces = game.dark.pieces;
         int board = encodeBoard(game.board);
 
-        int state = 0;
-        state |= isLightTurn;
-        state |= board << 1;
-        state |= darkPieces << 26;
-        state |= lightPieces << 29;
-        return state;
+        long encoded = 0;
+        encoded |= board;
+        encoded |= (long) darkPieces << 25;
+        encoded |= (long) lightPieces << 28;
+        return encoded;
     }
 }

@@ -29,12 +29,12 @@ public class Float64ValueBuffer extends FloatValueBuffer {
 
     @Override
     public double getDouble(int index) {
-        return Byte.toUnsignedLong(getByte(index));
+        return buffer[index];
     }
 
     @Override
     public float getFloat(int index) {
-        return Byte.toUnsignedInt(getByte(index));
+        return (float) buffer[index];
     }
 
     @Override

@@ -1,8 +1,9 @@
 package net.royalur.lut;
 
-import net.royalur.lut.buffer.ValueType;
-import net.royalur.lut.store.Chunk;
-import net.royalur.lut.store.ChunkStore;
+import net.royalur.lut.buffer.Float32ValueBuffer;
+import net.royalur.lut.buffer.UInt32ValueBuffer;
+import net.royalur.lut.store.LutMap;
+import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
@@ -11,10 +12,12 @@ import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -23,9 +26,9 @@ import java.util.function.Function;
 /**
  * A lookup table based upon game states.
  */
-public class LutTrainer {
+public class LutTrainer<R extends Roll> {
 
-    private static final @Nonnull DecimalFormat MS_DURATION = new DecimalFormat("#,###");
+    private static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
     private static final int OCCUPANTS_MASK = 0b11;
     private static final int LIGHT_ONLY_FLAG = 0b100;
@@ -34,24 +37,31 @@ public class LutTrainer {
     private static final int DARK_PATH_INDEX_SHIFT = 8;
     private static final int DARK_PATH_INDEX_MASK = 0b11111;
 
-    private final @Nonnull GameSettings<?> settings;
-    private final @Nonnull BoardShape shape;
-    private final @Nonnull PathPair paths;
-    private final int width;
-    private final int height;
-    private final int area;
+    private static final int DEFAULT_UPPER_KEY_LIMIT = 64;
+
+    private final GameSettings<R> settings;
+    private final GameStateEncoding encoding;
+    private final JsonNotation<?, ?, R> jsonNotation;
+    private final int boardIndexCount;
     private final int[] tileFlags;
     private final int[] nextBoardIndices;
 
-    public LutTrainer(@Nonnull GameSettings<?> settings) {
+    public LutTrainer(
+            GameSettings<R> settings,
+            GameStateEncoding encoding,
+            JsonNotation<?, ?, R> jsonNotation
+    ) {
         this.settings = settings;
-        this.shape = settings.getBoardShape();
-        this.paths = settings.getPaths();
-        this.width = shape.getWidth();
-        this.height = shape.getHeight();
-        this.area = width * height;
+        this.encoding = encoding;
+        this.jsonNotation = jsonNotation;
 
-        this.tileFlags = new int[area];
+        BoardShape shape = settings.getBoardShape();
+        PathPair paths = settings.getPaths();
+        int width = shape.getWidth();
+        int height = shape.getHeight();
+        this.boardIndexCount = width * height;
+
+        this.tileFlags = new int[boardIndexCount];
 
         List<Tile> lightPath = paths.getLight();
         List<Tile> darkPath = paths.getDark();
@@ -83,8 +93,8 @@ public class LutTrainer {
             }
         }
 
-        this.nextBoardIndices = new int[area];
-        for (int index = 0; index < area; ++index) {
+        this.nextBoardIndices = new int[boardIndexCount];
+        for (int index = 0; index < boardIndexCount; ++index) {
             int nextX = index % width;
             int nextY = index / width;
             do {
@@ -97,7 +107,7 @@ public class LutTrainer {
 
             int nextIndex = nextX + width * nextY;
             if (nextX >= width) {
-                nextIndex = area;
+                nextIndex = boardIndexCount;
             }
             nextBoardIndices[index] = nextIndex;
         }
@@ -110,7 +120,7 @@ public class LutTrainer {
     public int countStates(Function<FastSimpleGame, Boolean> gameFilter) {
         if (settings.getStartingPieceCount() > 7)
             throw new IllegalStateException("Starting piece count > 7 is not supported");
-        if (shape.getTiles().size() >= 27)
+        if (settings.getBoardShape().getArea() >= 27)
             throw new IllegalArgumentException("Board area too big");
 
         AtomicLong stateCount = new AtomicLong();
@@ -179,7 +189,7 @@ public class LutTrainer {
             game.light.score = newLightScore;
             game.dark.score = newDarkScore;
 
-            if (nextBoardIndex >= area) {
+            if (nextBoardIndex >= boardIndexCount) {
                 boolean lightWon = (newLightScore >= pieceCount);
                 boolean darkWon = (newDarkScore >= pieceCount);
                 game.isFinished = (lightWon || darkWon);
@@ -202,148 +212,161 @@ public class LutTrainer {
     }
 
     public static void main(String[] args) throws IOException {
-        GameSettings<?> settings = GameSettings.FINKEL;
-        LutTrainer lut = new LutTrainer(settings);
-        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        GameSettings<Roll> settings = GameSettings.FINKEL;
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
+        LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./finkel_old.rgu");
-        File outputFile = new File("./finkel.rgu");
-        ChunkStore states = lut.readOrPopulateStateStore(encoding, inputFile);
-
-        lut.writeStateStore(GameSettings.FINKEL, states, outputFile);
-
-//        FastSimpleGame game = new FastSimpleGame(settings);
-//        game.copyFrom(new Game<>(new SimpleRuleSetProvider().create(settings, new GameMetadata())));
-//        System.out.println(states.getAndUnwrapFloat(encoding.encode(game)));
-//        lut.iterate(settings, encoding, states, outputFile);
-    }
-
-    private void writeStateStore(
-            @Nonnull GameSettings<Roll> settings,
-            @Nonnull ChunkStore states,
-            @Nonnull File outputFile
-    ) throws IOException {
+        long populateStart = System.nanoTime();
+        Lut<Roll> lut = trainer.populateNewLut();
+        double populateDurationMs = (System.nanoTime() - populateStart) / 1e6;
+        System.out.println("Populate took " + MS_DURATION.format(populateDurationMs) + " ms");
 
         long start = System.nanoTime();
-        Chunk chunk = states.toSingleChunk();
-        Lut<Roll> lut = new Lut<>(new LutMetadata<>("Padraig Lamont", settings), chunk);
-        JsonNotation<?, ?, Roll> notation = JsonNotation.createSimple();
-
-        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-            lut.write(notation, fos.getChannel());
-        }
+        File outputFile = new File("./finkel_empty.rgu");
+        lut.write(jsonNotation, outputFile);
         double durationMs = (System.nanoTime() - start) / 1e6;
         System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
     }
 
-    public @Nonnull ChunkStore readStateStore(@Nonnull File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file)) {
-            ChunkStore states = ChunkStore.read(fis.getChannel());
+    public UInt32ValueBuffer populateKeys(int upperKeyFilter) {
+        OrderedUInt32BufferSet keys = new OrderedUInt32BufferSet();
 
-            if (states.getKeyType() != ValueType.UINT32)
-                throw new IOException("Expected int keys");
-            if (states.getValueType() != ValueType.UINT32)
-                throw new IOException("Expected int values");
+        AtomicInteger entryCount = new AtomicInteger(0);
+        loopGameStates(game -> {
+            if (!game.isLightTurn)
+                return;
 
-            return states;
-        }
-    }
+            long key = encoding.encodeGameState(game);
+            int upperKey = GameStateEncoding.calcUpperKey(key);
+            int lowerKey = GameStateEncoding.calcLowerKey(key);
+            if (upperKey != upperKeyFilter)
+                return;
 
-    public @Nonnull ChunkStore readOrPopulateStateStore(
-            @Nonnull FinkelGameEncoding encoding,
-            @Nonnull File file
-    ) throws IOException {
-
-        if (file.exists())
-            return readStateStore(file);
-
-        System.out.println("Populating map...");
-
-        // Populate the map.
-        ChunkStore states = new ChunkStore(ValueType.UINT32, ValueType.UINT32);
-
-        long start1 = System.nanoTime();
-        loopGameStates((game) -> {
-            int key = encoding.encode(game);
-            float score = (game.isFinished ? 100 * (game.isLightTurn ? 1 : -1) : 0);
-            states.addEntry(key, Float.floatToRawIntBits(score));
+            keys.add(lowerKey);
+            entryCount.incrementAndGet();
         });
-        double duration1Ms = (System.nanoTime() - start1) / 1e6;
-        System.out.println("Population took " + MS_DURATION.format(duration1Ms) + " ms");
-
-        long start2 = System.nanoTime();
-        double overlapsPerChunkBeforeSort = states.getOverlapsPerChunk();
-        states.sort();
-        double overlapsPerChunkAfterSort = states.getOverlapsPerChunk();
-        double duration2Ms = (System.nanoTime() - start2) / 1e6;
-        System.out.println("Sort took " + MS_DURATION.format(duration2Ms) + " ms");
-
-        writeStateStore(GameSettings.FINKEL, states, file);
-        return states;
+        return keys.toSingleCompressedBuffer().getBuffer();
     }
 
-    private float iterateState(
-            @Nonnull FastSimpleGame game,
-            @Nonnull FinkelGameEncoding encoding,
-            @Nonnull ChunkStore states,
-            float[] probabilities,
-            @Nonnull FastSimpleGame rollGame,
-            @Nonnull FastSimpleGame moveGame,
-            @Nonnull FastSimpleMoveList moveList
-    ) {
-        int key = encoding.encode(game);
+    public LutMap populateNewMap(int upperKeyFilter) {
+        UInt32ValueBuffer keys = populateKeys(upperKeyFilter);
+        int entryCount = keys.getCapacity();
 
-        float newValue = 0.0f;
+        Float32ValueBuffer values = new Float32ValueBuffer(entryCount);
+        LutMap map = new LutMap(entryCount, keys, values);
+
+        loopGameStates(game -> {
+            if (!game.isLightTurn)
+                return;
+
+            long key = encoding.encodeGameState(game);
+            int upperKey = GameStateEncoding.calcUpperKey(key);
+            int lowerKey = GameStateEncoding.calcLowerKey(key);
+            if (upperKey != upperKeyFilter)
+                return;
+
+            float value = (game.isFinished ? 100.0f : 50.0f);
+            map.set(lowerKey, value);
+        });
+        return map;
+    }
+
+    private Set<Integer> findAllUpperKeys() {
+        Set<Integer> upperKeys = new HashSet<>();
+        loopGameStates(game -> {
+            if (!game.isLightTurn)
+                return;
+
+            long key = encoding.encodeGameState(game);
+            upperKeys.add(GameStateEncoding.calcUpperKey(key));
+        });
+        return upperKeys;
+    }
+
+    private static int calculateMaxUnsigned(Iterable<Integer> upperKeys) {
+        int maxUpperKey = 0;
+        for (int upperKey : upperKeys) {
+            if (Long.compareUnsigned(upperKey, maxUpperKey) > 0) {
+                maxUpperKey = upperKey;
+            }
+        }
+        return maxUpperKey;
+    }
+
+    public LutMap[] populateNewMaps(int upperKeyLimit) {
+        Set<Integer> upperKeys = findAllUpperKeys();
+        int maxUpperKey = calculateMaxUnsigned(upperKeys);
+        if (Long.compareUnsigned(maxUpperKey, upperKeyLimit) >= 0) {
+            throw new IllegalArgumentException(
+                    "upperKeyLimit exceeds error limit: " + maxUpperKey + " >= " + upperKeyLimit
+            );
+        }
+        if (maxUpperKey < 0) {
+            throw new UnsupportedOperationException(
+                    "maxUpperKey is too large. It cannot be negative when treated as signed"
+            );
+        }
+
+        LutMap[] maps = new LutMap[maxUpperKey + 1];
+        for (int upperKey = 0; upperKey <= maxUpperKey; ++upperKey) {
+            maps[upperKey] = populateNewMap(upperKey);
+        }
+        return maps;
+    }
+
+    public Lut<R> populateNewLut(int upperKeyLimit) {
+        LutMetadata<R> metadata = new LutMetadata<>(settings);
+        LutMap[] maps = populateNewMaps(upperKeyLimit);
+        return new Lut<>(encoding, metadata, maps);
+    }
+
+    public Lut<R> populateNewLut() {
+        return populateNewLut(DEFAULT_UPPER_KEY_LIMIT);
+    }
+
+    private double iterateState(
+            Lut<R> lut,
+            FastSimpleGame game,
+            float[] probabilities,
+            FastSimpleGame rollGame,
+            FastSimpleGame moveGame,
+            FastSimpleMoveList moveList
+    ) {
+        double newValue = 0.0f;
         for (int roll = 0; roll <= 4; ++roll) {
             float prob = probabilities[roll];
 
             rollGame.copyFrom(game);
             rollGame.applyRoll(roll, moveList);
 
-            float bestValue;
+            double bestValue;
             if (rollGame.isWaitingForMove()) {
-                bestValue = (rollGame.isLightTurn ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY);
+                bestValue = 0.0;
 
                 for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
                     moveGame.copyFrom(rollGame);
                     moveGame.applyMove(moveList.moves[moveIndex]);
-                    int moveKey = encoding.encode(moveGame);
-                    Integer moveValueBits = states.getInt(moveKey);
-                    if (moveValueBits == null)
-                        throw new NullPointerException(Integer.toBinaryString(moveKey));
 
-                    float moveValue = Float.intBitsToFloat(moveValueBits);
-
-                    if (rollGame.isLightTurn) {
-                        bestValue = Math.max(bestValue, moveValue);
-                    } else {
-                        bestValue = Math.min(bestValue, moveValue);
-                    }
+                    double moveValue = lut.getLightWinPercent(moveGame);
+                    bestValue = Math.max(bestValue, moveValue);
                 }
             } else {
-                int rollKey = encoding.encode(rollGame);
-                Integer rollValueBits = states.getInt(rollKey);
-                if (rollValueBits == null)
-                    throw new NullPointerException(Integer.toBinaryString(rollKey));
-
-                bestValue = Float.intBitsToFloat(rollValueBits);
+                bestValue = lut.getLightWinPercent(rollGame);
             }
             newValue += prob * bestValue;
         }
 
-        int lastValueBits = states.updateEntry(key, Float.floatToRawIntBits(newValue));
-        float lastValue = Float.intBitsToFloat(lastValueBits);
+        double lastValue = lut.updateLightWinPercent(game, newValue);
         return Math.abs(lastValue - newValue);
     }
 
-    public void iterate(
-            @Nonnull GameSettings<?> settings,
-            @Nonnull FinkelGameEncoding encoding,
-            @Nonnull ChunkStore states,
-            @Nonnull File outputFile
+    public void train(
+            Lut<R> lut,
+            File outputFile
     ) throws IOException {
 
-        AtomicReference<Float> maxChange = new AtomicReference<>(0f);
+        AtomicReference<Double> maxChange = new AtomicReference<>(0.0d);
         FastSimpleGame rollGame = new FastSimpleGame(settings);
         FastSimpleGame moveGame = new FastSimpleGame(settings);
         FastSimpleMoveList moveList = new FastSimpleMoveList();
@@ -354,20 +377,20 @@ public class LutTrainer {
             for (int maxScore = 6; maxScore >= minScore; --maxScore) {
                 do {
                     long start = System.nanoTime();
-                    maxChange.set(0.0f);
+                    maxChange.set(0.0d);
 
                     int minScoreThreshold = minScore;
                     int maxScoreThreshold = maxScore;
                     loopGameStates((game) -> {
-                        if (game.isFinished)
+                        if (game.isFinished || !game.isLightTurn)
                             return;
                         if (Math.min(game.light.score, game.dark.score) != minScoreThreshold)
                             return;
                         if (Math.max(game.light.score, game.dark.score) != maxScoreThreshold)
                             return;
 
-                        float difference = iterateState(
-                                game, encoding, states, probabilities,
+                        double difference = iterateState(
+                                lut, game, probabilities,
                                 rollGame, moveGame, moveList
                         );
                         if (difference > maxChange.get()) {
@@ -385,26 +408,26 @@ public class LutTrainer {
                     iteration += 1;
 
                     if (iteration % 10 == 0) {
-                        writeStateStore(GameSettings.FINKEL, states, outputFile);
+                        lut.write(jsonNotation, outputFile);
                     }
                 } while (maxChange.get() > 0.01f);
             }
         }
 
-        writeStateStore(GameSettings.FINKEL, states, outputFile);
+        lut.write(jsonNotation, outputFile);
 
         System.out.println();
         System.out.println("Finished progressive value iteration!");
         System.out.println("Starting full value iteration for 10 steps...");
         for (int index = 0; index < 10; ++index) {
             long start = System.nanoTime();
-            maxChange.set(0.0f);
+            maxChange.set(0.0d);
             loopGameStates((game) -> {
-                if (game.isFinished)
+                if (game.isFinished || !game.isLightTurn)
                     return;
 
-                float difference = iterateState(
-                        game, encoding, states, probabilities,
+                double difference = iterateState(
+                        lut, game, probabilities,
                         rollGame, moveGame, moveList
                 );
                 if (difference > maxChange.get()) {
@@ -419,6 +442,6 @@ public class LutTrainer {
                     MS_DURATION.format(durationMs)
             );
         }
-        writeStateStore(GameSettings.FINKEL, states, outputFile);
+        lut.write(jsonNotation, outputFile);
     }
 }
