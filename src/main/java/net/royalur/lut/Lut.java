@@ -215,8 +215,7 @@ public class Lut<R extends Roll> {
             int entryCount = source.readInt();
             mapEntryCounts[index] = entryCount;
             mapKeyBuffers[index] = new UInt32ValueBuffer(entryCount);
-            // TODO
-            mapValueBuffers[index] = new Float32ValueBuffer(entryCount);// new Percent16ValueBuffer(entryCount);
+            mapValueBuffers[index] = new Float32ValueBuffer(entryCount);
         }
         for (int index = 0; index < mapCount; ++index) {
             mapKeyBuffers[index].readContents(source);

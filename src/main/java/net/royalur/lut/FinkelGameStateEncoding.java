@@ -118,6 +118,6 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
         state |= encodeBoard(game.board);
         state |= game.dark.pieces << 25;
         state |= game.light.pieces << 28;
-        return state;
+        return Integer.toUnsignedLong(state);
     }
 }
