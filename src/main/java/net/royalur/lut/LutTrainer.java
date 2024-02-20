@@ -217,13 +217,20 @@ public class LutTrainer<R extends Roll> {
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        long populateStart = System.nanoTime();
-        Lut<Roll> lut = trainer.populateNewLut();
-        double populateDurationMs = (System.nanoTime() - populateStart) / 1e6;
-        System.out.println("Populate took " + MS_DURATION.format(populateDurationMs) + " ms");
+        File inputFile = new File("./finkel.rgu");
+        File checkpointFile = new File("./finkel_ckpt.rgu");
+        File outputFile = new File("./finkel_test.rgu");
+
+        long readStart = System.nanoTime();
+        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
+        lut.getMetadata().getAdditionalMetadata().clear();
+        lut.getMetadata().addMetadata("author", "Padraig Lamont");
+        double readDurationMs = (System.nanoTime() - readStart) / 1e6;
+        System.out.println("Read took " + MS_DURATION.format(readDurationMs) + " ms");
+
+        trainer.train(lut, checkpointFile);
 
         long start = System.nanoTime();
-        File outputFile = new File("./finkel_empty.rgu");
         lut.write(jsonNotation, outputFile);
         double durationMs = (System.nanoTime() - start) / 1e6;
         System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
@@ -363,7 +370,16 @@ public class LutTrainer<R extends Roll> {
 
     public void train(
             Lut<R> lut,
-            File outputFile
+            File checkpointFile
+    ) throws IOException {
+
+        train(lut, checkpointFile, 0.01d);
+    }
+
+    public void train(
+            Lut<R> lut,
+            File checkpointFile,
+            double tolerance
     ) throws IOException {
 
         AtomicReference<Double> maxChange = new AtomicReference<>(0.0d);
@@ -408,13 +424,13 @@ public class LutTrainer<R extends Roll> {
                     iteration += 1;
 
                     if (iteration % 10 == 0) {
-                        lut.write(jsonNotation, outputFile);
+                        lut.write(jsonNotation, checkpointFile);
                     }
-                } while (maxChange.get() > 0.01f);
+                } while (maxChange.get() > tolerance);
             }
         }
 
-        lut.write(jsonNotation, outputFile);
+        lut.write(jsonNotation, checkpointFile);
 
         System.out.println();
         System.out.println("Finished progressive value iteration!");
@@ -442,6 +458,6 @@ public class LutTrainer<R extends Roll> {
                     MS_DURATION.format(durationMs)
             );
         }
-        lut.write(jsonNotation, outputFile);
+        lut.write(jsonNotation, checkpointFile);
     }
 }

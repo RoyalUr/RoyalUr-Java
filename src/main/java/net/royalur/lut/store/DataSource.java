@@ -12,6 +12,8 @@ import java.nio.channels.FileChannel;
  */
 public abstract class DataSource {
 
+    public abstract byte[] readBytes(int length) throws IOException;
+
     public abstract double readDouble() throws IOException;
 
     public abstract float readFloat() throws IOException;
@@ -60,6 +62,17 @@ public abstract class DataSource {
             workingBuffer.limit(remaining + read);
             if (workingBuffer.remaining() < byteCount)
                 throw new BufferUnderflowException();
+        }
+
+        @Override
+        public byte[] readBytes(int length) throws IOException {
+            if (length > workingBuffer.capacity())
+                throw new IOException("Working buffer is not large enough to read " + length + " bytes");
+
+            ensureAvailable(length);
+            byte[] dest = new byte[length];
+            workingBuffer.get(dest);
+            return dest;
         }
 
         @Override

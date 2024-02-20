@@ -1,8 +1,7 @@
 package net.royalur.agent;
 
 import net.royalur.Game;
-import net.royalur.lut.FinkelGameEncoding;
-import net.royalur.lut.store.ChunkStore;
+import net.royalur.lut.Lut;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.simple.fast.FastSimpleGame;
@@ -19,14 +18,12 @@ public class FinkelLUTAgent<
         R extends Roll
 > extends BaseAgent<P, S, R> {
 
-    private final @Nonnull ChunkStore states;
-    private final @Nonnull FinkelGameEncoding encoding;
+    private final @Nonnull Lut<R> lut;
     private final @Nonnull FastSimpleGame fastGame;
 
-    public FinkelLUTAgent(@Nonnull ChunkStore states) {
-        this.states = states;
-        this.encoding = new FinkelGameEncoding();
-        this.fastGame = new FastSimpleGame(GameSettings.FINKEL);
+    public FinkelLUTAgent(@Nonnull Lut<R> lut) {
+        this.lut = lut;
+        this.fastGame = new FastSimpleGame(lut.getMetadata().getGameSettings());
     }
 
     @Override
@@ -39,25 +36,26 @@ public class FinkelLUTAgent<
         if (availableMoves.size() == 1)
             return availableMoves.get(0);
 
-        Float bestScore = null;
+        double bestScore = -1.0d;
         Move<P> bestMove = null;
         for (Move<P> move : availableMoves) {
             Game<P, S, R> moveGame = game.copy();
             moveGame.makeMove(move);
 
             fastGame.copyFrom(moveGame);
-            int key = encoding.encode(fastGame);
-            Integer scoreBits = states.getInt(key);
-            if (scoreBits == null)
-                throw new IllegalStateException("State does not exist in map!");
-
-            float score = Float.intBitsToFloat(scoreBits);
+            double score = lut.getLightWinPercent(fastGame);
+            if (game.getTurn() == PlayerType.DARK) {
+                score = 100.0d - score;
+            }
             score *= (game.getTurn() == PlayerType.DARK ? -1 : 1);
-            if (bestScore == null || score > bestScore) {
+            if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
             }
         }
+        if (bestMove == null)
+            throw new NullPointerException();
+
         return bestMove;
     }
 }

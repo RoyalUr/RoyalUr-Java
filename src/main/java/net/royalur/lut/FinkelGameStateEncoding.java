@@ -41,7 +41,7 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
     }
 
     private static void addMiddleLaneStates(
-            List<Integer> states, int state, int lightPieces, int darkPieces, int index
+            @Nonnull List<Integer> states, int state, int lightPieces, int darkPieces, int index
     ) {
         int nextIndex = index + 1;
         for (int occupant = 0; occupant < 3; ++occupant) {
@@ -67,7 +67,7 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
         }
     }
 
-    private int encodeMiddleLane(FastSimpleBoard board) {
+    private int encodeMiddleLane(@Nonnull FastSimpleBoard board) {
         int state = 0;
         for (int index = 0; index < 8; ++index) {
             int piece = board.pieces[board.calcTileIndex(1, index)];
@@ -81,7 +81,7 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
         return compressed;
     }
 
-    private int encodeSideLane(FastSimpleBoard board, int boardX) {
+    private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
         int state = 0;
         int baseBitIndex = (boardX == 0 ? 0 : 3);
         for (int index = 0; index < 6; ++index) {
@@ -100,7 +100,7 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
         return state;
     }
 
-    private int encodeBoard(FastSimpleBoard board) {
+    private int encodeBoard(@Nonnull FastSimpleBoard board) {
         int leftLane = encodeSideLane(board, 0);
         int rightLane = encodeSideLane(board, 2);
         int middleLane = encodeMiddleLane(board);
@@ -108,16 +108,15 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
     }
 
     @Override
-    public long encodeGameState(FastSimpleGame game) {
-        int isLightTurn = game.isLightTurn ? 1 : 0;
+    public long encodeGameState(@Nonnull FastSimpleGame game) {
         int lightPieces = game.light.pieces;
         int darkPieces = game.dark.pieces;
         int board = encodeBoard(game.board);
 
-        long encoded = 0;
-        encoded |= board;
-        encoded |= (long) darkPieces << 25;
-        encoded |= (long) lightPieces << 28;
-        return encoded;
+        int state = 0;
+        state |= board;
+        state |= darkPieces << 25;
+        state |= lightPieces << 28;
+        return state;
     }
 }

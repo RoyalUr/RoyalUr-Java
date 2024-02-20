@@ -3,9 +3,9 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
-import net.royalur.lut.FinkelGameEncoding;
+import net.royalur.lut.FinkelGameStateEncoding;
 import net.royalur.lut.LutTrainer;
-import net.royalur.lut.store.ChunkStore;
+import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
@@ -239,15 +239,16 @@ public class RGUStatistics {
         }
     }
 
+    /*
     public void testMoveStats(
             GameSettings<Roll> settings,
             LutTrainer lut,
-            ChunkStore states,
+            OrderedUInt32BufferSet states,
             Function<FastSimpleGame, Boolean> gameFilter
     ) {
         long start = System.nanoTime();
 
-        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
 
         FastSimpleMoveList moveList = new FastSimpleMoveList();
         FastSimpleGame rollGame = new FastSimpleGame(settings);
@@ -459,7 +460,7 @@ public class RGUStatistics {
     private static void runOverallMoveStatsTests() throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
-        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
+        OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
         RGUStatistics statistics = new RGUStatistics();
         statistics.testMoveStats(settings, lut, states, (game) -> true);
@@ -468,9 +469,9 @@ public class RGUStatistics {
     private static void runBucketedMoveStatsTests(int buckets) throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
-        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
+        OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
-        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
         RGUStatistics statistics = new RGUStatistics();
         for (int bucket = 0; bucket < buckets; ++bucket) {
             float min = bucket * 100.0f / buckets;
@@ -490,7 +491,7 @@ public class RGUStatistics {
     private static void runGames() throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
-        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
+        OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
         RGUStatistics statistics = new RGUStatistics();
         statistics.testAgentActions(
@@ -499,7 +500,7 @@ public class RGUStatistics {
                 1000_000,
                 GameStatsTarget.values()
         );
-    }
+    }*/
 
     /**
      * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
@@ -510,10 +511,12 @@ public class RGUStatistics {
 //        runBucketedMoveStatsTests(10);
 //        runGames();
 
-        GameSettings<Roll> settings = GameSettings.FINKEL;
-        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        LutTrainer.main(args);
+
+        /*GameSettings<Roll> settings = GameSettings.FINKEL;
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
         LutTrainer lut = new LutTrainer(settings);
-        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
+        OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
         AtomicReference<Double> maxDifference = new AtomicReference<>(Double.NEGATIVE_INFINITY);
         AtomicReference<Double> minDifference = new AtomicReference<>(Double.POSITIVE_INFINITY);
@@ -570,6 +573,6 @@ public class RGUStatistics {
                 minDifference.set(diff);
             }
         });
-        System.out.println(minDifference + ", " + maxDifference);
+        System.out.println(minDifference + ", " + maxDifference);*/
     }
 }

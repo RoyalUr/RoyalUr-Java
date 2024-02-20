@@ -83,11 +83,16 @@ public class LutMetadata<R extends Roll> {
             JsonGenerator generator
     ) throws IOException {
 
-        notation.writeGameSettings(generator, gameSettings);
-
         for (Map.Entry<String, JsonNode> entry : additionalMetadata.entrySet()) {
-            generator.writeObjectFieldStart(entry.getKey());
+            generator.writeFieldName(entry.getKey());
             notation.getObjectMapper().writeTree(generator, entry.getValue());
+        }
+
+        generator.writeObjectFieldStart(GAME_SETTINGS_KEY);
+        try {
+            notation.writeGameSettings(generator, gameSettings);
+        } finally {
+            generator.writeEndObject();
         }
     }
 
