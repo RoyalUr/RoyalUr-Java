@@ -2,7 +2,7 @@ package net.royalur.lut;
 
 import net.royalur.Game;
 import net.royalur.lut.buffer.ValueType;
-import net.royalur.lut.store.BigEntryStore;
+import net.royalur.lut.store.ChunkStore;
 import net.royalur.model.GameSettings;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,10 +20,10 @@ public class FinkelGameEncodingTest {
 
     @Test
     public void testUniqueness() {
-        StateLUT lut = new StateLUT(GameSettings.FINKEL.withStartingPieceCount(3));
+        LutTrainer lut = new LutTrainer(GameSettings.FINKEL.withStartingPieceCount(3));
         int stateCount = lut.countStates();
 
-        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.BYTE);
+        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT8);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();
@@ -77,11 +77,11 @@ public class FinkelGameEncodingTest {
     @Test
     public void testPopulate() {
         GameSettings<?> settings = GameSettings.FINKEL.withStartingPieceCount(3);
-        StateLUT lut = new StateLUT(settings);
+        LutTrainer lut = new LutTrainer(settings);
         int stateCount = lut.countStates();
         System.out.println("Counted " + stateCount + " states");
 
-        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
+        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT32);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
         long start1 = System.currentTimeMillis();

@@ -1,67 +1,81 @@
 package net.royalur.lut.buffer;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
+import net.royalur.lut.store.DataSink;
+import net.royalur.lut.store.DataSource;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class LongValueBuffer extends ValueBuffer {
+public class Int32ValueBuffer extends IntValueBuffer {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
 
-    private final long[] buffer;
+    private static final long INT_MASK = (1L << 32) - 1;
+    private final int[] buffer;
 
-    public LongValueBuffer(int capacity) {
-        super(ValueType.LONG, capacity);
-        this.buffer = new long[capacity];
+    public Int32ValueBuffer(int capacity) {
+        super(ValueType.INT32, capacity);
+        this.buffer = new int[capacity];
+    }
+
+    private void checkValue(long value) {
+        if ((value & (~INT_MASK)) != 0)
+            throw new ArithmeticException("value cannot be represented in 32 bits");
     }
 
     @Override
     public long set(int index, long value) {
-        long lastValue = buffer[index];
+        checkValue(value);
+        int lastValue = set(index, (int) value);
+        return Integer.toUnsignedLong(lastValue);
+    }
+
+    @Override
+    public int set(int index, int value) {
+        int lastValue = buffer[index];
         buffer[index] = value;
         return lastValue;
     }
 
     @Override
-    public int set(int index, int value) {
-        throw new UnsupportedOperationException("This is a long array");
-    }
-
-    @Override
     public short set(int index, short value) {
-        throw new UnsupportedOperationException("This is a long array");
+        throw new UnsupportedOperationException("This is an int array");
     }
 
     @Override
     public byte set(int index, byte value) {
-        throw new UnsupportedOperationException("This is a long array");
+        throw new UnsupportedOperationException("This is an int array");
     }
 
     @Override
     public long getLong(int index) {
-        return buffer[index];
+        return Integer.toUnsignedLong(getInt(index));
     }
 
     @Override
     public int getInt(int index) {
-        throw new UnsupportedOperationException("This is a long buffer");
+        return buffer[index];
     }
 
     @Override
     public short getShort(int index) {
-        throw new UnsupportedOperationException("This is a long buffer");
+        throw new UnsupportedOperationException("This is an int buffer");
     }
 
     @Override
     public byte getByte(int index) {
-        throw new UnsupportedOperationException("This is a long buffer");
+        throw new UnsupportedOperationException("This is an int buffer");
     }
 
     @Override
     public int indexOf(long value, int startIndex, int endIndex) {
-        long[] buffer = this.buffer;
+        checkValue(value);
+        return indexOf((int) value, startIndex, endIndex);
+    }
+
+    @Override
+    public int indexOf(int value, int startIndex, int endIndex) {
+        int[] buffer = this.buffer;
         for (int index = startIndex; index < endIndex; ++index) {
             if (buffer[index] == value)
                 return index;
@@ -70,42 +84,38 @@ public class LongValueBuffer extends ValueBuffer {
     }
 
     @Override
-    public int indexOf(int value, int startIndex, int endIndex) {
-        return indexOf(Integer.toUnsignedLong(value), startIndex, endIndex);
-    }
-
-    @Override
     public int indexOf(short value, int startIndex, int endIndex) {
-        return indexOf(Short.toUnsignedLong(value), startIndex, endIndex);
+        return indexOf(Short.toUnsignedInt(value), startIndex, endIndex);
     }
 
     @Override
     public int indexOf(byte value, int startIndex, int endIndex) {
-        return indexOf(Byte.toUnsignedLong(value), startIndex, endIndex);
+        return indexOf(Byte.toUnsignedInt(value), startIndex, endIndex);
     }
 
     @Override
     public int indexOfBinarySearch(long value, int startIndex, int endIndex) {
+        checkValue(value);
+        return indexOfBinarySearch((int) value, startIndex, endIndex);
+    }
+
+    @Override
+    public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
         int lower = startIndex;
         int upper = endIndex;
         while (upper > lower + BINARY_TO_LINEAR_SEARCH_THRESHOLD) {
             int middleIndex = lower + (upper - lower) / 2;
-            long current = buffer[middleIndex];
+            int current = buffer[middleIndex];
             if (current == value)
                 return middleIndex;
 
-            if (Long.compareUnsigned(current, value) > 0) {
+            if (Integer.compareUnsigned(current, value) > 0) {
                 upper = middleIndex;
             } else {
                 lower = middleIndex + 1;
             }
         }
         return indexOf(value, lower, upper);
-    }
-
-    @Override
-    public int indexOfBinarySearch(int value, int startIndex, int endIndex) {
-        return indexOfBinarySearch(Integer.toUnsignedLong(value), startIndex, endIndex);
     }
 
     @Override
@@ -120,10 +130,10 @@ public class LongValueBuffer extends ValueBuffer {
 
     @Override
     public int moveIntoSortedPlace(int index) {
-        long value = buffer[index];
+        int value = buffer[index];
         for (int targetIndex = index; targetIndex > 0; targetIndex--) {
-            long compareValue = buffer[targetIndex - 1];
-            if (Long.compareUnsigned(value, compareValue) >= 0) {
+            int compareValue = buffer[targetIndex - 1];
+            if (Integer.compareUnsigned(value, compareValue) >= 0) {
                 buffer[targetIndex] = value;
                 return targetIndex;
             }
@@ -135,7 +145,7 @@ public class LongValueBuffer extends ValueBuffer {
 
     @Override
     public void moveIntoPlace(int index, int targetIndex) {
-        long value = buffer[index];
+        int value = buffer[index];
         for (int moveIndex = index; moveIndex > targetIndex; moveIndex--) {
             buffer[moveIndex] = buffer[moveIndex - 1];
         }
@@ -143,18 +153,24 @@ public class LongValueBuffer extends ValueBuffer {
     }
 
     @Override
-    public void writeContents(@Nonnull DataSink output) throws IOException {
-        output.write((outputBuffer) -> {
-            for (long value : buffer) {
-                outputBuffer.putLong(value);
+    public void writeContents(
+            @Nonnull DataSink output, int startIndex, int endIndex
+    ) throws IOException {
+
+        output.writeChunked((outputBuffer, fromIndex, toIndex) -> {
+            for (int index = fromIndex; index < toIndex; ++index) {
+                outputBuffer.putInt(buffer[index]);
             }
-        });
+        }, getType().getByteCount(), startIndex, endIndex);
     }
 
     @Override
-    public void readContents(@Nonnull DataSource input) throws IOException {
-        for (int index = 0; index < buffer.length; ++index) {
-            buffer[index] = input.readLong();
+    public void readContents(
+            @Nonnull DataSource input, int startIndex, int endIndex
+    ) throws IOException {
+
+        for (int index = startIndex; index < endIndex; ++index) {
+            buffer[index] = input.readInt();
         }
     }
 }

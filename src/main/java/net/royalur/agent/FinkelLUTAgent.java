@@ -2,7 +2,7 @@ package net.royalur.agent;
 
 import net.royalur.Game;
 import net.royalur.lut.FinkelGameEncoding;
-import net.royalur.lut.store.BigEntryStore;
+import net.royalur.lut.store.ChunkStore;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.simple.fast.FastSimpleGame;
@@ -19,11 +19,11 @@ public class FinkelLUTAgent<
         R extends Roll
 > extends BaseAgent<P, S, R> {
 
-    private final @Nonnull BigEntryStore states;
+    private final @Nonnull ChunkStore states;
     private final @Nonnull FinkelGameEncoding encoding;
     private final @Nonnull FastSimpleGame fastGame;
 
-    public FinkelLUTAgent(@Nonnull BigEntryStore states) {
+    public FinkelLUTAgent(@Nonnull ChunkStore states) {
         this.states = states;
         this.encoding = new FinkelGameEncoding();
         this.fastGame = new FastSimpleGame(GameSettings.FINKEL);

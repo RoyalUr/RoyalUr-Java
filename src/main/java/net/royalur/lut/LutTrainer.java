@@ -1,17 +1,19 @@
 package net.royalur.lut;
 
-import net.royalur.Game;
 import net.royalur.lut.buffer.ValueType;
-import net.royalur.lut.store.BigEntryStore;
+import net.royalur.lut.store.Chunk;
+import net.royalur.lut.store.ChunkStore;
 import net.royalur.model.*;
+import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
-import net.royalur.rules.simple.SimpleRuleSetProvider;
+import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,7 +24,7 @@ import java.util.function.Function;
 /**
  * A lookup table based upon game states.
  */
-public class StateLUT {
+public class LutTrainer {
 
     private static final @Nonnull DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
@@ -42,7 +44,7 @@ public class StateLUT {
     private final int[] tileFlags;
     private final int[] nextBoardIndices;
 
-    public StateLUT(@Nonnull GameSettings<?> settings) {
+    public LutTrainer(@Nonnull GameSettings<?> settings) {
         this.settings = settings;
         this.shape = settings.getBoardShape();
         this.paths = settings.getPaths();
@@ -202,45 +204,53 @@ public class StateLUT {
 
     public static void main(String[] args) throws IOException {
         GameSettings<?> settings = GameSettings.FINKEL;
-        StateLUT lut = new StateLUT(settings);
+        LutTrainer lut = new LutTrainer(settings);
         FinkelGameEncoding encoding = new FinkelGameEncoding();
 
+        File inputFile = new File("./finkel_old.rgu");
         File outputFile = new File("./finkel.rgu");
-        BigEntryStore states = lut.readOrPopulateStateStore(encoding, outputFile);
+        ChunkStore states = lut.readOrPopulateStateStore(encoding, inputFile);
 
-        FastSimpleGame game = new FastSimpleGame(settings);
-        game.copyFrom(new Game<>(new SimpleRuleSetProvider().create(settings, new GameMetadata())));
-        System.out.println(states.getAndUnwrapFloat(encoding.encode(game)));
+        lut.writeStateStore(GameSettings.FINKEL, states, outputFile);
+
+//        FastSimpleGame game = new FastSimpleGame(settings);
+//        game.copyFrom(new Game<>(new SimpleRuleSetProvider().create(settings, new GameMetadata())));
+//        System.out.println(states.getAndUnwrapFloat(encoding.encode(game)));
 //        lut.iterate(settings, encoding, states, outputFile);
     }
 
     private void writeStateStore(
-            @Nonnull BigEntryStore states,
+            @Nonnull GameSettings<Roll> settings,
+            @Nonnull ChunkStore states,
             @Nonnull File outputFile
     ) throws IOException {
 
         long start = System.nanoTime();
+        Chunk chunk = states.toSingleChunk();
+        Lut<Roll> lut = new Lut<>(new LutMetadata<>("Padraig Lamont", settings), chunk);
+        JsonNotation<?, ?, Roll> notation = JsonNotation.createSimple();
+
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-            states.write(fos.getChannel());
+            lut.write(notation, fos.getChannel());
         }
         double durationMs = (System.nanoTime() - start) / 1e6;
         System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
     }
 
-    public @Nonnull BigEntryStore readStateStore(@Nonnull File file) throws IOException {
+    public @Nonnull ChunkStore readStateStore(@Nonnull File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
-            BigEntryStore states = BigEntryStore.read(fis.getChannel());
+            ChunkStore states = ChunkStore.read(fis.getChannel());
 
-            if (states.getKeyType() != ValueType.INT)
+            if (states.getKeyType() != ValueType.INT32)
                 throw new IOException("Expected int keys");
-            if (states.getValueType() != ValueType.INT)
+            if (states.getValueType() != ValueType.INT32)
                 throw new IOException("Expected int values");
 
             return states;
         }
     }
 
-    public @Nonnull BigEntryStore readOrPopulateStateStore(
+    public @Nonnull ChunkStore readOrPopulateStateStore(
             @Nonnull FinkelGameEncoding encoding,
             @Nonnull File file
     ) throws IOException {
@@ -251,7 +261,7 @@ public class StateLUT {
         System.out.println("Populating map...");
 
         // Populate the map.
-        BigEntryStore states = new BigEntryStore(ValueType.INT, ValueType.INT);
+        ChunkStore states = new ChunkStore(ValueType.INT32, ValueType.INT32);
 
         long start1 = System.nanoTime();
         loopGameStates((game) -> {
@@ -269,14 +279,14 @@ public class StateLUT {
         double duration2Ms = (System.nanoTime() - start2) / 1e6;
         System.out.println("Sort took " + MS_DURATION.format(duration2Ms) + " ms");
 
-        writeStateStore(states, file);
+        writeStateStore(GameSettings.FINKEL, states, file);
         return states;
     }
 
     private float iterateState(
             @Nonnull FastSimpleGame game,
             @Nonnull FinkelGameEncoding encoding,
-            @Nonnull BigEntryStore states,
+            @Nonnull ChunkStore states,
             float[] probabilities,
             @Nonnull FastSimpleGame rollGame,
             @Nonnull FastSimpleGame moveGame,
@@ -330,7 +340,7 @@ public class StateLUT {
     public void iterate(
             @Nonnull GameSettings<?> settings,
             @Nonnull FinkelGameEncoding encoding,
-            @Nonnull BigEntryStore states,
+            @Nonnull ChunkStore states,
             @Nonnull File outputFile
     ) throws IOException {
 
@@ -376,13 +386,13 @@ public class StateLUT {
                     iteration += 1;
 
                     if (iteration % 10 == 0) {
-                        writeStateStore(states, outputFile);
+                        writeStateStore(GameSettings.FINKEL, states, outputFile);
                     }
                 } while (maxChange.get() > 0.01f);
             }
         }
 
-        writeStateStore(states, outputFile);
+        writeStateStore(GameSettings.FINKEL, states, outputFile);
 
         System.out.println();
         System.out.println("Finished progressive value iteration!");
@@ -410,6 +420,6 @@ public class StateLUT {
                     MS_DURATION.format(durationMs)
             );
         }
-        writeStateStore(states, outputFile);
+        writeStateStore(GameSettings.FINKEL, states, outputFile);
     }
 }

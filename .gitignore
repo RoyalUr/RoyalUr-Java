@@ -5,4 +5,4 @@ target/
 release.properties
 pom.xml.releaseBackup
 royalur.iml
-finkel.rgu
+*.rgu

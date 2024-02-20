@@ -1,10 +1,11 @@
 package net.royalur.lut.buffer;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
+import net.royalur.lut.store.DataSink;
+import net.royalur.lut.store.DataSource;
 
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.nio.ByteBuffer;
 
 /**
  * Stores binary values and provides efficient methods to manipulate it.
@@ -35,6 +36,10 @@ public abstract class ValueBuffer {
 
     public abstract byte set(int index, byte value);
 
+    public abstract double set(int index, double value);
+
+    public abstract float set(int index, float value);
+
     public abstract long getLong(int index);
 
     public abstract int getInt(int index);
@@ -43,45 +48,20 @@ public abstract class ValueBuffer {
 
     public abstract byte getByte(int index);
 
-    public abstract int indexOf(long value, int startIndex, int endIndex);
+    public abstract double getDouble(int index);
 
-    public abstract int indexOf(int value, int startIndex, int endIndex);
-
-    public abstract int indexOf(short value, int startIndex, int endIndex);
-
-    public abstract int indexOf(byte value, int startIndex, int endIndex);
-
-    /**
-     * Expects the buffer to be sorted in unsigned ascending order.
-     */
-    public abstract int indexOfBinarySearch(long value, int startIndex, int endIndex);
-
-    /**
-     * Expects the buffer to be sorted in unsigned ascending order.
-     */
-    public abstract int indexOfBinarySearch(int value, int startIndex, int endIndex);
-
-    /**
-     * Expects the buffer to be sorted in unsigned ascending order.
-     */
-    public abstract int indexOfBinarySearch(short value, int startIndex, int endIndex);
-
-    /**
-     * Expects the buffer to be sorted in unsigned ascending order.
-     */
-    public abstract int indexOfBinarySearch(byte value, int startIndex, int endIndex);
-
-    /**
-     * Returns the final index that the value was moved to.
-     */
-    public abstract int moveIntoSortedPlace(int index);
+    public abstract float getFloat(int index);
 
     /**
      * Moves the value to targetIndex, and shifts all values in between.
      */
     public abstract void moveIntoPlace(int index, int targetIndex);
 
-    public abstract void writeContents(@Nonnull DataSink output) throws IOException;
+    public abstract void writeContents(
+            @Nonnull DataSink output, int startIndex, int endIndex
+    ) throws IOException;
 
-    public abstract void readContents(@Nonnull DataSource input) throws IOException;
+    public abstract void readContents(
+            @Nonnull DataSource input, int startIndex, int endIndex
+    ) throws IOException;
 }

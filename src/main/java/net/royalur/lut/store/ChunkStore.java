@@ -1,8 +1,12 @@
 package net.royalur.lut.store;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
+import net.royalur.lut.Lut;
 import net.royalur.lut.buffer.ValueType;
+import net.royalur.model.GameSettings;
+import net.royalur.model.Piece;
+import net.royalur.model.PlayerState;
+import net.royalur.model.dice.Roll;
+import net.royalur.notation.JsonNotation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,9 +22,11 @@ import java.util.function.Consumer;
 
 /**
  * A big store of key-value entries that is built to reduce memory usage
- * by packing the keys and values together tightly in arrays.
+ * by packing the keys and values together tightly in arrays. This store
+ * also does a lot to keep the keys in sorted order as it is filled with
+ * hundreds of millions of entries.
  */
-public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
+public class ChunkStore implements Iterable<ChunkStore.Entry> {
 
     public static final int DEFAULT_ENTRIES_PER_CHUNK = 8 * 1024;
 
@@ -29,7 +35,7 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
     private final @Nonnull ValueType valueType;
     private final @Nonnull List<ChunkSet> chunkSets;
 
-    public BigEntryStore(
+    public ChunkStore(
             @Nonnull ValueType keyType,
             @Nonnull ValueType valueType,
             int entriesPerChunk
@@ -40,7 +46,7 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
         this.chunkSets = new ArrayList<>();
     }
 
-    public BigEntryStore(
+    public ChunkStore(
             @Nonnull ValueType keyType,
             @Nonnull ValueType valueType
     ) {
@@ -82,7 +88,7 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
     private ChunkSet allocateChunkSet(int chunkCount) {
         Chunk[] chunkSet = new Chunk[chunkCount];
         for (int index = 0; index < chunkCount; ++index) {
-            chunkSet[index] = new Chunk(this);
+            chunkSet[index] = new Chunk(entriesPerChunk, keyType, valueType);
         }
         return new ChunkSet(this, chunkSet);
     }
@@ -251,49 +257,39 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
         return  (double) overlappingChunks.get() / chunkSets.size();
     }
 
-    public void write(@Nonnull FileChannel channel) throws IOException {
-        int maxBytesPerKeyOrValue = Math.max(keyType.getByteCount(), valueType.getByteCount());
-        int requiredBytes = Math.max(1024, entriesPerChunk * maxBytesPerKeyOrValue);
-        DataSink output = new DataSink.FileDataSink(
-                channel,
-                ByteBuffer.allocateDirect(requiredBytes)
-        );
-        write(output);
-    }
+    /**
+     * Creates a single chunk that contains all the keys and all the entries from this store.
+     */
+    public Chunk toSingleChunk() {
+        Chunk result = new Chunk(getEntryCount(), keyType, valueType);
 
-    public void write(@Nonnull DataSink output) throws IOException {
-        output.write((buffer) -> {
-            buffer.putInt(keyType.ordinal());
-            buffer.putInt(valueType.ordinal());
-            buffer.putInt(entriesPerChunk);
-        });
-        writeContents(output);
-    }
-
-    public void writeContents(@Nonnull DataSink output) throws IOException {
-        output.write((buffer) -> {
-            buffer.putInt(chunkSets.size());
-            for (ChunkSet set : chunkSets) {
-                buffer.putInt(set.getChunkCount());
-            }
-        });
+        sort();
+        if (chunkSets.size() > 1)
+            throw new IllegalStateException("Sorting invalid!");
 
         for (ChunkSet set : chunkSets) {
-            set.write(output);
+            for (Chunk chunk : set.getChunks()) {
+                for (int chunkIndex = 0; chunkIndex < chunk.getEntryCount(); ++chunkIndex) {
+                    long key = chunk.getKeyLong(chunkIndex);
+                    long value = chunk.getValueLong(chunkIndex);
+                    result.addEntryWithoutSorting(key, value);
+                }
+            }
         }
+        return result;
     }
 
-    public static @Nonnull BigEntryStore read(@Nonnull FileChannel channel) throws IOException {
+    public static @Nonnull ChunkStore read(@Nonnull FileChannel channel) throws IOException {
         ByteBuffer workingBuffer = ByteBuffer.allocateDirect(1024 * 1024);
         DataSource input = new DataSource.FileDataSource(channel, workingBuffer);
         return read(input);
     }
 
-    public static @Nonnull BigEntryStore read(@Nonnull DataSource input) throws IOException {
+    public static @Nonnull ChunkStore read(@Nonnull DataSource input) throws IOException {
         ValueType keyType = ValueType.values()[input.readInt()];
         ValueType valueType = ValueType.values()[input.readInt()];
         int entriesPerChunk = input.readInt();
-        BigEntryStore store = new BigEntryStore(keyType, valueType, entriesPerChunk);
+        ChunkStore store = new ChunkStore(keyType, valueType, entriesPerChunk);
         store.readContents(input);
         return store;
     }
@@ -308,7 +304,7 @@ public class BigEntryStore implements Iterable<BigEntryStore.Entry> {
             chunkSets.add(allocateChunkSet(chunkCount));
         }
         for (ChunkSet set : chunkSets) {
-            set.read(input);
+            set.read(input, 0);
         }
     }
 

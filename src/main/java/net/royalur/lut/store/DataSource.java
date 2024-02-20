@@ -1,4 +1,4 @@
-package net.royalur.lut;
+package net.royalur.lut.store;
 
 import javax.annotation.Nonnull;
 import java.io.EOFException;
@@ -11,6 +11,10 @@ import java.nio.channels.FileChannel;
  * Provides an interface to read binary data.
  */
 public abstract class DataSource {
+
+    public abstract double readDouble() throws IOException;
+
+    public abstract float readFloat() throws IOException;
 
     public abstract long readLong() throws IOException;
 
@@ -56,6 +60,18 @@ public abstract class DataSource {
             workingBuffer.limit(remaining + read);
             if (workingBuffer.remaining() < byteCount)
                 throw new BufferUnderflowException();
+        }
+
+        @Override
+        public double readDouble() throws IOException {
+            ensureAvailable(8);
+            return workingBuffer.getDouble();
+        }
+
+        @Override
+        public float readFloat() throws IOException {
+            ensureAvailable(4);
+            return workingBuffer.getFloat();
         }
 
         @Override

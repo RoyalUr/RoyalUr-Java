@@ -1,6 +1,5 @@
 package net.royalur.notation;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
@@ -37,7 +36,9 @@ public class JsonHelper {
         }
     }
 
-    public @Nonnull JsonNode readValue(
+    private JsonHelper() {}
+
+    public static @Nonnull JsonNode readValue(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -47,7 +48,7 @@ public class JsonHelper {
         return json.get(key);
     }
 
-    public @Nonnull ObjectNode readDict(
+    public static @Nonnull ObjectNode readDict(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -61,7 +62,7 @@ public class JsonHelper {
         return (ObjectNode) value;
     }
 
-    public @Nullable ObjectNode readNullableDict(
+    public static @Nullable ObjectNode readNullableDict(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -78,7 +79,7 @@ public class JsonHelper {
         return (ObjectNode) value;
     }
 
-    public @Nonnull ArrayNode readArray(
+    public static @Nonnull ArrayNode readArray(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -92,7 +93,7 @@ public class JsonHelper {
         return (ArrayNode) value;
     }
 
-    public @Nullable ArrayNode readNullableArray(
+    public static @Nullable ArrayNode readNullableArray(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -109,7 +110,7 @@ public class JsonHelper {
         return (ArrayNode) value;
     }
 
-    public @Nonnull JsonNode readArrayEntry(
+    public static @Nonnull JsonNode readArrayEntry(
             @Nonnull ArrayNode json,
             int index
     ) {
@@ -119,7 +120,7 @@ public class JsonHelper {
         return json.get(index);
     }
 
-    public @Nonnull ObjectNode readArrayDictEntry(
+    public static @Nonnull ObjectNode readArrayDictEntry(
             @Nonnull ArrayNode json,
             int index
     ) {
@@ -133,7 +134,7 @@ public class JsonHelper {
         return (ObjectNode) value;
     }
 
-    public @Nonnull String readString(
+    public static @Nonnull String readString(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -147,7 +148,7 @@ public class JsonHelper {
         return value.textValue();
     }
 
-    public @Nullable String readNullableString(
+    public static @Nullable String readNullableString(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -164,7 +165,7 @@ public class JsonHelper {
         return value.textValue();
     }
 
-    public char readChar(
+    public static char readChar(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -178,7 +179,7 @@ public class JsonHelper {
         return value.charAt(0);
     }
 
-    public @Nonnull JsonNode readNumber(
+    public static @Nonnull JsonNode readNumber(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -192,7 +193,7 @@ public class JsonHelper {
         return value;
     }
 
-    public int readInt(
+    public static int readInt(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -205,7 +206,7 @@ public class JsonHelper {
         return value.intValue();
     }
 
-    public long readLong(
+    public static long readLong(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -218,7 +219,7 @@ public class JsonHelper {
         return value.longValue();
     }
 
-    public float readFloat(
+    public static float readFloat(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -238,7 +239,7 @@ public class JsonHelper {
         return valueFloat;
     }
 
-    public double readDouble(
+    public static double readDouble(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {
@@ -258,7 +259,7 @@ public class JsonHelper {
         return valueDouble;
     }
 
-    public boolean readBool(
+    public static boolean readBool(
             @Nonnull ObjectNode json,
             @Nonnull String key
     ) {

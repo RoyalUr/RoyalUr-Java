@@ -233,11 +233,6 @@ public class JsonNotation<
     private final @Nonnull ObjectMapper objectMapper;
 
     /**
-     * Helper functions for type-checking JSON while reading.
-     */
-    private final @Nonnull JsonHelper helper;
-
-    /**
      * Instantiates the JSON notation to encode and decode games.
      * @param pathPairs The paths that can be parsed in this notation.
      * @param boardShapes The board shapes that can be parsed in this notation.
@@ -258,7 +253,6 @@ public class JsonNotation<
         this.ruleSetProvider = ruleSetProvider;
         this.jsonFactory = jsonFactory;
         this.objectMapper = new ObjectMapper(jsonFactory);
-        this.helper = new JsonHelper();
     }
 
     /**
@@ -284,6 +278,14 @@ public class JsonNotation<
                 DiceType.FACTORIES,
                 new SimpleRuleSetProvider()
         );
+    }
+
+    public @Nonnull JsonFactory getJsonFactory() {
+        return jsonFactory;
+    }
+
+    public @Nonnull ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 
     public void writeRoll(
@@ -671,11 +673,9 @@ public class JsonNotation<
     public @Nonnull String encodeGame(
             @Nonnull Game<P, S, R> game
     ) {
-        // Write the JSON into a String buffer.
         Writer writer = new StringWriter();
         try (JsonGenerator generator = jsonFactory.createGenerator(writer)) {
 
-            // Write the game.
             generator.writeStartObject();
             try {
                 writeGame(generator, game);
@@ -694,7 +694,7 @@ public class JsonNotation<
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull ObjectNode json
     ) {
-        int rollValue = helper.readInt(json, ROLL_VALUE_KEY);
+        int rollValue = JsonHelper.readInt(json, ROLL_VALUE_KEY);
         return rules.getDiceFactory().createRoll(rollValue);
     }
 
@@ -703,10 +703,10 @@ public class JsonNotation<
             @Nonnull ObjectNode json
     ) {
 
-        char ownerChar = helper.readChar(json, JsonNotation.PIECE_OWNER_KEY);
+        char ownerChar = JsonHelper.readChar(json, JsonNotation.PIECE_OWNER_KEY);
         PlayerType owner = PlayerType.getByChar(ownerChar);
 
-        int pathIndex = helper.readInt(json, JsonNotation.PIECE_INDEX_KEY);
+        int pathIndex = JsonHelper.readInt(json, JsonNotation.PIECE_INDEX_KEY);
         return rules.getPieceProvider().create(
                 owner, pathIndex
         );
@@ -726,15 +726,15 @@ public class JsonNotation<
 
         PathPair paths = rules.getPaths();
 
-        ObjectNode sourceJson = helper.readNullableDict(json, MOVE_SOURCE_KEY);
+        ObjectNode sourceJson = JsonHelper.readNullableDict(json, MOVE_SOURCE_KEY);
         P source = (sourceJson != null ? readPiece(rules, sourceJson) : null);
         Tile sourceTile = (source != null ? getTileFromPiece(paths, source) : null);
 
-        ObjectNode destJson = helper.readNullableDict(json, MOVE_DEST_KEY);
+        ObjectNode destJson = JsonHelper.readNullableDict(json, MOVE_DEST_KEY);
         P dest = (destJson != null ? readPiece(rules, destJson) : null);
         Tile destTile = (dest != null ? getTileFromPiece(paths, dest) : null);
 
-        ObjectNode capturedJson = helper.readNullableDict(json, MOVE_CAPTURED_KEY);
+        ObjectNode capturedJson = JsonHelper.readNullableDict(json, MOVE_CAPTURED_KEY);
         P captured = (capturedJson != null ? readPiece(rules, capturedJson) : null);
 
         PlayerType player = (source != null ? source.getOwner() : (dest != null ? dest.getOwner() : null));
@@ -755,7 +755,7 @@ public class JsonNotation<
     ) {
         List<Move<P>> moves = new ArrayList<>();
         for (int index = 0; index < json.size(); ++index) {
-            ObjectNode moveJson = helper.readArrayDictEntry(json, index);
+            ObjectNode moveJson = JsonHelper.readArrayDictEntry(json, index);
             moves.add(readMove(rules, moveJson));
         }
         return moves;
@@ -767,13 +767,13 @@ public class JsonNotation<
     ) {
 
         Board<P> board = new Board<>(rules.getBoardShape());
-        ObjectNode piecesJson = helper.readDict(json, BOARD_PIECES_KEY);
+        ObjectNode piecesJson = JsonHelper.readDict(json, BOARD_PIECES_KEY);
 
         Iterator<String> keyIterator = piecesJson.fieldNames();
         while (keyIterator.hasNext()) {
             String tileKey = keyIterator.next();
             Tile tile = Tile.fromString(tileKey);
-            ObjectNode pieceJson = helper.readDict(piecesJson, tileKey);
+            ObjectNode pieceJson = JsonHelper.readDict(piecesJson, tileKey);
             P piece = readPiece(rules, pieceJson);
             board.set(tile, piece);
         }
@@ -786,8 +786,8 @@ public class JsonNotation<
             @Nonnull ObjectNode json
     ) {
 
-        int pieces = helper.readInt(json, PLAYER_PIECES_KEY);
-        int score = helper.readInt(json, PLAYER_SCORE_KEY);
+        int pieces = JsonHelper.readInt(json, PLAYER_PIECES_KEY);
+        int score = JsonHelper.readInt(json, PLAYER_SCORE_KEY);
         return rules.getPlayerStateProvider().create(
                 playerType, pieces, score
         );
@@ -813,7 +813,7 @@ public class JsonNotation<
             @Nonnull ObjectNode json,
             @Nonnull PlayerType turn
     ) {
-        ObjectNode rollJson = helper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
         return stateSource.createRolledState(rules, turn, roll);
     }
@@ -824,10 +824,10 @@ public class JsonNotation<
             @Nonnull ObjectNode json,
             @Nonnull PlayerType turn
     ) {
-        ObjectNode rollJson = helper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
 
-        ObjectNode moveJson = helper.readDict(json, MOVE_KEY);
+        ObjectNode moveJson = JsonHelper.readDict(json, MOVE_KEY);
         Move<P> move = readMove(rules, moveJson);
 
         return stateSource.createMovedState(rules, turn, roll, move);
@@ -848,7 +848,7 @@ public class JsonNotation<
             @Nonnull ObjectNode json,
             @Nonnull PlayerType turn
     ) {
-        ObjectNode rollJson = helper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
         return stateSource.createWaitingForMoveState(rules, turn, roll);
     }
@@ -898,7 +898,7 @@ public class JsonNotation<
             @Nonnull String stateType
     ) {
 
-        char turnChar = helper.readChar(json, TURN_KEY);
+        char turnChar = JsonHelper.readChar(json, TURN_KEY);
         PlayerType turn = PlayerType.getByChar(turnChar);
 
         if (isActionStateType(stateType)) {
@@ -917,7 +917,7 @@ public class JsonNotation<
             @Nonnull StateSource<P, S, R> stateSource,
             @Nonnull ObjectNode json
     ) {
-        char winnerChar = helper.readChar(json, WINNER_KEY);
+        char winnerChar = JsonHelper.readChar(json, WINNER_KEY);
         PlayerType winner = PlayerType.getByChar(winnerChar);
 
         return stateSource.createWinState(rules, winner);
@@ -928,7 +928,7 @@ public class JsonNotation<
             @Nonnull StateSource<P, S, R> stateSource,
             @Nonnull ObjectNode json
     ) {
-        String stateType = helper.readString(json, STATE_TYPE_KEY);
+        String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
 
         if (isOngoingGameState(stateType)) {
             return readOngoingState(rules, stateSource, json, stateType);
@@ -945,10 +945,10 @@ public class JsonNotation<
             @Nonnull RuleSet<P, S, R> rules,
             @Nonnull ObjectNode json
     ) {
-        ObjectNode boardJson = helper.readDict(json, BOARD_KEY);
-        ObjectNode playersJson = helper.readDict(json, PLAYERS_KEY);
-        ObjectNode lightPlayerJson = helper.readDict(playersJson, PlayerType.LIGHT.getCharStr());
-        ObjectNode darkPlayerJson = helper.readDict(playersJson, PlayerType.DARK.getCharStr());
+        ObjectNode boardJson = JsonHelper.readDict(json, BOARD_KEY);
+        ObjectNode playersJson = JsonHelper.readDict(json, PLAYERS_KEY);
+        ObjectNode lightPlayerJson = JsonHelper.readDict(playersJson, PlayerType.LIGHT.getCharStr());
+        ObjectNode darkPlayerJson = JsonHelper.readDict(playersJson, PlayerType.DARK.getCharStr());
 
         Board<P> board = readBoard(rules, boardJson);
         S lightPlayer = readPlayerState(rules, PlayerType.LIGHT, lightPlayerJson);
@@ -968,7 +968,7 @@ public class JsonNotation<
         DerivedStateSource<P, S, R> stateSource = new DerivedStateSource<>(initialState);
         int lastIndex = -1;
         for (int jsonIndex = 0; jsonIndex < json.size(); ++jsonIndex) {
-            ObjectNode stateJson = helper.readArrayDictEntry(json, jsonIndex);
+            ObjectNode stateJson = JsonHelper.readArrayDictEntry(json, jsonIndex);
             GameState<P, S, R> state = readState(rules, stateSource, stateJson);
 
             int index = stateSource.lastIndexOf(state);
@@ -981,15 +981,15 @@ public class JsonNotation<
     }
 
     public @Nonnull GameSettings<R> readGameSettings(@Nonnull ObjectNode json) {
-        String boardShapeName = helper.readString(json, BOARD_SHAPE_KEY);
-        String pathsName = helper.readString(json, PATHS_KEY);
-        String diceName = helper.readString(json, DICE_KEY);
-        int startingPieceCount = helper.readInt(json, STARTING_PIECE_COUNT_KEY);
-        boolean safeRosettes = helper.readBool(json, SAFE_ROSETTES_KEY);
-        boolean rosettesGrantExtraRolls = helper.readBool(
+        String boardShapeName = JsonHelper.readString(json, BOARD_SHAPE_KEY);
+        String pathsName = JsonHelper.readString(json, PATHS_KEY);
+        String diceName = JsonHelper.readString(json, DICE_KEY);
+        int startingPieceCount = JsonHelper.readInt(json, STARTING_PIECE_COUNT_KEY);
+        boolean safeRosettes = JsonHelper.readBool(json, SAFE_ROSETTES_KEY);
+        boolean rosettesGrantExtraRolls = JsonHelper.readBool(
                 json, ROSETTES_GRANT_EXTRA_ROLLS_KEY
         );
-        boolean capturesGrantExtraRolls = helper.readBool(
+        boolean capturesGrantExtraRolls = JsonHelper.readBool(
                 json, CAPTURES_GRANT_EXTRA_ROLLS_KEY
         );
         return new GameSettings<>(
@@ -1009,17 +1009,17 @@ public class JsonNotation<
 
     public @Nonnull Game<P, S, R> readGameV1(@Nonnull ObjectNode json) {
 
-        ObjectNode metadataJson = helper.readDict(json, METADATA_KEY);
+        ObjectNode metadataJson = JsonHelper.readDict(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
 
-        ObjectNode settingsJson = helper.readDict(json, SETTINGS_KEY);
+        ObjectNode settingsJson = JsonHelper.readDict(json, SETTINGS_KEY);
         GameSettings<R> settings = readGameSettings(settingsJson);
         RuleSet<P, S, R> rules = ruleSetProvider.create(settings, metadata);
 
-        ObjectNode initialStateJson = helper.readDict(json, INITIAL_STATE_KEY);
+        ObjectNode initialStateJson = JsonHelper.readDict(json, INITIAL_STATE_KEY);
         GameState<P, S, R> initialState = readInitialState(rules, initialStateJson);
 
-        ArrayNode statesJson = helper.readArray(json, STATES_KEY);
+        ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
         List<GameState<P, S, R>> states = readStates(rules, initialState, statesJson);
 
         List<GameState<P, S, R>> allStates = new ArrayList<>(states.size() + 1);
@@ -1030,7 +1030,7 @@ public class JsonNotation<
 
     public @Nonnull Game<P, S, R> readGame(@Nonnull ObjectNode json) {
 
-        int version = helper.readInt(json, VERSION_KEY);
+        int version = JsonHelper.readInt(json, VERSION_KEY);
         if (version == 1)
             return readGameV1(json);
 
@@ -1051,7 +1051,7 @@ public class JsonNotation<
             return readGame(objectNode);
 
         } catch (IOException e) {
-            throw new RuntimeException("Error writing JSON", e);
+            throw new RuntimeException("Error reading JSON", e);
         }
     }
 }

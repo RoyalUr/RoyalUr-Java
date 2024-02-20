@@ -1,8 +1,5 @@
 package net.royalur.lut.store;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -14,14 +11,14 @@ public class ChunkSet {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 8;
 
-    private final @Nonnull BigEntryStore store;
+    private final @Nonnull ChunkStore store;
     private final int entriesPerChunk;
     private final @Nonnull Chunk[] chunks;
     private int emptyChunkIndex = 0;
     private long lastKeyAdded = 0;
 
     public ChunkSet(
-            @Nonnull BigEntryStore store,
+            @Nonnull ChunkStore store,
             @Nonnull Chunk[] chunks
     ) {
         if (chunks.length == 0)
@@ -193,20 +190,26 @@ public class ChunkSet {
     }
 
     public void write(@Nonnull DataSink output) throws IOException {
-        output.write((outputBuffer) -> {
-            outputBuffer.putInt(emptyChunkIndex);
-            outputBuffer.putLong(lastKeyAdded);
-        });
         for (Chunk chunk : chunks) {
-            chunk.write(output);
+            chunk.writeKeys(output);
+        }
+        for (Chunk chunk : chunks) {
+            chunk.writeValues(output);
         }
     }
 
-    public void read(@Nonnull DataSource input) throws IOException {
+    public void read(@Nonnull DataSource input, int entryCount) throws IOException {
         emptyChunkIndex = input.readInt();
         lastKeyAdded = input.readLong();
+
+        int remainingEntries = entryCount;
         for (Chunk chunk : chunks) {
-            chunk.read(input);
+            chunk.read(input, remainingEntries);
+            remainingEntries = Math.max(0, remainingEntries - entriesPerChunk);
         }
+
+        // TODO calculate prooperly
+//        emptyChunkIndex = ?;
+//        lastKeyAdded = ?;
     }
 }

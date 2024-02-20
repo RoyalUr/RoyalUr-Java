@@ -1,20 +1,20 @@
 package net.royalur.lut.buffer;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
+import net.royalur.lut.store.DataSink;
+import net.royalur.lut.store.DataSource;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class ByteValueBuffer extends ValueBuffer {
+public class Int8ValueBuffer extends IntValueBuffer {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
 
     private static final long BYTE_MASK = (1L << 8) - 1;
     private final byte[] buffer;
 
-    public ByteValueBuffer(int capacity) {
-        super(ValueType.BYTE, capacity);
+    public Int8ValueBuffer(int capacity) {
+        super(ValueType.INT8, capacity);
         this.buffer = new byte[capacity];
     }
 
@@ -161,15 +161,21 @@ public class ByteValueBuffer extends ValueBuffer {
     }
 
     @Override
-    public void writeContents(@Nonnull DataSink output) throws IOException {
-        output.write((outputBuffer) -> {
-            outputBuffer.put(buffer);
-        });
+    public void writeContents(
+            @Nonnull DataSink output, int startIndex, int endIndex
+    ) throws IOException {
+
+        output.writeChunked((outputBuffer, fromIndex, toIndex) -> {
+            outputBuffer.put(buffer, fromIndex, toIndex - fromIndex);
+        }, getType().getByteCount(), startIndex, endIndex);
     }
 
     @Override
-    public void readContents(@Nonnull DataSource input) throws IOException {
-        for (int index = 0; index < buffer.length; ++index) {
+    public void readContents(
+            @Nonnull DataSource input, int startIndex, int endIndex
+    ) throws IOException {
+
+        for (int index = startIndex; index < endIndex; ++index) {
             buffer[index] = input.readByte();
         }
     }

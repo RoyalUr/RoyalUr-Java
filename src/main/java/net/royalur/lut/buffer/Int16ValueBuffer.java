@@ -1,20 +1,20 @@
 package net.royalur.lut.buffer;
 
-import net.royalur.lut.DataSink;
-import net.royalur.lut.DataSource;
+import net.royalur.lut.store.DataSink;
+import net.royalur.lut.store.DataSource;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class ShortValueBuffer extends ValueBuffer {
+public class Int16ValueBuffer extends IntValueBuffer {
 
     private static final int BINARY_TO_LINEAR_SEARCH_THRESHOLD = 32;
 
     private static final long SHORT_MASK = (1L << 16) - 1;
     private final short[] buffer;
 
-    public ShortValueBuffer(int capacity) {
-        super(ValueType.SHORT, capacity);
+    public Int16ValueBuffer(int capacity) {
+        super(ValueType.INT16, capacity);
         this.buffer = new short[capacity];
     }
 
@@ -157,17 +157,23 @@ public class ShortValueBuffer extends ValueBuffer {
     }
 
     @Override
-    public void writeContents(@Nonnull DataSink output) throws IOException {
-        output.write((outputBuffer) -> {
-            for (short value : buffer) {
-                outputBuffer.putShort(value);
+    public void writeContents(
+            @Nonnull DataSink output, int startIndex, int endIndex
+    ) throws IOException {
+
+        output.writeChunked((outputBuffer, fromIndex, toIndex) -> {
+            for (int index = fromIndex; index < toIndex; ++index) {
+                outputBuffer.putShort(buffer[index]);
             }
-        });
+        }, getType().getByteCount(), startIndex, endIndex);
     }
 
     @Override
-    public void readContents(@Nonnull DataSource input) throws IOException {
-        for (int index = 0; index < buffer.length; ++index) {
+    public void readContents(
+            @Nonnull DataSource input, int startIndex, int endIndex
+    ) throws IOException {
+
+        for (int index = startIndex; index < endIndex; ++index) {
             buffer[index] = input.readShort();
         }
     }

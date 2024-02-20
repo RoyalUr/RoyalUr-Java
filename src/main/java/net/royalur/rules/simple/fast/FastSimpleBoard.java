@@ -76,6 +76,16 @@ public class FastSimpleBoard {
     }
 
     /**
+     * Gets the underlying length of this board. This is not the area
+     * of the board. Instead, it represents the number of indices that
+     * can be used to reference a tile on the board.
+     * @return The underlying length of this board.
+     */
+    public int length() {
+        return pieces.length;
+    }
+
+    /**
      * Gets a piece from the board.
      * @param tileIndex The tile index.
      * @return Zero if empty, otherwise the absolute value of the returned

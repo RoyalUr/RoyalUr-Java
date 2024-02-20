@@ -4,14 +4,15 @@ import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
 import net.royalur.lut.FinkelGameEncoding;
-import net.royalur.lut.StateLUT;
-import net.royalur.lut.store.BigEntryStore;
+import net.royalur.lut.LutTrainer;
+import net.royalur.lut.store.ChunkStore;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.fast.FastSimpleBoard;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.stats.GameStats;
@@ -240,8 +241,8 @@ public class RGUStatistics {
 
     public void testMoveStats(
             GameSettings<Roll> settings,
-            StateLUT lut,
-            BigEntryStore states,
+            LutTrainer lut,
+            ChunkStore states,
             Function<FastSimpleGame, Boolean> gameFilter
     ) {
         long start = System.nanoTime();
@@ -457,8 +458,8 @@ public class RGUStatistics {
 
     private static void runOverallMoveStatsTests() throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
-        StateLUT lut = new StateLUT(settings);
-        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+        LutTrainer lut = new LutTrainer(settings);
+        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
 
         RGUStatistics statistics = new RGUStatistics();
         statistics.testMoveStats(settings, lut, states, (game) -> true);
@@ -466,8 +467,8 @@ public class RGUStatistics {
 
     private static void runBucketedMoveStatsTests(int buckets) throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
-        StateLUT lut = new StateLUT(settings);
-        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+        LutTrainer lut = new LutTrainer(settings);
+        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
 
         FinkelGameEncoding encoding = new FinkelGameEncoding();
         RGUStatistics statistics = new RGUStatistics();
@@ -488,8 +489,8 @@ public class RGUStatistics {
 
     private static void runGames() throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
-        StateLUT lut = new StateLUT(settings);
-        BigEntryStore states = lut.readStateStore(new File("./finkel.rgu"));
+        LutTrainer lut = new LutTrainer(settings);
+        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
 
         RGUStatistics statistics = new RGUStatistics();
         statistics.testAgentActions(
@@ -506,7 +507,69 @@ public class RGUStatistics {
      */
     public static void main(String[] args) throws IOException {
 //        runMoveStatsTests();
-        runBucketedMoveStatsTests(10);
+//        runBucketedMoveStatsTests(10);
 //        runGames();
+
+        GameSettings<Roll> settings = GameSettings.FINKEL;
+        FinkelGameEncoding encoding = new FinkelGameEncoding();
+        LutTrainer lut = new LutTrainer(settings);
+        ChunkStore states = lut.readStateStore(new File("./finkel.rgu"));
+
+        AtomicReference<Double> maxDifference = new AtomicReference<>(Double.NEGATIVE_INFINITY);
+        AtomicReference<Double> minDifference = new AtomicReference<>(Double.POSITIVE_INFINITY);
+
+        FastSimpleGame darkGame = new FastSimpleGame(settings);
+        int width = settings.getBoardShape().getWidth();
+        int height = settings.getBoardShape().getHeight();
+
+        lut.loopGameStates(lightGame -> {
+            if (!lightGame.isLightTurn)
+                return;
+
+            int keyLight = encoding.encode(lightGame);
+
+            // Swap players!
+            darkGame.isLightTurn = false;
+            darkGame.isFinished = lightGame.isFinished;
+            darkGame.rollValue = lightGame.rollValue;
+            darkGame.dark.score = lightGame.light.score;
+            darkGame.dark.pieces = lightGame.light.pieces;
+            darkGame.light.score = lightGame.dark.score;
+            darkGame.light.pieces = lightGame.dark.pieces;
+
+            FastSimpleBoard lightGameBoard = lightGame.board;
+            FastSimpleBoard darkGameBoard = darkGame.board;
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    int fromIndex = lightGameBoard.calcTileIndex(x, y);
+                    int toIndex = darkGameBoard.calcTileIndex(width - x - 1, y);
+                    darkGameBoard.set(toIndex, -1 * lightGameBoard.get(fromIndex));
+                }
+            }
+            int keyDark = encoding.encode(darkGame);
+
+            float lightScore, darkScore;
+            try {
+                lightScore = states.getAndUnwrapFloat(keyLight);
+            } catch (RuntimeException e) {
+                System.out.println(lightGame);
+                throw e;
+            }
+            try {
+                darkScore = states.getAndUnwrapFloat(keyDark);
+            } catch (RuntimeException e) {
+                System.out.println(darkGame);
+                throw e;
+            }
+
+            double diff = lightScore + darkScore;
+            if (diff > maxDifference.get()) {
+                maxDifference.set(diff);
+            }
+            if (diff < minDifference.get()) {
+                minDifference.set(diff);
+            }
+        });
+        System.out.println(minDifference + ", " + maxDifference);
     }
 }
