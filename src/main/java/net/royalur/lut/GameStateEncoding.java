@@ -18,13 +18,13 @@ public interface GameStateEncoding {
      * Gets the upper 32 bits of the given key.
      */
     static int calcUpperKey(long key) {
-        return (int) (key >> 32);
+        return (int) ((key & 0xFFFFFFFF00000000L) >> 32);
     }
 
     /**
      * Gets the lower 32 bits of the given key.
      */
     static int calcLowerKey(long key) {
-        return (int) (key & 0xFF);
+        return (int) key;
     }
 }

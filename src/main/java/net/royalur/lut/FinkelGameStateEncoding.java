@@ -109,6 +109,11 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
 
     @Override
     public long encodeGameState(@Nonnull FastSimpleGame game) {
+        if (!game.isLightTurn) {
+            throw new IllegalArgumentException(
+                    "Only game states where it is the light player's turn are supported by this encoding"
+            );
+        }
         int state = 0;
         state |= encodeBoard(game.board);
         state |= game.dark.pieces << 25;
