@@ -110,6 +110,46 @@ public class Lut<R extends Roll> {
         return maps[upperKey].set(lowerKey, winPercent);
     }
 
+    private static Percent16ValueBuffer convertToPercent16(FloatValueBuffer buffer) {
+        if (buffer instanceof Percent16ValueBuffer)
+            return (Percent16ValueBuffer) buffer;
+
+        int capacity = buffer.getCapacity();
+        Percent16ValueBuffer newBuffer = new Percent16ValueBuffer(capacity);
+        for (int index = 0; index < capacity; ++index) {
+            newBuffer.set(index, buffer.getDouble(index));
+        }
+        return newBuffer;
+    }
+
+    private static Float32ValueBuffer convertToFloat32(FloatValueBuffer buffer) {
+        if (buffer instanceof Float32ValueBuffer)
+            return (Float32ValueBuffer) buffer;
+
+        int capacity = buffer.getCapacity();
+        Float32ValueBuffer newBuffer = new Float32ValueBuffer(capacity);
+        for (int index = 0; index < capacity; ++index) {
+            newBuffer.set(index, buffer.getDouble(index));
+        }
+        return newBuffer;
+    }
+
+    public Lut<R> convertValuesToFloat32() {
+        LutMap[] newMaps = new LutMap[maps.length];
+        for (int index = 0; index < maps.length; ++index) {
+            LutMap oldMap = maps[index];
+            Float32ValueBuffer valueBuffer = convertToFloat32(oldMap.getValueBuffer());
+            newMaps[index] = new LutMap(
+                    oldMap.getEntryCount(), oldMap.getKeyBuffer(), valueBuffer
+            );
+        }
+        return new Lut<>(
+                encoding,
+                metadata,
+                newMaps
+        );
+    }
+
     public void write(JsonNotation<?, ?, R> notation, File file) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             write(notation, fos.getChannel());
@@ -121,18 +161,6 @@ public class Lut<R extends Roll> {
         outputBuffer.order(ByteOrder.BIG_ENDIAN);
         DataSink output = new DataSink.FileDataSink(channel, outputBuffer);
         write(notation, output);
-    }
-
-    private static Percent16ValueBuffer convertToPercent16(FloatValueBuffer buffer) {
-        if (buffer instanceof Percent16ValueBuffer)
-            return (Percent16ValueBuffer) buffer;
-
-        int capacity = buffer.getCapacity();
-        Percent16ValueBuffer newBuffer = new Percent16ValueBuffer(capacity);
-        for (int index = 0; index < capacity; ++index) {
-            newBuffer.set(index, buffer.getDouble(index));
-        }
-        return newBuffer;
     }
 
     public void write(JsonNotation<?, ?, R> notation, DataSink output) throws IOException {
@@ -215,7 +243,7 @@ public class Lut<R extends Roll> {
             int entryCount = source.readInt();
             mapEntryCounts[index] = entryCount;
             mapKeyBuffers[index] = new UInt32ValueBuffer(entryCount);
-            mapValueBuffers[index] = new Float32ValueBuffer(entryCount);
+            mapValueBuffers[index] = new Percent16ValueBuffer(entryCount);
         }
         for (int index = 0; index < mapCount; ++index) {
             mapKeyBuffers[index].readContents(source);

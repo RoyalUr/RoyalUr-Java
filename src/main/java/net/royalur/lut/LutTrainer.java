@@ -217,18 +217,20 @@ public class LutTrainer<R extends Roll> {
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./finkel.rgu");
+        File inputFile = new File("./finkel_bad.rgu");
         File checkpointFile = new File("./finkel_ckpt.rgu");
         File outputFile = new File("./finkel_test.rgu");
 
         long readStart = System.nanoTime();
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
+//        Lut<Roll> lut = trainer.populateNewLut();
+//        lut.write(jsonNotation, new File("./finkel_empty.rgu"));
+        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile).convertValuesToFloat32();
         lut.getMetadata().getAdditionalMetadata().clear();
         lut.getMetadata().addMetadata("author", "Padraig Lamont");
         double readDurationMs = (System.nanoTime() - readStart) / 1e6;
         System.out.println("Read took " + MS_DURATION.format(readDurationMs) + " ms");
 
-        trainer.train(lut, checkpointFile);
+        trainer.train(lut, checkpointFile, 0.001f);
 
         long start = System.nanoTime();
         lut.write(jsonNotation, outputFile);
