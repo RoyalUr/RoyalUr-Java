@@ -3,13 +3,16 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
+import net.royalur.agent.RandomAgent;
 import net.royalur.lut.FinkelGameStateEncoding;
+import net.royalur.lut.Lut;
 import net.royalur.lut.LutTrainer;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
+import net.royalur.notation.JsonNotation;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.rules.simple.fast.FastSimpleBoard;
@@ -136,6 +139,8 @@ public class RGUStatistics {
                     + ", " + (sample.getRules().doRosettesGrantExtraRolls() ? "rosettes+" : "rosettes-")
                     + ", " + (sample.getRules().doCapturesGrantExtraRolls() ? "captures+" : "captures-");
 
+            System.out.println("Processing " + desc);
+
             GameStats[] stats = new GameStats[tests];
             int agent1Wins = 0;
             int agent2Wins = 0;
@@ -159,6 +164,10 @@ public class RGUStatistics {
                     lightWins += 1;
                 } else {
                     darkWins += 1;
+                }
+
+                if (test % 10000 == 0) {
+                    System.out.println(".. " + test + " / " + tests);
                 }
             }
             long nanosPerTest = (System.nanoTime() - start) / tests;
@@ -507,11 +516,21 @@ public class RGUStatistics {
      * @param args Ignored.
      */
     public static void main(String[] args) throws IOException {
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
+        Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
+        new RGUStatistics().testAgentActions(
+                (rules) -> new GreedyAgent<>(),
+                (rules) -> new FinkelLUTAgent<>(lut),
+                1000000,
+                GameStatsTarget.values()
+        );
+
 //        runMoveStatsTests();
 //        runBucketedMoveStatsTests(10);
 //        runGames();
 
-        LutTrainer.main(args);
+//        LutTrainer.main(args);
 
         /*GameSettings<Roll> settings = GameSettings.FINKEL;
         FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();

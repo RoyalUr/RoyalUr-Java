@@ -47,7 +47,6 @@ public class FinkelLUTAgent<
             if (game.getTurn() == PlayerType.DARK) {
                 score = 100.0d - score;
             }
-            score *= (game.getTurn() == PlayerType.DARK ? -1 : 1);
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;

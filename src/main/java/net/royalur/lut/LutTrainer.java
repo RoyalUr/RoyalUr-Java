@@ -1,6 +1,7 @@
 package net.royalur.lut;
 
 import net.royalur.lut.buffer.Float32ValueBuffer;
+import net.royalur.lut.buffer.FloatValueBuffer;
 import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
@@ -217,14 +218,14 @@ public class LutTrainer<R extends Roll> {
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./finkel_bad.rgu");
-        File checkpointFile = new File("./finkel_ckpt.rgu");
-        File outputFile = new File("./finkel_test.rgu");
+        File inputFile = new File("./finkel2p_empty.rgu");
+        File checkpointFile = new File("./finkel2p_ckpt.rgu");
+        File outputFile = new File("./finkel2p.rgu");
 
         long readStart = System.nanoTime();
-//        Lut<Roll> lut = trainer.populateNewLut();
-//        lut.write(jsonNotation, new File("./finkel_empty.rgu"));
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile).convertValuesToFloat32();
+        Lut<Roll> lut = trainer.populateNewLut();
+        lut.write(jsonNotation, inputFile);
+//        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile).convertValuesToFloat32();
         lut.getMetadata().getAdditionalMetadata().clear();
         lut.getMetadata().addMetadata("author", "Padraig Lamont");
         double readDurationMs = (System.nanoTime() - readStart) / 1e6;
@@ -391,8 +392,9 @@ public class LutTrainer<R extends Roll> {
         float[] probabilities = settings.getDice().createDice().getRollProbabilities();
 
         int iteration = 0;
-        for (int minScore = 6; minScore >= 0; --minScore) {
-            for (int maxScore = 6; maxScore >= minScore; --maxScore) {
+        int pieceCount = settings.getStartingPieceCount();
+        for (int minScore = pieceCount - 1; minScore >= 0; --minScore) {
+            for (int maxScore = pieceCount - 1; maxScore >= minScore; --maxScore) {
                 do {
                     long start = System.nanoTime();
                     maxChange.set(0.0d);
