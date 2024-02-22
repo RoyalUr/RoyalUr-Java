@@ -6,19 +6,15 @@ import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
-import net.royalur.model.path.PathPair;
-import net.royalur.model.shape.BoardShape;
 import net.royalur.notation.JsonNotation;
+import net.royalur.rules.simple.fast.FastSimpleFlags;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -26,25 +22,12 @@ import java.util.function.Function;
  */
 public class LutTrainer<R extends Roll> {
 
-    private static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
-
-    private static final int OCCUPANTS_MASK = 0b11;
-    private static final int LIGHT_ONLY_FLAG = 0b100;
-    private static final int LIGHT_PATH_INDEX_SHIFT = 3;
-    private static final int LIGHT_PATH_INDEX_MASK = 0b11111;
-    private static final int DARK_PATH_INDEX_SHIFT = 8;
-    private static final int DARK_PATH_INDEX_MASK = 0b11111;
-
     private static final int DEFAULT_UPPER_KEY_LIMIT = 64;
 
     private final GameSettings<R> settings;
-    private final int startingPieceCount;
-
     private final GameStateEncoding encoding;
     private final JsonNotation<?, ?, R> jsonNotation;
-    private final int boardIndexCount;
-    private final int[] tileFlags;
-    private final int[] nextBoardIndices;
+    private final FastSimpleFlags flags;
 
     public LutTrainer(
             GameSettings<R> settings,
@@ -52,196 +35,16 @@ public class LutTrainer<R extends Roll> {
             JsonNotation<?, ?, R> jsonNotation
     ) {
         this.settings = settings;
-        this.startingPieceCount = settings.getStartingPieceCount();
-
         this.encoding = encoding;
         this.jsonNotation = jsonNotation;
-
-        BoardShape shape = settings.getBoardShape();
-        PathPair paths = settings.getPaths();
-        int width = shape.getWidth();
-        int height = shape.getHeight();
-        this.boardIndexCount = width * height;
-
-        this.tileFlags = new int[boardIndexCount];
-
-        List<Tile> lightPath = paths.getLight();
-        List<Tile> darkPath = paths.getDark();
-        for (int boardX = 0; boardX < width; ++boardX) {
-            for (int boardY = 0; boardY < height; ++boardY) {
-                Tile tile = Tile.fromIndices(boardX, boardY);
-                int index = boardX + width * boardY;
-
-                int occupants = 1;
-                boolean tileLightOnly = false;
-                int lightIndex = 0;
-                int darkIndex = 0;
-                if (lightPath.contains(tile)) {
-                    occupants += 1;
-                    tileLightOnly = true;
-                    lightIndex = lightPath.indexOf(tile);
-                }
-                if (darkPath.contains(tile)) {
-                    occupants += 1;
-                    tileLightOnly = false;
-                    darkIndex = darkPath.indexOf(tile);
-                }
-
-                int lightOnlyFlag = (tileLightOnly ? LIGHT_ONLY_FLAG : 0);
-                int occupantsFlag = (occupants & OCCUPANTS_MASK);
-                int lightPathFlag = (lightIndex & LIGHT_PATH_INDEX_MASK) << LIGHT_PATH_INDEX_SHIFT;
-                int darkPathFlag = (darkIndex & DARK_PATH_INDEX_MASK) << DARK_PATH_INDEX_SHIFT;
-                tileFlags[index] = lightOnlyFlag | occupantsFlag | lightPathFlag | darkPathFlag;
-            }
-        }
-
-        this.nextBoardIndices = new int[boardIndexCount];
-        for (int index = 0; index < boardIndexCount; ++index) {
-            int nextX = index % width;
-            int nextY = index / width;
-            do {
-                nextY += 1;
-                if (nextY >= height) {
-                    nextX += 1;
-                    nextY = 0;
-                }
-            } while (nextX < width && (tileFlags[nextX + width * nextY] & OCCUPANTS_MASK) == 1);
-
-            int nextIndex = nextX + width * nextY;
-            if (nextX >= width) {
-                nextIndex = boardIndexCount;
-            }
-            nextBoardIndices[index] = nextIndex;
-        }
-    }
-
-    public int countStates() {
-        return countStates(game -> true);
-    }
-
-    public int countStates(Function<FastSimpleGame, Boolean> gameFilter) {
-        if (settings.getStartingPieceCount() > 7)
-            throw new IllegalStateException("Starting piece count > 7 is not supported");
-        if (settings.getBoardShape().getArea() >= 27)
-            throw new IllegalArgumentException("Board area too big");
-
-        AtomicLong stateCount = new AtomicLong();
-        loopLightGameStates((game) -> {
-            if (gameFilter.apply(game)) {
-                stateCount.incrementAndGet();
-            }
-        });
-        return Math.toIntExact(stateCount.get());
-    }
-
-    /**
-     * Only loops through game states where it is light's turn.
-     */
-    public void loopLightGameStates(Consumer<FastSimpleGame> gameConsumer) {
-        FastSimpleGame game = new FastSimpleGame(settings);
-        game.isLightTurn = true;  // Always true.
-
-        int pieceCount = settings.getStartingPieceCount();
-
-        for (int lightPieces = 0; lightPieces <= pieceCount; ++lightPieces) {
-            for (int darkPieces = 0; darkPieces <= pieceCount; ++darkPieces) {
-                // Reset the game.
-                game.board.clear();
-                game.light.pieces = lightPieces;
-                game.light.score = pieceCount - lightPieces;
-                game.dark.pieces = darkPieces;
-                game.dark.score = pieceCount - darkPieces;
-
-                loopBoardStates(gameConsumer, game, 0);
-            }
-        }
-    }
-
-    private void loopBoardStates(
-            Consumer<FastSimpleGame> gameConsumer,
-            FastSimpleGame game,
-            int boardIndex
-    ) {
-        int startingPieceCount = this.startingPieceCount;
-        int boardIndexCount = this.boardIndexCount;
-        int tileFlag = tileFlags[boardIndex];
-        boolean lightOnly = (tileFlag & LIGHT_ONLY_FLAG) != 0;
-        int occupants = tileFlag & OCCUPANTS_MASK;
-        int nextBoardIndex = nextBoardIndices[boardIndex];
-
-        int originalLightScore = game.light.score;
-        int originalDarkScore = game.dark.score;
-
-        for (int occupant = 0; occupant < occupants; ++occupant) {
-            int newLightScore = originalLightScore;
-            int newDarkScore = originalDarkScore;
-            int newPiece = 0;
-            if (occupant == 1) {
-                if (lightOnly) {
-                    int lightIndex = (tileFlag >> LIGHT_PATH_INDEX_SHIFT) & LIGHT_PATH_INDEX_MASK;
-                    newPiece = lightIndex + 1;
-                    newLightScore -= 1;
-                } else {
-                    int darkIndex = (tileFlag >> DARK_PATH_INDEX_SHIFT) & DARK_PATH_INDEX_MASK;
-                    newPiece = -(darkIndex + 1);
-                    newDarkScore -= 1;
-                }
-            } else if (occupant == 2) {
-                int lightIndex = (tileFlag >> LIGHT_PATH_INDEX_SHIFT) & LIGHT_PATH_INDEX_MASK;
-                newPiece = lightIndex + 1;
-                newLightScore -= 1;
-            }
-            if (newLightScore < 0 || newDarkScore < 0)
-                continue;
-
-            game.board.set(boardIndex, newPiece);
-            game.light.score = newLightScore;
-            game.dark.score = newDarkScore;
-
-            if (nextBoardIndex >= boardIndexCount) {
-                boolean darkWon = (newDarkScore >= startingPieceCount);
-                if (darkWon)
-                    continue;
-
-                game.isFinished = (newLightScore >= startingPieceCount);
-                gameConsumer.accept(game);
-            } else {
-                loopBoardStates(gameConsumer, game, nextBoardIndex);
-            }
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        GameSettings<Roll> settings = GameSettings.FINKEL;
-        SimpleGameStateEncoding encoding = new SimpleGameStateEncoding();
-        JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
-        LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
-
-        File inputFile = new File("./models/finkel.rgu");
-        File checkpointFile = new File("./finkel_ckpt.rgu");
-        File outputFile = new File("./finkel.rgu");
-
-        long readStart = System.nanoTime();
-//        Lut<Roll> lut = trainer.populateNewLut();
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
-        lut.getMetadata().getAdditionalMetadata().clear();
-        lut.getMetadata().addMetadata("author", "Padraig Lamont");
-        double readDurationMs = (System.nanoTime() - readStart) / 1e6;
-        System.out.println("Read or populate took " + MS_DURATION.format(readDurationMs) + " ms");
-
-        lut = trainer.train(lut, checkpointFile, 0.001f);
-
-        long start = System.nanoTime();
-        lut.write(jsonNotation, outputFile);
-        double durationMs = (System.nanoTime() - start) / 1e6;
-        System.out.println("Write took " + MS_DURATION.format(durationMs) + " ms");
+        this.flags = new FastSimpleFlags(settings);
     }
 
     public UInt32ValueBuffer populateKeys(int upperKeyFilter) {
         OrderedUInt32BufferSet keys = new OrderedUInt32BufferSet();
 
         AtomicInteger entryCount = new AtomicInteger(0);
-        loopLightGameStates(game -> {
+        flags.loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -264,7 +67,7 @@ public class LutTrainer<R extends Roll> {
         Float32ValueBuffer values = new Float32ValueBuffer(entryCount);
         LutMap map = new LutMap(entryCount, keys, values);
 
-        loopLightGameStates(game -> {
+        flags.loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -282,7 +85,7 @@ public class LutTrainer<R extends Roll> {
 
     private Set<Integer> findAllUpperKeys() {
         Set<Integer> upperKeys = new HashSet<>();
-        loopLightGameStates(game -> {
+        flags.loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -385,7 +188,7 @@ public class LutTrainer<R extends Roll> {
         FastSimpleMoveList moveList = new FastSimpleMoveList();
         float[] probabilities = settings.getDice().createDice().getRollProbabilities();
 
-        loopLightGameStates(game -> {
+        flags.loopLightGameStates(game -> {
             if (game.isFinished || !stateFilter.apply(game))
                 return;
 
@@ -484,7 +287,7 @@ public class LutTrainer<R extends Roll> {
                     int max = Math.max(game.light.score, game.dark.score);
                     return min == minScoreFinal && max == maxScoreFinal;
                 };
-                int stateCount = countStates(stateFilter);
+                int stateCount = flags.countStates(stateFilter);
 
                 double maxChange;
                 do {
@@ -496,7 +299,7 @@ public class LutTrainer<R extends Roll> {
                             iteration + 1,
                             minScore, maxScore,
                             maxChange,
-                            MS_DURATION.format(durationMs)
+                            LutCLI.MS_DURATION.format(durationMs)
                     );
                     iteration += 1;
 
@@ -512,7 +315,7 @@ public class LutTrainer<R extends Roll> {
         System.out.println();
         System.out.println("Finished progressive value iteration!");
         System.out.println("Starting full value iteration for 10 steps...");
-        int stateCount = countStates();
+        int stateCount = flags.countStates();
         for (int index = 0; index < 10; ++index) {
             long start = System.nanoTime();
 
@@ -524,7 +327,7 @@ public class LutTrainer<R extends Roll> {
                     "%d. max diff = %.3f (%s ms)\n",
                     index + 1,
                     maxChange,
-                    MS_DURATION.format(durationMs)
+                    LutCLI.MS_DURATION.format(durationMs)
             );
         }
         lut.write(jsonNotation, checkpointFile);

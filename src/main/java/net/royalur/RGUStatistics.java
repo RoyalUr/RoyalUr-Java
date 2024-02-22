@@ -3,7 +3,7 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
-import net.royalur.lut.SimpleGameStateEncoding;
+import net.royalur.lut.FinkelGameStateEncoding;
 import net.royalur.lut.Lut;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
@@ -502,7 +502,7 @@ public class RGUStatistics {
      * @param args Ignored.
      */
     public static void main(String[] args) throws IOException {
-        SimpleGameStateEncoding encoding = new SimpleGameStateEncoding();
+        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
         new RGUStatistics().testAgentActions(

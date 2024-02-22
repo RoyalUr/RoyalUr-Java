@@ -42,6 +42,14 @@ public class Lut<R extends Roll> {
         this.maps = maps;
     }
 
+    public int getEntryCount() {
+        int size = 0;
+        for (LutMap map : maps) {
+            size += map.getEntryCount();
+        }
+        return size;
+    }
+
     public GameStateEncoding getGameStateEncoding() {
         return encoding;
     }
