@@ -82,18 +82,18 @@ public class FinkelGameStateEncoding implements GameStateEncoding {
     }
 
     private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
+        int width = board.width;
+        int[] pieces = board.pieces;
+
         int state = 0;
-        int baseBitIndex = (boardX == 0 ? 0 : 3);
         for (int index = 0; index < 6; ++index) {
             int boardY = index;
-            int bitIndex = baseBitIndex + index * 4;
             if (index >= 4) {
                 boardY += 2;
-                baseBitIndex += 4;
             }
 
-            int boardIndex = board.calcTileIndex(boardX, boardY);
-            int piece = board.pieces[board.calcTileIndex(boardX, boardY)];
+            int boardIndex = boardX + boardY * width;
+            int piece = pieces[boardIndex];
             int occupant = (piece == 0 ? 0 : 1);
             state |= occupant << index;
         }

@@ -26,9 +26,9 @@ public abstract class BaseAgent<
      * @param availableMoves The list of available moves to be chosen from.
      * @return The move that the agent chose to play.
      */
-    public abstract @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> availableMoves
+    public abstract Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> availableMoves
     );
 
     /**
@@ -36,7 +36,7 @@ public abstract class BaseAgent<
      * @param game The game to play a turn in.
      */
     @Override
-    public final void playTurn(@Nonnull Game<P, S, R> game) {
+    public final void playTurn(Game<P, S, R> game) {
         if (game.isFinished())
             throw new IllegalStateException("The game has already been completed");
         if (!game.isPlayable())

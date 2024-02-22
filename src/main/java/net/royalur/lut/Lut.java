@@ -7,6 +7,7 @@ import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.DataSource;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
+import net.royalur.model.GameSettings;
 import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleBoard;

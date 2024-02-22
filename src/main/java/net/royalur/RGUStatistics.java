@@ -4,7 +4,10 @@ import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
 import net.royalur.lut.FinkelGameStateEncoding;
+import net.royalur.lut.GameStateEncoding;
 import net.royalur.lut.Lut;
+import net.royalur.lut.SimpleGameStateEncoding;
+import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
@@ -502,13 +505,14 @@ public class RGUStatistics {
      * @param args Ignored.
      */
     public static void main(String[] args) throws IOException {
-        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+//        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        GameStateEncoding encoding = new SimpleGameStateEncoding(GameSettings.FINKEL);
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
         new RGUStatistics().testAgentActions(
                 (rules) -> new GreedyAgent<>(),
                 (rules) -> new FinkelLUTAgent<>(lut),
-                1000000,
+                10000,
                 GameStatsTarget.values()
         );
 

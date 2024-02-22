@@ -1,5 +1,6 @@
 package net.royalur.lut;
 
+import net.royalur.model.GameSettings;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
 /**
@@ -26,5 +27,15 @@ public interface GameStateEncoding {
      */
     static int calcLowerKey(long key) {
         return (int) key;
+    }
+
+    /**
+     * Creates an encoding for a simple set of rules.
+     */
+    static GameStateEncoding createSimple(GameSettings<?> settings) {
+        if (GameSettings.FINKEL.equals(settings))
+            return new FinkelGameStateEncoding();
+
+        return new SimpleGameStateEncoding(settings);
     }
 }
