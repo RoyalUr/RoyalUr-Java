@@ -3,10 +3,7 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
-import net.royalur.lut.FinkelGameStateEncoding;
-import net.royalur.lut.GameStateEncoding;
-import net.royalur.lut.Lut;
-import net.royalur.lut.SimpleGameStateEncoding;
+import net.royalur.lut.*;
 import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
@@ -509,12 +506,16 @@ public class RGUStatistics {
         GameStateEncoding encoding = new SimpleGameStateEncoding(GameSettings.FINKEL);
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
+
+        long start = System.nanoTime();
         new RGUStatistics().testAgentActions(
                 (rules) -> new GreedyAgent<>(),
                 (rules) -> new FinkelLUTAgent<>(lut),
                 10000,
                 GameStatsTarget.values()
         );
+        double durationMS = (System.nanoTime() - start) / 1e6d;
+        System.out.println("\nTook " + LutCLI.MS_DURATION.format(durationMS) + " ms");
 
 //        runMoveStatsTests();
 //        runBucketedMoveStatsTests(10);

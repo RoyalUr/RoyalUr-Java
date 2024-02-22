@@ -1,80 +1,29 @@
 package net.royalur.lut;
 
+import net.royalur.model.GameSettings;
 import net.royalur.rules.simple.fast.FastSimpleBoard;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public class FinkelGameStateEncoding implements GameStateEncoding {
-
-    private final int[] middleLaneCompression;
+public class FinkelGameStateEncoding extends SimpleGameStateEncoding {
 
     public FinkelGameStateEncoding() {
-        this.middleLaneCompression = generateMiddleLaneCompression();
-
-        int maxCompressed = 0;
-        for (int compressed : middleLaneCompression) {
-            maxCompressed = Math.max(maxCompressed, compressed);
-        }
-        int bits = 1;
-        while (maxCompressed > (1 << bits)) {
-            bits += 1;
-        }
-        if (bits != 13)
-            throw new IllegalStateException("Expected the middle lane to take 13 bits");
-    }
-
-    private static int[] generateMiddleLaneCompression() {
-        int[] middleLaneCompression = new int[0xffff];
-        Arrays.fill(middleLaneCompression, -1);
-
-        List<Integer> states = new ArrayList<>();
-        addMiddleLaneStates(states, 0, 7, 7, 0);
-        for (int index = 0; index < states.size(); ++index) {
-            int state = states.get(index);
-            middleLaneCompression[state] = index;
-        }
-        return middleLaneCompression;
-    }
-
-    private static void addMiddleLaneStates(
-            @Nonnull List<Integer> states, int state, int lightPieces, int darkPieces, int index
-    ) {
-        int nextIndex = index + 1;
-        for (int occupant = 0; occupant < 3; ++occupant) {
-            int newLightPieces = lightPieces;
-            int newDarkPieces = darkPieces;
-            if (occupant == 1) {
-                newDarkPieces -= 1;
-                if (newDarkPieces < 0)
-                    continue;
-
-            } else if (occupant == 2) {
-                newLightPieces -= 1;
-                if (newLightPieces < 0)
-                    continue;
-            }
-
-            int newState = state | (occupant << (2 * index));
-            if (nextIndex == 8) {
-                states.add(newState);
-            } else {
-                addMiddleLaneStates(states, newState, newLightPieces, newDarkPieces, nextIndex);
-            }
-        }
+        super(GameSettings.FINKEL);
     }
 
     private int encodeMiddleLane(@Nonnull FastSimpleBoard board) {
+        int width = board.width;
+        int[] pieces = board.pieces;
+
         int state = 0;
         for (int index = 0; index < 8; ++index) {
-            int piece = board.pieces[board.calcTileIndex(1, index)];
+            int piece = pieces[1 + index * width];
             int occupant = (piece == 0 ? 0 : (piece < 0 ? 1 : 2));
-            state |= occupant << (2 * index);
+            state = (state << 2) | occupant;
         }
-        int compressed = middleLaneCompression[state];
+
+        int compressed = warTileCompression[state];
         if (compressed == -1)
             throw new IllegalArgumentException("Illegal board state!");
 
