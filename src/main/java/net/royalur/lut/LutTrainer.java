@@ -1,7 +1,6 @@
 package net.royalur.lut;
 
 import net.royalur.lut.buffer.Float32ValueBuffer;
-import net.royalur.lut.buffer.FloatValueBuffer;
 import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
@@ -15,6 +14,7 @@ import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -125,7 +125,7 @@ public class LutTrainer<R extends Roll> {
             throw new IllegalArgumentException("Board area too big");
 
         AtomicLong stateCount = new AtomicLong();
-        loopGameStates((game) -> {
+        loopLightGameStates((game) -> {
             if (gameFilter.apply(game)) {
                 stateCount.incrementAndGet();
             }
@@ -133,7 +133,10 @@ public class LutTrainer<R extends Roll> {
         return Math.toIntExact(stateCount.get());
     }
 
-    public void loopGameStates(Consumer<FastSimpleGame> gameConsumer) {
+    /**
+     * Only loops through game states where it is light's turn.
+     */
+    public void loopLightGameStates(Consumer<FastSimpleGame> gameConsumer) {
         FastSimpleGame game = new FastSimpleGame(settings);
         int pieceCount = settings.getStartingPieceCount();
 
@@ -193,19 +196,12 @@ public class LutTrainer<R extends Roll> {
             if (nextBoardIndex >= boardIndexCount) {
                 boolean lightWon = (newLightScore >= pieceCount);
                 boolean darkWon = (newDarkScore >= pieceCount);
-                game.isFinished = (lightWon || darkWon);
+                if (darkWon)
+                    continue;
 
-                for (int turn = 0; turn <= 1; ++turn) {
-                    // When the game is finished, the winner must have all pieces scored!
-                    boolean isLightTurn = (turn == 1);
-                    if (!isLightTurn && lightWon)
-                        continue;
-                    if (isLightTurn && darkWon)
-                        continue;
-
-                    game.isLightTurn = isLightTurn;
-                    gameConsumer.accept(game);
-                }
+                game.isFinished = lightWon;
+                game.isLightTurn = true;
+                gameConsumer.accept(game);
             } else {
                 loopBoardStates(gameConsumer, game, nextBoardIndex);
             }
@@ -214,24 +210,23 @@ public class LutTrainer<R extends Roll> {
 
     public static void main(String[] args) throws IOException {
         GameSettings<Roll> settings = GameSettings.FINKEL;
-        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        SimpleGameStateEncoding encoding = new SimpleGameStateEncoding();
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./finkel2p_empty.rgu");
-        File checkpointFile = new File("./finkel2p_ckpt.rgu");
-        File outputFile = new File("./finkel2p.rgu");
+        File inputFile = new File("./models/finkel.rgu");
+        File checkpointFile = new File("./finkel_ckpt.rgu");
+        File outputFile = new File("./finkel.rgu");
 
         long readStart = System.nanoTime();
-        Lut<Roll> lut = trainer.populateNewLut();
-        lut.write(jsonNotation, inputFile);
-//        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile).convertValuesToFloat32();
+//        Lut<Roll> lut = trainer.populateNewLut();
+        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
         lut.getMetadata().getAdditionalMetadata().clear();
         lut.getMetadata().addMetadata("author", "Padraig Lamont");
         double readDurationMs = (System.nanoTime() - readStart) / 1e6;
-        System.out.println("Read took " + MS_DURATION.format(readDurationMs) + " ms");
+        System.out.println("Read or populate took " + MS_DURATION.format(readDurationMs) + " ms");
 
-        trainer.train(lut, checkpointFile, 0.001f);
+        lut = trainer.train(lut, checkpointFile, 0.001f);
 
         long start = System.nanoTime();
         lut.write(jsonNotation, outputFile);
@@ -243,7 +238,7 @@ public class LutTrainer<R extends Roll> {
         OrderedUInt32BufferSet keys = new OrderedUInt32BufferSet();
 
         AtomicInteger entryCount = new AtomicInteger(0);
-        loopGameStates(game -> {
+        loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -266,7 +261,7 @@ public class LutTrainer<R extends Roll> {
         Float32ValueBuffer values = new Float32ValueBuffer(entryCount);
         LutMap map = new LutMap(entryCount, keys, values);
 
-        loopGameStates(game -> {
+        loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -284,7 +279,7 @@ public class LutTrainer<R extends Roll> {
 
     private Set<Integer> findAllUpperKeys() {
         Set<Integer> upperKeys = new HashSet<>();
-        loopGameStates(game -> {
+        loopLightGameStates(game -> {
             if (!game.isLightTurn)
                 return;
 
@@ -341,6 +336,7 @@ public class LutTrainer<R extends Roll> {
             float[] probabilities,
             FastSimpleGame rollGame,
             FastSimpleGame moveGame,
+            FastSimpleGame tempGame,
             FastSimpleMoveList moveList
     ) {
         double newValue = 0.0f;
@@ -358,17 +354,114 @@ public class LutTrainer<R extends Roll> {
                     moveGame.copyFrom(rollGame);
                     moveGame.applyMove(moveList.moves[moveIndex]);
 
-                    double moveValue = lut.getLightWinPercent(moveGame);
+                    double moveValue = lut.getLightWinPercent(moveGame, tempGame);
                     bestValue = Math.max(bestValue, moveValue);
                 }
             } else {
-                bestValue = lut.getLightWinPercent(rollGame);
+                bestValue = lut.getLightWinPercent(rollGame, tempGame);
             }
             newValue += prob * bestValue;
         }
 
         double lastValue = lut.updateLightWinPercent(game, newValue);
         return Math.abs(lastValue - newValue);
+    }
+
+    private double performTrainingIterationSection(
+            Lut<R> lut,
+            Function<FastSimpleGame, Boolean> stateFilter,
+            int fromIndex,
+            int toIndex
+    ) {
+        AtomicInteger indexCounter = new AtomicInteger(0);
+        AtomicReference<Double> maxChange = new AtomicReference<>(0.0d);
+
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleGame tempGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+
+        loopLightGameStates(game -> {
+            if (game.isFinished || !stateFilter.apply(game))
+                return;
+
+            int index = indexCounter.getAndIncrement();
+            if (index < fromIndex || index >= toIndex)
+                return;
+
+            double change = iterateState(
+                    lut, game, probabilities,
+                    rollGame, moveGame, tempGame,
+                    moveList
+            );
+            if (change > maxChange.get()) {
+                maxChange.set(change);
+            }
+        });
+        return maxChange.get();
+    }
+
+    private double performTrainingIteration(
+            Lut<R> lut,
+            Function<FastSimpleGame, Boolean> stateFilter
+    ) {
+        // Calculate the number of states.
+        AtomicInteger stateCount = new AtomicInteger(0);
+        loopLightGameStates((game) -> {
+            if (game.isFinished || !stateFilter.apply(game))
+                return;
+
+            stateCount.incrementAndGet();
+        });
+        int threadCount = Runtime.getRuntime().availableProcessors();
+
+        if (stateCount.get() < threadCount) {
+            return performTrainingIterationSection(
+                    lut, stateFilter, 0, stateCount.get()
+            );
+        }
+
+        // Split up the keys between threads for processing.
+        int statesPerThread = (stateCount.get() + threadCount - 1) / threadCount;
+        AtomicReference<Double> maxChange = new AtomicReference<>(0.0d);
+
+        List<Thread> threads = new ArrayList<>();
+        AtomicReference<Exception> error = new AtomicReference<>();
+        for (int threadNo = 0; threadNo < threadCount; ++threadNo) {
+
+            int fromIndex = statesPerThread * threadNo;
+            int toIndex = Math.min(stateCount.get(), statesPerThread * (threadNo + 1));
+
+            Thread thread = new Thread(() -> {
+                try {
+                    double change = performTrainingIterationSection(
+                            lut, stateFilter,
+                            fromIndex, toIndex
+                    );
+                    synchronized (maxChange) {
+                        if (change > maxChange.get()) {
+                            maxChange.set(change);
+                        }
+                    }
+                } catch (Exception e) {
+                    error.set(e);
+                }
+            }, "train-" + threadNo);
+            threads.add(thread);
+            thread.start();
+        }
+        try {
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (error.get() != null)
+            throw new RuntimeException(error.get());
+
+        return maxChange.get();
     }
 
     public void train(
@@ -379,50 +472,39 @@ public class LutTrainer<R extends Roll> {
         train(lut, checkpointFile, 0.01d);
     }
 
-    public void train(
+    public Lut<R> train(
             Lut<R> lut,
             File checkpointFile,
             double tolerance
     ) throws IOException {
 
-        AtomicReference<Double> maxChange = new AtomicReference<>(0.0d);
-        FastSimpleGame rollGame = new FastSimpleGame(settings);
-        FastSimpleGame moveGame = new FastSimpleGame(settings);
-        FastSimpleMoveList moveList = new FastSimpleMoveList();
-        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+        lut = lut.copyValuesToFloat32();
 
         int iteration = 0;
         int pieceCount = settings.getStartingPieceCount();
         for (int minScore = pieceCount - 1; minScore >= 0; --minScore) {
             for (int maxScore = pieceCount - 1; maxScore >= minScore; --maxScore) {
+                double maxChange;
                 do {
                     long start = System.nanoTime();
-                    maxChange.set(0.0d);
 
-                    int minScoreThreshold = minScore;
-                    int maxScoreThreshold = maxScore;
-                    loopGameStates((game) -> {
-                        if (game.isFinished || !game.isLightTurn)
-                            return;
-                        if (Math.min(game.light.score, game.dark.score) != minScoreThreshold)
-                            return;
-                        if (Math.max(game.light.score, game.dark.score) != maxScoreThreshold)
-                            return;
+                    int minScoreFinal = minScore;
+                    int maxScoreFinal = maxScore;
+                    maxChange = performTrainingIteration(
+                            lut,
+                            game -> {
+                                int min = Math.min(game.light.score, game.dark.score);
+                                int max = Math.max(game.light.score, game.dark.score);
+                                return min == minScoreFinal && max == maxScoreFinal;
+                            }
+                    );
 
-                        double difference = iterateState(
-                                lut, game, probabilities,
-                                rollGame, moveGame, moveList
-                        );
-                        if (difference > maxChange.get()) {
-                            maxChange.set(difference);
-                        }
-                    });
                     double durationMs = (System.nanoTime() - start) / 1e6;
                     System.out.printf(
                             "%d. scores = [%d, %d], max diff = %.3f (%s ms)\n",
                             iteration + 1,
-                            minScoreThreshold, maxScoreThreshold,
-                            maxChange.get(),
+                            minScore, maxScore,
+                            maxChange,
                             MS_DURATION.format(durationMs)
                     );
                     iteration += 1;
@@ -430,7 +512,7 @@ public class LutTrainer<R extends Roll> {
                     if (iteration % 10 == 0) {
                         lut.write(jsonNotation, checkpointFile);
                     }
-                } while (maxChange.get() > tolerance);
+                } while (maxChange > tolerance);
             }
         }
 
@@ -441,27 +523,19 @@ public class LutTrainer<R extends Roll> {
         System.out.println("Starting full value iteration for 10 steps...");
         for (int index = 0; index < 10; ++index) {
             long start = System.nanoTime();
-            maxChange.set(0.0d);
-            loopGameStates((game) -> {
-                if (game.isFinished || !game.isLightTurn)
-                    return;
 
-                double difference = iterateState(
-                        lut, game, probabilities,
-                        rollGame, moveGame, moveList
-                );
-                if (difference > maxChange.get()) {
-                    maxChange.set(difference);
-                }
-            });
+            double maxChange = performTrainingIteration(
+                    lut, game -> true
+            );
             double durationMs = (System.nanoTime() - start) / 1e6;
             System.out.printf(
                     "%d. max diff = %.3f (%s ms)\n",
                     index + 1,
-                    maxChange.get(),
+                    maxChange,
                     MS_DURATION.format(durationMs)
             );
         }
         lut.write(jsonNotation, checkpointFile);
+        return lut;
     }
 }

@@ -18,18 +18,20 @@ public class FinkelLUTAgent<
         R extends Roll
 > extends BaseAgent<P, S, R> {
 
-    private final @Nonnull Lut<R> lut;
-    private final @Nonnull FastSimpleGame fastGame;
+    private final Lut<R> lut;
+    private final FastSimpleGame fastGame;
+    private final FastSimpleGame tempGame;
 
-    public FinkelLUTAgent(@Nonnull Lut<R> lut) {
+    public FinkelLUTAgent(Lut<R> lut) {
         this.lut = lut;
         this.fastGame = new FastSimpleGame(lut.getMetadata().getGameSettings());
+        this.tempGame = new FastSimpleGame(lut.getMetadata().getGameSettings());
     }
 
     @Override
-    public @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> availableMoves
+    public Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> availableMoves
     ) {
         if (availableMoves.isEmpty())
             throw new IllegalStateException();
@@ -43,7 +45,7 @@ public class FinkelLUTAgent<
             moveGame.makeMove(move);
 
             fastGame.copyFrom(moveGame);
-            double score = lut.getLightWinPercent(fastGame);
+            double score = lut.getLightWinPercent(fastGame, tempGame);
             if (game.getTurn() == PlayerType.DARK) {
                 score = 100.0d - score;
             }

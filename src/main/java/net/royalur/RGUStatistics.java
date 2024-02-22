@@ -3,21 +3,14 @@ package net.royalur;
 import net.royalur.agent.Agent;
 import net.royalur.agent.FinkelLUTAgent;
 import net.royalur.agent.GreedyAgent;
-import net.royalur.agent.RandomAgent;
-import net.royalur.lut.FinkelGameStateEncoding;
+import net.royalur.lut.SimpleGameStateEncoding;
 import net.royalur.lut.Lut;
-import net.royalur.lut.LutTrainer;
-import net.royalur.lut.store.OrderedUInt32BufferSet;
-import net.royalur.model.GameSettings;
 import net.royalur.model.Piece;
 import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
-import net.royalur.rules.simple.fast.FastSimpleBoard;
-import net.royalur.rules.simple.fast.FastSimpleGame;
-import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -26,15 +19,8 @@ import net.royalur.stats.SummaryStat;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -516,7 +502,7 @@ public class RGUStatistics {
      * @param args Ignored.
      */
     public static void main(String[] args) throws IOException {
-        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        SimpleGameStateEncoding encoding = new SimpleGameStateEncoding();
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
         new RGUStatistics().testAgentActions(

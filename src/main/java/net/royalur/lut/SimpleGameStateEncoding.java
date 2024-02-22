@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FinkelGameStateEncoding implements GameStateEncoding {
+public class SimpleGameStateEncoding implements GameStateEncoding {
 
     private final int[] middleLaneCompression;
 
-    public FinkelGameStateEncoding() {
+    public SimpleGameStateEncoding() {
         this.middleLaneCompression = generateMiddleLaneCompression();
 
         int maxCompressed = 0;

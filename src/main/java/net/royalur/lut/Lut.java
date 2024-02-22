@@ -12,6 +12,7 @@ import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleBoard;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,7 +31,6 @@ public class Lut<R extends Roll> {
     private final GameStateEncoding encoding;
     private final LutMetadata<R> metadata;
     private final LutMap[] maps;
-    private final FastSimpleGame tempGame;
 
     public Lut(
             GameStateEncoding encoding,
@@ -40,7 +40,6 @@ public class Lut<R extends Roll> {
         this.encoding = encoding;
         this.metadata = metadata;
         this.maps = maps;
-        this.tempGame = new FastSimpleGame(metadata.getGameSettings());
     }
 
     public GameStateEncoding getGameStateEncoding() {
@@ -78,9 +77,12 @@ public class Lut<R extends Roll> {
         }
     }
 
-    private long calcSymmetricalKey(FastSimpleGame game) {
+    private long calcSymmetricalKey(FastSimpleGame game, @Nullable FastSimpleGame tempGame) {
         FastSimpleGame keyGame = game;
         if (!game.isLightTurn) {
+            if (tempGame == null) {
+                tempGame = new FastSimpleGame(metadata.getGameSettings());
+            }
             reversePlayers(game, tempGame);
             keyGame = tempGame;
         }
@@ -89,9 +91,17 @@ public class Lut<R extends Roll> {
 
     /**
      * Assumes that the game is using symmetrical paths.
+     * This function is much slower than if you provide a tempGame.
      */
     public double getLightWinPercent(FastSimpleGame game) {
-        long key = calcSymmetricalKey(game);
+        return getLightWinPercent(game, null);
+    }
+
+    /**
+     * Assumes that the game is using symmetrical paths.
+     */
+    public double getLightWinPercent(FastSimpleGame game, @Nullable FastSimpleGame tempGame) {
+        long key = calcSymmetricalKey(game, tempGame);
         int upperKey = GameStateEncoding.calcUpperKey(key);
         int lowerKey = GameStateEncoding.calcLowerKey(key);
         double winPercent = maps[upperKey].getDouble(lowerKey);
@@ -122,10 +132,7 @@ public class Lut<R extends Roll> {
         return newBuffer;
     }
 
-    private static Float32ValueBuffer convertToFloat32(FloatValueBuffer buffer) {
-        if (buffer instanceof Float32ValueBuffer)
-            return (Float32ValueBuffer) buffer;
-
+    private static Float32ValueBuffer copyAsFloat32(FloatValueBuffer buffer) {
         int capacity = buffer.getCapacity();
         Float32ValueBuffer newBuffer = new Float32ValueBuffer(capacity);
         for (int index = 0; index < capacity; ++index) {
@@ -134,11 +141,11 @@ public class Lut<R extends Roll> {
         return newBuffer;
     }
 
-    public Lut<R> convertValuesToFloat32() {
+    public Lut<R> copyValuesToFloat32() {
         LutMap[] newMaps = new LutMap[maps.length];
         for (int index = 0; index < maps.length; ++index) {
             LutMap oldMap = maps[index];
-            Float32ValueBuffer valueBuffer = convertToFloat32(oldMap.getValueBuffer());
+            Float32ValueBuffer valueBuffer = copyAsFloat32(oldMap.getValueBuffer());
             newMaps[index] = new LutMap(
                     oldMap.getEntryCount(), oldMap.getKeyBuffer(), valueBuffer
             );
