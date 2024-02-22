@@ -14,10 +14,7 @@ import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,6 +38,8 @@ public class LutTrainer<R extends Roll> {
     private static final int DEFAULT_UPPER_KEY_LIMIT = 64;
 
     private final GameSettings<R> settings;
+    private final int startingPieceCount;
+
     private final GameStateEncoding encoding;
     private final JsonNotation<?, ?, R> jsonNotation;
     private final int boardIndexCount;
@@ -53,6 +52,8 @@ public class LutTrainer<R extends Roll> {
             JsonNotation<?, ?, R> jsonNotation
     ) {
         this.settings = settings;
+        this.startingPieceCount = settings.getStartingPieceCount();
+
         this.encoding = encoding;
         this.jsonNotation = jsonNotation;
 
@@ -138,6 +139,8 @@ public class LutTrainer<R extends Roll> {
      */
     public void loopLightGameStates(Consumer<FastSimpleGame> gameConsumer) {
         FastSimpleGame game = new FastSimpleGame(settings);
+        game.isLightTurn = true;  // Always true.
+
         int pieceCount = settings.getStartingPieceCount();
 
         for (int lightPieces = 0; lightPieces <= pieceCount; ++lightPieces) {
@@ -159,12 +162,11 @@ public class LutTrainer<R extends Roll> {
             FastSimpleGame game,
             int boardIndex
     ) {
-        int pieceCount = settings.getStartingPieceCount();
+        int startingPieceCount = this.startingPieceCount;
+        int boardIndexCount = this.boardIndexCount;
         int tileFlag = tileFlags[boardIndex];
         boolean lightOnly = (tileFlag & LIGHT_ONLY_FLAG) != 0;
         int occupants = tileFlag & OCCUPANTS_MASK;
-        int lightIndex = (tileFlag >> LIGHT_PATH_INDEX_SHIFT) & LIGHT_PATH_INDEX_MASK;
-        int darkIndex = (tileFlag >> DARK_PATH_INDEX_SHIFT) & DARK_PATH_INDEX_MASK;
         int nextBoardIndex = nextBoardIndices[boardIndex];
 
         int originalLightScore = game.light.score;
@@ -176,13 +178,16 @@ public class LutTrainer<R extends Roll> {
             int newPiece = 0;
             if (occupant == 1) {
                 if (lightOnly) {
+                    int lightIndex = (tileFlag >> LIGHT_PATH_INDEX_SHIFT) & LIGHT_PATH_INDEX_MASK;
                     newPiece = lightIndex + 1;
                     newLightScore -= 1;
                 } else {
+                    int darkIndex = (tileFlag >> DARK_PATH_INDEX_SHIFT) & DARK_PATH_INDEX_MASK;
                     newPiece = -(darkIndex + 1);
                     newDarkScore -= 1;
                 }
             } else if (occupant == 2) {
+                int lightIndex = (tileFlag >> LIGHT_PATH_INDEX_SHIFT) & LIGHT_PATH_INDEX_MASK;
                 newPiece = lightIndex + 1;
                 newLightScore -= 1;
             }
@@ -194,13 +199,11 @@ public class LutTrainer<R extends Roll> {
             game.dark.score = newDarkScore;
 
             if (nextBoardIndex >= boardIndexCount) {
-                boolean lightWon = (newLightScore >= pieceCount);
-                boolean darkWon = (newDarkScore >= pieceCount);
+                boolean darkWon = (newDarkScore >= startingPieceCount);
                 if (darkWon)
                     continue;
 
-                game.isFinished = lightWon;
-                game.isLightTurn = true;
+                game.isFinished = (newLightScore >= startingPieceCount);
                 gameConsumer.accept(game);
             } else {
                 loopBoardStates(gameConsumer, game, nextBoardIndex);
