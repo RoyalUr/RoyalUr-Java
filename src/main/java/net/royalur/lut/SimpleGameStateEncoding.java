@@ -20,8 +20,9 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
     protected final GameSettings<?> settings;
     protected final FastSimpleFlags flags;
     protected final int warTileCompressionTileCount;
+    protected final int warTileSegmentCount;
     protected final int[] warTileCompression;
-    protected final int warTileBits;
+    protected final int warTileSegmentBits;
     protected final int safeTileBitsPerPlayer;
     protected final int boardBits;
     protected final int[] warBoardIndices;
@@ -37,12 +38,15 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
         this.warTileCompressionTileCount = estimateGoodWarTileCompressionTileCount(
                 flags.warTileCount
         );
+        this.warTileSegmentCount = (
+                (flags.warTileCount + warTileCompressionTileCount - 1) / warTileCompressionTileCount
+        );
         this.warTileCompression = generateWarTileCompression(
                 settings.getStartingPieceCount(), warTileCompressionTileCount
         );
-        this.warTileBits = calculateBitsRequired(max(warTileCompression));
+        this.warTileSegmentBits = calculateBitsRequired(max(warTileCompression));
         this.safeTileBitsPerPlayer = flags.safeTileCountPerPlayer;
-        this.boardBits = 2 * safeTileBitsPerPlayer + warTileBits;
+        this.boardBits = 2 * safeTileBitsPerPlayer + warTileSegmentCount * warTileSegmentBits;
         this.warBoardIndices = gatherBoardIndices(flags.tileFlags, flag -> {
             return (flag & FastSimpleFlags.OCCUPANTS_MASK) == 3;
         });
@@ -159,7 +163,7 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
         int[] warBoardIndices = this.warBoardIndices;
         int[] warTileCompression = this.warTileCompression;
         int tileCount = this.warTileCompressionTileCount;
-        int warTileBits = this.warTileBits;
+        int warTileSegmentBits = this.warTileSegmentBits;
         int[] pieces = board.pieces;
 
         int tileIndex = 0;
@@ -180,7 +184,7 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
             if (compressed == -1)
                 throw new IllegalArgumentException("Illegal board state!");
 
-            result = (result << warTileBits) | compressed;
+            result = (result << warTileSegmentBits) | compressed;
 
         } while (tileIndex < warBoardIndices.length);
 
@@ -202,7 +206,7 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
 
     private long encodeBoard(FastSimpleBoard board) {
         int safeBits = this.safeTileBitsPerPlayer;
-        int warBits = this.warTileBits;
+        int warBits = warTileSegmentCount * warTileSegmentBits;
 
         int lightSafeZone = encodeSafeTiles(board, lightSafeBoardIndices);
         int darkSafeZone = encodeSafeTiles(board, darkSafeBoardIndices);

@@ -146,8 +146,10 @@ public class LutTrainer<R extends Roll> {
             FastSimpleMoveList moveList
     ) {
         double newValue = 0.0f;
-        for (int roll = 0; roll <= 4; ++roll) {
+        for (int roll = 0; roll < probabilities.length; ++roll) {
             float prob = probabilities[roll];
+            if (prob <= 0.0f)
+                continue;
 
             rollGame.copyFrom(game);
             rollGame.applyRoll(roll, moveList);

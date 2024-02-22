@@ -13,18 +13,18 @@ public class LutCLI {
     public static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
     public static void main(String[] args) throws IOException {
-        GameSettings<Roll> settings = GameSettings.FINKEL;//.withStartingPieceCount(2);
-        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
+        GameSettings<Roll> settings = GameSettings.BLITZ;
+        SimpleGameStateEncoding encoding = new SimpleGameStateEncoding(settings);
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./models/finkel.rgu");
-        File checkpointFile = new File("./finkel_ckpt.rgu");
-        File outputFile = new File("./finkel.rgu");
+        File inputFile = new File("./models/blitz.rgu");
+        File checkpointFile = new File("./blitz_ckpt.rgu");
+        File outputFile = new File("./blitz.rgu");
 
         long readStart = System.nanoTime();
-//        Lut<Roll> lut = trainer.populateNewLut();
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
+        Lut<Roll> lut = trainer.populateNewLut();
+//        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
         lut.getMetadata().getAdditionalMetadata().clear();
         lut.getMetadata().addMetadata("author", "Padraig Lamont");
         double readDurationMs = (System.nanoTime() - readStart) / 1e6;

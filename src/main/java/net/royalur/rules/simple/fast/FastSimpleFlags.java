@@ -160,9 +160,7 @@ public class FastSimpleFlags {
 
     private static int calculateBoardIndexCount(GameSettings<?> settings) {
         BoardShape shape = settings.getBoardShape();
-        int width = shape.getWidth();
-        int height = shape.getHeight();
-        return width * height;
+        return shape.getWidth() * shape.getHeight();
     }
 
     private static int[] calculateTileFlags(GameSettings<?> settings, int boardIndexCount) {
@@ -263,7 +261,6 @@ public class FastSimpleFlags {
                     "Asymmetrical board! Light & dark safe tile counts are not equal"
             );
         }
-
         return lightSafeTileCount;
     }
 }

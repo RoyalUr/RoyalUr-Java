@@ -4,15 +4,13 @@ import net.royalur.model.GameSettings;
 import net.royalur.rules.simple.fast.FastSimpleBoard;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
-import javax.annotation.Nonnull;
-
 public class FinkelGameStateEncoding extends SimpleGameStateEncoding {
 
     public FinkelGameStateEncoding() {
         super(GameSettings.FINKEL);
     }
 
-    private int encodeMiddleLane(@Nonnull FastSimpleBoard board) {
+    private int encodeMiddleLane(FastSimpleBoard board) {
         int width = board.width;
         int[] pieces = board.pieces;
 
@@ -30,7 +28,7 @@ public class FinkelGameStateEncoding extends SimpleGameStateEncoding {
         return compressed;
     }
 
-    private int encodeSideLane(@Nonnull FastSimpleBoard board, int boardX) {
+    private int encodeSideLane(FastSimpleBoard board, int boardX) {
         int width = board.width;
         int[] pieces = board.pieces;
 
@@ -49,7 +47,7 @@ public class FinkelGameStateEncoding extends SimpleGameStateEncoding {
         return state;
     }
 
-    private int encodeBoard(@Nonnull FastSimpleBoard board) {
+    private int encodeBoard(FastSimpleBoard board) {
         int leftLane = encodeSideLane(board, 0);
         int rightLane = encodeSideLane(board, 2);
         int middleLane = encodeMiddleLane(board);
@@ -57,7 +55,7 @@ public class FinkelGameStateEncoding extends SimpleGameStateEncoding {
     }
 
     @Override
-    public long encodeGameState(@Nonnull FastSimpleGame game) {
+    public long encodeGameState(FastSimpleGame game) {
         if (!game.isLightTurn) {
             throw new IllegalArgumentException(
                     "Only game states where it is the light player's turn are supported by this encoding"

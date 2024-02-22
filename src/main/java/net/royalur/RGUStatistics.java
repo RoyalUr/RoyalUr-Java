@@ -497,15 +497,11 @@ public class RGUStatistics {
         );
     }*/
 
-    /**
-     * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
-     * @param args Ignored.
-     */
-    public static void main(String[] args) throws IOException {
-//        FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
-        GameStateEncoding encoding = new SimpleGameStateEncoding(GameSettings.FINKEL);
+    private static void runGames() throws IOException {
+        FinkelGameStateEncoding finkelEncoding = new FinkelGameStateEncoding();
+        GameStateEncoding simpleEncoding = new SimpleGameStateEncoding(GameSettings.FINKEL);
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/finkel.rgu"));
+        Lut<Roll> lut = Lut.read(jsonNotation, finkelEncoding, new File("./models/finkel.rgu"));
 
         long start = System.nanoTime();
         new RGUStatistics().testAgentActions(
@@ -515,13 +511,21 @@ public class RGUStatistics {
                 GameStatsTarget.values()
         );
         double durationMS = (System.nanoTime() - start) / 1e6d;
+
         System.out.println("\nTook " + LutCLI.MS_DURATION.format(durationMS) + " ms");
+    }
+
+    /**
+     * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
+     * @param args Ignored.
+     */
+    public static void main(String[] args) throws IOException {
 
 //        runMoveStatsTests();
 //        runBucketedMoveStatsTests(10);
 //        runGames();
 
-//        LutTrainer.main(args);
+        LutCLI.main(args);
 
         /*GameSettings<Roll> settings = GameSettings.FINKEL;
         FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
