@@ -48,8 +48,8 @@ public class JsonHelper {
         JsonNode value = readValue(json, key);
         if (!(value instanceof ObjectNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, " +
-                "not " + value.getNodeType().name().toLowerCase()
+                "Expected " + key + " to be a dictionary, not "
+                        + value.getNodeType().name().toLowerCase()
             );
         }
         return (ObjectNode) value;
@@ -62,8 +62,8 @@ public class JsonHelper {
 
         if (!(value instanceof ObjectNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, " +
-                "not " + value.getNodeType().name().toLowerCase()
+                "Expected " + key + " to be a dictionary, not "
+                        + value.getNodeType().name().toLowerCase()
             );
         }
         return (ObjectNode) value;
@@ -73,8 +73,8 @@ public class JsonHelper {
         JsonNode value = readValue(json, key);
         if (!(value instanceof ArrayNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, " +
-                "not " + value.getNodeType().name().toLowerCase()
+                "Expected " + key + " to be a dictionary, not "
+                        + value.getNodeType().name().toLowerCase()
             );
         }
         return (ArrayNode) value;
@@ -87,8 +87,8 @@ public class JsonHelper {
 
         if (!(value instanceof ArrayNode)) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be a dictionary, " +
-                            "not " + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be a dictionary, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return (ArrayNode) value;
@@ -105,8 +105,8 @@ public class JsonHelper {
         JsonNode value = readArrayEntry(json, index);
         if (!(value instanceof ObjectNode)) {
             throw new JsonTypeError(
-                    "Expected the " + index + "'th entry to be a dictionary, " +
-                            "not " + value.getNodeType().name().toLowerCase()
+                    "Expected the " + index + "'th entry to be a dictionary, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return (ObjectNode) value;
@@ -116,8 +116,8 @@ public class JsonHelper {
         JsonNode value = readValue(json, key);
         if (!value.isTextual()) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be a string, " +
-                    "not " + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be a string, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return value.textValue();
@@ -130,8 +130,8 @@ public class JsonHelper {
 
         if (!value.isTextual()) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be a string, " +
-                            "not " + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be a string, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return value.textValue();
@@ -141,8 +141,8 @@ public class JsonHelper {
         String value = readString(json, key);
         if (value.length() != 1) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be a single character, " +
-                    "but it was " + value.length() + " characters"
+                    "Expected " + key + " to be a single character, but it was "
+                            + value.length() + " characters"
             );
         }
         return value.charAt(0);
@@ -152,8 +152,8 @@ public class JsonHelper {
         JsonNode value = readValue(json, key);
         if (!value.isNumber()) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a number, " +
-                "not " + value.getNodeType().name().toLowerCase()
+                "Expected " + key + " to be a number, not "
+                        + value.getNodeType().name().toLowerCase()
             );
         }
         return value;
@@ -189,8 +189,9 @@ public class JsonHelper {
         double epsilon = valueDouble - valueFloat;
         if (Math.abs(epsilon) > MAX_FLOAT_READ_EPSILON) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be representable as a float, " +
-                    "but could not represent " + value.asText() + " accurately enough"
+                    "Expected " + key + " to be representable as a float, "
+                            + "but could not represent " + value.asText()
+                            + " accurately enough"
             );
         }
         return valueFloat;
@@ -206,8 +207,9 @@ public class JsonHelper {
         BigDecimal epsilon = valueBigDecimal.subtract(new BigDecimal(valueDouble));
         if (epsilon.abs().compareTo(MAX_DOUBLE_READ_EPSILON) > 0) {
             throw new JsonTypeError(
-                    "Expected " + key + " to be representable as a double, " +
-                    "but could not represent " + value.asText() + " accurately enough"
+                    "Expected " + key + " to be representable as a double, "
+                            + "but could not represent " + value.asText()
+                            + " accurately enough"
             );
         }
         return valueDouble;
@@ -217,8 +219,8 @@ public class JsonHelper {
         JsonNode value = readValue(json, key);
         if (!(value instanceof BooleanNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a boolean, " +
-                "not " + value.getNodeType().name().toLowerCase()
+                "Expected " + key + " to be a boolean, not "
+                        + value.getNodeType().name().toLowerCase()
             );
         }
         return value.booleanValue();

@@ -1,7 +1,5 @@
 package net.royalur.stats;
 
-import javax.annotation.Nonnull;
-
 /**
  * Combined set of statistics from many games.
  */

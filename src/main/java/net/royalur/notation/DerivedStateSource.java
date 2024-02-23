@@ -62,8 +62,8 @@ public class DerivedStateSource extends StateSource {
     private void pushStates(List<GameState> states) {
         if (stateIndex < this.states.size()) {
             throw new IllegalStateException(
-                    "There are remaining unused states! " +
-                            this.states.subList(stateIndex, this.states.size())
+                    "There are remaining unused states! "
+                            + this.states.subList(stateIndex, this.states.size())
             );
         }
         this.states.addAll(states);
@@ -125,9 +125,9 @@ public class DerivedStateSource extends StateSource {
 
         if (waitingState.getTurn() != turn) {
             throw new IllegalStateException(
-                    "Inconsistent derivation! " +
-                    "Expected turn = " + turn.getTextName() + "," +
-                    "actual turn = " + waitingState.getTurn().getTextName()
+                    "Inconsistent derivation! "
+                            + "Expected turn = " + turn.getTextName()
+                            + ", actual turn = " + waitingState.getTurn().getTextName()
             );
         }
         return waitingState;
@@ -145,16 +145,16 @@ public class DerivedStateSource extends StateSource {
 
         if (waitingState.getTurn() != turn) {
             throw new IllegalStateException(
-                    "Inconsistent derivation! " +
-                    "Expected turn = " + turn.getTextName() + "," +
-                    "actual turn = " + waitingState.getTurn().getTextName()
+                    "Inconsistent derivation! "
+                            + "Expected turn = " + turn.getTextName()
+                            + ", actual turn = " + waitingState.getTurn().getTextName()
             );
         }
         if (waitingState.getRoll().value() != roll.value()) {
             throw new IllegalStateException(
-                    "Inconsistent derivation! " +
-                    "Expected roll value = " + roll.value() + "," +
-                    "actual roll value = " + waitingState.getRoll().value()
+                    "Inconsistent derivation! "
+                            + "Expected roll value = " + roll.value()
+                            + ", actual roll value = " + waitingState.getRoll().value()
             );
         }
         return waitingState;
@@ -171,9 +171,9 @@ public class DerivedStateSource extends StateSource {
 
         if (winState.getWinner() != winner) {
             throw new IllegalStateException(
-                    "Inconsistent derivation! " +
-                    "Expected winner = " + winner.getTextName() + "," +
-                    "actual winner = " + winState.getWinner().getTextName()
+                    "Inconsistent derivation! "
+                            + "Expected winner = " + winner.getTextName()
+                            + ", actual winner = " + winState.getWinner().getTextName()
             );
         }
         return winState;

@@ -79,9 +79,9 @@ public class PlayerState {
             return false;
 
         PlayerState other = (PlayerState) obj;
-        return player == other.player &&
-                pieceCount == other.pieceCount &&
-                score == other.score;
+        return player == other.player
+                && pieceCount == other.pieceCount
+                && score == other.score;
     }
 
     @Override

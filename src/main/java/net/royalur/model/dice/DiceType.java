@@ -41,6 +41,7 @@ public enum DiceType implements Name, DiceFactory {
      * A store to be used to parse dice.
      */
     public static final NameMap<DiceType, DiceFactory> FACTORIES;
+
     static {
         NameMap<DiceType, DiceFactory> factories = new UniqueNameMap<>();
         for (DiceType type : values()) {

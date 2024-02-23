@@ -33,6 +33,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      * A store to be used to parse board shapes.
      */
     public static final NameMap<BoardType, BoardShapeFactory> FACTORIES;
+
     static {
         NameMap<BoardType, BoardShapeFactory> factories = new UniqueNameMap<>();
         for (BoardType type : values()) {

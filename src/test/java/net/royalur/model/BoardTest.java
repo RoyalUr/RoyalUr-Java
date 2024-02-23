@@ -98,7 +98,8 @@ public class BoardTest {
                     Piece piece = new Piece(player, piecePathIndex);
 
                     // Copies to be used in Lambda expressions.
-                    int tileX = ix, tileY = iy;
+                    int tileX = ix;
+                    int tileY = iy;
 
                     if (ix < 0 || iy < 0 || ix >= shape.getWidth() || iy >= shape.getHeight()) {
                         assertThrows(IllegalArgumentException.class, () -> board1.getByIndices(tileX, tileY));

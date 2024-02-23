@@ -143,7 +143,8 @@ public class RGN implements Notation {
             MovedGameState movedState
     ) {
         Move move = movedState.getMove();
-        Tile from, to;
+        Tile from;
+        Tile to;
 
         // Get the origin tile.
         if (move.isIntroducingPiece()) {

@@ -76,9 +76,9 @@ public class BoardShape implements Named<Name> {
         if (minX != 1 || minY != 1) {
             // This is done in an attempt to standardise board shapes.
             throw new IllegalArgumentException(
-                    "The board shape must be translated such that it has tiles " +
-                    "at an x-coordinate of 1, and at a y-coordinate of 1. " +
-                    "Minimum X = " + minX + ", Minimum Y = " + minY
+                    "The board shape must be translated such that it has tiles "
+                            + "at an x-coordinate of 1, and at a y-coordinate of 1. "
+                            + "Minimum X = " + minX + ", Minimum Y = " + minY
             );
         }
         this.width = maxX;

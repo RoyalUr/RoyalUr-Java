@@ -2,7 +2,6 @@ package net.royalur.stats;
 
 import net.royalur.model.PlayerType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**

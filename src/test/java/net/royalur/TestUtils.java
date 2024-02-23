@@ -9,6 +9,8 @@ import java.util.random.RandomGenerator;
 
 public class TestUtils {
 
+    private TestUtils() {}
+
     /**
      * Creates dice that always produce the same values, to help
      * with creating deterministic tests.

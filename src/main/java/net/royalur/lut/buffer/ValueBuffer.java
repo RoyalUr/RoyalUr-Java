@@ -59,13 +59,13 @@ public abstract class ValueBuffer {
             DataSink output, int startIndex, int endIndex
     ) throws IOException;
 
-    public abstract void readContents(
-            DataSource input, int startIndex, int endIndex
-    ) throws IOException;
-    
     public void writeContents(DataSink output) throws IOException {
         writeContents(output, 0, capacity);
     }
+
+    public abstract void readContents(
+            DataSource input, int startIndex, int endIndex
+    ) throws IOException;
 
     public void readContents(DataSource input) throws IOException {
         readContents(input, 0, capacity);

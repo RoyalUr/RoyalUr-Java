@@ -63,6 +63,7 @@ public enum PathType implements Name, PathPairFactory {
      * A store to be used to parse path pairs.
      */
     public static final NameMap<PathType, PathPairFactory> FACTORIES;
+
     static {
         NameMap<PathType, PathPairFactory> factories = new UniqueNameMap<>();
         for (PathType type : values()) {

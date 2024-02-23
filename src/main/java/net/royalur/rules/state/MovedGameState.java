@@ -3,8 +3,6 @@ package net.royalur.rules.state;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 
-import javax.annotation.Nonnull;
-
 /**
  * A game state that represents a move of a piece on the board.
  */

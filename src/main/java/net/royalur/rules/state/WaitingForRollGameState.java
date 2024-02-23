@@ -25,7 +25,7 @@ public class WaitingForRollGameState extends PlayableGameState {
 
     @Override
     public String describe() {
-        return "Waiting for the " + getTurn().getTextName().toLowerCase() +
-                " player to roll the dice";
+        return "Waiting for the " + getTurn().getTextName().toLowerCase()
+                + " player to roll the dice";
     }
 }

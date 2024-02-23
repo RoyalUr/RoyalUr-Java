@@ -334,9 +334,10 @@ public class Move {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(source) ^ (31 * Objects.hashCode(sourcePiece)) ^
-                (113 * Objects.hashCode(dest)) ^ (149 * Objects.hashCode(destPiece)) ^
-                (191 * Objects.hashCode(capturedPiece));
+        return Objects.hashCode(source)
+                ^ (31 * Objects.hashCode(sourcePiece))
+                ^ (113 * Objects.hashCode(dest)) ^ (149 * Objects.hashCode(destPiece))
+                ^ (191 * Objects.hashCode(capturedPiece));
     }
 
     @Override
@@ -345,8 +346,9 @@ public class Move {
             return false;
 
         Move other = (Move) obj;
-        return Objects.equals(source, other.source) && Objects.equals(sourcePiece, other.sourcePiece) &&
-                Objects.equals(dest, other.dest) && Objects.equals(destPiece, other.destPiece) &&
-                Objects.equals(capturedPiece, other.capturedPiece);
+        return Objects.equals(source, other.source)
+                && Objects.equals(sourcePiece, other.sourcePiece)
+                && Objects.equals(dest, other.dest) && Objects.equals(destPiece, other.destPiece)
+                && Objects.equals(capturedPiece, other.capturedPiece);
     }
 }

@@ -1,6 +1,5 @@
 package net.royalur.stats;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 /**

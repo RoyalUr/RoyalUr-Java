@@ -74,30 +74,14 @@ public class GameStats {
             int turnsInLead
     ) {
         int targetCount = GameStatsTarget.values().length;
-        if (rolls.length != targetCount) {
-            throw new IllegalArgumentException(
-                    "The rolls array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
-                            "but instead it contained " + rolls.length + " elements"
-            );
-        }
-        if (moves.length != targetCount) {
-            throw new IllegalArgumentException(
-                    "The moves array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
-                            "but instead it contained " + rolls.length + " elements"
-            );
-        }
-        if (turns.length != targetCount) {
-            throw new IllegalArgumentException(
-                    "The turns array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
-                            "but instead it contained " + rolls.length + " elements"
-            );
-        }
-        if (drama.length != targetCount) {
-            throw new IllegalArgumentException(
-                    "The drama array should contain one entry for each of the " + targetCount + " GameStatsTargets, " +
-                            "but instead it contained " + rolls.length + " elements"
-            );
-        }
+        if (rolls.length != targetCount)
+            throw new IllegalArgumentException("rolls is wrong length");
+        if (moves.length != targetCount)
+            throw new IllegalArgumentException("moves is wrong length");
+        if (turns.length != targetCount)
+            throw new IllegalArgumentException("turns is wrong length");
+        if (drama.length != targetCount)
+            throw new IllegalArgumentException("drama is wrong length");
 
         this.didLightWin = didLightWin;
         this.rolls = rolls;
@@ -246,8 +230,12 @@ public class GameStats {
             Piece piece = board.get(tile);
             if (piece != null) {
                 switch (piece.getOwner()) {
-                    case LIGHT -> utility += piece.getPathIndex() + 1;
-                    case DARK -> utility -= piece.getPathIndex() + 1;
+                    case LIGHT -> {
+                        utility += piece.getPathIndex() + 1;
+                    }
+                    case DARK -> {
+                        utility -= piece.getPathIndex() + 1;
+                    }
                 }
             }
         }

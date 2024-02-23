@@ -1,12 +1,6 @@
 package net.royalur.notation;
 
 import net.royalur.Game;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
-import net.royalur.rules.RuleSet;
-
-import javax.annotation.Nonnull;
 
 /**
  * A notation can be used as a shared format for distributing

@@ -261,16 +261,19 @@ public class BoardShapeTest {
         assertEquals(shape.getArea(), byRow.size());
 
         Set<Tile> seen = new HashSet<>();
-        Tile last = null;
+        int lastX = -1;
+        int lastY = -1;
         for (Tile tile : byRow) {
             assertNotNull(tile);
+            int x = tile.getX();
+            int y = tile.getY();
 
-            if (last != null) {
-                assertTrue(tile.getY() > last.getY() || (tile.getY() == last.getY() && tile.getX() > last.getX()));
-            }
+            assertTrue(y > lastY || (y == lastY && x > lastX));
             assertTrue(shape.contains(tile));
             assertTrue(seen.add(tile));
-            last = tile;
+
+            lastX = x;
+            lastY = y;
         }
         assertEquals(shape.getArea(), seen.size());
     }
@@ -282,16 +285,19 @@ public class BoardShapeTest {
         assertEquals(shape.getArea(), byCol.size());
 
         Set<Tile> seen = new HashSet<>();
-        Tile last = null;
+        int lastX = -1;
+        int lastY = -1;
         for (Tile tile : byCol) {
             assertNotNull(tile);
+            int x = tile.getX();
+            int y = tile.getY();
 
-            if (last != null) {
-                assertTrue(tile.getX() > last.getX() || (tile.getX() == last.getX() && tile.getY() > last.getY()));
-            }
+            assertTrue(x > lastX || (x == lastX && y > lastY));
             assertTrue(shape.contains(tile));
             assertTrue(seen.add(tile));
-            last = tile;
+
+            lastX = x;
+            lastY = y;
         }
         assertEquals(shape.getArea(), seen.size());
     }

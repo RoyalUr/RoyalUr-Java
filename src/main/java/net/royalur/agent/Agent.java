@@ -28,8 +28,8 @@ public interface Agent {
         while (!game.isFinished()) {
             if (!game.isPlayable()) {
                 throw new IllegalStateException(
-                        "Encountered an unplayable state that is not the end of the game: " +
-                                game.getCurrentState().getClass().getSimpleName()
+                        "Encountered an unplayable state that is not the end of the game: "
+                                + game.getCurrentState().getClass().getSimpleName()
                 );
             }
 

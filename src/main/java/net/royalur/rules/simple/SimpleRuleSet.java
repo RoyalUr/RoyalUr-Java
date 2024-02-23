@@ -111,9 +111,9 @@ public class SimpleRuleSet extends RuleSet {
             int scorePathIndex = path.size() - roll.value();
             Tile scoreTile = path.get(scorePathIndex);
             Piece scorePiece = board.get(scoreTile);
-            if (scorePiece != null &&
-                    scorePiece.getOwner() == playerType &&
-                    scorePiece.getPathIndex() == scorePathIndex
+            if (scorePiece != null
+                    && scorePiece.getOwner() == playerType
+                    && scorePiece.getPathIndex() == scorePathIndex
             ) {
                 moves.add(new Move(playerType, scoreTile, scorePiece, null, null, null));
             }

@@ -11,8 +11,10 @@ public class LutCLI {
 
     public static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
+    private LutCLI() {}
+
     public static void main(String[] args) throws IOException {
-        GameSettings settings = GameSettings.ASEB ;
+        GameSettings settings = GameSettings.ASEB;
         SimpleGameStateEncoding encoding = new SimpleGameStateEncoding(settings);
         JsonNotation jsonNotation = JsonNotation.createSimple();
         LutTrainer trainer = new LutTrainer(settings, encoding, jsonNotation);
