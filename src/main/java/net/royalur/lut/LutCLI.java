@@ -13,14 +13,14 @@ public class LutCLI {
     public static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
     public static void main(String[] args) throws IOException {
-        GameSettings<Roll> settings = GameSettings.BLITZ;
+        GameSettings<Roll> settings = GameSettings.ASEB ;
         SimpleGameStateEncoding encoding = new SimpleGameStateEncoding(settings);
         JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
         LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
 
-        File inputFile = new File("./models/blitz.rgu");
-        File checkpointFile = new File("./blitz_ckpt.rgu");
-        File outputFile = new File("./blitz.rgu");
+        File inputFile = new File("./models/aseb.rgu");
+        File checkpointFile = new File("./aseb_ckpt.rgu");
+        File outputFile = new File("./aseb.rgu");
 
         long readStart = System.nanoTime();
         Lut<Roll> lut = trainer.populateNewLut();
