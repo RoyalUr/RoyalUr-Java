@@ -14,5 +14,5 @@ public interface PathPairFactory extends Named<Name> {
      * Create an instance of the paths.
      * @return The instance of the paths.
      */
-    @Nonnull PathPair createPathPair();
+    PathPair createPathPair();
 }

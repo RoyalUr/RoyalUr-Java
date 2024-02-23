@@ -16,17 +16,17 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
     /**
      * The state of the pieces on the board.
      */
-    private final @Nonnull Board<P> board;
+    private final Board<P> board;
 
     /**
      * The state of the light player.
      */
-    private final @Nonnull S lightPlayer;
+    private final S lightPlayer;
 
     /**
      * The state of the dark player.
      */
-    private final @Nonnull S darkPlayer;
+    private final S darkPlayer;
 
     /**
      * Instantiates a game state.
@@ -35,9 +35,9 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * @param darkPlayer The state of the dark player.
      */
     public GameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer
     ) {
         if (lightPlayer.getPlayer() != PlayerType.LIGHT)
             throw new IllegalArgumentException("lightPlayer should be a Player.LIGHT, not " + lightPlayer.getPlayer());
@@ -53,7 +53,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the pieces on the board.
      * @return The state of the pieces on the board.
      */
-    public @Nonnull Board<P> getBoard() {
+    public Board<P> getBoard() {
         return board;
     }
 
@@ -61,7 +61,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the light player.
      * @return The state of the light player.
      */
-    public @Nonnull S getLightPlayer() {
+    public S getLightPlayer() {
         return lightPlayer;
     }
 
@@ -69,7 +69,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the dark player.
      * @return The state of the dark player.
      */
-    public @Nonnull S getDarkPlayer() {
+    public S getDarkPlayer() {
         return darkPlayer;
     }
 
@@ -78,7 +78,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * @param player The player to retrieve the state of.
      * @return The state of the player {@code player}.
      */
-    public @Nonnull S getPlayer(@Nonnull PlayerType player) {
+    public S getPlayer(PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightPlayer();
             case DARK -> getDarkPlayer();
@@ -101,5 +101,5 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Generates an English text description of the state of the game.
      * @return An English text description of the state of the game.
      */
-    public abstract @Nonnull String describe();
+    public abstract String describe();
 }

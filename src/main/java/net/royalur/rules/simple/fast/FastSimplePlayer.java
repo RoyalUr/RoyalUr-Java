@@ -10,7 +10,7 @@ public class FastSimplePlayer {
     /**
      * The tile indices of each tile on the path for this player.
      */
-    public final @Nonnull int[] path;
+    public final int[] path;
 
     /**
      * The sign of this player for pieces.
@@ -22,7 +22,7 @@ public class FastSimplePlayer {
     public int pieces;
     public int score;
 
-    public FastSimplePlayer(@Nonnull int[] path, boolean isLight) {
+    public FastSimplePlayer(int[] path, boolean isLight) {
         this.path = path;
         this.sign = (isLight ? 1 : -1);
         this.isLight = isLight;
@@ -30,7 +30,7 @@ public class FastSimplePlayer {
         this.score = 0;
     }
 
-    public void copyFrom(@Nonnull FastSimplePlayer other) {
+    public void copyFrom(FastSimplePlayer other) {
         if (sign != other.sign)
             throw new IllegalArgumentException("Different player!");
 
@@ -38,7 +38,7 @@ public class FastSimplePlayer {
         this.score = other.score;
     }
 
-    public void copyFrom(@Nonnull PlayerState state) {
+    public void copyFrom(PlayerState state) {
         PlayerType expectedPlayerType = (isLight ? PlayerType.LIGHT : PlayerType.DARK);
         if (expectedPlayerType != state.getPlayer())
             throw new IllegalArgumentException("Different player!");

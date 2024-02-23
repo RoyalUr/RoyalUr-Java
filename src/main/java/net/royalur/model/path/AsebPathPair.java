@@ -17,7 +17,7 @@ public class AsebPathPair extends PathPair {
     /**
      * The path of the light player's pieces.
      */
-    public static final @Nonnull List<Tile> LIGHT_PATH = List.copyOf(Tile.createPath(
+    public static final List<Tile> LIGHT_PATH = List.copyOf(Tile.createPath(
             1, 5,
             1, 1,
             2, 1,
@@ -28,7 +28,7 @@ public class AsebPathPair extends PathPair {
     /**
      * The path of the dark player's pieces.
      */
-    public static final @Nonnull List<Tile> DARK_PATH = List.copyOf(Tile.createPath(
+    public static final List<Tile> DARK_PATH = List.copyOf(Tile.createPath(
             3, 5,
             3, 1,
             2, 1,

@@ -21,9 +21,9 @@ import java.util.List;
 public class LeastAdvancedGreedyAgent<P extends Piece, S extends PlayerState, R extends Roll> extends BaseAgent<P, S, R> {
 
     @Override
-    public @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> moves
+    public Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> moves
     ) {
         // Sort in ascending order of path index.
         moves = new ArrayList<>(moves);

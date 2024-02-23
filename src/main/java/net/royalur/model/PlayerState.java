@@ -12,7 +12,7 @@ public class PlayerState {
     /**
      * The player that this state represents.
      */
-    private final @Nonnull PlayerType player;
+    private final PlayerType player;
 
     /**
      * The number of pieces that the player has available to introduce
@@ -32,7 +32,7 @@ public class PlayerState {
      *                   introduce to the board.
      * @param score The number of pieces that the player has taken off the board.
      */
-    public PlayerState(@Nonnull PlayerType player, int pieceCount, int score) {
+    public PlayerState(PlayerType player, int pieceCount, int score) {
         if (pieceCount < 0)
             throw new IllegalArgumentException("pieceCount must be at least 0. Not: " + pieceCount);
         if (score < 0)
@@ -47,7 +47,7 @@ public class PlayerState {
      * Gets the player that this state represents.
      * @return The player that this state represents.
      */
-    public @Nonnull PlayerType getPlayer() {
+    public PlayerType getPlayer() {
         return player;
     }
 
@@ -86,7 +86,7 @@ public class PlayerState {
     }
 
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(player.getTextName()).append(": ");
 

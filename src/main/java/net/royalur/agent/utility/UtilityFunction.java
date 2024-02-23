@@ -14,18 +14,18 @@ public abstract class UtilityFunction implements Named<Name> {
     /**
      * The name of this path pair.
      */
-    private final @Nonnull Name name;
+    private final Name name;
 
     /**
      * Instantiates a utility function.
      * @param name The name of this utility function.
      */
-    public UtilityFunction(@Nonnull Name name) {
+    public UtilityFunction(Name name) {
         this.name = name;
     }
 
     @Override
-    public @Nonnull Name getName() {
+    public Name getName() {
         return name;
     }
 
@@ -36,7 +36,7 @@ public abstract class UtilityFunction implements Named<Name> {
      * @param game The game to evaluate.
      * @return A utility value for light in the given state.
      */
-    public abstract float scoreGameStateForLight(@Nonnull FastSimpleGame game);
+    public abstract float scoreGameStateForLight(FastSimpleGame game);
 
     /**
      * Scores the state of the game numerically, where a positive
@@ -45,7 +45,7 @@ public abstract class UtilityFunction implements Named<Name> {
      * @param game The game to evaluate.
      * @return A utility value for the current player of the game.
      */
-    public float scoreGame(@Nonnull FastSimpleGame game) {
+    public float scoreGame(FastSimpleGame game) {
         float lightUtility = scoreGameStateForLight(game);
         return game.isLightTurn ? lightUtility : -lightUtility;
     }

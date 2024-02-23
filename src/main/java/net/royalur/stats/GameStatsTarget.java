@@ -27,7 +27,7 @@ public enum GameStatsTarget {
     /**
      * A human-readable name representing this target, in English.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * The player associated with this target, if this target
@@ -41,7 +41,7 @@ public enum GameStatsTarget {
      * @param player The player associated with this target, if this target is
      *               associated with a player, or else {@code null}.
      */
-    GameStatsTarget(@Nonnull String name, @Nullable PlayerType player) {
+    GameStatsTarget(String name, @Nullable PlayerType player) {
         this.name = name;
         this.player = player;
     }
@@ -50,7 +50,7 @@ public enum GameStatsTarget {
      * Gets a human-readable name representing this target, in English.
      * @return A human-readable name representing this target, in English.
      */
-    public @Nonnull String getName() {
+    public String getName() {
         return name;
     }
 
@@ -67,7 +67,7 @@ public enum GameStatsTarget {
      * @return The specific player associated with this target.
      * @throws UnsupportedOperationException if this target does not have an associated player.
      */
-    public @Nonnull PlayerType getAssociatedPlayer() {
+    public PlayerType getAssociatedPlayer() {
         if (player == null)
             throw new UnsupportedOperationException("This target does not have an associated player");
 
@@ -79,7 +79,7 @@ public enum GameStatsTarget {
      * @param player The player to retrieve the statistics for.
      * @return The target associated with {@code player}.
      */
-    public static @Nonnull GameStatsTarget get(@Nonnull PlayerType player) {
+    public static GameStatsTarget get(PlayerType player) {
         return switch (player) {
             case LIGHT -> GameStatsTarget.LIGHT;
             case DARK -> GameStatsTarget.DARK;

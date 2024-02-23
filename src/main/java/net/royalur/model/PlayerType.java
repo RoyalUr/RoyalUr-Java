@@ -29,7 +29,7 @@ public enum PlayerType implements Name {
     /**
      * An English name for this player, capitalised.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * A constant character representing the player.
@@ -41,7 +41,7 @@ public enum PlayerType implements Name {
      * A constant character representing the player,
      * stored in a string.
      */
-    private final @Nonnull String characterString;
+    private final String characterString;
 
     /**
      * Instantiates a type of player.
@@ -49,7 +49,7 @@ public enum PlayerType implements Name {
      * @param name An English name for this player.
      * @param character A fixed character to represent this player.
      */
-    PlayerType(int id, @Nonnull String name, char character) {
+    PlayerType(int id, String name, char character) {
         this.id = id;
         this.name = name;
         this.character = character;
@@ -57,7 +57,7 @@ public enum PlayerType implements Name {
     }
 
     @Override
-    public @Nonnull String getTextName() {
+    public String getTextName() {
         return name;
     }
 
@@ -85,7 +85,7 @@ public enum PlayerType implements Name {
      * This character will never change.
      * @return A constant character representing the player.
      */
-    public @Nonnull String getCharStr() {
+    public String getCharStr() {
         return characterString;
     }
 
@@ -115,7 +115,7 @@ public enum PlayerType implements Name {
      * @param character The character associated with a player.
      * @return The player associated with the given character.
      */
-    public static @Nonnull PlayerType getByChar(char character) {
+    public static PlayerType getByChar(char character) {
         for (PlayerType player : values()) {
             if (player.character == character)
                 return player;

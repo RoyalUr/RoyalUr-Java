@@ -50,187 +50,187 @@ public class JsonNotation<
     /**
      * The key in the JSON for the version of the notation.
      */
-    public static final @Nonnull String VERSION_KEY = "notation_version";
+    public static final String VERSION_KEY = "notation_version";
 
     /**
      * The key in the JSON for the metadata of the game.
      */
-    public static final @Nonnull String METADATA_KEY = "metadata";
+    public static final String METADATA_KEY = "metadata";
 
     /**
      * The key in the JSON for the settings of a game.
      */
-    public static final @Nonnull String SETTINGS_KEY = "settings";
+    public static final String SETTINGS_KEY = "settings";
 
     /**
      * The key in the JSON for the game setting of the board shape used.
      */
-    public static final @Nonnull String BOARD_SHAPE_KEY = "board_shape";
+    public static final String BOARD_SHAPE_KEY = "board_shape";
 
     /**
      * The key in the JSON for the game setting of the paths used.
      */
-    public static final @Nonnull String PATHS_KEY = "paths";
+    public static final String PATHS_KEY = "paths";
 
     /**
      * The key in the JSON for the game settings of the dice used.
      */
-    public static final @Nonnull String DICE_KEY = "dice";
+    public static final String DICE_KEY = "dice";
 
     /**
      * The key in the JSON for game setting of the starting piece count.
      */
-    public static final @Nonnull String STARTING_PIECE_COUNT_KEY = "start_pieces";
+    public static final String STARTING_PIECE_COUNT_KEY = "start_pieces";
 
     /**
      * The key in the JSON for the game setting of whether rosettes are safe.
      */
-    public static final @Nonnull String SAFE_ROSETTES_KEY = "safe_rosettes";
+    public static final String SAFE_ROSETTES_KEY = "safe_rosettes";
 
     /**
      * The key in the JSON for the game setting of whether rosettes grant extra rolls.
      */
-    public static final @Nonnull String ROSETTES_GRANT_EXTRA_ROLLS_KEY = "rosettes_grant_rolls";
+    public static final String ROSETTES_GRANT_EXTRA_ROLLS_KEY = "rosettes_grant_rolls";
 
     /**
      * The key in the JSON for the game setting of whether rosettes grant extra rolls.
      */
-    public static final @Nonnull String CAPTURES_GRANT_EXTRA_ROLLS_KEY = "captures_grant_rolls";
+    public static final String CAPTURES_GRANT_EXTRA_ROLLS_KEY = "captures_grant_rolls";
 
     /**
      * The key in the JSON for the initial state of the board and players.
      */
-    public static final @Nonnull String INITIAL_STATE_KEY = "initial_state";
+    public static final String INITIAL_STATE_KEY = "initial_state";
 
     /**
      * The key in the JSON for the list of states in the game.
      */
-    public static final @Nonnull String STATES_KEY = "states";
+    public static final String STATES_KEY = "states";
 
     /**
      * The key in the JSON for the type of state.
      */
-    public static final @Nonnull String STATE_TYPE_KEY = "type";
+    public static final String STATE_TYPE_KEY = "type";
 
     /**
      * Represents states of type {@link RolledGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_ROLLED = "roll";
+    public static final String STATE_TYPE_ROLLED = "roll";
 
     /**
      * Represents states of type {@link MovedGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_MOVED = "move";
+    public static final String STATE_TYPE_MOVED = "move";
 
     /**
      * Represents states of type {@link WaitingForRollGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_WAITING_FOR_ROLL = "wait4roll";
+    public static final String STATE_TYPE_WAITING_FOR_ROLL = "wait4roll";
 
     /**
      * Represents states of type {@link WaitingForMoveGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_WAITING_FOR_MOVE = "wait4move";
+    public static final String STATE_TYPE_WAITING_FOR_MOVE = "wait4move";
 
     /**
      * Represents states of type {@link WinGameState}.
      */
-    public static final @Nonnull String STATE_TYPE_WIN = "win";
+    public static final String STATE_TYPE_WIN = "win";
 
     /**
      * The key in the JSON for the roll that was made.
      */
-    public static final @Nonnull String ROLL_KEY = "roll";
+    public static final String ROLL_KEY = "roll";
 
     /**
      * The key in the JSON for the value of a roll.
      */
-    public static final @Nonnull String ROLL_VALUE_KEY = "value";
+    public static final String ROLL_VALUE_KEY = "value";
 
     /**
      * The key in the JSON for a move that was made.
      */
-    public static final @Nonnull String MOVE_KEY = "move";
+    public static final String MOVE_KEY = "move";
 
     /**
      * The key in the JSON for the source piece of a move.
      */
-    public static final @Nonnull String MOVE_SOURCE_KEY = "src";
+    public static final String MOVE_SOURCE_KEY = "src";
 
     /**
      * The key in the JSON for the destination piece of a move.
      */
-    public static final @Nonnull String MOVE_DEST_KEY = "dest";
+    public static final String MOVE_DEST_KEY = "dest";
 
     /**
      * The key in the JSON for the captured piece of a move.
      */
-    public static final @Nonnull String MOVE_CAPTURED_KEY = "captured";
+    public static final String MOVE_CAPTURED_KEY = "captured";
 
     /**
      * The key in the JSON for the moves that are available in a state.
      */
-    public static final @Nonnull String AVAILABLE_MOVES_KEY = "moves";
+    public static final String AVAILABLE_MOVES_KEY = "moves";
 
     /**
      * The key in the JSON for the owner of a piece.
      */
-    public static final @Nonnull String PIECE_OWNER_KEY = "owner";
+    public static final String PIECE_OWNER_KEY = "owner";
 
     /**
      * The key in the JSON for the index of a piece on its path.
      */
-    public static final @Nonnull String PIECE_INDEX_KEY = "index";
+    public static final String PIECE_INDEX_KEY = "index";
 
     /**
      * The key in the JSON for the player whose turn it is in a state.
      */
-    public static final @Nonnull String TURN_KEY = "turn";
+    public static final String TURN_KEY = "turn";
 
     /**
      * The key in the JSON for the player that won the game.
      */
-    public static final @Nonnull String WINNER_KEY = "winner";
+    public static final String WINNER_KEY = "winner";
 
     /**
      * The key in the JSON for the state of the board.
      */
-    public static final @Nonnull String BOARD_KEY = "board";
+    public static final String BOARD_KEY = "board";
 
     /**
      * The key in the JSON for the pieces on a board.
      */
-    public static final @Nonnull String BOARD_PIECES_KEY = "pieces";
+    public static final String BOARD_PIECES_KEY = "pieces";
 
     /**
      * The key in the JSON for the state of the players.
      */
-    public static final @Nonnull String PLAYERS_KEY = "players";
+    public static final String PLAYERS_KEY = "players";
 
     /**
      * The key in the JSON for the pieces of a player state.
      */
-    public static final @Nonnull String PLAYER_PIECES_KEY = "pieces";
+    public static final String PLAYER_PIECES_KEY = "pieces";
 
     /**
      * The key in the JSON for the score of a player state.
      */
-    public static final @Nonnull String PLAYER_SCORE_KEY = "score";
+    public static final String PLAYER_SCORE_KEY = "score";
 
-    private final @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes;
-    private final @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs;
-    private final @Nonnull NameMap<?, ? extends DiceFactory<R>> dice;
-    private final @Nonnull RuleSetProvider<P, S> ruleSetProvider;
+    private final NameMap<?, ? extends BoardShapeFactory> boardShapes;
+    private final NameMap<?, ? extends PathPairFactory> pathPairs;
+    private final NameMap<?, ? extends DiceFactory<R>> dice;
+    private final RuleSetProvider<P, S> ruleSetProvider;
 
     /**
      * A factory to build generators to write the JSON.
      */
-    private final @Nonnull JsonFactory jsonFactory;
+    private final JsonFactory jsonFactory;
 
     /**
      * A mapper to use for parsing JSON into a tree.
      */
-    private final @Nonnull ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     /**
      * Instantiates the JSON notation to encode and decode games.
@@ -241,11 +241,11 @@ public class JsonNotation<
      * @param jsonFactory A factory to build generators to write the JSON.
      */
     public JsonNotation(
-            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
-            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
-            @Nonnull NameMap<?, ? extends DiceFactory<R>> dice,
-            @Nonnull RuleSetProvider<P, S> ruleSetProvider,
-            @Nonnull JsonFactory jsonFactory
+            NameMap<?, ? extends BoardShapeFactory> boardShapes,
+            NameMap<?, ? extends PathPairFactory> pathPairs,
+            NameMap<?, ? extends DiceFactory<R>> dice,
+            RuleSetProvider<P, S> ruleSetProvider,
+            JsonFactory jsonFactory
     ) {
         this.boardShapes = boardShapes;
         this.pathPairs = pathPairs;
@@ -263,15 +263,15 @@ public class JsonNotation<
      * @param ruleSetProvider The provider to create rule sets from game settings.
      */
     public JsonNotation(
-            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
-            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
-            @Nonnull NameMap<?, ? extends DiceFactory<R>> dice,
-            @Nonnull RuleSetProvider<P, S> ruleSetProvider
+            NameMap<?, ? extends BoardShapeFactory> boardShapes,
+            NameMap<?, ? extends PathPairFactory> pathPairs,
+            NameMap<?, ? extends DiceFactory<R>> dice,
+            RuleSetProvider<P, S> ruleSetProvider
     ) {
         this(boardShapes, pathPairs, dice, ruleSetProvider, JsonFactory.builder().build());
     }
 
-    public static @Nonnull JsonNotation<Piece, PlayerState, Roll> createSimple() {
+    public static JsonNotation<Piece, PlayerState, Roll> createSimple() {
         return new JsonNotation<>(
                 BoardType.FACTORIES,
                 PathType.FACTORIES,
@@ -280,25 +280,25 @@ public class JsonNotation<
         );
     }
 
-    public @Nonnull JsonFactory getJsonFactory() {
+    public JsonFactory getJsonFactory() {
         return jsonFactory;
     }
 
-    public @Nonnull ObjectMapper getObjectMapper() {
+    public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
     public void writeRoll(
-            @Nonnull JsonGenerator generator,
-            @Nonnull R roll
+            JsonGenerator generator,
+            R roll
     ) throws IOException {
 
         generator.writeNumberField(ROLL_VALUE_KEY, roll.value());
     }
 
     public void writePiece(
-            @Nonnull JsonGenerator generator,
-            @Nonnull P piece
+            JsonGenerator generator,
+            P piece
     ) throws IOException {
 
         generator.writeStringField(PIECE_OWNER_KEY, piece.getOwner().getCharStr());
@@ -306,8 +306,8 @@ public class JsonNotation<
     }
 
     protected void writePieceField(
-            @Nonnull JsonGenerator generator,
-            @Nonnull String fieldName,
+            JsonGenerator generator,
+            String fieldName,
             @Nullable P piece
     ) throws IOException {
 
@@ -324,8 +324,8 @@ public class JsonNotation<
     }
 
     public void writeMove(
-            @Nonnull JsonGenerator generator,
-            @Nonnull Move<P> move
+            JsonGenerator generator,
+            Move<P> move
     ) throws IOException {
 
         P sourcePiece = (move.hasSource() ? move.getSourcePiece() : null);
@@ -339,8 +339,8 @@ public class JsonNotation<
     }
 
     public void writeMoveList(
-            @Nonnull JsonGenerator generator,
-            @Nonnull List<Move<P>> moves
+            JsonGenerator generator,
+            List<Move<P>> moves
     ) throws IOException {
 
         for (Move<P> move : moves) {
@@ -354,8 +354,8 @@ public class JsonNotation<
     }
 
     public void writeBoard(
-            @Nonnull JsonGenerator generator,
-            @Nonnull Board<P> board
+            JsonGenerator generator,
+            Board<P> board
     ) throws IOException {
 
         generator.writeObjectFieldStart(BOARD_PIECES_KEY);
@@ -377,8 +377,8 @@ public class JsonNotation<
     }
 
     public void writePlayerState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull S playerState
+            JsonGenerator generator,
+            S playerState
     ) throws IOException {
 
         generator.writeNumberField(PLAYER_PIECES_KEY, playerState.getPieceCount());
@@ -386,8 +386,8 @@ public class JsonNotation<
     }
 
     public void writeRolledState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull RolledGameState<P, S, R> state
+            JsonGenerator generator,
+            RolledGameState<P, S, R> state
     ) throws IOException {
 
         generator.writeObjectFieldStart(ROLL_KEY);
@@ -406,8 +406,8 @@ public class JsonNotation<
     }
 
     public void writeMovedState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull MovedGameState<P, S, R> state
+            JsonGenerator generator,
+            MovedGameState<P, S, R> state
     ) throws IOException {
 
         generator.writeObjectFieldStart(ROLL_KEY);
@@ -426,8 +426,8 @@ public class JsonNotation<
     }
 
     public void writeActionState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull ActionGameState<P, S, R> state
+            JsonGenerator generator,
+            ActionGameState<P, S, R> state
     ) throws IOException {
 
         if (state instanceof RolledGameState<P, S, R> rolledState) {
@@ -442,15 +442,15 @@ public class JsonNotation<
     }
 
     public void writeWaitingForRollState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull WaitingForRollGameState<P, S, R> state
+            JsonGenerator generator,
+            WaitingForRollGameState<P, S, R> state
     ) {
         // Nothing to include.
     }
 
     public void writeWaitingForMoveState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull WaitingForMoveGameState<P, S, R> state
+            JsonGenerator generator,
+            WaitingForMoveGameState<P, S, R> state
     ) throws IOException {
 
         generator.writeObjectFieldStart(ROLL_KEY);
@@ -469,8 +469,8 @@ public class JsonNotation<
     }
 
     public void writePlayableState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull PlayableGameState<P, S, R> state
+            JsonGenerator generator,
+            PlayableGameState<P, S, R> state
     ) throws IOException {
 
         if (state instanceof WaitingForRollGameState<P, S, R> waitingForRollState) {
@@ -485,8 +485,8 @@ public class JsonNotation<
     }
 
     public void writeOngoingState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull OngoingGameState<P, S, R> state
+            JsonGenerator generator,
+            OngoingGameState<P, S, R> state
     ) throws IOException {
 
         generator.writeStringField(TURN_KEY, state.getTurn().getCharStr());
@@ -503,15 +503,15 @@ public class JsonNotation<
     }
 
     public void writeWinState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull WinGameState<P, S, R> state
+            JsonGenerator generator,
+            WinGameState<P, S, R> state
     ) throws IOException {
 
         generator.writeStringField(WINNER_KEY, state.getWinner().getCharStr());
     }
 
-    public @Nonnull String getStateType(
-            @Nonnull GameState<P, S, R> state
+    public String getStateType(
+            GameState<P, S, R> state
     ) {
         if (state instanceof RolledGameState)
             return STATE_TYPE_ROLLED;
@@ -528,8 +528,8 @@ public class JsonNotation<
     }
 
     public void writeState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull GameState<P, S, R> state
+            JsonGenerator generator,
+            GameState<P, S, R> state
     ) throws IOException {
 
         generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
@@ -546,8 +546,8 @@ public class JsonNotation<
     }
 
     public void writeStates(
-            @Nonnull JsonGenerator generator,
-            @Nonnull List<GameState<P, S, R>> states
+            JsonGenerator generator,
+            List<GameState<P, S, R>> states
     ) throws IOException {
 
         for (GameState<P, S, R> state : states) {
@@ -561,8 +561,8 @@ public class JsonNotation<
     }
 
     public void writeInitialState(
-            @Nonnull JsonGenerator generator,
-            @Nonnull GameState<P, S, R> state
+            JsonGenerator generator,
+            GameState<P, S, R> state
     ) throws IOException {
 
         generator.writeObjectFieldStart(BOARD_KEY);
@@ -595,8 +595,8 @@ public class JsonNotation<
     }
 
     public void writeGameSettings(
-            @Nonnull JsonGenerator generator,
-            @Nonnull GameSettings<R> settings
+            JsonGenerator generator,
+            GameSettings<R> settings
     ) throws IOException {
 
         generator.writeStringField(
@@ -623,8 +623,8 @@ public class JsonNotation<
     }
 
     public void writeMetadata(
-            @Nonnull JsonGenerator generator,
-            @Nonnull GameMetadata metadata
+            JsonGenerator generator,
+            GameMetadata metadata
     ) throws IOException {
 
         for (Map.Entry<String, String> entry : metadata.getAll().entrySet()) {
@@ -633,8 +633,8 @@ public class JsonNotation<
     }
 
     public void writeGame(
-            @Nonnull JsonGenerator generator,
-            @Nonnull Game<P, S, R> game
+            JsonGenerator generator,
+            Game<P, S, R> game
     ) throws IOException {
 
         generator.writeNumberField(VERSION_KEY, LATEST_VERSION);
@@ -670,8 +670,8 @@ public class JsonNotation<
     }
 
     @Override
-    public @Nonnull String encodeGame(
-            @Nonnull Game<P, S, R> game
+    public String encodeGame(
+            Game<P, S, R> game
     ) {
         Writer writer = new StringWriter();
         try (JsonGenerator generator = jsonFactory.createGenerator(writer)) {
@@ -690,17 +690,17 @@ public class JsonNotation<
         return writer.toString();
     }
 
-    public @Nonnull R readRoll(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ObjectNode json
+    public R readRoll(
+            RuleSet<P, S, R> rules,
+            ObjectNode json
     ) {
         int rollValue = JsonHelper.readInt(json, ROLL_VALUE_KEY);
         return rules.getDiceFactory().createRoll(rollValue);
     }
 
-    public @Nonnull P readPiece(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ObjectNode json
+    public P readPiece(
+            RuleSet<P, S, R> rules,
+            ObjectNode json
     ) {
 
         char ownerChar = JsonHelper.readChar(json, JsonNotation.PIECE_OWNER_KEY);
@@ -712,16 +712,16 @@ public class JsonNotation<
         );
     }
 
-    private @Nonnull Tile getTileFromPiece(
-            @Nonnull PathPair paths,
-            @Nonnull P piece
+    private Tile getTileFromPiece(
+            PathPair paths,
+            P piece
     ) {
         return paths.get(piece.getOwner()).get(piece.getPathIndex());
     }
 
-    public @Nonnull Move<P> readMove(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ObjectNode json
+    public Move<P> readMove(
+            RuleSet<P, S, R> rules,
+            ObjectNode json
     ) {
 
         PathPair paths = rules.getPaths();
@@ -749,9 +749,9 @@ public class JsonNotation<
         );
     }
 
-    public @Nonnull List<Move<P>> readMoveList(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ArrayNode json
+    public List<Move<P>> readMoveList(
+            RuleSet<P, S, R> rules,
+            ArrayNode json
     ) {
         List<Move<P>> moves = new ArrayList<>();
         for (int index = 0; index < json.size(); ++index) {
@@ -761,9 +761,9 @@ public class JsonNotation<
         return moves;
     }
 
-    public @Nonnull Board<P> readBoard(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ObjectNode json
+    public Board<P> readBoard(
+            RuleSet<P, S, R> rules,
+            ObjectNode json
     ) {
 
         Board<P> board = new Board<>(rules.getBoardShape());
@@ -780,10 +780,10 @@ public class JsonNotation<
         return board;
     }
 
-    public @Nonnull S readPlayerState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType playerType,
-            @Nonnull ObjectNode json
+    public S readPlayerState(
+            RuleSet<P, S, R> rules,
+            PlayerType playerType,
+            ObjectNode json
     ) {
 
         int pieces = JsonHelper.readInt(json, PLAYER_PIECES_KEY);
@@ -793,36 +793,36 @@ public class JsonNotation<
         );
     }
 
-    public boolean isActionStateType(@Nonnull String stateType) {
+    public boolean isActionStateType(String stateType) {
         return stateType.equals(STATE_TYPE_ROLLED)
                 || stateType.equals(STATE_TYPE_MOVED);
     }
 
-    public boolean isPlayableGameState(@Nonnull String stateType) {
+    public boolean isPlayableGameState(String stateType) {
         return stateType.equals(STATE_TYPE_WAITING_FOR_ROLL)
                 || stateType.equals(STATE_TYPE_WAITING_FOR_MOVE);
     }
 
-    public boolean isOngoingGameState(@Nonnull String stateType) {
+    public boolean isOngoingGameState(String stateType) {
         return isActionStateType(stateType) || isPlayableGameState(stateType);
     }
 
-    public @Nonnull RolledGameState<P, S, R> readRolledState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull PlayerType turn
+    public RolledGameState<P, S, R> readRolledState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            PlayerType turn
     ) {
         ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
         return stateSource.createRolledState(rules, turn, roll);
     }
 
-    public @Nonnull MovedGameState<P, S, R> readMovedState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull PlayerType turn
+    public MovedGameState<P, S, R> readMovedState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            PlayerType turn
     ) {
         ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
@@ -833,32 +833,32 @@ public class JsonNotation<
         return stateSource.createMovedState(rules, turn, roll, move);
     }
 
-    public @Nonnull WaitingForRollGameState<P, S, R> readWaitingForRollState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull PlayerType turn
+    public WaitingForRollGameState<P, S, R> readWaitingForRollState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            PlayerType turn
     ) {
         return stateSource.createWaitingForRollState(rules, turn);
     }
 
-    public @Nonnull WaitingForMoveGameState<P, S, R> readWaitingForMoveState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull PlayerType turn
+    public WaitingForMoveGameState<P, S, R> readWaitingForMoveState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            PlayerType turn
     ) {
         ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
         R roll = readRoll(rules, rollJson);
         return stateSource.createWaitingForMoveState(rules, turn, roll);
     }
 
-    public @Nonnull ActionGameState<P, S, R> readActionState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull String stateType,
-            @Nonnull PlayerType turn
+    public ActionGameState<P, S, R> readActionState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            String stateType,
+            PlayerType turn
     ) {
 
         if (stateType.equals(STATE_TYPE_ROLLED)) {
@@ -872,12 +872,12 @@ public class JsonNotation<
         }
     }
 
-    public @Nonnull PlayableGameState<P, S, R> readPlayableState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull String stateType,
-            @Nonnull PlayerType turn
+    public PlayableGameState<P, S, R> readPlayableState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            String stateType,
+            PlayerType turn
     ) {
 
         if (stateType.equals(STATE_TYPE_WAITING_FOR_ROLL)) {
@@ -891,11 +891,11 @@ public class JsonNotation<
         }
     }
 
-    public @Nonnull OngoingGameState<P, S, R> readOngoingState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json,
-            @Nonnull String stateType
+    public OngoingGameState<P, S, R> readOngoingState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json,
+            String stateType
     ) {
 
         char turnChar = JsonHelper.readChar(json, TURN_KEY);
@@ -912,10 +912,10 @@ public class JsonNotation<
         }
     }
 
-    public @Nonnull WinGameState<P, S, R> readWinState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json
+    public WinGameState<P, S, R> readWinState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json
     ) {
         char winnerChar = JsonHelper.readChar(json, WINNER_KEY);
         PlayerType winner = PlayerType.getByChar(winnerChar);
@@ -923,10 +923,10 @@ public class JsonNotation<
         return stateSource.createWinState(rules, winner);
     }
 
-    public @Nonnull GameState<P, S, R> readState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StateSource<P, S, R> stateSource,
-            @Nonnull ObjectNode json
+    public GameState<P, S, R> readState(
+            RuleSet<P, S, R> rules,
+            StateSource<P, S, R> stateSource,
+            ObjectNode json
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
 
@@ -941,9 +941,9 @@ public class JsonNotation<
         }
     }
 
-    public @Nonnull GameState<P, S, R> readInitialState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull ObjectNode json
+    public GameState<P, S, R> readInitialState(
+            RuleSet<P, S, R> rules,
+            ObjectNode json
     ) {
         ObjectNode boardJson = JsonHelper.readDict(json, BOARD_KEY);
         ObjectNode playersJson = JsonHelper.readDict(json, PLAYERS_KEY);
@@ -960,10 +960,10 @@ public class JsonNotation<
         return readState(rules, stateSource, json);
     }
 
-    public @Nonnull List<GameState<P, S, R>> readStates(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull GameState<P, S, R> initialState,
-            @Nonnull ArrayNode json
+    public List<GameState<P, S, R>> readStates(
+            RuleSet<P, S, R> rules,
+            GameState<P, S, R> initialState,
+            ArrayNode json
     ) {
         DerivedStateSource<P, S, R> stateSource = new DerivedStateSource<>(initialState);
         int lastIndex = -1;
@@ -980,7 +980,7 @@ public class JsonNotation<
         return stateSource.getAllStates();
     }
 
-    public @Nonnull GameSettings<R> readGameSettings(@Nonnull ObjectNode json) {
+    public GameSettings<R> readGameSettings(ObjectNode json) {
         String boardShapeName = JsonHelper.readString(json, BOARD_SHAPE_KEY);
         String pathsName = JsonHelper.readString(json, PATHS_KEY);
         String diceName = JsonHelper.readString(json, DICE_KEY);
@@ -1003,11 +1003,11 @@ public class JsonNotation<
         );
     }
 
-    public @Nonnull GameMetadata readMetadata(@Nonnull ObjectNode json) {
+    public GameMetadata readMetadata(ObjectNode json) {
         return new GameMetadata();
     }
 
-    public @Nonnull Game<P, S, R> readGameV1(@Nonnull ObjectNode json) {
+    public Game<P, S, R> readGameV1(ObjectNode json) {
 
         ObjectNode metadataJson = JsonHelper.readDict(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
@@ -1028,7 +1028,7 @@ public class JsonNotation<
         return new Game<>(rules, metadata, allStates);
     }
 
-    public @Nonnull Game<P, S, R> readGame(@Nonnull ObjectNode json) {
+    public Game<P, S, R> readGame(ObjectNode json) {
 
         int version = JsonHelper.readInt(json, VERSION_KEY);
         if (version == 1)
@@ -1038,7 +1038,7 @@ public class JsonNotation<
     }
 
     @Override
-    public @Nonnull Game<P, S, R> decodeGame(@Nonnull String encoded) {
+    public Game<P, S, R> decodeGame(String encoded) {
 
         try (JsonParser parser = jsonFactory.createParser(encoded)) {
 

@@ -18,12 +18,12 @@ import javax.annotation.Nullable;
  * that can be used to play the Royal Game of Ur. If a more exotic set of
  * rules is desired, then you will need to construct your games manually.
  */
-public class GameSettings<R extends Roll> {
+public class GameSettings {
 
     /**
      * The rules used in the YouTube video Tom Scott vs. Irving Finkel.
      */
-    public static final @Nonnull GameSettings<Roll> FINKEL = new GameSettings<>(
+    public static final GameSettings FINKEL = new GameSettings(
             new StandardBoardShape(),
             new BellPathPair(),
             DiceType.FOUR_BINARY,
@@ -36,7 +36,7 @@ public class GameSettings<R extends Roll> {
     /**
      * The settings proposed by James Masters.
      */
-    public static final @Nonnull GameSettings<Roll> MASTERS = new GameSettings<>(
+    public static final GameSettings MASTERS = new GameSettings(
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.FOUR_BINARY,
@@ -49,7 +49,7 @@ public class GameSettings<R extends Roll> {
     /**
      * The settings used for Aseb.
      */
-    public static final @Nonnull GameSettings<Roll> ASEB = new GameSettings<>(
+    public static final GameSettings ASEB = new GameSettings(
             new AsebBoardShape(),
             new AsebPathPair(),
             DiceType.FOUR_BINARY,
@@ -62,7 +62,7 @@ public class GameSettings<R extends Roll> {
     /**
      * The settings used for Blitz.
      */
-    public static final @Nonnull GameSettings<Roll> BLITZ = new GameSettings<>(
+    public static final GameSettings BLITZ = new GameSettings(
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.FOUR_BINARY,
@@ -75,17 +75,17 @@ public class GameSettings<R extends Roll> {
     /**
      * The shape of the game board.
      */
-    private final @Nonnull BoardShape boardShape;
+    private final BoardShape boardShape;
 
     /**
      * The paths that each player must take around the board.
      */
-    private final @Nonnull PathPair paths;
+    private final PathPair paths;
 
     /**
      * A generator for the dice that should be used to generate dice rolls in games.
      */
-    private final @Nonnull DiceFactory<R> diceFactory;
+    private final DiceFactory diceFactory;
 
     /**
      * The number of pieces that each player starts with.
@@ -120,9 +120,9 @@ public class GameSettings<R extends Roll> {
      * @param capturesGrantExtraRolls Whether capturing a piece grants an extra roll.
      */
     public GameSettings(
-            @Nonnull BoardShape boardShape,
-            @Nonnull PathPair paths,
-            @Nonnull DiceFactory<R> diceFactory,
+            BoardShape boardShape,
+            PathPair paths,
+            DiceFactory diceFactory,
             int startingPieceCount,
             boolean safeRosettes,
             boolean rosettesGrantExtraRolls,
@@ -147,7 +147,7 @@ public class GameSettings<R extends Roll> {
      * Gets the shape of the game board.
      * @return The shape of the game board.
      */
-    public @Nonnull BoardShape getBoardShape() {
+    public BoardShape getBoardShape() {
         return boardShape;
     }
 
@@ -155,7 +155,7 @@ public class GameSettings<R extends Roll> {
      * Gets the paths that each player must take around the board.
      * @return The paths that each player must take around the board.
      */
-    public @Nonnull PathPair getPaths() {
+    public PathPair getPaths() {
         return paths;
     }
 
@@ -163,7 +163,7 @@ public class GameSettings<R extends Roll> {
      * Gets the generator of the dice that should be used to generate dice rolls.
      * @return The generator of the dice that should be used to generate dice rolls.
      */
-    public @Nonnull DiceFactory<R> getDice() {
+    public DiceFactory getDice() {
         return diceFactory;
     }
 
@@ -206,8 +206,8 @@ public class GameSettings<R extends Roll> {
      * @param boardShape The board shape to use for the new game settings.
      * @return New game settings updated with a new board shape.
      */
-    public @Nonnull GameSettings<R> withBoardShape(@Nonnull BoardShape boardShape) {
-        return new GameSettings<>(
+    public GameSettings withBoardShape(BoardShape boardShape) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -220,7 +220,7 @@ public class GameSettings<R extends Roll> {
      *                          the new game settings.
      * @return New game settings updated with a new board shape.
      */
-    public @Nonnull GameSettings<R> withBoardShape(@Nonnull BoardShapeFactory boardShapeFactory) {
+    public GameSettings withBoardShape(BoardShapeFactory boardShapeFactory) {
         return withBoardShape(boardShapeFactory.createBoardShape());
     }
 
@@ -229,8 +229,8 @@ public class GameSettings<R extends Roll> {
      * @param paths The paths to use for the new game settings.
      * @return New game settings updated with new paths.
      */
-    public @Nonnull GameSettings<R> withPaths(@Nonnull PathPair paths) {
-        return new GameSettings<>(
+    public GameSettings withPaths(PathPair paths) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -243,7 +243,7 @@ public class GameSettings<R extends Roll> {
      *                     the new game settings.
      * @return New game settings updated with new paths.
      */
-    public @Nonnull GameSettings<R> withPaths(@Nonnull PathPairFactory pathsFactory) {
+    public GameSettings withPaths(PathPairFactory pathsFactory) {
         return withPaths(pathsFactory.createPathPair());
     }
 
@@ -253,10 +253,8 @@ public class GameSettings<R extends Roll> {
      *                    made using the new game settings.
      * @return New game settings updated with a new generator of dice.
      */
-    public <NEW_R extends Roll> @Nonnull GameSettings<NEW_R> withDice(
-            @Nonnull DiceFactory<NEW_R> diceFactory
-    ) {
-        return new GameSettings<>(
+    public GameSettings withDice(DiceFactory diceFactory) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -269,8 +267,8 @@ public class GameSettings<R extends Roll> {
      *                           start with in the new game settings.
      * @return New game settings updated with a new starting piece count.
      */
-    public @Nonnull GameSettings<R> withStartingPieceCount(int startingPieceCount) {
-        return new GameSettings<>(
+    public GameSettings withStartingPieceCount(int startingPieceCount) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -284,8 +282,8 @@ public class GameSettings<R extends Roll> {
      * @return New game settings updated with a new value for
      *         whether rosettes are safe.
      */
-    public @Nonnull GameSettings<R> withSafeRosettes(boolean safeRosettes) {
-        return new GameSettings<>(
+    public GameSettings withSafeRosettes(boolean safeRosettes) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -299,8 +297,8 @@ public class GameSettings<R extends Roll> {
      * @return New game settings updated with a new value for
      *         whether landing on rosettes grants an extra roll.
      */
-    public @Nonnull GameSettings<R> withRosettesGrantExtraRolls(boolean rosettesGrantExtraRolls) {
-        return new GameSettings<>(
+    public GameSettings withRosettesGrantExtraRolls(boolean rosettesGrantExtraRolls) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -314,8 +312,8 @@ public class GameSettings<R extends Roll> {
      * @return New game settings updated with a new value for
      *         whether capturing a piece grants an extra roll.
      */
-    public @Nonnull GameSettings<R> withCapturesGrantExtraRolls(boolean capturesGrantExtraRolls) {
-        return new GameSettings<>(
+    public GameSettings withCapturesGrantExtraRolls(boolean capturesGrantExtraRolls) {
+        return new GameSettings(
                 boardShape, paths, diceFactory,
                 startingPieceCount, safeRosettes,
                 rosettesGrantExtraRolls, capturesGrantExtraRolls
@@ -327,7 +325,7 @@ public class GameSettings<R extends Roll> {
         if (obj == null || !obj.getClass().equals(getClass()))
             return false;
 
-        GameSettings<?> other = (GameSettings<?>) obj;
+        GameSettings other = (GameSettings) obj;
         return boardShape.equals(other.boardShape)
                 && paths.equals(other.paths)
                 && diceFactory.equals(other.diceFactory)

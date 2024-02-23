@@ -21,7 +21,7 @@ public class StandardBoardShape extends BoardShape {
     /**
      * The set of all tiles that exist on the standard board.
      */
-    public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
+    public static final Set<Tile> BOARD_TILES = Tile.unionLists(
             new BellPathPair().getLight(),
             new BellPathPair().getDark()
     );
@@ -29,7 +29,7 @@ public class StandardBoardShape extends BoardShape {
     /**
      * The set of rosette tiles that exist on the standard board.
      */
-    public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
+    public static final Set<Tile> ROSETTE_TILES = Set.of(
             new Tile(1, 1),
             new Tile(3, 1),
             new Tile(2, 4),
@@ -45,7 +45,7 @@ public class StandardBoardShape extends BoardShape {
     }
 
     @Override
-    public boolean contains(@Nonnull Tile tile) {
+    public boolean contains(Tile tile) {
         return containsIndices(tile.getXIndex(), tile.getYIndex());
     }
 
@@ -55,7 +55,7 @@ public class StandardBoardShape extends BoardShape {
     }
 
     @Override
-    public boolean isRosette(@Nonnull Tile tile) {
+    public boolean isRosette(Tile tile) {
         return isRosetteIndices(tile.getXIndex(), tile.getYIndex());
     }
 

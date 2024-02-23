@@ -28,19 +28,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RGNTest {
 
     public static class ProvidedRules implements Arguments {
-        public final @Nonnull String name;
-        public final @Nonnull RuleSet<Piece, PlayerState, Roll> rules;
+        public final String name;
+        public final RuleSet<Piece, PlayerState, Roll> rules;
 
         public ProvidedRules(
-                @Nonnull String name,
-                @Nonnull RuleSet<Piece, PlayerState, Roll> rules
+                String name,
+                RuleSet<Piece, PlayerState, Roll> rules
         ) {
             this.name = name;
             this.rules = rules;
         }
 
         @Override
-        public @Nonnull String toString() {
+        public String toString() {
             return name;
         }
 
@@ -51,7 +51,7 @@ public class RGNTest {
     }
 
     public static class RulesProvider implements ArgumentsProvider {
-        public static @Nonnull List<ProvidedRules> get() {
+        public static List<ProvidedRules> get() {
             List<ProvidedRules> rules = new ArrayList<>();
 
             DiceFactory<Roll> dice = TestUtils.createDeterministicDice(
@@ -84,25 +84,25 @@ public class RGNTest {
         }
 
         @Override
-        public @Nonnull Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return get().stream();
         }
     }
 
     public static class ProvidedGame implements Arguments {
-        public final @Nonnull String name;
-        public final @Nonnull Game<Piece, PlayerState, Roll> game;
+        public final String name;
+        public final Game<Piece, PlayerState, Roll> game;
 
         public ProvidedGame(
-                @Nonnull String name,
-                @Nonnull Game<Piece, PlayerState, Roll> game
+                String name,
+                Game<Piece, PlayerState, Roll> game
         ) {
             this.name = name;
             this.game = game;
         }
 
         @Override
-        public @Nonnull String toString() {
+        public String toString() {
             return name;
         }
 
@@ -118,8 +118,8 @@ public class RGNTest {
          * Light always rolls 1, dark always rolls 0.
          */
         private static void playRiggedGame(
-                @Nonnull String name,
-                @Nonnull Game<Piece, PlayerState, Roll> game
+                String name,
+                Game<Piece, PlayerState, Roll> game
         ) {
 
             while (!game.isFinished()) {
@@ -153,7 +153,7 @@ public class RGNTest {
             }
         }
 
-        public static @Nonnull List<ProvidedGame> get() {
+        public static List<ProvidedGame> get() {
             List<ProvidedGame> games = new ArrayList<>();
 
             // Empty games.
@@ -220,7 +220,7 @@ public class RGNTest {
         }
 
         @Override
-        public @Nonnull Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return get().stream();
         }
     }

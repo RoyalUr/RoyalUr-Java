@@ -12,40 +12,40 @@ public class GameStatsSummary {
      * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
      * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[][] rolls;
+    private final double[][] rolls;
 
     /**
      * Statistics about the number of moves made in the summarised games.
      * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
      * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[][] moves;
+    private final double[][] moves;
 
     /**
      * Statistics about the number of turns in the summarised games.
      * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
      * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[][] turns;
+    private final double[][] turns;
 
     /**
      * Statistics about the count of drama in the summarised games.
      * The first dimension of this array is indexed by the ordinal of an element of {@link GameStatsTarget},
      * and the second dimension is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[][] drama;
+    private final double[][] drama;
 
     /**
      * Statistics about the number of turns that the winner held the lead in a game before winning.
      * This array is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[] turnsInLead;
+    private final double[] turnsInLead;
 
     /**
      * Statistics about the percentage of turns that the winner held the lead in a game before winning.
      * This array is indexed by the ordinal of an element of {@link SummaryStat}.
      */
-    private final @Nonnull double[] percentInLead;
+    private final double[] percentInLead;
 
     /**
      * Instantiates a summary of the statistics from several games.
@@ -73,12 +73,12 @@ public class GameStatsSummary {
      *                      of {@link SummaryStat}.
      */
     protected GameStatsSummary(
-            @Nonnull double[][] rolls,
-            @Nonnull double[][] moves,
-            @Nonnull double[][] turns,
-            @Nonnull double[][] drama,
-            @Nonnull double[] turnsInLead,
-            @Nonnull double[] percentInLead
+            double[][] rolls,
+            double[][] moves,
+            double[][] turns,
+            double[][] drama,
+            double[] turnsInLead,
+            double[] percentInLead
     ) {
         this.rolls = rolls;
         this.moves = moves;
@@ -94,7 +94,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about rolls for target {@code target}.
      */
-    public double getRollsStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
+    public double getRollsStatistic(GameStatsTarget target, SummaryStat statistic) {
         return rolls[target.ordinal()][statistic.ordinal()];
     }
 
@@ -104,7 +104,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about moves for target {@code target}.
      */
-    public double getMovesStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
+    public double getMovesStatistic(GameStatsTarget target, SummaryStat statistic) {
         return moves[target.ordinal()][statistic.ordinal()];
     }
 
@@ -114,7 +114,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about turns for target {@code target}.
      */
-    public double getTurnsStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
+    public double getTurnsStatistic(GameStatsTarget target, SummaryStat statistic) {
         return turns[target.ordinal()][statistic.ordinal()];
     }
 
@@ -124,7 +124,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about drama for target {@code target}.
      */
-    public double getDramaStatistic(@Nonnull GameStatsTarget target, @Nonnull SummaryStat statistic) {
+    public double getDramaStatistic(GameStatsTarget target, SummaryStat statistic) {
         return drama[target.ordinal()][statistic.ordinal()];
     }
 
@@ -133,7 +133,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about turns in lead.
      */
-    public double getTurnsInLeadStatistic(@Nonnull SummaryStat statistic) {
+    public double getTurnsInLeadStatistic(SummaryStat statistic) {
         return turnsInLead[statistic.ordinal()];
     }
 
@@ -142,7 +142,7 @@ public class GameStatsSummary {
      * @param statistic The summary statistic to retrieve.
      * @return The value of the summary statistic {@code statistic} about turns in lead.
      */
-    public double getPercentInLeadStatistic(@Nonnull SummaryStat statistic) {
+    public double getPercentInLeadStatistic(SummaryStat statistic) {
         return percentInLead[statistic.ordinal()];
     }
 
@@ -151,7 +151,7 @@ public class GameStatsSummary {
      * @param stats The game statistics to summarise.
      * @return The summarised statistics from many games.
      */
-    public static @Nonnull GameStatsSummary summarise(GameStats... stats) {
+    public static GameStatsSummary summarise(GameStats... stats) {
         double[][] rolls = new double[GameStatsTarget.values().length][];
         double[][] moves = new double[GameStatsTarget.values().length][];
         double[][] turns = new double[GameStatsTarget.values().length][];

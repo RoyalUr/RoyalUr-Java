@@ -28,16 +28,16 @@ public class PathPairTest {
     private static final Tile T32 = new Tile(3, 2);
 
     public static class PathPairConstructors {
-        public final @Nonnull String name;
-        public final @Nonnull Supplier<PathPair> pair;
-        public final @Nonnull Supplier<List<Tile>> lightWithStartEnd;
-        public final @Nonnull Supplier<List<Tile>> darkWithStartEnd;
+        public final String name;
+        public final Supplier<PathPair> pair;
+        public final Supplier<List<Tile>> lightWithStartEnd;
+        public final Supplier<List<Tile>> darkWithStartEnd;
 
         public PathPairConstructors(
-                @Nonnull String name,
-                @Nonnull Supplier<PathPair> pair,
-                @Nonnull Supplier<List<Tile>> lightWithStartEnd,
-                @Nonnull Supplier<List<Tile>> darkWithStartEnd
+                String name,
+                Supplier<PathPair> pair,
+                Supplier<List<Tile>> lightWithStartEnd,
+                Supplier<List<Tile>> darkWithStartEnd
         ) {
             this.name = name;
             this.pair = pair;
@@ -46,7 +46,7 @@ public class PathPairTest {
         }
 
         @Override
-        public @Nonnull String toString() {
+        public String toString() {
             return name;
         }
     }

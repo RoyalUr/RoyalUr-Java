@@ -15,7 +15,7 @@ public interface PieceProvider<P extends Piece> {
     /**
      * Generate a piece on the board.
      */
-    @Nonnull P create(@Nonnull PlayerType owner, int pathIndex);
+    P create(PlayerType owner, int pathIndex);
 
     /**
      * Generates a new piece to be introduced to the board.
@@ -23,7 +23,7 @@ public interface PieceProvider<P extends Piece> {
      * @param newPathIndex The destination index of the piece in the player's path.
      * @return The new piece that may be introduced to the board.
      */
-    @Nonnull P createIntroduced(@Nonnull PlayerType owner, int newPathIndex);
+    P createIntroduced(PlayerType owner, int newPathIndex);
 
     /**
      * Generates a piece that has been moved from another tile on the board.
@@ -31,5 +31,5 @@ public interface PieceProvider<P extends Piece> {
      * @param newPathIndex The destination index of the piece in the player's path.
      * @return The new piece to be placed on the board.
      */
-    @Nonnull P createMoved(@Nonnull P originPiece, int newPathIndex);
+    P createMoved(P originPiece, int newPathIndex);
 }

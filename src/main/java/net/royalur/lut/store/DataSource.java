@@ -31,12 +31,12 @@ public abstract class DataSource {
      */
     public static class FileDataSource extends DataSource {
 
-        private final @Nonnull FileChannel channel;
-        private final @Nonnull ByteBuffer workingBuffer;
+        private final FileChannel channel;
+        private final ByteBuffer workingBuffer;
 
         public FileDataSource(
-                @Nonnull FileChannel channel,
-                @Nonnull ByteBuffer workingBuffer
+                FileChannel channel,
+                ByteBuffer workingBuffer
         ) {
             this.channel = channel;
             this.workingBuffer = workingBuffer;

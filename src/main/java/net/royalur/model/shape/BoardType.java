@@ -16,7 +16,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      */
     STANDARD(1, "Standard") {
         @Override
-        public @Nonnull BoardShape createBoardShape() {
+        public BoardShape createBoardShape() {
             return new StandardBoardShape();
         }
     },
@@ -26,7 +26,7 @@ public enum BoardType implements Name, BoardShapeFactory {
      */
     ASEB(2, "Aseb") {
         @Override
-        public @Nonnull BoardShape createBoardShape() {
+        public BoardShape createBoardShape() {
             return new AsebBoardShape();
         }
     };
@@ -34,7 +34,7 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * A store to be used to parse board shapes.
      */
-    public static final @Nonnull NameMap<BoardType, BoardShapeFactory> FACTORIES;
+    public static final NameMap<BoardType, BoardShapeFactory> FACTORIES;
     static {
         NameMap<BoardType, BoardShapeFactory> factories = new UniqueNameMap<>();
         for (BoardType type : values()) {
@@ -52,25 +52,25 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * The name of this board shape.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * Instantiates a type of path.
      * @param id   A fixed numerical identifier to represent this board shape.
      * @param name The name of this board shape.
      */
-    BoardType(int id, @Nonnull String name) {
+    BoardType(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
     @Override
-    public @Nonnull Name getName() {
+    public Name getName() {
         return this;
     }
 
     @Override
-    public @Nonnull String getTextName() {
+    public String getTextName() {
         return name;
     }
 
@@ -88,5 +88,5 @@ public enum BoardType implements Name, BoardShapeFactory {
      * Create an instance of the board shape.
      * @return The instance of the board shape.
      */
-    public abstract @Nonnull BoardShape createBoardShape();
+    public abstract BoardShape createBoardShape();
 }

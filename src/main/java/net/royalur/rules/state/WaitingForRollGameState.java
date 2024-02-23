@@ -25,16 +25,16 @@ public class WaitingForRollGameState<
      * @param turn        The player who can roll the dice.
      */
     public WaitingForRollGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType turn
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer, turn);
     }
 
     @Override
-    public @Nonnull String describe() {
+    public String describe() {
         return "Waiting for the " + getTurn().getTextName().toLowerCase() +
                 " player to roll the dice";
     }

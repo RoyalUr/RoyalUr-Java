@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class IntValueBuffer extends ValueBuffer {
 
-    public IntValueBuffer(@Nonnull ValueType type, int capacity) {
+    public IntValueBuffer(ValueType type, int capacity) {
         super(type, capacity);
         if (!type.isInt())
             throw new IllegalArgumentException("Provided ValueType is not an integer!");

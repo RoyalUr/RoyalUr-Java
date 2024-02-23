@@ -17,19 +17,19 @@ public class TestUtils {
      * @param diceType The dice type to produce.
      * @return A factory that produces dice of the given type.
      */
-    public static @Nonnull DiceFactory<Roll> createDeterministicDice(
-            @Nonnull DiceType diceType
+    public static DiceFactory<Roll> createDeterministicDice(
+            DiceType diceType
     ) {
         return diceType.createFactory(new Supplier<>() {
             private int seed = 47;
 
             @Override
-            public @Nonnull RandomGenerator get() {
+            public RandomGenerator get() {
                 return new Random(++seed);
             }
 
             @Override
-            public @Nonnull String toString() {
+            public String toString() {
                 return diceType.toString();
             }
         });

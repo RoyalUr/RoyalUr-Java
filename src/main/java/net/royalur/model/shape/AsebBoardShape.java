@@ -19,7 +19,7 @@ public class AsebBoardShape extends BoardShape {
     /**
      * The set of all tiles that exist on the board.
      */
-    public static final @Nonnull Set<Tile> BOARD_TILES = Tile.unionLists(
+    public static final Set<Tile> BOARD_TILES = Tile.unionLists(
             new AsebPathPair().getLight(),
             new AsebPathPair().getDark()
     );
@@ -27,7 +27,7 @@ public class AsebBoardShape extends BoardShape {
     /**
      * The set of rosette tiles that exist on the board.
      */
-    public static final @Nonnull Set<Tile> ROSETTE_TILES = Set.of(
+    public static final Set<Tile> ROSETTE_TILES = Set.of(
             new Tile(1, 1),
             new Tile(3, 1),
             new Tile(2, 4),

@@ -21,12 +21,12 @@ public class RolledGameState<
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    private final @Nonnull R roll;
+    private final R roll;
 
     /**
      * The moves that are available from this position using the given roll.
      */
-    private final @Nonnull List<Move<P>> availableMoves;
+    private final List<Move<P>> availableMoves;
 
     /**
      * Instantiates a game state that represents a roll that was made in a game.
@@ -40,12 +40,12 @@ public class RolledGameState<
      *                       using the given roll.
      */
     public RolledGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull List<Move<P>> availableMoves
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType turn,
+            R roll,
+            List<Move<P>> availableMoves
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
@@ -56,7 +56,7 @@ public class RolledGameState<
      * Gets the roll that the player made.
      * @return The roll that the player made.
      */
-    public @Nonnull R getRoll() {
+    public R getRoll() {
         return roll;
     }
 
@@ -66,12 +66,12 @@ public class RolledGameState<
      * @return The moves that are available from
      *         this position using the given roll.
      */
-    public @Nonnull List<Move<P>> getAvailableMoves() {
+    public List<Move<P>> getAvailableMoves() {
         return this.availableMoves;
     }
 
     @Override
-    public @Nonnull String describe() {
+    public String describe() {
         StringBuilder builder = new StringBuilder();
         builder.append("The ")
                 .append(getTurn().getTextName().toLowerCase())

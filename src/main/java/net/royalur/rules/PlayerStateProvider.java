@@ -27,14 +27,14 @@ public interface PlayerStateProvider<
      * @param score The number of pieces the player has scored.
      * @return A player state for the player {@code player}.
      */
-    @Nonnull S create(@Nonnull PlayerType player, int pieces, int score);
+    S create(PlayerType player, int pieces, int score);
 
     /**
      * Generates the starting state for the {@code player} player.
      * @param player The player to create the starting state for.
      * @return A player state for the player {@code player}.
      */
-    @Nonnull S createStartingState(@Nonnull PlayerType player);
+    S createStartingState(PlayerType player);
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
@@ -43,7 +43,7 @@ public interface PlayerStateProvider<
      * @param piece The piece that was introduced to the board.
      * @return A new player state after the given piece was introduced to the board.
      */
-    @Nonnull S applyPieceIntroduced(@Nonnull S playerState, @Nonnull P piece);
+    S applyPieceIntroduced(S playerState, P piece);
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
@@ -52,7 +52,7 @@ public interface PlayerStateProvider<
      * @param piece The piece that was captured.
      * @return A new player state after the given piece was captured.
      */
-    @Nonnull S applyPieceCaptured(@Nonnull S playerState, @Nonnull P piece);
+    S applyPieceCaptured(S playerState, P piece);
 
     /**
      * Generates a new player state that is a copy of {@code playerState},
@@ -61,5 +61,5 @@ public interface PlayerStateProvider<
      * @param piece The piece that was scored.
      * @return A new player state with the given new piece scored.
      */
-    @Nonnull S applyPieceScored(@Nonnull S playerState, @Nonnull P piece);
+    S applyPieceScored(S playerState, P piece);
 }

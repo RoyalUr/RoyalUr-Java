@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class FastSimpleBoard {
 
-    public final @Nonnull BoardShape shape;
+    public final BoardShape shape;
     public final int width;
     public final int height;
 
@@ -25,10 +25,10 @@ public class FastSimpleBoard {
      * Light tiles are positive path indices + 1. Dark
      * tiles are negative path indices - 1.
      */
-    public final @Nonnull int[] pieces;
-    public final @Nonnull int[] rosetteTiles;
+    public final int[] pieces;
+    public final int[] rosetteTiles;
 
-    public FastSimpleBoard(@Nonnull BoardShape shape) {
+    public FastSimpleBoard(BoardShape shape) {
         this.shape = shape;
         this.width = shape.getWidth();
         this.height = shape.getHeight();
@@ -47,11 +47,11 @@ public class FastSimpleBoard {
         Arrays.fill(pieces, 0);
     }
 
-    public void copyFrom(@Nonnull FastSimpleBoard other) {
+    public void copyFrom(FastSimpleBoard other) {
         System.arraycopy(other.pieces, 0, pieces, 0, pieces.length);
     }
 
-    public void copyFrom(@Nonnull Board<? extends Piece> board) {
+    public void copyFrom(Board<? extends Piece> board) {
         if (!shape.isEquivalent(board.getShape()))
             throw new IllegalArgumentException("board has a different shape");
 

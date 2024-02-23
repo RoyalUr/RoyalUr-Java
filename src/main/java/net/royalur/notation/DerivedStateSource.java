@@ -18,20 +18,20 @@ public class DerivedStateSource<
         P extends Piece, S extends PlayerState, R extends Roll
 > extends StateSource<P, S, R> {
 
-    private final @Nonnull List<GameState<P, S, R>> states;
+    private final List<GameState<P, S, R>> states;
     private int stateIndex;
 
-    public DerivedStateSource(@Nonnull GameState<P, S, R> initialState) {
+    public DerivedStateSource(GameState<P, S, R> initialState) {
         states = new ArrayList<>();
         stateIndex = 0;
         states.add(initialState);
     }
 
-    public @Nonnull List<GameState<P, S, R>> getAllStates() {
+    public List<GameState<P, S, R>> getAllStates() {
         return states;
     }
 
-    public int lastIndexOf(@Nonnull GameState<P, S, R> state) {
+    public int lastIndexOf(GameState<P, S, R> state) {
         for (int index = states.size() - 1; index >= 0; --index) {
             if (state.equals(states.get(index)))
                 return index;
@@ -74,9 +74,9 @@ public class DerivedStateSource<
 
     @Override
     public RolledGameState<P, S, R> createRolledState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     ) {
         GameState<P, S, R> precedingState = nextState();
         if (!(precedingState instanceof WaitingForRollGameState<P, S, R> waitingState))
@@ -92,10 +92,10 @@ public class DerivedStateSource<
 
     @Override
     public MovedGameState<P, S, R> createMovedState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull Move<P> move
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll,
+            Move<P> move
     ) {
         // Support for implied roll states from moves.
         if (peekState() instanceof WaitingForRollGameState) {
@@ -116,8 +116,8 @@ public class DerivedStateSource<
 
     @Override
     public WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn
+            RuleSet<P, S, R> rules,
+            PlayerType turn
     ) {
         GameState<P, S, R> state = getCurrentState();
         if (!(state instanceof WaitingForRollGameState<P, S, R> waitingState)) {
@@ -138,9 +138,9 @@ public class DerivedStateSource<
 
     @Override
     public WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     ) {
         GameState<P, S, R> state = getCurrentState();
         if (!(state instanceof WaitingForMoveGameState<P, S, R> waitingState))
@@ -165,8 +165,8 @@ public class DerivedStateSource<
 
     @Override
     public WinGameState<P, S, R> createWinState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType winner
+            RuleSet<P, S, R> rules,
+            PlayerType winner
     ) {
         GameState<P, S, R> state = getCurrentState();
         if (!(state instanceof WinGameState<P, S, R> winState))

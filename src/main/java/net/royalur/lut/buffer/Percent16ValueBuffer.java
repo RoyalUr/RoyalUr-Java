@@ -59,7 +59,7 @@ public class Percent16ValueBuffer extends FloatValueBuffer {
 
     @Override
     public void writeContents(
-            @Nonnull DataSink output, int startIndex, int endIndex
+            DataSink output, int startIndex, int endIndex
     ) throws IOException {
 
          buffer.writeContents(output, startIndex, endIndex);
@@ -67,7 +67,7 @@ public class Percent16ValueBuffer extends FloatValueBuffer {
 
     @Override
     public void readContents(
-            @Nonnull DataSource input, int startIndex, int endIndex
+            DataSource input, int startIndex, int endIndex
     ) throws IOException {
 
         buffer.readContents(input, startIndex, endIndex);

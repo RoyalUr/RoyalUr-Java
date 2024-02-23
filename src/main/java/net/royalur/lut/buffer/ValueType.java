@@ -13,14 +13,14 @@ public enum ValueType {
     PERCENT16(7, Percent16ValueBuffer::new, false, true, 2);
 
     private final int id;
-    private final @Nonnull Function<Integer, ValueBuffer> builderFn;
+    private final Function<Integer, ValueBuffer> builderFn;
     private final boolean isIntType;
     private final boolean isFloatType;
     private final int byteCount;
 
     ValueType(
             int id,
-            @Nonnull Function<Integer, ValueBuffer> builderFn,
+            Function<Integer, ValueBuffer> builderFn,
             boolean isIntType,
             boolean isFloatType,
             int byteCount
@@ -48,7 +48,7 @@ public enum ValueType {
         return isFloatType;
     }
 
-    public @Nonnull ValueBuffer createBuffer(int capacity) {
+    public ValueBuffer createBuffer(int capacity) {
         ValueBuffer result = builderFn.apply(capacity);
         if (result == null)
             throw new NullPointerException();
@@ -56,7 +56,7 @@ public enum ValueType {
         return result;
     }
 
-    public @Nonnull IntValueBuffer createIntBuffer(int capacity) {
+    public IntValueBuffer createIntBuffer(int capacity) {
         ValueBuffer result = createBuffer(capacity);
         if (!(result instanceof IntValueBuffer))
             throw new IllegalStateException("Buffer is not of integer type! " + name());
@@ -64,7 +64,7 @@ public enum ValueType {
         return (IntValueBuffer) result;
     }
 
-    static @Nonnull ValueType getByID(int id) {
+    static ValueType getByID(int id) {
         for (ValueType valueType : values()) {
             if (valueType.getID() == id)
                 return valueType;

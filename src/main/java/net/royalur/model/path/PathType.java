@@ -16,7 +16,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     BELL(1, "Bell") {
         @Override
-        public @Nonnull PathPair createPathPair() {
+        public PathPair createPathPair() {
             return new BellPathPair();
         }
     },
@@ -26,7 +26,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     ASEB(2, "Aseb") {
         @Override
-        public @Nonnull PathPair createPathPair() {
+        public PathPair createPathPair() {
             return new AsebPathPair();
         }
     },
@@ -36,7 +36,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     MASTERS(3, "Masters") {
         @Override
-        public @Nonnull PathPair createPathPair() {
+        public PathPair createPathPair() {
             return new MastersPathPair();
         }
     },
@@ -46,7 +46,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     MURRAY(4, "Murray") {
         @Override
-        public @Nonnull PathPair createPathPair() {
+        public PathPair createPathPair() {
             return new MurrayPathPair();
         }
     },
@@ -56,7 +56,7 @@ public enum PathType implements Name, PathPairFactory {
      */
     SKIRIUK(5, "Skiriuk") {
         @Override
-        public @Nonnull PathPair createPathPair() {
+        public PathPair createPathPair() {
             return new SkiriukPathPair();
         }
     };
@@ -64,7 +64,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * A store to be used to parse path pairs.
      */
-    public static final @Nonnull NameMap<PathType, PathPairFactory> FACTORIES;
+    public static final NameMap<PathType, PathPairFactory> FACTORIES;
     static {
         NameMap<PathType, PathPairFactory> factories = new UniqueNameMap<>();
         for (PathType type : values()) {
@@ -82,25 +82,25 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The name given to this path.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * Instantiates a type of path.
      * @param id   A fixed numerical identifier to represent this path.
      * @param name The name given to this path.
      */
-    PathType(int id, @Nonnull String name) {
+    PathType(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
     @Override
-    public @Nonnull Name getName() {
+    public Name getName() {
         return this;
     }
 
     @Override
-    public @Nonnull String getTextName() {
+    public String getTextName() {
         return name;
     }
 
@@ -118,5 +118,5 @@ public enum PathType implements Name, PathPairFactory {
      * Create an instance of the paths.
      * @return The instance of the paths.
      */
-    public abstract @Nonnull PathPair createPathPair();
+    public abstract PathPair createPathPair();
 }

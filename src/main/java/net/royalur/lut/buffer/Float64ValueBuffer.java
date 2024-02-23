@@ -48,7 +48,7 @@ public class Float64ValueBuffer extends FloatValueBuffer {
 
     @Override
     public void writeContents(
-            @Nonnull DataSink output, int startIndex, int endIndex
+            DataSink output, int startIndex, int endIndex
     ) throws IOException {
 
         output.writeChunked((outputBuffer, fromIndex, toIndex) -> {
@@ -60,7 +60,7 @@ public class Float64ValueBuffer extends FloatValueBuffer {
 
     @Override
     public void readContents(
-            @Nonnull DataSource input, int startIndex, int endIndex
+            DataSource input, int startIndex, int endIndex
     ) throws IOException {
 
         for (int index = startIndex; index < endIndex; ++index) {

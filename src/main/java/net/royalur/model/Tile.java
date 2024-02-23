@@ -86,7 +86,7 @@ public class Tile {
      * @param iy The y-index of the tile. This coordinate is 0-based.
      * @return A tile representing the tile at indices ({@code ix}, {@code iy}).
      */
-    public static @Nonnull Tile fromIndices(int ix, int iy) {
+    public static Tile fromIndices(int ix, int iy) {
         return new Tile(ix + 1, iy + 1);
     }
 
@@ -125,7 +125,7 @@ public class Tile {
      * Encodes the x-coordinate as an upper-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */
-    public void encodeX(@Nonnull StringBuilder builder) {
+    public void encodeX(StringBuilder builder) {
         builder.append((char) ('A' + (x - 1)));
     }
 
@@ -133,7 +133,7 @@ public class Tile {
      * Encodes the x-coordinate as a lower-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */
-    public void encodeXLowerCase(@Nonnull StringBuilder builder) {
+    public void encodeXLowerCase(StringBuilder builder) {
         builder.append((char) ('a' + (x - 1)));
     }
 
@@ -141,7 +141,7 @@ public class Tile {
      * Encodes the y-coordinate as a number, and appends it to {@code builder}.
      * @param builder The builder to place the encoded y-coordinate into.
      */
-    public void encodeY(@Nonnull StringBuilder builder) {
+    public void encodeY(StringBuilder builder) {
         builder.append(y);
     }
 
@@ -151,7 +151,7 @@ public class Tile {
      * @return A text representation of the location of this tile.
      */
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         encodeX(builder);
         encodeY(builder);
@@ -169,7 +169,7 @@ public class Tile {
      * @param tile The text representation of the tile's location.
      * @return The tile that the given text is representing.
      */
-    public static @Nonnull Tile fromString(@Nonnull String tile) {
+    public static Tile fromString(String tile) {
         if (tile.length() < 2)
             throw new IllegalArgumentException("Expected a letter followed by a number");
 
@@ -193,7 +193,7 @@ public class Tile {
      *                    ordered following x0, y0, x1, y1, x2, y2, etc.
      * @return A list of tiles.
      */
-    public static @Nonnull List<Tile> createList(int... coordinates) {
+    public static List<Tile> createList(int... coordinates) {
         if (coordinates.length % 2 != 0)
             throw new IllegalArgumentException("Expected an even number of coordinates");
 
@@ -213,7 +213,7 @@ public class Tile {
      *                    ordered following x0, y0, x1, y1, x2, y2, etc.
      * @return A list of tiles following the path between the given waypoints.
      */
-    public static @Nonnull List<Tile> createPath(int... coordinates) {
+    public static List<Tile> createPath(int... coordinates) {
         List<Tile> tiles = createList(coordinates);
         if (tiles.isEmpty())
             throw new IllegalArgumentException("No coordinates were provided");
@@ -238,7 +238,7 @@ public class Tile {
      * @return A set of all tiles.
      */
     @SafeVarargs
-    public static @Nonnull Set<Tile> unionLists(Collection<Tile>... tileLists) {
+    public static Set<Tile> unionLists(Collection<Tile>... tileLists) {
         Set<Tile> tiles = new HashSet<>();
         for (Collection<Tile> tileList : tileLists) {
             tiles.addAll(tileList);

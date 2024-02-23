@@ -17,7 +17,7 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction {
 
     private final int scoredPieceUtility;
 
-    public PiecesAdvancedUtilityFn(@Nonnull RuleSet<Piece, PlayerState, Roll> rules) {
+    public PiecesAdvancedUtilityFn(RuleSet<Piece, PlayerState, Roll> rules) {
         super(new TextName("PiecesAdvanced"));
 
         int pathLength = rules.getPaths().getLight().size();
@@ -30,7 +30,7 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction {
     }
 
     @Override
-    public float scoreGameStateForLight(@Nonnull FastSimpleGame game) {
+    public float scoreGameStateForLight(FastSimpleGame game) {
         float utility = (game.light.score - game.dark.score) * scoredPieceUtility;
         int[] boardPieces = game.board.pieces;
         for (int boardPiece : boardPieces) {

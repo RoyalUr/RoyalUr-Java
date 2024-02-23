@@ -17,7 +17,7 @@ public class Board<P extends Piece> {
     /**
      * The shape of this board.
      */
-    private final @Nonnull BoardShape shape;
+    private final BoardShape shape;
 
     /**
      * The number of x-coordinates that exist in this board.
@@ -33,13 +33,13 @@ public class Board<P extends Piece> {
      * The pieces on the tiles of this board.
      * Tiles that contain no piece are null.
      */
-    private final @Nonnull Piece[] pieces;
+    private final Piece[] pieces;
 
     /**
      * Instantiates an empty board with the shape {@code shape}.
      * @param shape The shape of this board.
      */
-    public Board(@Nonnull BoardShape shape) {
+    public Board(BoardShape shape) {
         this.shape = shape;
         this.width = shape.getWidth();
         this.height = shape.getHeight();
@@ -50,7 +50,7 @@ public class Board<P extends Piece> {
      * Instantiates a board with the same shape and pieces as {@code template}.
      * @param template Another board to use as a template to copy from.
      */
-    protected Board(@Nonnull Board<P> template) {
+    protected Board(Board<P> template) {
         this(template.shape);
         System.arraycopy(template.pieces, 0, pieces, 0, pieces.length);
     }
@@ -59,7 +59,7 @@ public class Board<P extends Piece> {
      * Creates an exact copy of this board.
      * @return An exact copy of this board.
      */
-    public @Nonnull Board<P> copy() {
+    public Board<P> copy() {
         return new Board<>(this);
     }
 
@@ -81,7 +81,7 @@ public class Board<P extends Piece> {
      * Gets the shape of this board.
      * @return The shape of this board.
      */
-    public @Nonnull BoardShape getShape() {
+    public BoardShape getShape() {
         return shape;
     }
 
@@ -108,7 +108,7 @@ public class Board<P extends Piece> {
      * @param tile The tile to be bounds-checked.
      * @return Whether the given tile falls within the bounds of this board.
      */
-    public boolean contains(@Nonnull Tile tile) {
+    public boolean contains(Tile tile) {
         return shape.contains(tile);
     }
 
@@ -131,7 +131,7 @@ public class Board<P extends Piece> {
      * @param tile The tile to find the piece on.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
-    public @Nullable P get(@Nonnull Tile tile) {
+    public @Nullable P get(Tile tile) {
         if (!contains(tile))
             throw new IllegalArgumentException("There is no tile at " + tile);
 
@@ -168,7 +168,7 @@ public class Board<P extends Piece> {
      * @return The previous piece on the given tile if there was one,
      *         or else {@code null}.
      */
-    public @Nullable P set(@Nonnull Tile tile, @Nullable P piece) {
+    public @Nullable P set(Tile tile, @Nullable P piece) {
         if (!contains(tile))
             throw new IllegalArgumentException("There is no tile at " + tile);
 
@@ -215,7 +215,7 @@ public class Board<P extends Piece> {
      * @param player The player to count the pieces of.
      * @return The number of pieces on the board for the given player.
      */
-    public int countPieces(@Nonnull PlayerType player) {
+    public int countPieces(PlayerType player) {
         int pieceCount = 0;
         for (Piece piece : this.pieces) {
             if (piece != null && piece.getOwner() == player) {
@@ -254,7 +254,7 @@ public class Board<P extends Piece> {
      * @param includeOffBoardTiles Whether to include tiles that don't fall on the board as spaces.
      * @return A String representing the contents of this board.
      */
-    public @Nonnull String toString(String columnDelimiter, boolean includeOffBoardTiles) {
+    public String toString(String columnDelimiter, boolean includeOffBoardTiles) {
         StringBuilder builder = new StringBuilder();
         for (int ix = 0; ix < shape.getWidth(); ++ix) {
             if (ix > 0) {
@@ -274,7 +274,7 @@ public class Board<P extends Piece> {
     }
 
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         return toString("\n", true);
     }
 }

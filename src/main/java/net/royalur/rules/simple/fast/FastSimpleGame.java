@@ -24,15 +24,15 @@ public class FastSimpleGame {
     public final boolean capturesGrantExtraRoll;
     public final int startingPieceCount;
 
-    public final @Nonnull FastSimpleBoard board;
-    public final @Nonnull FastSimplePlayer light;
-    public final @Nonnull FastSimplePlayer dark;
+    public final FastSimpleBoard board;
+    public final FastSimplePlayer light;
+    public final FastSimplePlayer dark;
 
     public boolean isLightTurn;
     public int rollValue;
     public boolean isFinished;
 
-    public FastSimpleGame(@Nonnull GameSettings<?> settings) {
+    public FastSimpleGame(GameSettings<?> settings) {
         this.areRosettesSafe = settings.areRosettesSafe();
         this.rosettesGrantExtraRoll = settings.doRosettesGrantExtraRolls();
         this.capturesGrantExtraRoll = settings.doCapturesGrantExtraRolls();
@@ -50,15 +50,15 @@ public class FastSimpleGame {
         this.isFinished = false;
     }
 
-    public @Nonnull FastSimplePlayer getPlayer(boolean isLight) {
+    public FastSimplePlayer getPlayer(boolean isLight) {
         return isLight ? light : dark;
     }
 
-    public @Nonnull FastSimplePlayer getTurnPlayer() {
+    public FastSimplePlayer getTurnPlayer() {
         return getPlayer(isLightTurn);
     }
 
-    public void copyFrom(@Nonnull FastSimpleGame other) {
+    public void copyFrom(FastSimpleGame other) {
         board.copyFrom(other.board);
         light.copyFrom(other.light);
         dark.copyFrom(other.dark);
@@ -68,7 +68,7 @@ public class FastSimpleGame {
     }
 
     public void copyFrom(
-            @Nonnull Game<
+            Game<
                     ? extends Piece,
                     ? extends PlayerState,
                     ? extends Roll
@@ -107,7 +107,7 @@ public class FastSimpleGame {
     /**
      * Populates {@code moveList} with all available moves in the current state of the game.
      */
-    public void findAvailableMoves(@Nonnull FastSimpleMoveList moveList) {
+    public void findAvailableMoves(FastSimpleMoveList moveList) {
         moveList.clear();
 
         int rollValue = this.rollValue;
@@ -165,7 +165,7 @@ public class FastSimpleGame {
         }
     }
 
-    public void applyRoll(int rollValue, @Nonnull FastSimpleMoveList moveList) {
+    public void applyRoll(int rollValue, FastSimpleMoveList moveList) {
         if (this.rollValue >= 0)
             throw new IllegalStateException("A roll has already been made");
 
@@ -267,9 +267,9 @@ public class FastSimpleGame {
         return (moveStatus & MOVE_STATUS_GRANTED_EXTRA_ROLL) != 0;
     }
 
-    private static @Nonnull int[] tilesToIndices(
-            @Nonnull FastSimpleBoard board,
-            @Nonnull List<Tile> tiles
+    private static int[] tilesToIndices(
+            FastSimpleBoard board,
+            List<Tile> tiles
     ) {
         int[] indices = new int[tiles.size()];
         for (int index = 0; index < indices.length; ++index) {

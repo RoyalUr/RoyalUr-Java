@@ -12,13 +12,11 @@ import java.util.List;
  * on any game, and should not hold game-specific state.
  * @param <P> The type of pieces that this agent can interact with.
  * @param <S> The type of player state that this agent can interact with.
- * @param <R> The type of rolls that may be made by this agent or their opponent.
  */
 public abstract class BaseAgent<
         P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> implements Agent<P, S, R> {
+        S extends PlayerState
+> implements Agent<P, S> {
 
     /**
      * Determines the move to be executed from the current state of the game.

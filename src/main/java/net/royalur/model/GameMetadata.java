@@ -20,29 +20,29 @@ public class GameMetadata {
     /**
      * The format used for parsing and serialising date times to text.
      */
-    public static final @Nonnull DateTimeFormatter DATETIME_FORMATTER =
+    public static final DateTimeFormatter DATETIME_FORMATTER =
             DateTimeFormatter.ISO_DATE;
 
     /**
      * The key for storing when a game started.
      */
-    public static final @Nonnull String START_DATETIME_KEY = "StartTime";
+    public static final String START_DATETIME_KEY = "StartTime";
 
     /**
      * The key for storing when a game was finished.
      */
-    public static final @Nonnull String END_DATETIME_KEY = "EndTime";
+    public static final String END_DATETIME_KEY = "EndTime";
 
     /**
      * Arbitrary metadata about a game.
      */
-    private final @Nonnull Map<String, String> metadata;
+    private final Map<String, String> metadata;
 
     /**
      * Instantiates metadata for a game of the Royal Game of Ur.
      * @param metadata The metadata of the game.
      */
-    public GameMetadata(@Nonnull Map<String, String> metadata) {
+    public GameMetadata(Map<String, String> metadata) {
         this.metadata = new LinkedHashMap<>(metadata);
     }
 
@@ -57,7 +57,7 @@ public class GameMetadata {
      * Creates a copy of this metadata.
      * @return A copy of this metadata.
      */
-    public @Nonnull GameMetadata copy() {
+    public GameMetadata copy() {
         return new GameMetadata(metadata);
     }
 
@@ -65,7 +65,7 @@ public class GameMetadata {
      * Retrieves a copy of all the metadata stored.
      * @return A copy of all the metadata stored.
      */
-    public @Nonnull Map<String, String> getAll() {
+    public Map<String, String> getAll() {
         return Map.copyOf(metadata);
     }
 
@@ -75,7 +75,7 @@ public class GameMetadata {
      * @param key The metadata key to retrieve.
      * @return The metadata value associated with {@code key}, or else {@code null}.
      */
-    public @Nullable String get(@Nonnull String key) {
+    public @Nullable String get(String key) {
         return metadata.get(key);
     }
 
@@ -83,7 +83,7 @@ public class GameMetadata {
      * Removes any metadata value associated with {@code key}.
      * @param key The metadata key to remove.
      */
-    public void remove(@Nonnull String key) {
+    public void remove(String key) {
         metadata.remove(key);
     }
 
@@ -92,7 +92,7 @@ public class GameMetadata {
      * @param key The metadata key to set the value for.
      * @param value The value to associate with the given key.
      */
-    public void put(@Nonnull String key, @Nonnull String value) {
+    public void put(String key, String value) {
         metadata.put(key, value);
     }
 
@@ -100,7 +100,7 @@ public class GameMetadata {
      * Sets the date and time when this game began.
      * @param datetime The date and time when this game began.
      */
-    public void setStartTime(@Nonnull TemporalAccessor datetime) {
+    public void setStartTime(TemporalAccessor datetime) {
         String formatted = DATETIME_FORMATTER.format(datetime);
         put(START_DATETIME_KEY, formatted);
     }
@@ -123,7 +123,7 @@ public class GameMetadata {
      * Sets the date and time when this game was finished.
      * @param datetime The date and time when this game was finished.
      */
-    public void setEndTime(@Nonnull TemporalAccessor datetime) {
+    public void setEndTime(TemporalAccessor datetime) {
         String formatted = DATETIME_FORMATTER.format(datetime);
         put(END_DATETIME_KEY, formatted);
     }
@@ -152,7 +152,7 @@ public class GameMetadata {
     }
 
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         return metadata.toString();
     }
 
@@ -160,7 +160,7 @@ public class GameMetadata {
      * Initialises metadata for a new game.
      * @param settings The settings used for the game.
      */
-    public void initialiseForNewGame(@Nonnull GameSettings<?> settings) {
+    public void initialiseForNewGame(GameSettings<?> settings) {
         setStartTime(ZonedDateTime.now());
     }
 
@@ -169,8 +169,8 @@ public class GameMetadata {
      * @param settings The settings used for the game.
      * @return Metadata for a new game.
      */
-    public static @Nonnull GameMetadata createForNewGame(
-            @Nonnull GameSettings<?> settings
+    public static GameMetadata createForNewGame(
+            GameSettings<?> settings
     ) {
         GameMetadata metadata = new GameMetadata();
         metadata.initialiseForNewGame(settings);

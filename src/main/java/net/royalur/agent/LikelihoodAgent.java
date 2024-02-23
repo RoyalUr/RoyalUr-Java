@@ -10,7 +10,6 @@ import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.util.Cast;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,19 +21,18 @@ import java.util.List;
  */
 public class LikelihoodAgent<
         P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends BaseAgent<P, S, R> {
+        S extends PlayerState
+> extends BaseAgent<P, S> {
 
     /**
      * The rules used for games given to this agent.
      */
-    private final @Nonnull SimpleRuleSet<P, S, R> rules;
+    private final SimpleRuleSet<P, S, R> rules;
 
     /**
      * The utility function to use to evaluate game states.
      */
-    private final @Nonnull UtilityFunction utilityFunction;
+    private final UtilityFunction utilityFunction;
 
     /**
      * Any sequence of rolls that has a lower likelihood of
@@ -46,19 +44,19 @@ public class LikelihoodAgent<
      * Game objects used to hold the state of games
      * while exploring the game tree.
      */
-    private @Nonnull FastSimpleGame[] gameHolders;
+    private FastSimpleGame[] gameHolders;
 
     /**
      * Move lists used to hold available moves while
      * exploring the game tree.
      */
-    private @Nonnull FastSimpleMoveList[] moveListHolders;
+    private FastSimpleMoveList[] moveListHolders;
 
     /**
      * Dice used to hold the state of dice while exploring
      * the game tree.
      */
-    private @Nonnull Dice<R>[] diceHolders;
+    private Dice<R>[] diceHolders;
 
     /**
      * Instantiates a likelihood agent.
@@ -67,8 +65,8 @@ public class LikelihoodAgent<
      *                            sequence of rolls to further depth.
      */
     public LikelihoodAgent(
-            @Nonnull SimpleRuleSet<P, S, R> rules,
-            @Nonnull UtilityFunction utilityFunction,
+            SimpleRuleSet<P, S, R> rules,
+            UtilityFunction utilityFunction,
             float likelihoodThreshold
     ) {
         this.rules = rules;
@@ -84,7 +82,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for storing the state of a game.
      */
-    private @Nonnull FastSimpleGame getGameHolder(int depth) {
+    private FastSimpleGame getGameHolder(int depth) {
         if (depth >= gameHolders.length) {
             int newLength = Math.max(4, gameHolders.length * 2);
             while (depth >= newLength) {
@@ -104,7 +102,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for storing available moves.
      */
-    private @Nonnull FastSimpleMoveList getMoveListHolder(int depth) {
+    private FastSimpleMoveList getMoveListHolder(int depth) {
         if (depth >= moveListHolders.length) {
             int newLength = Math.max(4, moveListHolders.length * 2);
             while (depth >= newLength) {
@@ -125,7 +123,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for the state of a die.
      */
-    private @Nonnull Dice<R> getDiceHolder(int depth) {
+    private Dice<R> getDiceHolder(int depth) {
         if (depth >= diceHolders.length) {
             int newLength = Math.max(4, diceHolders.length * 2);
             while (depth >= newLength) {
@@ -141,9 +139,9 @@ public class LikelihoodAgent<
     }
 
     private float calculateBestMoveUtility(
-            @Nonnull FastSimpleGame precedingGame,
-            @Nonnull FastSimpleMoveList availableMoves,
-            @Nonnull Dice<R> dice,
+            FastSimpleGame precedingGame,
+            FastSimpleMoveList availableMoves,
+            Dice<R> dice,
             float likelihood,
             int depth
     ) {
@@ -175,8 +173,8 @@ public class LikelihoodAgent<
      }
 
     private float calculateProbabilityWeightedUtility(
-            @Nonnull FastSimpleGame precedingGame,
-            @Nonnull Dice<R> precedingDice,
+            FastSimpleGame precedingGame,
+            Dice<R> precedingDice,
             float likelihood,
             int depth
     ) {
@@ -227,9 +225,9 @@ public class LikelihoodAgent<
     }
 
     @Override
-    public @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> moves
+    public Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> moves
     ) {
         if (moves.isEmpty())
             throw new IllegalArgumentException("No moves available");

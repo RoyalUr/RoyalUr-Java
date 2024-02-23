@@ -10,18 +10,18 @@ public class TextName implements Name {
     /**
      * The text name.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * Instantiates a text name.
      * @param name The text name.
      */
-    public TextName(@Nonnull String name) {
+    public TextName(String name) {
         this.name = name;
     }
 
     @Override
-    public @Nonnull String getTextName() {
+    public String getTextName() {
         return name;
     }
 

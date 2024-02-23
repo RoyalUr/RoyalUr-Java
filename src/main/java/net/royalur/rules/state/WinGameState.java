@@ -20,7 +20,7 @@ public class WinGameState<
     /**
      * The player that won the game.
      */
-    private final @Nonnull PlayerType winner;
+    private final PlayerType winner;
 
     /**
      * Instantiates a game state where a player has won the game.
@@ -30,10 +30,10 @@ public class WinGameState<
      * @param winner The winning player.
      */
     public WinGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType winner
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType winner
     ) {
         super(board, lightPlayer, darkPlayer);
         this.winner = winner;
@@ -53,7 +53,7 @@ public class WinGameState<
      * Gets the player that won the game.
      * @return The player that won the game.
      */
-    public @Nonnull PlayerType getWinner() {
+    public PlayerType getWinner() {
         return this.winner;
     }
 
@@ -61,7 +61,7 @@ public class WinGameState<
      * Gets the player that lost the game.
      * @return The player that lost the game.
      */
-    public @Nonnull PlayerType getLoser() {
+    public PlayerType getLoser() {
         return this.winner.getOtherPlayer();
     }
 
@@ -82,7 +82,7 @@ public class WinGameState<
     }
 
     @Override
-    public @Nonnull String describe() {
+    public String describe() {
         return "The " + winner.getTextName().toLowerCase() + " player has won!";
     }
 }

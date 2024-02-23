@@ -18,31 +18,31 @@ public abstract class StateSource<
 > {
 
     public abstract RolledGameState<P, S, R> createRolledState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     );
 
     public abstract MovedGameState<P, S, R> createMovedState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull Move<P> move
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll,
+            Move<P> move
     );
 
     public abstract WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn
+            RuleSet<P, S, R> rules,
+            PlayerType turn
     );
 
     public abstract WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     );
 
     public abstract WinGameState<P, S, R> createWinState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType winner
+            RuleSet<P, S, R> rules,
+            PlayerType winner
     );
 }

@@ -34,17 +34,17 @@ public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, Pla
     }
 
     @Override
-    public @Nonnull PlayerState create(@Nonnull PlayerType player, int pieces, int score) {
+    public PlayerState create(PlayerType player, int pieces, int score) {
         return new PlayerState(player, pieces, score);
     }
 
     @Override
-    public @Nonnull PlayerState createStartingState(@Nonnull PlayerType player) {
+    public PlayerState createStartingState(PlayerType player) {
         return new PlayerState(player, startingPieceCount, 0);
     }
 
     @Override
-    public @Nonnull PlayerState applyPieceIntroduced(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
+    public PlayerState applyPieceIntroduced(PlayerState playerState, Piece piece) {
         return new PlayerState(
                 playerState.getPlayer(),
                 playerState.getPieceCount() - 1,
@@ -53,7 +53,7 @@ public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, Pla
     }
 
     @Override
-    public @Nonnull PlayerState applyPieceCaptured(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
+    public PlayerState applyPieceCaptured(PlayerState playerState, Piece piece) {
         return new PlayerState(
                 playerState.getPlayer(),
                 playerState.getPieceCount() + 1,
@@ -62,7 +62,7 @@ public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, Pla
     }
 
     @Override
-    public @Nonnull PlayerState applyPieceScored(@Nonnull PlayerState playerState, @Nonnull Piece piece) {
+    public PlayerState applyPieceScored(PlayerState playerState, Piece piece) {
         return new PlayerState(
                 playerState.getPlayer(),
                 playerState.getPieceCount(),

@@ -12,7 +12,7 @@ public class FastSimpleMoveList {
      * Path indices of tiles to move. -1 represents introducing a piece.
      * Only {@link #moveCount} moves are populated in this array.
      */
-    public @Nonnull int[] moves;
+    public int[] moves;
 
     public int moveCount;
 

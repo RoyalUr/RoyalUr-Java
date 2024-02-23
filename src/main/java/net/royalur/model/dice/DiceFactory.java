@@ -8,15 +8,14 @@ import java.util.random.RandomGenerator;
 
 /**
  * A factory that creates dice.
- * @param <R> The type of roll that this dice produce.
  */
-public interface DiceFactory<R extends Roll> extends Named<Name> {
+public interface DiceFactory extends Named<Name> {
 
     /**
      * Create an instance of the dice using a default source of randomness.
      * @return The instance of the dice using a default source of randomness.
      */
-    @Nonnull Dice<R> createDice();
+    Dice createDice();
 
     /**
      * Generates a roll with the given value.
@@ -27,7 +26,7 @@ public interface DiceFactory<R extends Roll> extends Named<Name> {
      * @param value The value of the dice roll.
      * @return A roll with the given value.
      */
-    default @Nonnull R createRoll(int value) {
+    default Roll createRoll(int value) {
         return createDice().generateRoll(value);
     }
 }

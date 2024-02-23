@@ -11,7 +11,7 @@ public class Piece {
     /**
      * The player that owns this piece.
      */
-    private final @Nonnull PlayerType owner;
+    private final PlayerType owner;
 
     /**
      * The index of the piece on its owner player's path.
@@ -24,7 +24,7 @@ public class Piece {
      * @param pathIndex The index of this piece on its owner's path
      *                  around the board.
      */
-    public Piece(@Nonnull PlayerType owner, int pathIndex) {
+    public Piece(PlayerType owner, int pathIndex) {
         if (pathIndex < 0) {
             throw new IllegalArgumentException(
                     "The path index cannot be negative: " + pathIndex
@@ -38,7 +38,7 @@ public class Piece {
      * Gets the player that owns this piece.
      * @return The player that owns this piece.
      */
-    public @Nonnull PlayerType getOwner() {
+    public PlayerType getOwner() {
         return owner;
     }
 
@@ -65,7 +65,7 @@ public class Piece {
     }
 
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         return owner.getTextName();
     }
 

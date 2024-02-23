@@ -22,8 +22,8 @@ public interface RuleSetProvider<P extends Piece, S extends PlayerState> {
      * @param <R> The type of rolls that may be made.
      * @return A rule set matching the given settings and game metadata.
      */
-    <R extends Roll> @Nonnull RuleSet<P, S, R> create(
-            @Nonnull GameSettings<R> settings,
-            @Nonnull GameMetadata metadata
+    <R extends Roll> RuleSet<P, S, R> create(
+            GameSettings<R> settings,
+            GameMetadata metadata
     );
 }

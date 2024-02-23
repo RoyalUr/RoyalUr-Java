@@ -13,17 +13,17 @@ public class UniqueNameMap<N extends Name, V> implements NameMap<N, V> {
     /**
      * The key/value pairs stored in this map.
      */
-    private final @Nonnull List<Entry<N, V>> entries;
+    private final List<Entry<N, V>> entries;
 
     /**
      * The entries stored by their name.
      */
-    private final @Nonnull Map<String, Entry<N, V>> byLowercaseName;
+    private final Map<String, Entry<N, V>> byLowercaseName;
 
     /**
      * The entries stored by their ID.
      */
-    private final @Nonnull Map<Integer, Entry<N, V>> byID;
+    private final Map<Integer, Entry<N, V>> byID;
 
     /**
      * Instantiates an empty store.
@@ -38,14 +38,14 @@ public class UniqueNameMap<N extends Name, V> implements NameMap<N, V> {
      * Instantiates this named store with all entries from {@code original}.
      * @param original The original named store to copy entries from.
      */
-    public UniqueNameMap(@Nonnull NameMap<N, V> original) {
+    public UniqueNameMap(NameMap<N, V> original) {
         this();
         for (Entry<N, V> entry : original.entries()) {
             put(entry);
         }
     }
 
-    private void put(@Nonnull Entry<N, V> entry) {
+    private void put(Entry<N, V> entry) {
         N name = entry.getName();
         String textName = name.getTextName();
         String lowercaseName = textName.toLowerCase();
@@ -63,12 +63,12 @@ public class UniqueNameMap<N extends Name, V> implements NameMap<N, V> {
     }
 
     @Override
-    public void put(@Nonnull N name, @Nonnull V value) {
+    public void put(N name, V value) {
         put(new Entry<>(name, value));
     }
 
     @Override
-    public @Nonnull V get(int id) {
+    public V get(int id) {
         Entry<N, V> entry = byID.get(id);
         if (entry != null)
             return entry.getValue();
@@ -77,7 +77,7 @@ public class UniqueNameMap<N extends Name, V> implements NameMap<N, V> {
     }
 
     @Override
-    public @Nonnull V get(@Nonnull String textName) {
+    public V get(String textName) {
         String lowercaseName = textName.toLowerCase();
         Entry<N, V> entry = byLowercaseName.get(lowercaseName);
         if (entry != null)
@@ -87,12 +87,12 @@ public class UniqueNameMap<N extends Name, V> implements NameMap<N, V> {
     }
 
     @Override
-    public @Nonnull V get(@Nonnull N name) {
+    public V get(N name) {
         return get(name.getTextName());
     }
 
     @Override
-    public @Nonnull Collection<Entry<N, V>> entries() {
+    public Collection<Entry<N, V>> entries() {
         return Collections.unmodifiableList(entries);
     }
 }

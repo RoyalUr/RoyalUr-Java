@@ -20,12 +20,12 @@ public class MovedGameState<
     /**
      * The roll of the dice that was used for the move.
      */
-    private final @Nonnull R roll;
+    private final R roll;
 
     /**
      * The move that was made.
      */
-    private final @Nonnull Move<P> move;
+    private final Move<P> move;
 
     /**
      * Instantiates a game state representing a move that was made in a game.
@@ -37,12 +37,12 @@ public class MovedGameState<
      * @param move        The move that was made on the board.
      */
     public MovedGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull Move<P> move
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType turn,
+            R roll,
+            Move<P> move
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
@@ -53,7 +53,7 @@ public class MovedGameState<
      * Gets the roll of the dice that was used for the move.
      * @return The roll of the dice that was used for the move.
      */
-    public @Nonnull R getRoll() {
+    public R getRoll() {
         return roll;
     }
 
@@ -61,12 +61,12 @@ public class MovedGameState<
      * Gets the move that was made.
      * @return The move that was made.
      */
-    public @Nonnull Move<P> getMove() {
+    public Move<P> getMove() {
         return move;
     }
 
     @Override
-    public @Nonnull String describe() {
+    public String describe() {
         StringBuilder builder = new StringBuilder();
         builder.append("The ");
         builder.append(getTurn().getTextName().toLowerCase());

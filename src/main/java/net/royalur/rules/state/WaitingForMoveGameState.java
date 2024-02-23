@@ -21,12 +21,12 @@ public class WaitingForMoveGameState<
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    private final @Nonnull R roll;
+    private final R roll;
 
     /**
      * The moves that are available to be made from this position.
      */
-    private final @Nonnull List<Move<P>> availableMoves;
+    private final List<Move<P>> availableMoves;
 
     /**
      * Instantiates a game state where the game is waiting for a player to make a move.
@@ -39,12 +39,12 @@ public class WaitingForMoveGameState<
      * @param availableMoves The moves that are available to be made from this position.
      */
     public WaitingForMoveGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull List<Move<P>> availableMoves
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType turn,
+            R roll,
+            List<Move<P>> availableMoves
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         if (availableMoves.isEmpty())
@@ -58,7 +58,7 @@ public class WaitingForMoveGameState<
      * Gets the roll that the player made.
      * @return The roll that the player made.
      */
-    public @Nonnull R getRoll() {
+    public R getRoll() {
         return roll;
     }
 
@@ -66,12 +66,12 @@ public class WaitingForMoveGameState<
      * Gets the moves that are available to be made from this position.
      * @return The moves that are available to be made from this position.
      */
-    public @Nonnull List<Move<P>> getAvailableMoves() {
+    public List<Move<P>> getAvailableMoves() {
         return availableMoves;
     }
 
     @Override
-    public @Nonnull String describe() {
+    public String describe() {
         return "Waiting for the " + getTurn().getTextName().toLowerCase()
                 + " player to make a move with their roll of " + roll.value();
     }

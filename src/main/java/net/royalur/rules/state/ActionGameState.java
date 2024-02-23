@@ -26,10 +26,10 @@ public abstract class ActionGameState<
      * @param turn        The player who made an action or that should make an action.
      */
     public ActionGameState(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer,
-            @Nonnull PlayerType turn
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer,
+            PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer, turn);
     }

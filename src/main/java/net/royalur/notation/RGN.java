@@ -48,12 +48,12 @@ public class RGN<
     /**
      * A map of factories for identifying path pairs for parsing.
      */
-    private final @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs;
+    private final NameMap<?, ? extends PathPairFactory> pathPairs;
 
     /**
      * A map of factories for identifying board shapes for parsing.
      */
-    private final @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes;
+    private final NameMap<?, ? extends BoardShapeFactory> boardShapes;
 
     /**
      * The maximum length of the lines that contain moves.
@@ -75,8 +75,8 @@ public class RGN<
      * @param maxTurnLineLength The maximum length of a turn before it is split onto another line.
      */
     public RGN(
-            @Nonnull NameMap<?, ? extends PathPairFactory> pathPairs,
-            @Nonnull NameMap<?, ? extends BoardShapeFactory> boardShapes,
+            NameMap<?, ? extends PathPairFactory> pathPairs,
+            NameMap<?, ? extends BoardShapeFactory> boardShapes,
             int maxActionLineLength,
             int maxTurnLineLength
     ) {
@@ -98,7 +98,7 @@ public class RGN<
      * @param value The value to be escaped.
      * @return The escaped version of {@code value}.
      */
-    public static @Nonnull String escape(@Nonnull String value) {
+    public static String escape(String value) {
         StringBuilder builder = new StringBuilder("\"");
         for (char ch : value.toCharArray()) {
             if (ch == '"') {
@@ -126,9 +126,9 @@ public class RGN<
      * @param <R> The type of the dice rolls that was made in the given state.
      */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void appendDiceRoll(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StringBuilder builder,
-            @Nonnull RolledGameState<P, S, R> rolledState
+            RuleSet<P, S, R> rules,
+            StringBuilder builder,
+            RolledGameState<P, S, R> rolledState
     ) {
         Roll roll = rolledState.getRoll();
         builder.append(roll.value());
@@ -144,9 +144,9 @@ public class RGN<
      * @param <R> The type of the dice rolls that was used in the given state.
      */
     protected <P extends Piece, S extends PlayerState, R extends Roll> void appendMove(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull StringBuilder builder,
-            @Nonnull MovedGameState<P, S, R> movedState
+            RuleSet<P, S, R> rules,
+            StringBuilder builder,
+            MovedGameState<P, S, R> movedState
     ) {
         Move<?> move = movedState.getMove();
         Tile from, to;
@@ -189,7 +189,7 @@ public class RGN<
     }
 
     @Override
-    public @Nonnull String encodeGame(@Nonnull Game<P, S, R> game) {
+    public String encodeGame(Game<P, S, R> game) {
         StringBuilder builder = new StringBuilder();
 
         // Encode the metadata.
@@ -314,7 +314,7 @@ public class RGN<
     }
 
     @Override
-    public @Nonnull Game<P, S, R> decodeGame(@Nonnull String encoded) {
+    public Game<P, S, R> decodeGame(String encoded) {
         throw new UnsupportedOperationException("TODO");
     }
 }

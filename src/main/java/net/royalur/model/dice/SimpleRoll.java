@@ -71,7 +71,7 @@ public record SimpleRoll(int value) implements Roll {
     }
 
     @Override
-    public @Nonnull String toString() {
+    public String toString() {
         return Integer.toString(value);
     }
 
@@ -80,7 +80,7 @@ public record SimpleRoll(int value) implements Roll {
      * @param value The value that was rolled on the dice.
      * @return A roll representing a roll of the value {@code value}.
      */
-    public static @Nonnull SimpleRoll of(int value) {
+    public static SimpleRoll of(int value) {
         return switch (value) {
             case 0 -> ZERO;
             case 1 -> ONE;

@@ -23,19 +23,19 @@ public class GameStats {
      * The number of rolls performed in the game, indexed by
      * the ordinal of an element of {@link GameStatsTarget}.
      */
-    private final @Nonnull int[] rolls;
+    private final int[] rolls;
 
     /**
      * The number of moves made in the game, indexed by the
      * ordinal of an element of {@link GameStatsTarget}.
      */
-    private final @Nonnull int[] moves;
+    private final int[] moves;
 
     /**
      * The number of turns in the game, indexed by the ordinal
      * of an element of {@link GameStatsTarget}.
      */
-    private final @Nonnull int[] turns;
+    private final int[] turns;
 
     /**
      * The number of times the lead player swapped during each game,
@@ -46,7 +46,7 @@ public class GameStats {
      * on their turn, and then keep that advantage on their opponent's
      * turn).
      */
-    private final @Nonnull int[] drama;
+    private final int[] drama;
 
     /**
      * The number of turns that the winner held the lead before winning the game.
@@ -69,10 +69,10 @@ public class GameStats {
      */
     protected GameStats(
             boolean didLightWin,
-            @Nonnull int[] rolls,
-            @Nonnull int[] moves,
-            @Nonnull int[] turns,
-            @Nonnull int[] drama,
+            int[] rolls,
+            int[] moves,
+            int[] turns,
+            int[] drama,
             int turnsInLead
     ) {
         int targetCount = GameStatsTarget.values().length;
@@ -122,7 +122,7 @@ public class GameStats {
      * @param target The target to retrieve the statistic about.
      * @return The number of rolls counted for the target {@code target}.
      */
-    public int getRolls(@Nonnull GameStatsTarget target) {
+    public int getRolls(GameStatsTarget target) {
         return rolls[target.ordinal()];
     }
 
@@ -131,7 +131,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of rolls performed by {@code player}.
      */
-    public int getRolls(@Nonnull PlayerType player) {
+    public int getRolls(PlayerType player) {
         return getRolls(GameStatsTarget.get(player));
     }
 
@@ -140,7 +140,7 @@ public class GameStats {
      * @param target The target to retrieve the statistic about.
      * @return The number of moves counted for the target {@code target}.
      */
-    public int getMoves(@Nonnull GameStatsTarget target) {
+    public int getMoves(GameStatsTarget target) {
         return moves[target.ordinal()];
     }
 
@@ -149,7 +149,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of moves made by {@code player}.
      */
-    public int getMoves(@Nonnull PlayerType player) {
+    public int getMoves(PlayerType player) {
         return getMoves(GameStatsTarget.get(player));
     }
 
@@ -158,7 +158,7 @@ public class GameStats {
      * @param target The target to retrieve the statistic about.
      * @return The number of turns counted for the target {@code target}.
      */
-    public int getTurns(@Nonnull GameStatsTarget target) {
+    public int getTurns(GameStatsTarget target) {
         return turns[target.ordinal()];
     }
 
@@ -167,7 +167,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of turns that {@code player} had.
      */
-    public int getTurns(@Nonnull PlayerType player) {
+    public int getTurns(PlayerType player) {
         return getTurns(GameStatsTarget.get(player));
     }
 
@@ -176,7 +176,7 @@ public class GameStats {
      * @param target The target to retrieve the statistic about.
      * @return The drama counted for the target {@code target}.
      */
-    public int getDrama(@Nonnull GameStatsTarget target) {
+    public int getDrama(GameStatsTarget target) {
         return drama[target.ordinal()];
     }
 
@@ -185,7 +185,7 @@ public class GameStats {
      * @param player The player to retrieve the statistic about.
      * @return The number of times that {@code player} took the lead from behind.
      */
-    public int getDrama(@Nonnull PlayerType player) {
+    public int getDrama(PlayerType player) {
         return getDrama(GameStatsTarget.get(player));
     }
 
@@ -261,7 +261,7 @@ public class GameStats {
      * @param game The game to gather statistics about.
      * @return The statistics gathered about the game.
      */
-    public static @Nonnull GameStats gather(@Nonnull Game<?, ?, ?> game) {
+    public static GameStats gather(Game<?, ?, ?> game) {
         int targetCount = GameStatsTarget.values().length;
         int[] rolls = new int[targetCount];
         int[] moves = new int[targetCount];
@@ -335,7 +335,7 @@ public class GameStats {
      * @param stats The statistics to summarise.
      * @return The summarised statistics of all the statistics in {@code stats}.
      */
-    public static @Nonnull GameStatsSummary summarise(GameStats... stats) {
+    public static GameStatsSummary summarise(GameStats... stats) {
         return GameStatsSummary.summarise(stats);
     }
 }

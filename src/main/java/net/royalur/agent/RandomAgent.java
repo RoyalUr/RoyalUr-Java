@@ -25,7 +25,7 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
      * Instantiates a random agent that uses {@code random} as its source of randomness.
      * @param random The source of randomness to use to decide the moves to make.
      */
-    public RandomAgent(@Nonnull Random random) {
+    public RandomAgent(Random random) {
         this.random = random;
     }
 
@@ -37,9 +37,9 @@ public class RandomAgent<P extends Piece, S extends PlayerState, R extends Roll>
     }
 
     @Override
-    public @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> moves
+    public Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> moves
     ) {
         int randomIndex = random.nextInt(moves.size());
         return moves.get(randomIndex);

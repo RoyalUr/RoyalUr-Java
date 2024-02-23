@@ -13,7 +13,7 @@ import java.util.random.RandomGenerator;
 /**
  * The type of dice to be used in a game.
  */
-public enum DiceType implements Name, DiceFactory<Roll> {
+public enum DiceType implements Name, DiceFactory {
 
     /**
      * Represents rolling four binary die and counting the number
@@ -21,7 +21,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      */
     FOUR_BINARY(1, "FourBinary") {
         @Override
-        public @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random) {
+        public Dice createDice(RandomGenerator random) {
             return new BinaryDice(this, random, 4);
         }
     },
@@ -33,7 +33,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      */
     THREE_BINARY_0MAX(2, "ThreeBinary0Max") {
         @Override
-        public @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random) {
+        public Dice createDice(RandomGenerator random) {
             return new BinaryDice0AsMax(this, random, 3);
         }
     },
@@ -42,9 +42,9 @@ public enum DiceType implements Name, DiceFactory<Roll> {
     /**
      * A store to be used to parse dice.
      */
-    public static final @Nonnull NameMap<DiceType, DiceFactory<Roll>> FACTORIES;
+    public static final NameMap<DiceType, DiceFactory> FACTORIES;
     static {
-        NameMap<DiceType, DiceFactory<Roll>> factories = new UniqueNameMap<>();
+        NameMap<DiceType, DiceFactory> factories = new UniqueNameMap<>();
         for (DiceType type : values()) {
             factories.put(type, type);
         }
@@ -60,25 +60,25 @@ public enum DiceType implements Name, DiceFactory<Roll> {
     /**
      * The name given to this dice.
      */
-    private final @Nonnull String name;
+    private final String name;
 
     /**
      * Instantiates a type of dice.
      * @param id   A fixed numerical identifier to represent this dice.
      * @param name The name given to this dice.
      */
-    DiceType(int id, @Nonnull String name) {
+    DiceType(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
     @Override
-    public @Nonnull Name getName() {
+    public Name getName() {
         return this;
     }
 
     @Override
-    public @Nonnull String getTextName() {
+    public String getTextName() {
         return name;
     }
 
@@ -93,7 +93,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
     }
 
     @Override
-    public @Nonnull Dice<Roll> createDice() {
+    public Dice createDice() {
         return createDice(new Random());
     }
 
@@ -102,7 +102,7 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      * @param random The source of randomness to use for the dice.
      * @return A new set of these dice.
      */
-    public abstract @Nonnull Dice<Roll> createDice(@Nonnull RandomGenerator random);
+    public abstract Dice createDice(RandomGenerator random);
 
     /**
      * Creates a factory that produces dice using {@code randomProvider} to
@@ -110,17 +110,17 @@ public enum DiceType implements Name, DiceFactory<Roll> {
      * @param randomProvider The provider of the source of randomness for each dice.
      * @return A factory for these dice.
      */
-    public @Nonnull DiceFactory<Roll> createFactory(
-            @Nonnull Supplier<RandomGenerator> randomProvider
+    public DiceFactory createFactory(
+            Supplier<RandomGenerator> randomProvider
     ) {
         return new DiceFactory<>() {
             @Override
-            public @Nonnull Dice<Roll> createDice() {
+            public Dice createDice() {
                 return DiceType.this.createDice(randomProvider.get());
             }
 
             @Override
-            public @Nonnull Name getName() {
+            public Name getName() {
                 return DiceType.this;
             }
         };

@@ -25,12 +25,12 @@ public interface Notation<
      * @param game The game to be encoded.
      * @return Text that represents {@code game} in this notation.
      */
-    @Nonnull String encodeGame(@Nonnull Game<P, S, R> game);
+    String encodeGame(Game<P, S, R> game);
 
     /**
      * Decodes the game from the text {@code encoded}, based upon the rules {@code rules}.
      * @param encoded The text to decode into a game.
      * @return The decoded game.
      */
-    @Nonnull Game<P, S, R> decodeGame(@Nonnull String encoded);
+    Game<P, S, R> decodeGame(String encoded);
 }

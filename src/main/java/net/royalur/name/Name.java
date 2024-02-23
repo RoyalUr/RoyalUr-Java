@@ -12,7 +12,7 @@ public interface Name {
      * Gets the text name.
      * @return The text name.
      */
-    @Nonnull String getTextName();
+    String getTextName();
 
     /**
      * Gets whether this name has an associated integer ID.

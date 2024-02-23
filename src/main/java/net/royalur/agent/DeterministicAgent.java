@@ -17,9 +17,9 @@ import java.util.List;
 public class DeterministicAgent<P extends Piece, S extends PlayerState, R extends Roll> extends BaseAgent<P, S, R> {
 
     @Override
-    public @Nonnull Move<P> decideMove(
-            @Nonnull Game<P, S, R> game,
-            @Nonnull List<Move<P>> moves
+    public Move<P> decideMove(
+            Game<P, S, R> game,
+            List<Move<P>> moves
     ) {
         Move<P> chosen = null;
         for (Move<P> move : moves) {

@@ -15,9 +15,9 @@ import javax.annotation.Nonnull;
 public class SimpleRuleSetProvider implements RuleSetProvider<Piece, PlayerState> {
 
     @Override
-    public <R extends Roll> @Nonnull SimpleRuleSet<Piece, PlayerState, R> create(
-            @Nonnull GameSettings<R> settings,
-            @Nonnull GameMetadata metadata
+    public <R extends Roll> SimpleRuleSet<Piece, PlayerState, R> create(
+            GameSettings<R> settings,
+            GameMetadata metadata
     ) {
         SimplePieceProvider pieceProvider = new SimplePieceProvider();
         SimplePlayerStateProvider stateProvider = new SimplePlayerStateProvider(

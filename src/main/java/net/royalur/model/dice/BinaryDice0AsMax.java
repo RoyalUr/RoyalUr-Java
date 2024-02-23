@@ -28,7 +28,7 @@ public class BinaryDice0AsMax extends BinaryDice {
      * @param random The source of randomness used to generate dice rolls.
      * @param numDie The number of binary dice to roll.
      */
-    public BinaryDice0AsMax(@Nonnull Name name, @Nonnull RandomGenerator random, int numDie) {
+    public BinaryDice0AsMax(Name name, RandomGenerator random, int numDie) {
         super(name, random, numDie);
         this.maxRollValue = numDie + 1;
         this.rollProbabilities = new float[maxRollValue + 1];
@@ -46,7 +46,7 @@ public class BinaryDice0AsMax extends BinaryDice {
     }
 
     @Override
-    public @Nonnull float[] getRollProbabilities() {
+    public float[] getRollProbabilities() {
         return rollProbabilities;
     }
 
@@ -57,7 +57,7 @@ public class BinaryDice0AsMax extends BinaryDice {
     }
 
     @Override
-    public @Nonnull Roll generateRoll(int value) {
+    public Roll generateRoll(int value) {
         if (value <= 0 || value > getMaxRollValue())
             throw new IllegalArgumentException("This dice cannot roll " + value);
 

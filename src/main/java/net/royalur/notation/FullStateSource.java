@@ -15,21 +15,21 @@ public class FullStateSource<
         P extends Piece, S extends PlayerState, R extends Roll
 > extends StateSource<P, S, R> {
 
-    private final @Nonnull Board<P> board;
-    private final @Nonnull S lightPlayer;
-    private final @Nonnull S darkPlayer;
+    private final Board<P> board;
+    private final S lightPlayer;
+    private final S darkPlayer;
 
     public FullStateSource(
-            @Nonnull Board<P> board,
-            @Nonnull S lightPlayer,
-            @Nonnull S darkPlayer
+            Board<P> board,
+            S lightPlayer,
+            S darkPlayer
     ) {
         this.board = board;
         this.lightPlayer = lightPlayer;
         this.darkPlayer = darkPlayer;
     }
 
-    private S getPlayer(@Nonnull PlayerType turn) {
+    private S getPlayer(PlayerType turn) {
         return switch (turn) {
             case LIGHT -> lightPlayer;
             case DARK -> darkPlayer;
@@ -38,9 +38,9 @@ public class FullStateSource<
 
     @Override
     public RolledGameState<P, S, R> createRolledState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     ) {
         List<Move<P>> availableMoves = rules.findAvailableMoves(
                 board, getPlayer(turn), roll
@@ -53,10 +53,10 @@ public class FullStateSource<
 
     @Override
     public MovedGameState<P, S, R> createMovedState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll,
-            @Nonnull Move<P> move
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll,
+            Move<P> move
     ) {
         return new MovedGameState<>(
                 board, lightPlayer, darkPlayer,
@@ -66,8 +66,8 @@ public class FullStateSource<
 
     @Override
     public WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn
+            RuleSet<P, S, R> rules,
+            PlayerType turn
     ) {
         return new WaitingForRollGameState<>(
                 board, lightPlayer, darkPlayer, turn
@@ -76,9 +76,9 @@ public class FullStateSource<
 
     @Override
     public WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType turn,
-            @Nonnull R roll
+            RuleSet<P, S, R> rules,
+            PlayerType turn,
+            R roll
     ) {
         List<Move<P>> availableMoves = rules.findAvailableMoves(
                 board, getPlayer(turn), roll
@@ -91,8 +91,8 @@ public class FullStateSource<
 
     @Override
     public WinGameState<P, S, R> createWinState(
-            @Nonnull RuleSet<P, S, R> rules,
-            @Nonnull PlayerType winner
+            RuleSet<P, S, R> rules,
+            PlayerType winner
     ) {
         return new WinGameState<>(
                 board, lightPlayer, darkPlayer, winner

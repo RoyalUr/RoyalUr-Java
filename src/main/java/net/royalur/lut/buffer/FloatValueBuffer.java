@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class FloatValueBuffer extends ValueBuffer {
 
-    public FloatValueBuffer(@Nonnull ValueType type, int capacity) {
+    public FloatValueBuffer(ValueType type, int capacity) {
         super(type, capacity);
         if (!type.isFloat())
             throw new IllegalArgumentException("Provided ValueType is not floating-point!");

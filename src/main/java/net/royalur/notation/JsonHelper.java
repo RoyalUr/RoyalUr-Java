@@ -19,28 +19,28 @@ public class JsonHelper {
     public static final BigDecimal MAX_DOUBLE_READ_EPSILON = new BigDecimal("0.01");
 
     public static class JsonReadError extends RuntimeException {
-        public JsonReadError(@Nonnull String message) {
+        public JsonReadError(String message) {
             super(message);
         }
     }
 
     public static class JsonKeyError extends JsonReadError {
-        public JsonKeyError(@Nonnull String message) {
+        public JsonKeyError(String message) {
             super(message);
         }
     }
 
     public static class JsonTypeError extends JsonReadError {
-        public JsonTypeError(@Nonnull String message) {
+        public JsonTypeError(String message) {
             super(message);
         }
     }
 
     private JsonHelper() {}
 
-    public static @Nonnull JsonNode readValue(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+    public static JsonNode readValue(
+            ObjectNode json,
+            String key
     ) {
         if (!json.has(key))
             throw new JsonKeyError("Missing " + key);
@@ -48,9 +48,9 @@ public class JsonHelper {
         return json.get(key);
     }
 
-    public static @Nonnull ObjectNode readDict(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+    public static ObjectNode readDict(
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (!(value instanceof ObjectNode)) {
@@ -63,8 +63,8 @@ public class JsonHelper {
     }
 
     public static @Nullable ObjectNode readNullableDict(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (value.isNull())
@@ -79,9 +79,9 @@ public class JsonHelper {
         return (ObjectNode) value;
     }
 
-    public static @Nonnull ArrayNode readArray(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+    public static ArrayNode readArray(
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (!(value instanceof ArrayNode)) {
@@ -94,8 +94,8 @@ public class JsonHelper {
     }
 
     public static @Nullable ArrayNode readNullableArray(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (value.isNull())
@@ -110,8 +110,8 @@ public class JsonHelper {
         return (ArrayNode) value;
     }
 
-    public static @Nonnull JsonNode readArrayEntry(
-            @Nonnull ArrayNode json,
+    public static JsonNode readArrayEntry(
+            ArrayNode json,
             int index
     ) {
         if (!json.has(index))
@@ -120,8 +120,8 @@ public class JsonHelper {
         return json.get(index);
     }
 
-    public static @Nonnull ObjectNode readArrayDictEntry(
-            @Nonnull ArrayNode json,
+    public static ObjectNode readArrayDictEntry(
+            ArrayNode json,
             int index
     ) {
         JsonNode value = readArrayEntry(json, index);
@@ -134,9 +134,9 @@ public class JsonHelper {
         return (ObjectNode) value;
     }
 
-    public static @Nonnull String readString(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+    public static String readString(
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (!value.isTextual()) {
@@ -149,8 +149,8 @@ public class JsonHelper {
     }
 
     public static @Nullable String readNullableString(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (value.isNull())
@@ -166,8 +166,8 @@ public class JsonHelper {
     }
 
     public static char readChar(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         String value = readString(json, key);
         if (value.length() != 1) {
@@ -179,9 +179,9 @@ public class JsonHelper {
         return value.charAt(0);
     }
 
-    public static @Nonnull JsonNode readNumber(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+    public static JsonNode readNumber(
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (!value.isNumber()) {
@@ -194,8 +194,8 @@ public class JsonHelper {
     }
 
     public static int readInt(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readNumber(json, key);
         if (value.isFloatingPointNumber())
@@ -207,8 +207,8 @@ public class JsonHelper {
     }
 
     public static long readLong(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readNumber(json, key);
         if (value.isFloatingPointNumber())
@@ -220,8 +220,8 @@ public class JsonHelper {
     }
 
     public static float readFloat(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readNumber(json, key);
         float valueFloat = value.floatValue();
@@ -240,8 +240,8 @@ public class JsonHelper {
     }
 
     public static double readDouble(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readNumber(json, key);
         double valueDouble = value.doubleValue();
@@ -260,8 +260,8 @@ public class JsonHelper {
     }
 
     public static boolean readBool(
-            @Nonnull ObjectNode json,
-            @Nonnull String key
+            ObjectNode json,
+            String key
     ) {
         JsonNode value = readValue(json, key);
         if (!(value instanceof BooleanNode)) {

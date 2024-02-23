@@ -16,7 +16,7 @@ public class Move<P extends Piece> {
     /**
      * The instigator of this move.
      */
-    private final @Nonnull PlayerType player;
+    private final PlayerType player;
 
     /**
      * The origin of the move. If this is {@code null}, it represents
@@ -67,7 +67,7 @@ public class Move<P extends Piece> {
      *                       if no piece would be captured by this move.
      */
     public Move(
-            @Nonnull PlayerType player,
+            PlayerType player,
             @Nullable Tile source, @Nullable P sourcePiece,
             @Nullable Tile dest, @Nullable P destPiece,
             @Nullable P capturedPiece
@@ -91,7 +91,7 @@ public class Move<P extends Piece> {
      * Gets the instigator of this move.
      * @return The instigator of this move.
      */
-    public @Nonnull PlayerType getPlayer() {
+    public PlayerType getPlayer() {
         return player;
     }
 
@@ -141,7 +141,7 @@ public class Move<P extends Piece> {
      * @param shape The shape of the board.
      * @return Whether this move will land a piece on a rosette.
      */
-    public boolean isDestRosette(@Nonnull BoardShape shape) {
+    public boolean isDestRosette(BoardShape shape) {
         return dest != null && shape.isRosette(dest);
     }
 
@@ -159,7 +159,7 @@ public class Move<P extends Piece> {
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source tile of this move.
      */
-    public @Nonnull Tile getSource() {
+    public Tile getSource() {
         if (source == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
@@ -171,7 +171,7 @@ public class Move<P extends Piece> {
      * @param paths The paths around the board that this move follows.
      * @return The source tile of this move, including off the board tiles when introducing a piece.
      */
-    public @Nonnull Tile getSource(@Nonnull PathPair paths) {
+    public Tile getSource(PathPair paths) {
         return source != null ? source : paths.getStart(player);
     }
 
@@ -189,7 +189,7 @@ public class Move<P extends Piece> {
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source piece of this move.
      */
-    public @Nonnull P getSourcePiece() {
+    public P getSourcePiece() {
         if (sourcePiece == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
@@ -210,7 +210,7 @@ public class Move<P extends Piece> {
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination tile of this move.
      */
-    public @Nonnull Tile getDest() {
+    public Tile getDest() {
         if (dest == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
@@ -222,7 +222,7 @@ public class Move<P extends Piece> {
      * @param paths The paths around the board that this move follows.
      * @return The destination tile of this move, including off the board tiles when scoring a piece.
      */
-    public @Nonnull Tile getDest(@Nonnull PathPair paths) {
+    public Tile getDest(PathPair paths) {
         return dest != null ? dest : paths.getEnd(player);
     }
 
@@ -243,7 +243,7 @@ public class Move<P extends Piece> {
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination piece of this move.
      */
-    public @Nonnull P getDestPiece() {
+    public P getDestPiece() {
         if (destPiece == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
@@ -266,7 +266,7 @@ public class Move<P extends Piece> {
      * @param paths The paths used for this move.
      * @return The index of the destination piece in the path.
      */
-    public int getDestIndex(@Nonnull PathPair paths) {
+    public int getDestIndex(PathPair paths) {
         if (destPiece == null)
             return paths.get(player).size();
 
@@ -287,7 +287,7 @@ public class Move<P extends Piece> {
      * that will be captured, this will throw an error.
      * @return The piece that will be captured by this move.
      */
-    public @Nonnull P getCapturedPiece() {
+    public P getCapturedPiece() {
         if (capturedPiece == null)
             throw new IllegalStateException("This move does not capture a piece");
 
@@ -298,7 +298,7 @@ public class Move<P extends Piece> {
      * Apply this move to update the board {@code board}.
      * @param board The board to update by applying this move.
      */
-    public void apply(@Nonnull Board<P> board) {
+    public void apply(Board<P> board) {
         if (source != null) {
             board.set(source, null);
         }
@@ -311,7 +311,7 @@ public class Move<P extends Piece> {
      * Generates an English description of this move.
      * @return An English description of this move.
      */
-    public @Nonnull String describe() {
+    public String describe() {
         boolean scoring = isScoringPiece();
         boolean introducing = isIntroducingPiece();
 

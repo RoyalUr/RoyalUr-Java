@@ -13,38 +13,38 @@ public class UnmodifiableNameMap<N extends Name, V> implements NameMap<N, V> {
     /**
      * The delegate that actually stores the values.
      */
-    private final @Nonnull NameMap<N, V> delegate;
+    private final NameMap<N, V> delegate;
 
     /**
      * Instantiates a new name map that cannot be modified.
      * @param delegate The delegate that actually stores the named things.
      */
-    public UnmodifiableNameMap(@Nonnull NameMap<N, V> delegate) {
+    public UnmodifiableNameMap(NameMap<N, V> delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public void put(@Nonnull N name, @Nonnull V value) {
+    public void put(N name, V value) {
         throw new UnsupportedOperationException("This map does not allow modification");
     }
 
     @Override
-    public @Nonnull V get(int id) {
+    public V get(int id) {
         return delegate.get(id);
     }
 
     @Override
-    public @Nonnull V get(@Nonnull String textName) {
+    public V get(String textName) {
         return delegate.get(textName);
     }
 
     @Override
-    public @Nonnull V get(@Nonnull N name) {
+    public V get(N name) {
         return delegate.get(name);
     }
 
     @Override
-    public @Nonnull Collection<Entry<N, V>> entries() {
+    public Collection<Entry<N, V>> entries() {
         return delegate.entries();
     }
 }

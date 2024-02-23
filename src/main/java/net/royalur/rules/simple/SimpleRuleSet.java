@@ -56,11 +56,11 @@ public class SimpleRuleSet<
      * @param capturesGrantExtraRolls Whether capturing a piece gives an extra roll.
      */
     public SimpleRuleSet(
-            @Nonnull BoardShape boardShape,
-            @Nonnull PathPair paths,
-            @Nonnull DiceFactory<R> diceFactory,
-            @Nonnull PieceProvider<P> pieceProvider,
-            @Nonnull PlayerStateProvider<P, S> playerStateProvider,
+            BoardShape boardShape,
+            PathPair paths,
+            DiceFactory<R> diceFactory,
+            PieceProvider<P> pieceProvider,
+            PlayerStateProvider<P, S> playerStateProvider,
             boolean safeRosettes,
             boolean rosettesGrantExtraRolls,
             boolean capturesGrantExtraRolls
@@ -71,7 +71,7 @@ public class SimpleRuleSet<
         this.capturesGrantExtraRolls = capturesGrantExtraRolls;
     }
 
-    public @Nonnull FastSimpleGame createCompatibleFastGame() {
+    public FastSimpleGame createCompatibleFastGame() {
         int startingPieceCount = playerStateProvider.getStartingPieceCount();
         return new FastSimpleGame(this.getSettings());
     }
@@ -92,7 +92,7 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public @Nonnull GameState<P, S, R> generateInitialGameState() {
+    public GameState<P, S, R> generateInitialGameState() {
         return new WaitingForRollGameState<>(
                 new Board<>(boardShape),
                 playerStateProvider.createStartingState(PlayerType.LIGHT),
@@ -102,10 +102,10 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public @Nonnull List<Move<P>> findAvailableMoves(
-            @Nonnull Board<P> board,
-            @Nonnull S player,
-            @Nonnull R roll
+    public List<Move<P>> findAvailableMoves(
+            Board<P> board,
+            S player,
+            R roll
     ) {
         if (roll.value() <= 0)
             return Collections.emptyList();
@@ -175,9 +175,9 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public @Nonnull List<GameState<P, S, R>> applyRoll(
-            @Nonnull WaitingForRollGameState<P, S, R> state,
-            @Nonnull R roll
+    public List<GameState<P, S, R>> applyRoll(
+            WaitingForRollGameState<P, S, R> state,
+            R roll
     ) {
 
         // Construct the state representing the roll that was made.
@@ -222,7 +222,7 @@ public class SimpleRuleSet<
      * @return Whether the player that made the move should be granted
      *         another roll.
      */
-    public boolean shouldGrantExtraRoll(@Nonnull MovedGameState<P, S, R> movedState) {
+    public boolean shouldGrantExtraRoll(MovedGameState<P, S, R> movedState) {
         Move<P> move = movedState.getMove();
         if (rosettesGrantExtraRolls && move.isDestRosette(boardShape))
             return true;
@@ -231,9 +231,9 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public @Nonnull List<GameState<P, S, R>> applyMove(
-            @Nonnull WaitingForMoveGameState<P, S, R> state,
-            @Nonnull Move<P> move
+    public List<GameState<P, S, R>> applyMove(
+            WaitingForMoveGameState<P, S, R> state,
+            Move<P> move
     ) {
 
         // Generate the state representing the move that was made.
@@ -285,8 +285,8 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public @Nonnull List<GameState<P, S, R>> selectLandmarkStates(
-            @Nonnull List<GameState<P, S, R>> states
+    public List<GameState<P, S, R>> selectLandmarkStates(
+            List<GameState<P, S, R>> states
     ) {
         List<GameState<P, S, R>> landmarkStates = new ArrayList<>();
         boolean seenAction = false;

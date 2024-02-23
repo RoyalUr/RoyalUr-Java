@@ -30,27 +30,27 @@ public abstract class RuleSet<
     /**
      * The shape of the game board.
      */
-    protected final @Nonnull BoardShape boardShape;
+    protected final BoardShape boardShape;
 
     /**
      * The paths that each player must take around the board.
      */
-    protected final @Nonnull PathPair paths;
+    protected final PathPair paths;
 
     /**
      * The generator of dice that are used to generate dice rolls.
      */
-    protected final @Nonnull DiceFactory<R> diceFactory;
+    protected final DiceFactory<R> diceFactory;
 
     /**
      * Provides the manipulation of piece values.
      */
-    protected final @Nonnull PieceProvider<P> pieceProvider;
+    protected final PieceProvider<P> pieceProvider;
 
     /**
      * Provides the manipulation of player state values.
      */
-    protected final @Nonnull PlayerStateProvider<P, S> playerStateProvider;
+    protected final PlayerStateProvider<P, S> playerStateProvider;
 
     /**
      * Instantiates a rule set for the Royal Game of Ur.
@@ -61,11 +61,11 @@ public abstract class RuleSet<
      * @param playerStateProvider Provides the manipulation of player states.
      */
     protected RuleSet(
-            @Nonnull BoardShape boardShape,
-            @Nonnull PathPair paths,
-            @Nonnull DiceFactory<R> diceFactory,
-            @Nonnull PieceProvider<P> pieceProvider,
-            @Nonnull PlayerStateProvider<P, S> playerStateProvider
+            BoardShape boardShape,
+            PathPair paths,
+            DiceFactory<R> diceFactory,
+            PieceProvider<P> pieceProvider,
+            PlayerStateProvider<P, S> playerStateProvider
     ) {
         if (!boardShape.isCompatible(paths)) {
             throw new IllegalArgumentException(
@@ -84,7 +84,7 @@ public abstract class RuleSet<
      * Get the settings used for this rule set.
      * @return The settings used for this rule set.
      */
-    public @Nonnull GameSettings<R> getSettings() {
+    public GameSettings<R> getSettings() {
         return new GameSettings<>(
                 boardShape,
                 paths,
@@ -100,7 +100,7 @@ public abstract class RuleSet<
      * Gets the shape of the board used in this rule set.
      * @return The shape of the game board.
      */
-    public @Nonnull BoardShape getBoardShape() {
+    public BoardShape getBoardShape() {
         return boardShape;
     }
 
@@ -108,7 +108,7 @@ public abstract class RuleSet<
      * Gets the paths that the players must take around the board.
      * @return The paths that players must take around the board.
      */
-    public @Nonnull PathPair getPaths() {
+    public PathPair getPaths() {
         return paths;
     }
 
@@ -116,7 +116,7 @@ public abstract class RuleSet<
      * Gets the generator of dice that are used to generate dice rolls.
      * @return The generator of dice that are used to generate dice rolls.
      */
-    public @Nonnull DiceFactory<R> getDiceFactory() {
+    public DiceFactory<R> getDiceFactory() {
         return diceFactory;
     }
 
@@ -124,7 +124,7 @@ public abstract class RuleSet<
      * Gets the provider of piece manipulations.
      * @return The provider of making piece changes.
      */
-    public @Nonnull PieceProvider<P> getPieceProvider() {
+    public PieceProvider<P> getPieceProvider() {
         return pieceProvider;
     }
 
@@ -132,7 +132,7 @@ public abstract class RuleSet<
      * Gets the provider of player state manipulations.
      * @return The provider of making player state changes.
      */
-    public @Nonnull PlayerStateProvider<P, S> getPlayerStateProvider() {
+    public PlayerStateProvider<P, S> getPlayerStateProvider() {
         return playerStateProvider;
     }
 
@@ -158,7 +158,7 @@ public abstract class RuleSet<
      * Generates the initial state for a game.
      * @return The initial state for a game.
      */
-    public abstract @Nonnull GameState<P, S, R> generateInitialGameState();
+    public abstract GameState<P, S, R> generateInitialGameState();
 
     /**
      * Finds all available moves from the given state.
@@ -167,10 +167,10 @@ public abstract class RuleSet<
      * @param roll The roll that was made. Must be non-zero.
      * @return A list of all the available moves from the given state.
      */
-    public abstract @Nonnull List<Move<P>> findAvailableMoves(
-            @Nonnull Board<P> board,
-            @Nonnull S player,
-            @Nonnull R roll
+    public abstract List<Move<P>> findAvailableMoves(
+            Board<P> board,
+            S player,
+            R roll
     );
 
     /**
@@ -184,9 +184,9 @@ public abstract class RuleSet<
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> applyRoll(
-            @Nonnull WaitingForRollGameState<P, S, R> state,
-            @Nonnull R roll
+    public abstract List<GameState<P, S, R>> applyRoll(
+            WaitingForRollGameState<P, S, R> state,
+            R roll
     );
 
     /**
@@ -202,9 +202,9 @@ public abstract class RuleSet<
      *         list may include historical information game states, and will
      *         always include the new state of the game as its last element.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> applyMove(
-            @Nonnull WaitingForMoveGameState<P, S, R> state,
-            @Nonnull Move<P> move
+    public abstract List<GameState<P, S, R>> applyMove(
+            WaitingForMoveGameState<P, S, R> state,
+            Move<P> move
     );
 
     /**
@@ -214,15 +214,15 @@ public abstract class RuleSet<
      * during serialisation.
      * @param states All the states in a game.
      */
-    public abstract @Nonnull List<GameState<P, S, R>> selectLandmarkStates(
-            @Nonnull List<GameState<P, S, R>> states
+    public abstract List<GameState<P, S, R>> selectLandmarkStates(
+            List<GameState<P, S, R>> states
     );
 
     /**
      * Creates a simple rule set that follows the given game settings.
      */
-    public static <R extends Roll> @Nonnull SimpleRuleSet<Piece, PlayerState, R>
-    createSimple(@Nonnull GameSettings<R> settings) {
+    public static <R extends Roll> SimpleRuleSet<Piece, PlayerState, R>
+    createSimple(GameSettings<R> settings) {
         return new SimpleRuleSetProvider().create(settings, new GameMetadata());
     }
 }

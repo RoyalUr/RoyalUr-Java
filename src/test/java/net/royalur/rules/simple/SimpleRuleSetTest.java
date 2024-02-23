@@ -117,8 +117,8 @@ public class SimpleRuleSetTest {
     }
 
     private static void assertGamesMatch(
-            @Nonnull Game<Piece, PlayerState, Roll> game,
-            @Nonnull FastSimpleGame fastGame
+            Game<Piece, PlayerState, Roll> game,
+            FastSimpleGame fastGame
     ) {
         assertEquals(game.isFinished(), fastGame.isFinished);
         if (game.isFinished()) {

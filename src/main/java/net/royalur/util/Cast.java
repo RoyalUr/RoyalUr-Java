@@ -16,7 +16,7 @@ public class Cast {
      * @param <T> The type to cast the original value into.
      */
     @SuppressWarnings("unchecked")
-    public static @Nonnull <F, T> T unsafeCast(@Nonnull F from) {
+    public static <F, T> T unsafeCast(F from) {
         return (T) from;
     }
 }

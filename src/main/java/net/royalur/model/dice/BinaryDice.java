@@ -8,7 +8,7 @@ import java.util.random.RandomGenerator;
 /**
  * Rolls a number of binary die and counts the result.
  */
-public class BinaryDice extends Dice<Roll> {
+public class BinaryDice extends Dice {
 
     /**
      * The number of binary dice to roll.
@@ -18,7 +18,7 @@ public class BinaryDice extends Dice<Roll> {
     /**
      * The source of randomness to use to generate dice rolls.
      */
-    private final @Nonnull RandomGenerator random;
+    private final RandomGenerator random;
 
     /**
      * The probability of rolling each value with these dice.
@@ -32,7 +32,7 @@ public class BinaryDice extends Dice<Roll> {
      * @param random The source of randomness used to generate dice rolls.
      * @param numDie The number of binary dice to roll.
      */
-    public BinaryDice(@Nonnull Name name, @Nonnull RandomGenerator random, int numDie) {
+    public BinaryDice(Name name, RandomGenerator random, int numDie) {
         super(name);
         if (numDie <= 0)
             throw new IllegalArgumentException("numDie must be at least 1");
@@ -58,7 +58,7 @@ public class BinaryDice extends Dice<Roll> {
     }
 
     @Override
-    public @Nonnull float[] getRollProbabilities() {
+    public float[] getRollProbabilities() {
         return rollProbabilities;
     }
 
@@ -70,7 +70,7 @@ public class BinaryDice extends Dice<Roll> {
     }
 
     @Override
-    public @Nonnull Roll generateRoll(int value) {
+    public Roll generateRoll(int value) {
         if (value < 0 || value > getMaxRollValue())
             throw new IllegalArgumentException("This dice cannot roll " + value);
 

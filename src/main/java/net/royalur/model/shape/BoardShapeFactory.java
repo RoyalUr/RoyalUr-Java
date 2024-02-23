@@ -14,5 +14,5 @@ public interface BoardShapeFactory extends Named<Name> {
      * Create an instance of the board shape.
      * @return The instance of the board shape.
      */
-    @Nonnull BoardShape createBoardShape();
+    BoardShape createBoardShape();
 }

@@ -18,17 +18,17 @@ public class BoardShape implements Named<Name> {
     /**
      * The name of this board shape.
      */
-    private final @Nonnull Name name;
+    private final Name name;
 
     /**
      * The set of tiles that fall within the bounds of this board shape.
      */
-    private final @Nonnull Set<Tile> tiles;
+    private final Set<Tile> tiles;
 
     /**
      * The set of tiles that represent rosette tiles in this board shape.
      */
-    private final @Nonnull Set<Tile> rosettes;
+    private final Set<Tile> rosettes;
 
     /**
      * The number of x-coordinates that exist in this board shape.
@@ -48,9 +48,9 @@ public class BoardShape implements Named<Name> {
      * @param rosettes The set of tiles that represent rosettes in this board shape.
      */
     public BoardShape(
-            @Nonnull Name name,
-            @Nonnull Set<Tile> tiles,
-            @Nonnull Set<Tile> rosettes
+            Name name,
+            Set<Tile> tiles,
+            Set<Tile> rosettes
     ) {
         if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
@@ -87,7 +87,7 @@ public class BoardShape implements Named<Name> {
     }
 
     @Override
-    public @Nonnull Name getName() {
+    public Name getName() {
         return name;
     }
 
@@ -95,7 +95,7 @@ public class BoardShape implements Named<Name> {
      * Gets the set of tiles that fall within the bounds of this board shape.
      * @return The set of tiles that fall within the bounds of this board shape.
      */
-    public @Nonnull Set<Tile> getTiles() {
+    public Set<Tile> getTiles() {
         return tiles;
     }
 
@@ -103,7 +103,7 @@ public class BoardShape implements Named<Name> {
      * Gets the set of tiles that represent rosette tiles in this board shape.
      * @return The set of tiles that represent rosette tiles in this board shape.
      */
-    public @Nonnull Set<Tile> getRosetteTiles() {
+    public Set<Tile> getRosetteTiles() {
         return rosettes;
     }
 
@@ -137,7 +137,7 @@ public class BoardShape implements Named<Name> {
      * @return The tiles of this board ordered by ascending row, and then
      *         ascending column number.
      */
-    public final @Nonnull List<Tile> getTilesByRow() {
+    public final List<Tile> getTilesByRow() {
         List<Tile> tilesByRow = new ArrayList<>();
         for (int iy = 0; iy < height; ++iy) {
             for (int ix = 0; ix < width; ++ix) {
@@ -156,7 +156,7 @@ public class BoardShape implements Named<Name> {
      * @return The tiles of this board ordered by ascending column, and then
      *         ascending row.
      */
-    public final @Nonnull List<Tile> getTilesByColumn() {
+    public final List<Tile> getTilesByColumn() {
         List<Tile> tilesByColumn = new ArrayList<>();
         for (int ix = 0; ix < width; ++ix) {
             for (int iy = 0; iy < height; ++iy) {
@@ -174,7 +174,7 @@ public class BoardShape implements Named<Name> {
      * @param tile The tile to be bounds-checked.
      * @return Whether the given tile falls within this board shape.
      */
-    public boolean contains(@Nonnull Tile tile) {
+    public boolean contains(Tile tile) {
         return tiles.contains(tile);
     }
 
@@ -200,7 +200,7 @@ public class BoardShape implements Named<Name> {
      * @param tiles The tiles to check for.
      * @return Whether all of {@code tiles} exist on this board shape.
      */
-    public boolean containsAll(@Nonnull Collection<Tile> tiles) {
+    public boolean containsAll(Collection<Tile> tiles) {
         for (Tile tile : tiles) {
             if (!contains(tile))
                 return false;
@@ -213,7 +213,7 @@ public class BoardShape implements Named<Name> {
      * @param tile The tile to check if it is a rosette.
      * @return Whether the given tile is a rosette tile on this board.
      */
-    public boolean isRosette(@Nonnull Tile tile) {
+    public boolean isRosette(Tile tile) {
         return rosettes.contains(tile);
     }
 
@@ -238,7 +238,7 @@ public class BoardShape implements Named<Name> {
      * @return Whether the pair of paths could be used on this shape
      *         of board.
      */
-    public boolean isCompatible(@Nonnull PathPair paths) {
+    public boolean isCompatible(PathPair paths) {
         return this.containsAll(paths.getLight()) && this.containsAll(paths.getDark());
     }
 
@@ -248,7 +248,7 @@ public class BoardShape implements Named<Name> {
      * @param other The board shape to compare with for equivalence.
      * @return Whether this board shape is equivalent to {@param other}.
      */
-    public boolean isEquivalent(@Nonnull BoardShape other) {
+    public boolean isEquivalent(BoardShape other) {
         return tiles.equals(other.tiles) && rosettes.equals(other.rosettes);
     }
 
@@ -271,10 +271,10 @@ public class BoardShape implements Named<Name> {
      *                     this board shape.
      * @return A new board shape with the given name.
      */
-    public static @Nonnull BoardShape create(
-            @Nonnull String name,
-            @Nonnull Set<Tile> tiles,
-            @Nonnull Set<Tile> rosetteTiles
+    public static BoardShape create(
+            String name,
+            Set<Tile> tiles,
+            Set<Tile> rosetteTiles
     ) {
         return new BoardShape(new TextName(name), tiles, rosetteTiles);
     }

@@ -69,7 +69,7 @@ public enum SummaryStat {
      */
     SummaryStat() {}
 
-    private static double calculatePercentile(@Nonnull double[] sortedMeasurements, double percentile) {
+    private static double calculatePercentile(double[] sortedMeasurements, double percentile) {
         double index = (sortedMeasurements.length - 1) * percentile;
         int belowIndex = (int) Math.floor(index);
         int aboveIndex = (int) Math.ceil(index);
@@ -86,7 +86,7 @@ public enum SummaryStat {
      * @param measurements The measurements to summarise.
      * @return The summary statistics for the measurements in {@code measurements}.
      */
-    public static @Nonnull double[] compute(@Nonnull double[] measurements) {
+    public static double[] compute(double[] measurements) {
         if (measurements.length == 0)
             throw new IllegalArgumentException("No measurements provided");
 
