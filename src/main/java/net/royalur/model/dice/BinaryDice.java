@@ -2,7 +2,6 @@ package net.royalur.model.dice;
 
 import net.royalur.name.Name;
 
-import javax.annotation.Nonnull;
 import java.util.random.RandomGenerator;
 
 /**

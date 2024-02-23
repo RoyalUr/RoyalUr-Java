@@ -3,8 +3,6 @@ package net.royalur.model.path;
 import net.royalur.name.Name;
 import net.royalur.name.Named;
 
-import javax.annotation.Nonnull;
-
 /**
  * A factory that creates a pair of paths.
  */

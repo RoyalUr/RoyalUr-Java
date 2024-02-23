@@ -2,33 +2,26 @@ package net.royalur;
 
 import net.royalur.model.*;
 import net.royalur.model.dice.DiceFactory;
-import net.royalur.model.dice.Roll;
 import net.royalur.model.path.*;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.model.shape.BoardType;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.RuleSetProvider;
 
-import javax.annotation.Nonnull;
-
 /**
  * A builder to help in the creation of custom games of the Royal Game of Ur.
  */
-public class GameBuilder<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> {
+public class GameBuilder {
 
     /**
      * The settings of the game being built.
      */
-    private final GameSettings<R> gameSettings;
+    private final GameSettings gameSettings;
 
     /**
      * The provider to use to construct the final rule set.
      */
-    private final RuleSetProvider<P, S> ruleSetProvider;
+    private final RuleSetProvider ruleSetProvider;
 
     /**
      * Instantiates a new game builder.
@@ -36,8 +29,8 @@ public class GameBuilder<
      * @param ruleSetProvider The provider to use to construct the final rule set.
      */
     public GameBuilder(
-            GameSettings<R> settings,
-            RuleSetProvider<P, S> ruleSetProvider
+            GameSettings settings,
+            RuleSetProvider ruleSetProvider
     ) {
         this.gameSettings = settings;
         this.ruleSetProvider = ruleSetProvider;
@@ -47,7 +40,7 @@ public class GameBuilder<
      * Get the settings of the game being built.
      * @return The settings of the game being built.
      */
-    public GameSettings<R> getSettings() {
+    public GameSettings getSettings() {
         return gameSettings;
     }
 
@@ -55,19 +48,17 @@ public class GameBuilder<
      * Gets the provider to use to construct the final rule set.
      * @return The provider to use to construct the final rule set.
      */
-    public RuleSetProvider<P, S> getRuleSetProvider() {
+    public RuleSetProvider getRuleSetProvider() {
         return ruleSetProvider;
     }
 
     /**
      * Create a copy of this game builder with new settings.
      * @param settings The new settings.
-     * @param <NEW_R> The type of the dice rolls generated.
      * @return A copy of this game builder with new settings.
      */
-    public <NEW_R extends Roll> GameBuilder<P, S, NEW_R>
-    replaceSettings(GameSettings<NEW_R> settings) {
-        return new GameBuilder<>(settings, ruleSetProvider);
+    public GameBuilder replaceSettings(GameSettings settings) {
+        return new GameBuilder(settings, ruleSetProvider);
     }
 
     /**
@@ -76,7 +67,7 @@ public class GameBuilder<
      * @return A new builder that allows the construction of games
      *         following the rules proposed by Irving Finkel.
      */
-    public GameBuilder<P, S, Roll> finkel() {
+    public GameBuilder finkel() {
         return replaceSettings(GameSettings.FINKEL);
     }
 
@@ -86,7 +77,7 @@ public class GameBuilder<
      * @return A new builder that allows the construction of games
      *         following the rules proposed James Masters.
      */
-    public GameBuilder<P, S, Roll> masters() {
+    public GameBuilder masters() {
         return replaceSettings(GameSettings.MASTERS);
     }
 
@@ -96,7 +87,7 @@ public class GameBuilder<
      * @return A new builder that allows the construction of games
      *         following the Aseb rules.
      */
-    public GameBuilder<P, S, Roll> aseb() {
+    public GameBuilder aseb() {
         return replaceSettings(GameSettings.ASEB);
     }
 
@@ -107,7 +98,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the shape of the board set
      *         to {@code boardType}.
      */
-    public GameBuilder<P, S, R> boardShape(BoardType boardType) {
+    public GameBuilder boardShape(BoardType boardType) {
         return boardShape(boardType.createBoardShape());
     }
 
@@ -118,7 +109,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the shape of the board set
      *         to {@code boardShape}.
      */
-    public GameBuilder<P, S, R> boardShape(BoardShape boardShape) {
+    public GameBuilder boardShape(BoardShape boardShape) {
         return replaceSettings(gameSettings.withBoardShape(boardShape));
     }
 
@@ -129,7 +120,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the paths taken by each
      *         player set to {@code pathType}.
      */
-    public GameBuilder<P, S, R> paths(PathType pathType) {
+    public GameBuilder paths(PathType pathType) {
         return paths(pathType.createPathPair());
     }
 
@@ -140,7 +131,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the paths taken by each
      *         player set to {@code paths}.
      */
-    public GameBuilder<P, S, R> paths(PathPair paths) {
+    public GameBuilder paths(PathPair paths) {
         return replaceSettings(gameSettings.withPaths(paths));
     }
 
@@ -148,12 +139,10 @@ public class GameBuilder<
      * Copies this game builder with the factory used to generate dice
      * for games set to {@code diceFactory}.
      * @param diceFactory The factory to use to generate dice for games.
-     * @param <NEW_R> The type of the dice rolls generated.
      * @return A copy of this game builder with factory used to generate
      *         dice for games set to {@code diceFactory}.
      */
-    public <NEW_R extends Roll> GameBuilder<P, S, NEW_R>
-    dice(DiceFactory<NEW_R> diceFactory) {
+    public GameBuilder dice(DiceFactory diceFactory) {
         return replaceSettings(gameSettings.withDice(diceFactory));
     }
 
@@ -165,7 +154,7 @@ public class GameBuilder<
      * @return A copy of this game builder with the number of starting pieces
      *         of each player set to {@code startingPieceCount}.
      */
-    public GameBuilder<P, S, R> startingPieceCount(int startingPieceCount) {
+    public GameBuilder startingPieceCount(int startingPieceCount) {
         return replaceSettings(gameSettings.withStartingPieceCount(startingPieceCount));
     }
 
@@ -176,7 +165,7 @@ public class GameBuilder<
      * @return A copy of this game builder with safe rosettes if
      *         {@code safeRosettes} is true, or else with unsafe rosettes.
      */
-    public GameBuilder<P, S, R> safeRosettes(boolean safeRosettes) {
+    public GameBuilder safeRosettes(boolean safeRosettes) {
         return replaceSettings(gameSettings.withSafeRosettes(safeRosettes));
     }
 
@@ -188,7 +177,7 @@ public class GameBuilder<
      * @return A copy of this game builder with rosettes granting extra
      *         dice rolls set to {@code rosettesGrantExtraRolls}.
      */
-    public GameBuilder<P, S, R> rosettesGrantExtraRolls(
+    public GameBuilder rosettesGrantExtraRolls(
             boolean rosettesGrantExtraRolls
     ) {
         return replaceSettings(gameSettings.withRosettesGrantExtraRolls(rosettesGrantExtraRolls));
@@ -202,9 +191,7 @@ public class GameBuilder<
      * @return A copy of this game builder with capturing pieces granting
      *         extra dice rolls set to {@code capturesGrantExtraRolls}.
      */
-    public GameBuilder<P, S, R> capturesGrantExtraRolls(
-            boolean capturesGrantExtraRolls
-    ) {
+    public GameBuilder capturesGrantExtraRolls(boolean capturesGrantExtraRolls) {
         return replaceSettings(gameSettings.withCapturesGrantExtraRolls(capturesGrantExtraRolls));
     }
 
@@ -212,7 +199,7 @@ public class GameBuilder<
      * Generates a rule set to match the settings in this builder.
      * @return A rule set to match the settings in this builder.
      */
-    public RuleSet<P, S, R> buildRules() {
+    public RuleSet buildRules() {
         return ruleSetProvider.create(gameSettings, new GameMetadata());
     }
 
@@ -220,7 +207,7 @@ public class GameBuilder<
      * Generates a new game using the rules set in this builder.
      * @return A new game using the rules set in this builder.
      */
-    public Game<P, S, R> build() {
-        return new Game<>(buildRules());
+    public Game build() {
+        return new Game(buildRules());
     }
 }

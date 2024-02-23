@@ -13,11 +13,11 @@ public class BoardTest {
 
     @Test
     public void testBaseProperties() {
-        Board<Piece> standard = new Board<>(new StandardBoardShape());
+        Board standard = new Board(new StandardBoardShape());
         assertEquals(3, standard.getWidth());
         assertEquals(8, standard.getHeight());
 
-        Board<Piece> aseb = new Board<>(new AsebBoardShape());
+        Board aseb = new Board(new AsebBoardShape());
         assertEquals(3, aseb.getWidth());
         assertEquals(12, aseb.getHeight());
     }
@@ -25,8 +25,8 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testCopy(BoardShape shape) {
-        Board<Piece> board = new Board<>(shape);
-        Board<Piece> copy = board.copy();
+        Board board = new Board(shape);
+        Board copy = board.copy();
         assertEquals(board, copy);
 
         for (Tile tile : shape.getTilesByRow()) {
@@ -56,7 +56,7 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testContains(BoardShape shape) {
-        Board<Piece> board = new Board<>(shape);
+        Board board = new Board(shape);
 
         // Deliberately includes out-of-bounds coordinates.
         int area = 0;
@@ -82,8 +82,8 @@ public class BoardTest {
     @ParameterizedTest
     @ArgumentsSource(BoardShapeTest.BoardShapeProvider.class)
     public void testGetSet(BoardShape shape) {
-        Board<Piece> board1 = new Board<>(shape);
-        Board<Piece> board2 = new Board<>(shape);
+        Board board1 = new Board(shape);
+        Board board2 = new Board(shape);
 
         for (Tile tile : shape.getTilesByColumn()) {
             assertNull(board2.getByIndices(tile.getXIndex(), tile.getYIndex()));
@@ -134,10 +134,10 @@ public class BoardTest {
 
     @Test
     public void testEquals() {
-        Board<Piece> standard1 = new Board<>(new StandardBoardShape());
-        Board<Piece> standard2 = new Board<>(new StandardBoardShape());
-        Board<Piece> aseb1 = new Board<>(new AsebBoardShape());
-        Board<Piece> aseb2 = new Board<>(new AsebBoardShape());
+        Board standard1 = new Board(new StandardBoardShape());
+        Board standard2 = new Board(new StandardBoardShape());
+        Board aseb1 = new Board(new AsebBoardShape());
+        Board aseb2 = new Board(new AsebBoardShape());
 
         assertEquals(standard1, standard1);
         assertEquals(standard1, standard2);
@@ -205,10 +205,10 @@ public class BoardTest {
 
     @Test
     public void testToString() {
-        Board<Piece> standard1 = new Board<>(new StandardBoardShape());
-        Board<Piece> standard2 = new Board<>(new StandardBoardShape());
-        Board<Piece> aseb1 = new Board<>(new AsebBoardShape());
-        Board<Piece> aseb2 = new Board<>(new AsebBoardShape());
+        Board standard1 = new Board(new StandardBoardShape());
+        Board standard2 = new Board(new StandardBoardShape());
+        Board aseb1 = new Board(new AsebBoardShape());
+        Board aseb2 = new Board(new AsebBoardShape());
 
         assertEquals(
                 """

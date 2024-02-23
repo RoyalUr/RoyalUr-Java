@@ -1,6 +1,5 @@
 package net.royalur.name;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -23,7 +22,6 @@ public interface NameMap<N extends Name, V> {
      * @return The thing with the given name.
      * @throws IllegalArgumentException If there is no entry with the given name.
      */
-    @Nonnull
     V get(String textName);
 
     /**
@@ -32,7 +30,6 @@ public interface NameMap<N extends Name, V> {
      * @return The thing with the given ID.
      * @throws IllegalArgumentException If there is no entry with the given ID.
      */
-    @Nonnull
     V get(int id);
 
     /**
@@ -41,7 +38,6 @@ public interface NameMap<N extends Name, V> {
      * @return The thing with the given name.
      * @throws IllegalArgumentException If there is no entry with the given name.
      */
-    @Nonnull
     V get(N name);
 
     /**

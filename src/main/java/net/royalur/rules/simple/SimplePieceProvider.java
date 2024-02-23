@@ -4,12 +4,10 @@ import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.rules.PieceProvider;
 
-import javax.annotation.Nonnull;
-
 /**
  * Provides new instances of, and manipulations to, simple pieces.
  */
-public class SimplePieceProvider implements PieceProvider<Piece> {
+public class SimplePieceProvider implements PieceProvider {
 
     @Override
     public Piece create(PlayerType owner, int pathIndex) {

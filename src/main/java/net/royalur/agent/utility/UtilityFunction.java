@@ -4,8 +4,6 @@ import net.royalur.name.Name;
 import net.royalur.name.Named;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
-import javax.annotation.Nonnull;
-
 /**
  * A function that is used to score game states.
  */

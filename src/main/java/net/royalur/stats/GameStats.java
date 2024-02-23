@@ -7,8 +7,6 @@ import net.royalur.rules.state.GameState;
 import net.royalur.rules.state.MovedGameState;
 import net.royalur.rules.state.RolledGameState;
 
-import javax.annotation.Nonnull;
-
 /**
  * Statistics about a game of the Royal Game of Ur.
  */
@@ -237,10 +235,10 @@ public class GameStats {
         return getDrama(GameStatsTarget.OVERALL);
     }
 
-    private static int calculatePiecesAdvancedUtilityForLight(GameState<?, ?, ?> state) {
+    private static int calculatePiecesAdvancedUtilityForLight(GameState state) {
         PlayerState light = state.getLightPlayer();
         PlayerState dark = state.getDarkPlayer();
-        Board<?> board = state.getBoard();
+        Board board = state.getBoard();
 
         int utility = light.getScore() - dark.getScore();
 
@@ -261,21 +259,21 @@ public class GameStats {
      * @param game The game to gather statistics about.
      * @return The statistics gathered about the game.
      */
-    public static GameStats gather(Game<?, ?, ?> game) {
+    public static GameStats gather(Game game) {
         int targetCount = GameStatsTarget.values().length;
         int[] rolls = new int[targetCount];
         int[] moves = new int[targetCount];
         int[] turns = new int[targetCount];
         int[] drama = new int[targetCount];
 
-        ActionGameState<?, ?, ?> lastAction = null;
+        ActionGameState lastAction = null;
         PlayerType currentLead = null;
         int losingLeadTurns = 0;
         int turnsInLead = 0;
 
         // Count all the rolls and moves.
-        for (GameState<?, ?, ?> state : game.getStates()) {
-            if (!(state instanceof ActionGameState<?, ?, ?> actionState))
+        for (GameState state : game.getStates()) {
+            if (!(state instanceof ActionGameState actionState))
                 continue;
 
             PlayerType player = actionState.getTurnPlayer().getPlayer();
@@ -284,7 +282,7 @@ public class GameStats {
                 rolls[GameStatsTarget.OVERALL.ordinal()] += 1;
                 rolls[GameStatsTarget.get(player).ordinal()] += 1;
 
-            } else if (actionState instanceof MovedGameState<?, ?, ?> move) {
+            } else if (actionState instanceof MovedGameState move) {
                 moves[GameStatsTarget.OVERALL.ordinal()] += 1;
                 moves[GameStatsTarget.get(player).ordinal()] += 1;
             }

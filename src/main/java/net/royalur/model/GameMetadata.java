@@ -1,8 +1,5 @@
 package net.royalur.model;
 
-import net.royalur.rules.RuleSet;
-
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -160,7 +157,7 @@ public class GameMetadata {
      * Initialises metadata for a new game.
      * @param settings The settings used for the game.
      */
-    public void initialiseForNewGame(GameSettings<?> settings) {
+    public void initialiseForNewGame(GameSettings settings) {
         setStartTime(ZonedDateTime.now());
     }
 
@@ -170,7 +167,7 @@ public class GameMetadata {
      * @return Metadata for a new game.
      */
     public static GameMetadata createForNewGame(
-            GameSettings<?> settings
+            GameSettings settings
     ) {
         GameMetadata metadata = new GameMetadata();
         metadata.initialiseForNewGame(settings);

@@ -1,6 +1,5 @@
 package net.royalur.lut.store;
 
-import javax.annotation.Nonnull;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -34,10 +33,7 @@ public abstract class DataSource {
         private final FileChannel channel;
         private final ByteBuffer workingBuffer;
 
-        public FileDataSource(
-                FileChannel channel,
-                ByteBuffer workingBuffer
-        ) {
+        public FileDataSource(FileChannel channel, ByteBuffer workingBuffer) {
             this.channel = channel;
             this.workingBuffer = workingBuffer;
             workingBuffer.limit(0);

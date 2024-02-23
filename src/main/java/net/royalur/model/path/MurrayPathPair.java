@@ -2,7 +2,6 @@ package net.royalur.model.path;
 
 import net.royalur.model.Tile;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**

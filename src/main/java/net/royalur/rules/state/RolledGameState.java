@@ -3,30 +3,22 @@ package net.royalur.rules.state;
 import net.royalur.model.*;
 import net.royalur.model.dice.Roll;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * A game state that represents a roll that was made in a game.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of roll that was made in this game state.
  */
-public class RolledGameState<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends ActionGameState<P, S, R> {
+public class RolledGameState extends ActionGameState {
 
     /**
      * The roll that represents the number of places the player can move a piece.
      */
-    private final R roll;
+    private final Roll roll;
 
     /**
      * The moves that are available from this position using the given roll.
      */
-    private final List<Move<P>> availableMoves;
+    private final List<Move> availableMoves;
 
     /**
      * Instantiates a game state that represents a roll that was made in a game.
@@ -40,12 +32,12 @@ public class RolledGameState<
      *                       using the given roll.
      */
     public RolledGameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer,
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer,
             PlayerType turn,
-            R roll,
-            List<Move<P>> availableMoves
+            Roll roll,
+            List<Move> availableMoves
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
@@ -56,7 +48,7 @@ public class RolledGameState<
      * Gets the roll that the player made.
      * @return The roll that the player made.
      */
-    public R getRoll() {
+    public Roll getRoll() {
         return roll;
     }
 
@@ -66,7 +58,7 @@ public class RolledGameState<
      * @return The moves that are available from
      *         this position using the given roll.
      */
-    public List<Move<P>> getAvailableMoves() {
+    public List<Move> getAvailableMoves() {
         return this.availableMoves;
     }
 

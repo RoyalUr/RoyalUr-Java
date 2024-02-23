@@ -1,21 +1,11 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
-
-import javax.annotation.Nonnull;
 
 /**
  * A game state where the game is waiting for a player to roll the dice.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of roll that will be made from this game state.
  */
-public class WaitingForRollGameState<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends PlayableGameState<P, S, R> {
+public class WaitingForRollGameState extends PlayableGameState {
 
     /**
      * Instantiates a game state where the game is waiting for a player to roll the dice.
@@ -25,9 +15,9 @@ public class WaitingForRollGameState<
      * @param turn        The player who can roll the dice.
      */
     public WaitingForRollGameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer,
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer,
             PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer, turn);

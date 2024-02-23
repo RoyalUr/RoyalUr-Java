@@ -16,21 +16,19 @@ import javax.annotation.Nonnull;
  * should check the specific notation you are considering to
  * determine the information that it is able to save.
  */
-public interface Notation<
-    P extends Piece, S extends PlayerState, R extends Roll
-> {
+public interface Notation {
 
     /**
      * Encodes the given game, {@code game}, into text.
      * @param game The game to be encoded.
      * @return Text that represents {@code game} in this notation.
      */
-    String encodeGame(Game<P, S, R> game);
+    String encodeGame(Game game);
 
     /**
      * Decodes the game from the text {@code encoded}, based upon the rules {@code rules}.
      * @param encoded The text to decode into a game.
      * @return The decoded game.
      */
-    Game<P, S, R> decodeGame(String encoded);
+    Game decodeGame(String encoded);
 }

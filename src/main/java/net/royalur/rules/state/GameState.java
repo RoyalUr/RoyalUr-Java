@@ -1,32 +1,26 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
-
-import javax.annotation.Nonnull;
 
 /**
  * A game state represents a single point within a game.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class GameState<P extends Piece, S extends PlayerState, R extends Roll> {
+public abstract class GameState {
 
     /**
      * The state of the pieces on the board.
      */
-    private final Board<P> board;
+    private final Board board;
 
     /**
      * The state of the light player.
      */
-    private final S lightPlayer;
+    private final PlayerState lightPlayer;
 
     /**
      * The state of the dark player.
      */
-    private final S darkPlayer;
+    private final PlayerState darkPlayer;
 
     /**
      * Instantiates a game state.
@@ -35,9 +29,9 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * @param darkPlayer The state of the dark player.
      */
     public GameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer
     ) {
         if (lightPlayer.getPlayer() != PlayerType.LIGHT)
             throw new IllegalArgumentException("lightPlayer should be a Player.LIGHT, not " + lightPlayer.getPlayer());
@@ -53,7 +47,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the pieces on the board.
      * @return The state of the pieces on the board.
      */
-    public Board<P> getBoard() {
+    public Board getBoard() {
         return board;
     }
 
@@ -61,7 +55,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the light player.
      * @return The state of the light player.
      */
-    public S getLightPlayer() {
+    public PlayerState getLightPlayer() {
         return lightPlayer;
     }
 
@@ -69,7 +63,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * Get the state of the dark player.
      * @return The state of the dark player.
      */
-    public S getDarkPlayer() {
+    public PlayerState getDarkPlayer() {
         return darkPlayer;
     }
 
@@ -78,7 +72,7 @@ public abstract class GameState<P extends Piece, S extends PlayerState, R extend
      * @param player The player to retrieve the state of.
      * @return The state of the player {@code player}.
      */
-    public S getPlayer(PlayerType player) {
+    public PlayerState getPlayer(PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightPlayer();
             case DARK -> getDarkPlayer();

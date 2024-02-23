@@ -1,6 +1,5 @@
 package net.royalur.model.dice;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**

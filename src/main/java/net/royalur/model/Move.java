@@ -3,15 +3,13 @@ package net.royalur.model;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
  * A move that can be made on a board.
- * @param <P> The type of piece that is being moved and that may be captured.
  */
-public class Move<P extends Piece> {
+public class Move {
 
     /**
      * The instigator of this move.
@@ -28,7 +26,7 @@ public class Move<P extends Piece> {
      * The piece on the board to be moved, or {@code null} if a new
      * piece is to be moved onto the board.
      */
-    private final @Nullable P sourcePiece;
+    private final @Nullable Piece sourcePiece;
 
     /**
      * The destination of the move. If this is {@code null}, it represents
@@ -40,13 +38,13 @@ public class Move<P extends Piece> {
      * The piece that will be placed at the destination of the move, or
      * {@code null} if moving a piece off of the board.
      */
-    private final @Nullable P destPiece;
+    private final @Nullable Piece destPiece;
 
     /**
      * The piece that will be captured by this move, or {@code null}
      * if no piece would be captured by this move.
      */
-    private final @Nullable P capturedPiece;
+    private final @Nullable Piece capturedPiece;
 
     /**
      * Creates a new move with origin {@code source} and destination {@code dest}.
@@ -54,23 +52,23 @@ public class Move<P extends Piece> {
      * the board. If {@code dest} is {@code null}, it represents moving a piece
      * off of the board.
      *
-     * @param player    The player that is the instigator of this move.
-     * @param source      The origin of the move. If this is {@code null}, it represents
-     *                  moving a new piece onto the board.
+     * @param player The player that is the instigator of this move.
+     * @param source The origin of the move. If this is {@code null}, it represents
+     *               moving a new piece onto the board.
      * @param sourcePiece The piece on the board to be moved, or {@code null} if a new
-     *                  piece is to be moved onto the board.
-     * @param dest        The destination of the move. If this is {@code null}, it represents
-     *                  moving a piece off of the board.
-     * @param destPiece   The piece that will be placed at the destination of the move, or
+     *                    piece is to be moved onto the board.
+     * @param dest The destination of the move. If this is {@code null}, it represents
+     *             moving a piece off of the board.
+     * @param destPiece The piece that will be placed at the destination of the move, or
      *                  {@code null} if moving a piece off of the board.
      * @param capturedPiece The piece that will be captured by this move, or {@code null}
-     *                       if no piece would be captured by this move.
+     *                      if no piece would be captured by this move.
      */
     public Move(
             PlayerType player,
-            @Nullable Tile source, @Nullable P sourcePiece,
-            @Nullable Tile dest, @Nullable P destPiece,
-            @Nullable P capturedPiece
+            @Nullable Tile source, @Nullable Piece sourcePiece,
+            @Nullable Tile dest, @Nullable Piece destPiece,
+            @Nullable Piece capturedPiece
     ) {
         if ((source == null) ^ (sourcePiece == null))
             throw new IllegalArgumentException("source and sourcePiece must either be both null, or both non-null");
@@ -180,7 +178,7 @@ public class Move<P extends Piece> {
      * piece, in the case where a new piece is moved onto the board.
      * @return The source piece of this move, or null.
      */
-    public @Nullable P getSourcePieceOrNull() {
+    public @Nullable Piece getSourcePieceOrNull() {
         return sourcePiece;
     }
 
@@ -189,7 +187,7 @@ public class Move<P extends Piece> {
      * case where a new piece is moved onto the board, this will throw an error.
      * @return The source piece of this move.
      */
-    public P getSourcePiece() {
+    public Piece getSourcePiece() {
         if (sourcePiece == null)
             throw new IllegalStateException("This move has no source, as it is introducing a piece");
 
@@ -231,7 +229,7 @@ public class Move<P extends Piece> {
      * destination piece, in the case where a piece is moved off the board.
      * @return The destination piece of this move, or null.
      */
-    public @Nullable P getDestPieceOrNull() {
+    public @Nullable Piece getDestPieceOrNull() {
         if (destPiece == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
@@ -243,7 +241,7 @@ public class Move<P extends Piece> {
      * in the case where a piece is moved off the board, this will throw an error.
      * @return The destination piece of this move.
      */
-    public P getDestPiece() {
+    public Piece getDestPiece() {
         if (destPiece == null)
             throw new IllegalStateException("This move has no destination, as it is scoring a piece");
 
@@ -278,7 +276,7 @@ public class Move<P extends Piece> {
      * if there is no piece that will be captured.
      * @return The piece that will be captured by this move, or null.
      */
-    public @Nullable P getCapturedPieceOrNull() {
+    public @Nullable Piece getCapturedPieceOrNull() {
         return capturedPiece;
     }
 
@@ -287,7 +285,7 @@ public class Move<P extends Piece> {
      * that will be captured, this will throw an error.
      * @return The piece that will be captured by this move.
      */
-    public P getCapturedPiece() {
+    public Piece getCapturedPiece() {
         if (capturedPiece == null)
             throw new IllegalStateException("This move does not capture a piece");
 
@@ -298,7 +296,7 @@ public class Move<P extends Piece> {
      * Apply this move to update the board {@code board}.
      * @param board The board to update by applying this move.
      */
-    public void apply(Board<P> board) {
+    public void apply(Board board) {
         if (source != null) {
             board.set(source, null);
         }
@@ -346,7 +344,7 @@ public class Move<P extends Piece> {
         if (obj == null || !obj.getClass().equals(getClass()))
             return false;
 
-        Move<?> other = (Move<?>) obj;
+        Move other = (Move) obj;
         return Objects.equals(source, other.source) && Objects.equals(sourcePiece, other.sourcePiece) &&
                 Objects.equals(dest, other.dest) && Objects.equals(destPiece, other.destPiece) &&
                 Objects.equals(capturedPiece, other.capturedPiece);

@@ -7,25 +7,18 @@ import javax.annotation.Nonnull;
 
 /**
  * A game state that represents a move of a piece on the board.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of the roll that was made.
  */
-public class MovedGameState<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends ActionGameState<P, S, R> {
+public class MovedGameState extends ActionGameState {
 
     /**
      * The roll of the dice that was used for the move.
      */
-    private final R roll;
+    private final Roll roll;
 
     /**
      * The move that was made.
      */
-    private final Move<P> move;
+    private final Move move;
 
     /**
      * Instantiates a game state representing a move that was made in a game.
@@ -37,12 +30,12 @@ public class MovedGameState<
      * @param move        The move that was made on the board.
      */
     public MovedGameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer,
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer,
             PlayerType turn,
-            R roll,
-            Move<P> move
+            Roll roll,
+            Move move
     ) {
         super(board, lightPlayer, darkPlayer, turn);
         this.roll = roll;
@@ -53,7 +46,7 @@ public class MovedGameState<
      * Gets the roll of the dice that was used for the move.
      * @return The roll of the dice that was used for the move.
      */
-    public R getRoll() {
+    public Roll getRoll() {
         return roll;
     }
 
@@ -61,7 +54,7 @@ public class MovedGameState<
      * Gets the move that was made.
      * @return The move that was made.
      */
-    public Move<P> getMove() {
+    public Move getMove() {
         return move;
     }
 

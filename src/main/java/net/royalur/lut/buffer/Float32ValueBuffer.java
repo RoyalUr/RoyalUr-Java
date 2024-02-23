@@ -3,9 +3,7 @@ package net.royalur.lut.buffer;
 import net.royalur.lut.store.DataSink;
 import net.royalur.lut.store.DataSource;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Float32ValueBuffer extends FloatValueBuffer {
 

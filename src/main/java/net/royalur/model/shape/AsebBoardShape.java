@@ -3,7 +3,6 @@ package net.royalur.model.shape;
 import net.royalur.model.Tile;
 import net.royalur.model.path.AsebPathPair;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**

@@ -1,48 +1,39 @@
 package net.royalur.agent;
 
 import net.royalur.Game;
-import net.royalur.lut.FinkelGameStateEncoding;
 import net.royalur.lut.Lut;
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * Uses a lookup-table to decide the move to make.
  */
-public class FinkelLUTAgent<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends BaseAgent<P, S, R> {
+public class LutAgent extends BaseAgent {
 
-    private final Lut<R> lut;
+    private final Lut lut;
     private final FastSimpleGame fastGame;
     private final FastSimpleGame tempGame;
 
-    public FinkelLUTAgent(Lut<R> lut) {
+    public LutAgent(Lut lut) {
         this.lut = lut;
-        this.fastGame = new FastSimpleGame(lut.getMetadata().getGameSettings());
-        this.tempGame = new FastSimpleGame(lut.getMetadata().getGameSettings());
+        GameSettings settings = lut.getMetadata().getGameSettings();
+        this.fastGame = new FastSimpleGame(settings);
+        this.tempGame = new FastSimpleGame(settings);
     }
 
     @Override
-    public Move<P> decideMove(
-            Game<P, S, R> game,
-            List<Move<P>> availableMoves
-    ) {
+    public Move decideMove(Game game, List<Move> availableMoves) {
         if (availableMoves.isEmpty())
             throw new IllegalStateException();
         if (availableMoves.size() == 1)
             return availableMoves.get(0);
 
         double bestScore = -1.0d;
-        Move<P> bestMove = null;
-        for (Move<P> move : availableMoves) {
-            Game<P, S, R> moveGame = game.copy();
+        Move bestMove = null;
+        for (Move move : availableMoves) {
+            Game moveGame = game.copy();
             moveGame.makeMove(move);
 
             fastGame.copyFrom(moveGame);

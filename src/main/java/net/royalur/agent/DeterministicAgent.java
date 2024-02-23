@@ -10,19 +10,13 @@ import java.util.List;
 
 /**
  * An agent that makes deterministic move choices for testing. This is not thread-safe.
- * @param <P> The type of pieces that this agent can interact with.
- * @param <S> The type of player state that this agent can interact with.
- * @param <R> The type of rolls that may be made by this agent.
  */
-public class DeterministicAgent<P extends Piece, S extends PlayerState, R extends Roll> extends BaseAgent<P, S, R> {
+public class DeterministicAgent extends BaseAgent {
 
     @Override
-    public Move<P> decideMove(
-            Game<P, S, R> game,
-            List<Move<P>> moves
-    ) {
-        Move<P> chosen = null;
-        for (Move<P> move : moves) {
+    public Move decideMove(Game game, List<Move> moves) {
+        Move chosen = null;
+        for (Move move : moves) {
             if (chosen == null) {
                 chosen = move;
                 continue;

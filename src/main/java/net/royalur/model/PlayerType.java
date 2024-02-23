@@ -2,7 +2,6 @@ package net.royalur.model;
 
 import net.royalur.name.Name;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**

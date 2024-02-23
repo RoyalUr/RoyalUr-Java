@@ -2,14 +2,12 @@ package net.royalur.model;
 
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.DiceType;
-import net.royalur.model.dice.Roll;
 import net.royalur.model.path.*;
 import net.royalur.model.shape.AsebBoardShape;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.StandardBoardShape;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**

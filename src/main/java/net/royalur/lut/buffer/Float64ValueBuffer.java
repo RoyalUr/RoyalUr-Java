@@ -3,7 +3,6 @@ package net.royalur.lut.buffer;
 import net.royalur.lut.store.DataSink;
 import net.royalur.lut.store.DataSource;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class Float64ValueBuffer extends FloatValueBuffer {

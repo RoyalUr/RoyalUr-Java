@@ -3,8 +3,6 @@ package net.royalur.rules.simple.fast;
 import net.royalur.model.PlayerState;
 import net.royalur.model.PlayerType;
 
-import javax.annotation.Nonnull;
-
 public class FastSimplePlayer {
 
     /**

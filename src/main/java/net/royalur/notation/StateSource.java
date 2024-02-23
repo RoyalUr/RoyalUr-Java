@@ -1,48 +1,42 @@
 package net.royalur.notation;
 
 import net.royalur.model.Move;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
 import net.royalur.model.PlayerType;
 import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
 
-import javax.annotation.Nonnull;
-
 /**
  * Produces game states from serialised information.
  */
-public abstract class StateSource<
-    P extends Piece, S extends PlayerState, R extends Roll
-> {
+public abstract class StateSource {
 
-    public abstract RolledGameState<P, S, R> createRolledState(
-            RuleSet<P, S, R> rules,
+    public abstract RolledGameState createRolledState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     );
 
-    public abstract MovedGameState<P, S, R> createMovedState(
-            RuleSet<P, S, R> rules,
+    public abstract MovedGameState createMovedState(
+            RuleSet rules,
             PlayerType turn,
-            R roll,
-            Move<P> move
+            Roll roll,
+            Move move
     );
 
-    public abstract WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            RuleSet<P, S, R> rules,
+    public abstract WaitingForRollGameState createWaitingForRollState(
+            RuleSet rules,
             PlayerType turn
     );
 
-    public abstract WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            RuleSet<P, S, R> rules,
+    public abstract WaitingForMoveGameState createWaitingForMoveState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     );
 
-    public abstract WinGameState<P, S, R> createWinState(
-            RuleSet<P, S, R> rules,
+    public abstract WinGameState createWinState(
+            RuleSet rules,
             PlayerType winner
     );
 }

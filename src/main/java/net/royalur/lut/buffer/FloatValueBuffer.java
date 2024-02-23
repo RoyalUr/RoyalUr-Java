@@ -1,7 +1,5 @@
 package net.royalur.lut.buffer;
 
-import javax.annotation.Nonnull;
-
 /**
  * Stores binary values and provides efficient methods to manipulate it.
  */

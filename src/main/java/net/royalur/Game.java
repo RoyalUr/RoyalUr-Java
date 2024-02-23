@@ -8,7 +8,6 @@ import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -20,7 +19,7 @@ public class Game {
     /**
      * The set of rules that are being used for this game.
      */
-    private final RuleSet<P, S, R> rules;
+    private final RuleSet rules;
 
     /**
      * The metadata of this game.
@@ -30,13 +29,13 @@ public class Game {
     /**
      * The dice to be used to generate dice rolls.
      */
-    private final Dice<R> dice;
+    private final Dice dice;
 
     /**
      * The states that have occurred so far in the game.
      * The last state in the list is the current state of the game.
      */
-    private final List<GameState<P, S, R>> states;
+    private final List<GameState> states;
 
     /**
      * Instantiates a game of the Royal Game of Ur.
@@ -45,9 +44,9 @@ public class Game {
      * @param states The states that have occurred so far in the game.
      */
     public Game(
-            RuleSet<P, S, R> rules,
+            RuleSet rules,
             GameMetadata metadata,
-            List<GameState<P, S, R>> states
+            List<GameState> states
     ) {
         if (states.isEmpty())
             throw new IllegalArgumentException("Games must have at least one state");
@@ -64,7 +63,7 @@ public class Game {
      * Instantiates a game of the Royal Game of Ur that has not yet had any moves played.
      * @param rules The rules of the game.
      */
-    public Game(RuleSet<P, S, R> rules) {
+    public Game(RuleSet rules) {
         this(
                 rules,
                 GameMetadata.createForNewGame(rules.getSettings()),
@@ -76,7 +75,7 @@ public class Game {
      * Instantiates a game of the Royal Game of Ur that is a copy of {@code game}.
      * @param game The rules of the game.
      */
-    protected Game(Game<P, S, R> game) {
+    protected Game(Game game) {
         this(game.rules, game.metadata.copy(), game.states);
         dice.copyFrom(game.dice);
     }
@@ -85,22 +84,22 @@ public class Game {
      * Generates a copy of this game.
      * @return A copy of {@code this}.
      */
-    public Game<P, S, R> copy() {
+    public Game copy() {
         if (!getClass().equals(Game.class)) {
             throw new UnsupportedOperationException(
                     getClass() + " does not support copy"
             );
         }
-        return new Game<>(this);
+        return new Game(this);
     }
 
     /**
      * Adds all states from {@code states} to this game.
      * @param states The states to add to this game.
      */
-    public void addStates(Iterable<GameState<P, S, R>> states) {
+    public void addStates(Iterable<GameState> states) {
         int seen = 0;
-        for (GameState<P, S, R> state : states) {
+        for (GameState state : states) {
             seen += 1;
             if (state == null)
                 throw new IllegalArgumentException("The states list should not contain any null entries");
@@ -115,7 +114,7 @@ public class Game {
      * Adds the state {@code state} to this game.
      * @param state The state to add to this game.
      */
-    public void addState(GameState<P, S, R> state) {
+    public void addState(GameState state) {
         states.add(state);
     }
 
@@ -123,7 +122,7 @@ public class Game {
      * Gets the set of rules that are being used for this game.
      * @return The set of rules that are being used for this game.
      */
-    public RuleSet<P, S, R> getRules() {
+    public RuleSet getRules() {
         return rules;
     }
 
@@ -139,7 +138,7 @@ public class Game {
      * Gets the dice to are used to make dice rolls.
      * @return The dice to be used to make dice rolls.
      */
-    public Dice<R> getDice() {
+    public Dice getDice() {
         return dice;
     }
 
@@ -148,7 +147,7 @@ public class Game {
      * The last state in the list is the current state of the game.
      * @return The states that have occurred so far in the game.
      */
-    public List<GameState<P, S, R>> getStates() {
+    public List<GameState> getStates() {
         return List.copyOf(states);
     }
 
@@ -156,7 +155,7 @@ public class Game {
      * Retrieve the state that the game is currently in.
      * @return The state that the game is currently in.
      */
-    public GameState<P, S, R> getCurrentState() {
+    public GameState getCurrentState() {
         return states.get(states.size() - 1);
     }
 
@@ -167,10 +166,10 @@ public class Game {
      * @return The states that represent the actions that have been
      *         made so far in the game.
      */
-    public List<ActionGameState<P, S, R>> getActionStates() {
+    public List<ActionGameState> getActionStates() {
         return states.stream()
                 .filter(s -> s instanceof ActionGameState)
-                .map(s -> (ActionGameState<P, S, R>) s)
+                .map(s -> (ActionGameState) s)
                 .toList();
     }
 
@@ -180,7 +179,7 @@ public class Game {
      * landmark states as they contain all the information required
      * to recreate everything that happened in the game so far.
      */
-    public List<GameState<P, S, R>> getLandmarkStates() {
+    public List<GameState> getLandmarkStates() {
         return rules.selectLandmarkStates(states);
     }
 
@@ -221,10 +220,10 @@ public class Game {
      * This will throw an error if the game is not in a playable state.
      * @return The playable state that the game is currently in.
      */
-    public PlayableGameState<P, S, R> getCurrentPlayableState() {
-        GameState<P, S, R> state = getCurrentState();
+    public PlayableGameState getCurrentPlayableState() {
+        GameState state = getCurrentState();
         if (state instanceof PlayableGameState)
-            return (PlayableGameState<P, S, R>) state;
+            return (PlayableGameState) state;
 
         throw new IllegalStateException("This game is not in a playable game state");
     }
@@ -234,10 +233,10 @@ public class Game {
      * This will throw an error if the game is not waiting for a roll from a player.
      * @return The waiting for roll state that the game is currently in.
      */
-    public WaitingForRollGameState<P, S, R> getCurrentWaitingForRollState() {
-        GameState<P, S, R> state = getCurrentState();
+    public WaitingForRollGameState getCurrentWaitingForRollState() {
+        GameState state = getCurrentState();
         if (state instanceof WaitingForRollGameState)
-            return (WaitingForRollGameState<P, S, R>) state;
+            return (WaitingForRollGameState) state;
 
         throw new IllegalStateException("This game is not waiting for a roll");
     }
@@ -247,10 +246,10 @@ public class Game {
      * This will throw an error if the game is not waiting for a move from a player.
      * @return The waiting for move state that the game is currently in.
      */
-    public WaitingForMoveGameState<P, S, R> getCurrentWaitingForMoveState() {
-        GameState<P, S, R> state = getCurrentState();
+    public WaitingForMoveGameState getCurrentWaitingForMoveState() {
+        GameState state = getCurrentState();
         if (state instanceof WaitingForMoveGameState)
-            return (WaitingForMoveGameState<P, S, R>) state;
+            return (WaitingForMoveGameState) state;
 
         throw new IllegalStateException("This game is not waiting for a move");
     }
@@ -260,10 +259,10 @@ public class Game {
      * This will throw an error if the game has not ended.
      * @return The win state that the game is currently in.
      */
-    public WinGameState<P, S, R> getCurrentWinState() {
-        GameState<P, S, R> state = getCurrentState();
+    public WinGameState getCurrentWinState() {
+        GameState state = getCurrentState();
         if (state instanceof WinGameState)
-            return (WinGameState<P, S, R>) state;
+            return (WinGameState) state;
 
         throw new IllegalStateException("This game has not ended");
     }
@@ -273,8 +272,8 @@ public class Game {
      * state of the game accordingly.
      * @param roll The value of the dice that is to be rolled.
      */
-    public void rollDice(R roll) {
-        WaitingForRollGameState<P, S, R> state = getCurrentWaitingForRollState();
+    public void rollDice(Roll roll) {
+        WaitingForRollGameState state = getCurrentWaitingForRollState();
         addStates(rules.applyRoll(state, roll));
     }
 
@@ -282,8 +281,8 @@ public class Game {
      * Rolls the dice, and updates the state of the game accordingly.
      * @return The value of the dice that were rolled.
      */
-    public R rollDice() {
-        R roll = dice.roll();
+    public Roll rollDice() {
+        Roll roll = dice.roll();
         rollDice(roll);
         return roll;
     }
@@ -294,8 +293,8 @@ public class Game {
      * @param value The value of the dice to be rolled.
      * @return The value of the dice that were rolled.
      */
-    public R rollDice(int value) {
-        R roll = dice.roll(value);
+    public Roll rollDice(int value) {
+        Roll roll = dice.roll(value);
         rollDice(roll);
         return roll;
     }
@@ -304,7 +303,7 @@ public class Game {
      * Finds all moves that can be made from the current position.
      * @return All moves that can be made from the current position.
      */
-    public List<Move<P>> findAvailableMoves() {
+    public List<Move> findAvailableMoves() {
         return getCurrentWaitingForMoveState().getAvailableMoves();
     }
 
@@ -313,8 +312,8 @@ public class Game {
      * This does not check whether the move is valid.
      * @param move The move to make from the current state of the game.
      */
-    public void makeMove(Move<P> move) {
-        WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
+    public void makeMove(Move move) {
+        WaitingForMoveGameState state = getCurrentWaitingForMoveState();
         addStates(rules.applyMove(state, move));
     }
 
@@ -322,8 +321,8 @@ public class Game {
      * Moves the piece {@code piece}, and updates the state of the game.
      * @param piece The piece to be moved.
      */
-    public void makeMove(P piece) {
-        for (Move<P> move : findAvailableMoves()) {
+    public void makeMove(Piece piece) {
+        for (Move move : findAvailableMoves()) {
             if (!move.hasSource() || !move.getSourcePiece().equals(piece))
                 continue;
 
@@ -338,9 +337,9 @@ public class Game {
      * @param sourceTile The tile where the piece to be moved resides.
      */
     public void makeMove(Tile sourceTile) {
-        WaitingForMoveGameState<P, S, R> state = getCurrentWaitingForMoveState();
+        WaitingForMoveGameState state = getCurrentWaitingForMoveState();
         PathPair paths = rules.getPaths();
-        for (Move<P> move : findAvailableMoves()) {
+        for (Move move : findAvailableMoves()) {
             if (!move.getSource(paths).equals(sourceTile))
                 continue;
 
@@ -354,7 +353,7 @@ public class Game {
      * Moves a new piece onto the board.
      */
     public void makeMoveIntroducingPiece() {
-        for (Move<P> move : findAvailableMoves()) {
+        for (Move move : findAvailableMoves()) {
             if (!move.isIntroducingPiece())
                 continue;
 
@@ -368,7 +367,7 @@ public class Game {
      * Gets the current state of the board.
      * @return The current state of the board.
      */
-    public Board<P> getBoard() {
+    public Board getBoard() {
         return getCurrentState().getBoard();
     }
 
@@ -376,7 +375,7 @@ public class Game {
      * Gets the current state of the light player.
      * @return The current state of the light player.
      */
-    public S getLightPlayer() {
+    public PlayerState getLightPlayer() {
         return getCurrentState().getLightPlayer();
     }
 
@@ -384,7 +383,7 @@ public class Game {
      * Gets the current state of the dark player.
      * @return The current state of the dark player.
      */
-    public S getDarkPlayer() {
+    public PlayerState getDarkPlayer() {
         return getCurrentState().getDarkPlayer();
     }
 
@@ -393,7 +392,7 @@ public class Game {
      * @param player The player to get the state of.
      * @return The state of the player {@code player}.
      */
-    public S getPlayer(PlayerType player) {
+    public PlayerState getPlayer(PlayerType player) {
         return getCurrentState().getPlayer(player);
     }
 
@@ -425,7 +424,7 @@ public class Game {
      * Gets the state of the player whose turn it is.
      * @return The state of the player whose turn it is.
      */
-    public S getTurnPlayer() {
+    public PlayerState getTurnPlayer() {
         return getCurrentPlayableState().getTurnPlayer();
     }
 
@@ -433,7 +432,7 @@ public class Game {
      * Gets the state of the player that is waiting as it is not their turn.
      * @return The state of the player that is waiting as it is not their turn.
      */
-    public S getWaitingPlayer() {
+    public PlayerState getWaitingPlayer() {
         return getCurrentPlayableState().getWaitingPlayer();
     }
 
@@ -457,7 +456,7 @@ public class Game {
      * Gets the state of the winning player.
      * @return The state of the winning player.
      */
-    public S getWinningPlayer() {
+    public PlayerState getWinningPlayer() {
         return getCurrentWinState().getWinningPlayer();
     }
 
@@ -465,7 +464,7 @@ public class Game {
      * Gets the state of the losing player.
      * @return The state of the losing player.
      */
-    public S getLosingPlayer() {
+    public PlayerState getLosingPlayer() {
         return getCurrentWinState().getLosingPlayer();
     }
 
@@ -474,15 +473,15 @@ public class Game {
      * current turn player to make a move.
      * @return The roll that was made that can now be used to make a move.
      */
-    public R getRoll() {
+    public Roll getRoll() {
         return getCurrentWaitingForMoveState().getRoll();
     }
 
     /**
      * Creates a builder to assist in constructing games with custom settings.
      */
-    public static GameBuilder<Piece, PlayerState, Roll> builder() {
-        return new GameBuilder<>(GameSettings.FINKEL, new SimpleRuleSetProvider());
+    public static GameBuilder builder() {
+        return new GameBuilder(GameSettings.FINKEL, new SimpleRuleSetProvider());
     }
 
     /**
@@ -490,8 +489,7 @@ public class Game {
      * @param settings The settings to use for the game.
      * @return A game with custom settings.
      */
-    public static <R extends Roll> Game<Piece, PlayerState, R>
-    create(GameSettings<R> settings) {
+    public static Game create(GameSettings settings) {
         return builder().replaceSettings(settings).build();
     }
 
@@ -501,7 +499,7 @@ public class Game {
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
-    public static Game<Piece, PlayerState, Roll> createFinkel() {
+    public static Game createFinkel() {
         return create(GameSettings.FINKEL);
     }
 
@@ -511,7 +509,7 @@ public class Game {
      * rosette tiles, the standard dice, and seven starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
-    public static Game<Piece, PlayerState, Roll> createMasters() {
+    public static Game createMasters() {
         return create(GameSettings.MASTERS);
     }
 
@@ -520,7 +518,7 @@ public class Game {
      * the Aseb paths, the standard dice, and five starting pieces per player.
      * @return A game of Aseb.
      */
-    public static Game<Piece, PlayerState, Roll> createAseb() {
+    public static Game createAseb() {
         return create(GameSettings.ASEB);
     }
 }

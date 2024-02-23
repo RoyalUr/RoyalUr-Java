@@ -1,18 +1,15 @@
 package net.royalur.model;
 
 import net.royalur.model.shape.BoardShape;
-import net.royalur.util.Cast;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
 /**
  * Stores the placement of pieces on the tiles of a Royal Game of Ur board.
- * @param <P> The type of pieces that may be placed on this board.
  */
-public class Board<P extends Piece> {
+public class Board {
 
     /**
      * The shape of this board.
@@ -50,7 +47,7 @@ public class Board<P extends Piece> {
      * Instantiates a board with the same shape and pieces as {@code template}.
      * @param template Another board to use as a template to copy from.
      */
-    protected Board(Board<P> template) {
+    protected Board(Board template) {
         this(template.shape);
         System.arraycopy(template.pieces, 0, pieces, 0, pieces.length);
     }
@@ -59,8 +56,8 @@ public class Board<P extends Piece> {
      * Creates an exact copy of this board.
      * @return An exact copy of this board.
      */
-    public Board<P> copy() {
-        return new Board<>(this);
+    public Board copy() {
+        return new Board(this);
     }
 
     private int calcTileIndex(int ix, int iy) {
@@ -131,12 +128,12 @@ public class Board<P extends Piece> {
      * @param tile The tile to find the piece on.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
-    public @Nullable P get(Tile tile) {
+    public @Nullable Piece get(Tile tile) {
         if (!contains(tile))
             throw new IllegalArgumentException("There is no tile at " + tile);
 
         int index = calcTileIndex(tile.getXIndex(), tile.getYIndex());
-        return Cast.unsafeCast(pieces[index]);
+        return pieces[index];
     }
 
     /**
@@ -148,14 +145,14 @@ public class Board<P extends Piece> {
      *           This coordinate is 0-based.
      * @return The piece on the given tile if one exists, or else {@code null}.
      */
-    public @Nullable P getByIndices(int ix, int iy) {
+    public @Nullable Piece getByIndices(int ix, int iy) {
         if (!containsIndices(ix, iy)) {
             throw new IllegalArgumentException(
                     "There is no tile at the indices (" + ix + ", " + iy + ")"
             );
         }
         int index = calcTileIndex(ix, iy);
-        return Cast.unsafeCast(pieces[index]);
+        return pieces[index];
     }
 
     /**
@@ -168,12 +165,12 @@ public class Board<P extends Piece> {
      * @return The previous piece on the given tile if there was one,
      *         or else {@code null}.
      */
-    public @Nullable P set(Tile tile, @Nullable P piece) {
+    public @Nullable Piece set(Tile tile, @Nullable Piece piece) {
         if (!contains(tile))
             throw new IllegalArgumentException("There is no tile at " + tile);
 
         int index = calcTileIndex(tile.getXIndex(), tile.getYIndex());
-        P previous = Cast.unsafeCast(pieces[index]);
+        Piece previous = pieces[index];
         pieces[index] = piece;
         return previous;
     }
@@ -191,14 +188,14 @@ public class Board<P extends Piece> {
      * @return The previous piece on the given tile if there was one,
      *         or else {@code null}.
      */
-    public @Nullable P setByIndices(int ix, int iy, @Nullable P piece) {
+    public @Nullable Piece setByIndices(int ix, int iy, @Nullable Piece piece) {
         if (!containsIndices(ix, iy)) {
             throw new IllegalArgumentException(
                     "There is no tile at indices (" + ix + ", " + iy + ")"
             );
         }
         int index = calcTileIndex(ix, iy);
-        P previous = Cast.unsafeCast(pieces[index]);
+        Piece previous = pieces[index];
         pieces[index] = piece;
         return previous;
     }
@@ -230,7 +227,7 @@ public class Board<P extends Piece> {
         if (obj == null || !obj.getClass().equals(getClass()))
             return false;
 
-        Board<?> other = (Board<?>) obj;
+        Board other = (Board) obj;
         if (!shape.equals(other.shape))
             return false;
 

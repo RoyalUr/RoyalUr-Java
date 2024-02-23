@@ -1,6 +1,5 @@
 package net.royalur.lut.store;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -11,9 +10,7 @@ import java.util.function.Consumer;
  */
 public abstract class DataSink {
 
-    public abstract void write(
-            Consumer<ByteBuffer> writeFn
-    ) throws IOException;
+    public abstract void write(Consumer<ByteBuffer> writeFn) throws IOException;
 
     public abstract void writeChunked(
             ChunkedWriter chunkWriter,
@@ -30,10 +27,7 @@ public abstract class DataSink {
         private final FileChannel channel;
         private final ByteBuffer workingBuffer;
 
-        public FileDataSink(
-                FileChannel channel,
-                ByteBuffer workingBuffer
-        ) {
+        public FileDataSink(FileChannel channel, ByteBuffer workingBuffer) {
             this.channel = channel;
             this.workingBuffer = workingBuffer;
         }

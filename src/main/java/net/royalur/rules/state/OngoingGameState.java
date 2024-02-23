@@ -1,24 +1,13 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.Board;
-import net.royalur.model.Piece;
 import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
-
-import javax.annotation.Nonnull;
 
 /**
  * A game state from within a game where a winner has not yet been determined.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be stored in this game state.
  */
-public abstract class OngoingGameState<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends GameState<P, S, R> {
+public abstract class OngoingGameState extends GameState {
 
     /**
      * The player who made an action or that should make an action.
@@ -33,9 +22,9 @@ public abstract class OngoingGameState<
      * @param turn The player who made an action or that should make an action.
      */
     public OngoingGameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer,
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer,
             PlayerType turn
     ) {
         super(board, lightPlayer, darkPlayer);
@@ -69,7 +58,7 @@ public abstract class OngoingGameState<
      * Gets the state of the player that we are waiting on to interact with the game.
      * @return The state of the player that we are waiting on to interact with the game.
      */
-    public S getTurnPlayer() {
+    public PlayerState getTurnPlayer() {
         return getPlayer(getTurn());
     }
 
@@ -79,7 +68,7 @@ public abstract class OngoingGameState<
      * @return The state of the player that is waiting for the other player to interact
      *         with the game.
      */
-    public S getWaitingPlayer() {
+    public PlayerState getWaitingPlayer() {
         return getPlayer(getWaiting());
     }
 }

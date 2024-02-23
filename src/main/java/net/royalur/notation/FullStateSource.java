@@ -5,31 +5,28 @@ import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * Produces game states from scratch.
  */
-public class FullStateSource<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends StateSource<P, S, R> {
+public class FullStateSource extends StateSource {
 
-    private final Board<P> board;
-    private final S lightPlayer;
-    private final S darkPlayer;
+    private final Board board;
+    private final PlayerState lightPlayer;
+    private final PlayerState darkPlayer;
 
     public FullStateSource(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer
     ) {
         this.board = board;
         this.lightPlayer = lightPlayer;
         this.darkPlayer = darkPlayer;
     }
 
-    private S getPlayer(PlayerType turn) {
+    private PlayerState getPlayer(PlayerType turn) {
         return switch (turn) {
             case LIGHT -> lightPlayer;
             case DARK -> darkPlayer;
@@ -37,64 +34,64 @@ public class FullStateSource<
     }
 
     @Override
-    public RolledGameState<P, S, R> createRolledState(
-            RuleSet<P, S, R> rules,
+    public RolledGameState createRolledState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     ) {
-        List<Move<P>> availableMoves = rules.findAvailableMoves(
+        List<Move> availableMoves = rules.findAvailableMoves(
                 board, getPlayer(turn), roll
         );
-        return new RolledGameState<>(
+        return new RolledGameState(
                 board, lightPlayer, darkPlayer,
                 turn, roll, availableMoves
         );
     }
 
     @Override
-    public MovedGameState<P, S, R> createMovedState(
-            RuleSet<P, S, R> rules,
+    public MovedGameState createMovedState(
+            RuleSet rules,
             PlayerType turn,
-            R roll,
-            Move<P> move
+            Roll roll,
+            Move move
     ) {
-        return new MovedGameState<>(
+        return new MovedGameState(
                 board, lightPlayer, darkPlayer,
                 turn, roll, move
         );
     }
 
     @Override
-    public WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            RuleSet<P, S, R> rules,
+    public WaitingForRollGameState createWaitingForRollState(
+            RuleSet rules,
             PlayerType turn
     ) {
-        return new WaitingForRollGameState<>(
+        return new WaitingForRollGameState(
                 board, lightPlayer, darkPlayer, turn
         );
     }
 
     @Override
-    public WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            RuleSet<P, S, R> rules,
+    public WaitingForMoveGameState createWaitingForMoveState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     ) {
-        List<Move<P>> availableMoves = rules.findAvailableMoves(
+        List<Move> availableMoves = rules.findAvailableMoves(
                 board, getPlayer(turn), roll
         );
-        return new WaitingForMoveGameState<>(
+        return new WaitingForMoveGameState(
                 board, lightPlayer, darkPlayer,
                 turn, roll, availableMoves
         );
     }
 
     @Override
-    public WinGameState<P, S, R> createWinState(
-            RuleSet<P, S, R> rules,
+    public WinGameState createWinState(
+            RuleSet rules,
             PlayerType winner
     ) {
-        return new WinGameState<>(
+        return new WinGameState(
                 board, lightPlayer, darkPlayer, winner
         );
     }

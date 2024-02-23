@@ -1,13 +1,8 @@
 package net.royalur.agent.utility;
 
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
 import net.royalur.name.TextName;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.fast.FastSimpleGame;
-
-import javax.annotation.Nonnull;
 
 /**
  * Scores game states based upon how far pieces have been advanced
@@ -17,7 +12,7 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction {
 
     private final int scoredPieceUtility;
 
-    public PiecesAdvancedUtilityFn(RuleSet<Piece, PlayerState, Roll> rules) {
+    public PiecesAdvancedUtilityFn(RuleSet rules) {
         super(new TextName("PiecesAdvanced"));
 
         int pathLength = rules.getPaths().getLight().size();

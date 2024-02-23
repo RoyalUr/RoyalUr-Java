@@ -21,27 +21,27 @@ import java.util.Set;
 /**
  * Holds the metadata stored for a LUT.
  */
-public class LutMetadata<R extends Roll> {
+public class LutMetadata {
 
     private static final String GAME_SETTINGS_KEY = "game_settings";
     private static final Set<String> RESERVED_KEYS = Set.of(GAME_SETTINGS_KEY);
 
-    private final GameSettings<R> gameSettings;
+    private final GameSettings gameSettings;
     private final Map<String, JsonNode> additionalMetadata;
 
     public LutMetadata(
-            GameSettings<R> gameSettings,
+            GameSettings gameSettings,
             Map<String, JsonNode> additionalMetadata
     ) {
         this.gameSettings = gameSettings;
         this.additionalMetadata = new HashMap<>(additionalMetadata);
     }
 
-    public LutMetadata(GameSettings<R> gameSettings) {
+    public LutMetadata(GameSettings gameSettings) {
         this(gameSettings, Collections.emptyMap());
     }
 
-    public GameSettings<R> getGameSettings() {
+    public GameSettings getGameSettings() {
         return gameSettings;
     }
 
@@ -60,7 +60,7 @@ public class LutMetadata<R extends Roll> {
         addMetadata(key, new TextNode(value));
     }
 
-    public String encode(JsonNotation<?, ?, R> notation) {
+    public String encode(JsonNotation notation) {
         Writer writer = new StringWriter();
         try (JsonGenerator generator = notation.getJsonFactory().createGenerator(writer)) {
 
@@ -79,7 +79,7 @@ public class LutMetadata<R extends Roll> {
     }
 
     public void write(
-            JsonNotation<?, ?, R> notation,
+            JsonNotation notation,
             JsonGenerator generator
     ) throws IOException {
 
@@ -96,8 +96,8 @@ public class LutMetadata<R extends Roll> {
         }
     }
 
-    public static <R extends Roll> LutMetadata<R> decode(
-            JsonNotation<?, ?, R> notation,
+    public static <R extends Roll> LutMetadata decode(
+            JsonNotation notation,
             String encoded
     ) {
         try (JsonParser parser = notation.getJsonFactory().createParser(encoded)) {
@@ -115,12 +115,12 @@ public class LutMetadata<R extends Roll> {
         }
     }
 
-    public static <R extends Roll> LutMetadata<R> read(
-            JsonNotation<?, ?, R> notation,
+    public static <R extends Roll> LutMetadata read(
+            JsonNotation notation,
             ObjectNode json
     ) {
         ObjectNode gameSettingsJson = JsonHelper.readDict(json, GAME_SETTINGS_KEY);
-        GameSettings<R> gameSettings = notation.readGameSettings(gameSettingsJson);
+        GameSettings gameSettings = notation.readGameSettings(gameSettingsJson);
 
         Map<String, JsonNode> additionalMetadata = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : json.properties()) {
@@ -129,6 +129,6 @@ public class LutMetadata<R extends Roll> {
 
             additionalMetadata.put(entry.getKey(), entry.getValue());
         }
-        return new LutMetadata<>(gameSettings, additionalMetadata);
+        return new LutMetadata(gameSettings, additionalMetadata);
     }
 }

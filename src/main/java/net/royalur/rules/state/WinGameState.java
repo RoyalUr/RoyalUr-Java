@@ -1,21 +1,11 @@
 package net.royalur.rules.state;
 
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
-
-import javax.annotation.Nonnull;
 
 /**
  * A game state where a player has won the game.
- * @param <P> The type of pieces that are stored on the board in this game state.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be stored in this game state.
  */
-public class WinGameState<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends GameState<P, S, R> {
+public class WinGameState extends GameState {
 
     /**
      * The player that won the game.
@@ -30,9 +20,9 @@ public class WinGameState<
      * @param winner The winning player.
      */
     public WinGameState(
-            Board<P> board,
-            S lightPlayer,
-            S darkPlayer,
+            Board board,
+            PlayerState lightPlayer,
+            PlayerState darkPlayer,
             PlayerType winner
     ) {
         super(board, lightPlayer, darkPlayer);
@@ -69,7 +59,7 @@ public class WinGameState<
      * Gets the state of the player that won the game.
      * @return The state of the player that won the game.
      */
-    public S getWinningPlayer() {
+    public PlayerState getWinningPlayer() {
         return getPlayer(getWinner());
     }
 
@@ -77,7 +67,7 @@ public class WinGameState<
      * Gets the state of the player that lost the game.
      * @return The state of the player that lost the game.
      */
-    public S getLosingPlayer() {
+    public PlayerState getLosingPlayer() {
         return getPlayer(getLoser());
     }
 

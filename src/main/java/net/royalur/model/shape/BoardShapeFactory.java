@@ -3,8 +3,6 @@ package net.royalur.model.shape;
 import net.royalur.name.Name;
 import net.royalur.name.Named;
 
-import javax.annotation.Nonnull;
-
 /**
  * A factory that creates a board shape.
  */

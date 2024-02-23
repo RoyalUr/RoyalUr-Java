@@ -5,7 +5,6 @@ import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleFlags;
 import net.royalur.rules.simple.fast.FastSimpleGame;
@@ -20,19 +19,19 @@ import java.util.function.Function;
 /**
  * A lookup table based upon game states.
  */
-public class LutTrainer<R extends Roll> {
+public class LutTrainer {
 
     private static final int DEFAULT_UPPER_KEY_LIMIT = 64;
 
-    private final GameSettings<R> settings;
+    private final GameSettings settings;
     private final GameStateEncoding encoding;
-    private final JsonNotation<?, ?, R> jsonNotation;
+    private final JsonNotation jsonNotation;
     private final FastSimpleFlags flags;
 
     public LutTrainer(
-            GameSettings<R> settings,
+            GameSettings settings,
             GameStateEncoding encoding,
-            JsonNotation<?, ?, R> jsonNotation
+            JsonNotation jsonNotation
     ) {
         this.settings = settings;
         this.encoding = encoding;
@@ -126,18 +125,18 @@ public class LutTrainer<R extends Roll> {
         return maps;
     }
 
-    public Lut<R> populateNewLut(int upperKeyLimit) {
-        LutMetadata<R> metadata = new LutMetadata<>(settings);
+    public Lut populateNewLut(int upperKeyLimit) {
+        LutMetadata metadata = new LutMetadata(settings);
         LutMap[] maps = populateNewMaps(upperKeyLimit);
-        return new Lut<>(encoding, metadata, maps);
+        return new Lut(encoding, metadata, maps);
     }
 
-    public Lut<R> populateNewLut() {
+    public Lut populateNewLut() {
         return populateNewLut(DEFAULT_UPPER_KEY_LIMIT);
     }
 
     private double iterateState(
-            Lut<R> lut,
+            Lut lut,
             FastSimpleGame game,
             float[] probabilities,
             FastSimpleGame rollGame,
@@ -176,7 +175,7 @@ public class LutTrainer<R extends Roll> {
     }
 
     private double performTrainingIterationSection(
-            Lut<R> lut,
+            Lut lut,
             Function<FastSimpleGame, Boolean> stateFilter,
             int fromIndex,
             int toIndex
@@ -211,7 +210,7 @@ public class LutTrainer<R extends Roll> {
     }
 
     private double performTrainingIteration(
-            Lut<R> lut,
+            Lut lut,
             int stateCount,
             Function<FastSimpleGame, Boolean> stateFilter
     ) {
@@ -262,15 +261,15 @@ public class LutTrainer<R extends Roll> {
     }
 
     public void train(
-            Lut<R> lut,
+            Lut lut,
             File checkpointFile
     ) throws IOException {
 
         train(lut, checkpointFile, 0.01d);
     }
 
-    public Lut<R> train(
-            Lut<R> lut,
+    public Lut train(
+            Lut lut,
             File checkpointFile,
             double tolerance
     ) throws IOException {

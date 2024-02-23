@@ -5,12 +5,10 @@ import net.royalur.model.PlayerType;
 import net.royalur.model.PlayerState;
 import net.royalur.rules.PlayerStateProvider;
 
-import javax.annotation.Nonnull;
-
 /**
  * Provides new instances of, and manipulations to, simple player states.
  */
-public class SimplePlayerStateProvider implements PlayerStateProvider<Piece, PlayerState> {
+public class SimplePlayerStateProvider implements PlayerStateProvider {
 
     /**
      * The number of pieces that each player starts with.

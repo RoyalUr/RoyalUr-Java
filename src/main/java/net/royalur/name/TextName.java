@@ -1,7 +1,5 @@
 package net.royalur.name;
 
-import javax.annotation.Nonnull;
-
 /**
  * A name that is backed by a String.
  */

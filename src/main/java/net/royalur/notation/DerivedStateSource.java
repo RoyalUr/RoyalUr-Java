@@ -5,33 +5,30 @@ import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- Produces game states from previous game states using the actions
- that were taken in a game. This effectively simulates games and
- uses saved information to fill in the gaps and as a sanity check.
+ * Produces game states from previous game states using the actions
+ * that were taken in a game. This effectively simulates games and
+ * uses saved information to fill in the gaps and as a sanity check.
  */
-public class DerivedStateSource<
-        P extends Piece, S extends PlayerState, R extends Roll
-> extends StateSource<P, S, R> {
+public class DerivedStateSource extends StateSource {
 
-    private final List<GameState<P, S, R>> states;
+    private final List<GameState> states;
     private int stateIndex;
 
-    public DerivedStateSource(GameState<P, S, R> initialState) {
+    public DerivedStateSource(GameState initialState) {
         states = new ArrayList<>();
         stateIndex = 0;
         states.add(initialState);
     }
 
-    public List<GameState<P, S, R>> getAllStates() {
+    public List<GameState> getAllStates() {
         return states;
     }
 
-    public int lastIndexOf(GameState<P, S, R> state) {
+    public int lastIndexOf(GameState state) {
         for (int index = states.size() - 1; index >= 0; --index) {
             if (state.equals(states.get(index)))
                 return index;
@@ -39,13 +36,13 @@ public class DerivedStateSource<
         throw new IllegalArgumentException("State could not be found");
     }
 
-    private GameState<P, S, R> peekState() {
+    private GameState peekState() {
         if (stateIndex >= states.size())
             throw new IllegalStateException("No available states!");
         return states.get(stateIndex);
     }
 
-    private GameState<P, S, R> nextState() {
+    private GameState nextState() {
         if (stateIndex >= states.size())
             throw new IllegalStateException("No available states!");
 
@@ -54,7 +51,7 @@ public class DerivedStateSource<
         return states.get(index);
     }
 
-    private GameState<P, S, R> getCurrentState() {
+    private GameState getCurrentState() {
         if (stateIndex == states.size()) {
             return states.get(stateIndex - 1);
         } else {
@@ -62,7 +59,7 @@ public class DerivedStateSource<
         }
     }
 
-    private void pushStates(List<GameState<P, S, R>> states) {
+    private void pushStates(List<GameState> states) {
         if (stateIndex < this.states.size()) {
             throw new IllegalStateException(
                     "There are remaining unused states! " +
@@ -73,54 +70,54 @@ public class DerivedStateSource<
     }
 
     @Override
-    public RolledGameState<P, S, R> createRolledState(
-            RuleSet<P, S, R> rules,
+    public RolledGameState createRolledState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     ) {
-        GameState<P, S, R> precedingState = nextState();
-        if (!(precedingState instanceof WaitingForRollGameState<P, S, R> waitingState))
+        GameState precedingState = nextState();
+        if (!(precedingState instanceof WaitingForRollGameState waitingState))
             throw new IllegalStateException("Preceding state is not a WaitingForRollGameState");
 
         pushStates(rules.applyRoll(waitingState, roll));
-        GameState<P, S, R> state = nextState();
-        if (!(state instanceof RolledGameState<P, S, R> rolledState))
+        GameState state = nextState();
+        if (!(state instanceof RolledGameState rolledState))
             throw new IllegalStateException("The state was not a RolledGameState after applying a roll");
 
         return rolledState;
     }
 
     @Override
-    public MovedGameState<P, S, R> createMovedState(
-            RuleSet<P, S, R> rules,
+    public MovedGameState createMovedState(
+            RuleSet rules,
             PlayerType turn,
-            R roll,
-            Move<P> move
+            Roll roll,
+            Move move
     ) {
         // Support for implied roll states from moves.
         if (peekState() instanceof WaitingForRollGameState) {
             createRolledState(rules, turn, roll);
         }
 
-        GameState<P, S, R> precedingState = nextState();
-        if (!(precedingState instanceof WaitingForMoveGameState<P, S, R> waitingState))
+        GameState precedingState = nextState();
+        if (!(precedingState instanceof WaitingForMoveGameState waitingState))
             throw new IllegalStateException("Preceding state is not a WaitingForMoveGameState");
 
         pushStates(rules.applyMove(waitingState, move));
-        GameState<P, S, R> state = nextState();
-        if (!(state instanceof MovedGameState<P, S, R> movedState))
+        GameState state = nextState();
+        if (!(state instanceof MovedGameState movedState))
             throw new IllegalStateException("The state was not a MovedGameState after applying a move");
 
         return movedState;
     }
 
     @Override
-    public WaitingForRollGameState<P, S, R> createWaitingForRollState(
-            RuleSet<P, S, R> rules,
+    public WaitingForRollGameState createWaitingForRollState(
+            RuleSet rules,
             PlayerType turn
     ) {
-        GameState<P, S, R> state = getCurrentState();
-        if (!(state instanceof WaitingForRollGameState<P, S, R> waitingState)) {
+        GameState state = getCurrentState();
+        if (!(state instanceof WaitingForRollGameState waitingState)) {
             throw new IllegalStateException(
                     "The state is not a WaitingForRollGameState, it is a " + state.getClass()
             );
@@ -137,13 +134,13 @@ public class DerivedStateSource<
     }
 
     @Override
-    public WaitingForMoveGameState<P, S, R> createWaitingForMoveState(
-            RuleSet<P, S, R> rules,
+    public WaitingForMoveGameState createWaitingForMoveState(
+            RuleSet rules,
             PlayerType turn,
-            R roll
+            Roll roll
     ) {
-        GameState<P, S, R> state = getCurrentState();
-        if (!(state instanceof WaitingForMoveGameState<P, S, R> waitingState))
+        GameState state = getCurrentState();
+        if (!(state instanceof WaitingForMoveGameState waitingState))
             throw new IllegalStateException("The state is not a WaitingForMoveGameState");
 
         if (waitingState.getTurn() != turn) {
@@ -164,12 +161,12 @@ public class DerivedStateSource<
     }
 
     @Override
-    public WinGameState<P, S, R> createWinState(
-            RuleSet<P, S, R> rules,
+    public WinGameState createWinState(
+            RuleSet rules,
             PlayerType winner
     ) {
-        GameState<P, S, R> state = getCurrentState();
-        if (!(state instanceof WinGameState<P, S, R> winState))
+        GameState state = getCurrentState();
+        if (!(state instanceof WinGameState winState))
             throw new IllegalStateException("The state is not a WinGameState");
 
         if (winState.getWinner() != winner) {

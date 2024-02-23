@@ -11,7 +11,6 @@ import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.state.*;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,15 +18,8 @@ import java.util.List;
 /**
  * The most common, simple, rules of the Royal Game of Ur.
  * This still allows a large range of custom rules.
- * @param <P> The type of pieces that are stored on the board.
- * @param <S> The type of state that is stored for each player.
- * @param <R> The type of rolls that may be made.
  */
-public class SimpleRuleSet<
-        P extends Piece,
-        S extends PlayerState,
-        R extends Roll
-> extends RuleSet<P, S, R> {
+public class SimpleRuleSet extends RuleSet {
 
     /**
      * Whether rosette tiles are safe squares for pieces.
@@ -58,9 +50,9 @@ public class SimpleRuleSet<
     public SimpleRuleSet(
             BoardShape boardShape,
             PathPair paths,
-            DiceFactory<R> diceFactory,
-            PieceProvider<P> pieceProvider,
-            PlayerStateProvider<P, S> playerStateProvider,
+            DiceFactory diceFactory,
+            PieceProvider pieceProvider,
+            PlayerStateProvider playerStateProvider,
             boolean safeRosettes,
             boolean rosettesGrantExtraRolls,
             boolean capturesGrantExtraRolls
@@ -92,9 +84,9 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public GameState<P, S, R> generateInitialGameState() {
-        return new WaitingForRollGameState<>(
-                new Board<>(boardShape),
+    public GameState generateInitialGameState() {
+        return new WaitingForRollGameState(
+                new Board(boardShape),
                 playerStateProvider.createStartingState(PlayerType.LIGHT),
                 playerStateProvider.createStartingState(PlayerType.DARK),
                 PlayerType.LIGHT
@@ -102,28 +94,28 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public List<Move<P>> findAvailableMoves(
-            Board<P> board,
-            S player,
-            R roll
+    public List<Move> findAvailableMoves(
+            Board board,
+            PlayerState player,
+            Roll roll
     ) {
         if (roll.value() <= 0)
             return Collections.emptyList();
 
         PlayerType playerType = player.getPlayer();
         List<Tile> path = paths.get(playerType);
-        List<Move<P>> moves = new ArrayList<>();
+        List<Move> moves = new ArrayList<>();
 
         // Check if a piece can be taken off the board.
         if (roll.value() <= path.size()) {
             int scorePathIndex = path.size() - roll.value();
             Tile scoreTile = path.get(scorePathIndex);
-            P scorePiece = board.get(scoreTile);
+            Piece scorePiece = board.get(scoreTile);
             if (scorePiece != null &&
                     scorePiece.getOwner() == playerType &&
                     scorePiece.getPathIndex() == scorePathIndex
             ) {
-                moves.add(new Move<>(playerType, scoreTile, scorePiece, null, null, null));
+                moves.add(new Move(playerType, scoreTile, scorePiece, null, null, null));
             }
         }
 
@@ -131,7 +123,7 @@ public class SimpleRuleSet<
         for (int pathIndex = -1; pathIndex < path.size() - roll.value(); ++pathIndex) {
 
             Tile tile;
-            P piece;
+            Piece piece;
             if (pathIndex >= 0) {
                 // Move a piece on the board.
                 tile = path.get(pathIndex);
@@ -151,7 +143,7 @@ public class SimpleRuleSet<
             // Check if the destination is free.
             int destPathIndex = pathIndex + roll.value();
             Tile dest = path.get(destPathIndex);
-            P destPiece = board.get(dest);
+            Piece destPiece = board.get(dest);
             if (destPiece != null)  {
                 // Can't capture your own pieces.
                 if (destPiece.getOwner() == playerType)
@@ -163,28 +155,24 @@ public class SimpleRuleSet<
             }
 
             // Generate the move.
-            P movedPiece;
+            Piece movedPiece;
             if (pathIndex >= 0) {
                 movedPiece = pieceProvider.createMoved(piece, destPathIndex);
             } else {
                 movedPiece = pieceProvider.createIntroduced(playerType, destPathIndex);
             }
-            moves.add(new Move<>(playerType, tile, piece, dest, movedPiece, destPiece));
+            moves.add(new Move(playerType, tile, piece, dest, movedPiece, destPiece));
         }
         return moves;
     }
 
     @Override
-    public List<GameState<P, S, R>> applyRoll(
-            WaitingForRollGameState<P, S, R> state,
-            R roll
-    ) {
-
+    public List<GameState> applyRoll(WaitingForRollGameState state, Roll roll) {
         // Construct the state representing the roll that was made.
-        List<Move<P>> availableMoves = findAvailableMoves(
+        List<Move> availableMoves = findAvailableMoves(
                 state.getBoard(), state.getTurnPlayer(), roll
         );
-        RolledGameState<P, S, R> rolledState = new RolledGameState<>(
+        RolledGameState rolledState = new RolledGameState(
                 state.getBoard(),
                 state.getLightPlayer(),
                 state.getDarkPlayer(),
@@ -196,7 +184,7 @@ public class SimpleRuleSet<
         // Swap turn when the player has no available moves.
         if (availableMoves.isEmpty()) {
             PlayerType newTurn = state.getTurn().getOtherPlayer();
-            return List.of(rolledState, new WaitingForRollGameState<>(
+            return List.of(rolledState, new WaitingForRollGameState(
                     state.getBoard(),
                     state.getLightPlayer(),
                     state.getDarkPlayer(),
@@ -205,7 +193,7 @@ public class SimpleRuleSet<
         }
 
         // The player has moves they can make.
-        return List.of(rolledState, new WaitingForMoveGameState<>(
+        return List.of(rolledState, new WaitingForMoveGameState(
                 state.getBoard(),
                 state.getLightPlayer(),
                 state.getDarkPlayer(),
@@ -222,8 +210,8 @@ public class SimpleRuleSet<
      * @return Whether the player that made the move should be granted
      *         another roll.
      */
-    public boolean shouldGrantExtraRoll(MovedGameState<P, S, R> movedState) {
-        Move<P> move = movedState.getMove();
+    public boolean shouldGrantExtraRoll(MovedGameState movedState) {
+        Move move = movedState.getMove();
         if (rosettesGrantExtraRolls && move.isDestRosette(boardShape))
             return true;
 
@@ -231,67 +219,61 @@ public class SimpleRuleSet<
     }
 
     @Override
-    public List<GameState<P, S, R>> applyMove(
-            WaitingForMoveGameState<P, S, R> state,
-            Move<P> move
-    ) {
-
+    public List<GameState> applyMove(WaitingForMoveGameState state, Move move) {
         // Generate the state representing the move that was made.
-        MovedGameState<P, S, R> movedState = new MovedGameState<>(
+        MovedGameState movedState = new MovedGameState(
                 state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(),
                 state.getTurn(), state.getRoll(), move
         );
 
         // Apply the move to the board.
-        Board<P> board = state.getBoard().copy();
+        Board board = state.getBoard().copy();
         move.apply(board);
 
         // Apply the move to the player that made the move.
-        S turnPlayer = state.getTurnPlayer();
+        PlayerState turnPlayer = state.getTurnPlayer();
         if (move.isIntroducingPiece()) {
-            P introducedPiece = move.getDestPiece();
+            Piece introducedPiece = move.getDestPiece();
             turnPlayer = playerStateProvider.applyPieceIntroduced(turnPlayer, introducedPiece);
         }
         if (move.isScoringPiece()) {
-            P scoredPiece = move.getSourcePiece();
+            Piece scoredPiece = move.getSourcePiece();
             turnPlayer = playerStateProvider.applyPieceScored(turnPlayer, scoredPiece);
         }
 
         // Apply the effects of the move to the other player.
-        S otherPlayer = state.getWaitingPlayer();
+        PlayerState otherPlayer = state.getWaitingPlayer();
         if (move.isCapture()) {
-            P capturedPiece = move.getCapturedPiece();
+            Piece capturedPiece = move.getCapturedPiece();
             otherPlayer = playerStateProvider.applyPieceCaptured(otherPlayer, capturedPiece);
         }
 
         // Determine which player is which.
         PlayerType turn = turnPlayer.getPlayer();
-        S lightPlayer = (turn == PlayerType.LIGHT ? turnPlayer : otherPlayer);
-        S darkPlayer = (turn == PlayerType.DARK ? turnPlayer : otherPlayer);
+        PlayerState lightPlayer = (turn == PlayerType.LIGHT ? turnPlayer : otherPlayer);
+        PlayerState darkPlayer = (turn == PlayerType.DARK ? turnPlayer : otherPlayer);
 
         // Check if the player has won the game.
         int turnPlayerPieces = turnPlayer.getPieceCount();
         if (move.isScoringPiece() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
-            return List.of(movedState, new WinGameState<>(
+            return List.of(movedState, new WinGameState(
                     board, lightPlayer, darkPlayer, turn
             ));
         }
 
         // Determine whose turn it will be in the next state.
         PlayerType nextTurn = (shouldGrantExtraRoll(movedState) ? turn : turn.getOtherPlayer());
-        return List.of(movedState, new WaitingForRollGameState<>(
+        return List.of(movedState, new WaitingForRollGameState(
                 board, lightPlayer, darkPlayer, nextTurn
         ));
     }
 
     @Override
-    public List<GameState<P, S, R>> selectLandmarkStates(
-            List<GameState<P, S, R>> states
-    ) {
-        List<GameState<P, S, R>> landmarkStates = new ArrayList<>();
+    public List<GameState> selectLandmarkStates(List<GameState> states) {
+        List<GameState> landmarkStates = new ArrayList<>();
         boolean seenAction = false;
         for (int index = states.size() - 1; index >= 0; --index) {
-            GameState<P, S, R> state = states.get(index);
+            GameState state = states.get(index);
 
             // We always want to include the last action that was made in the game.
             if (state instanceof ActionGameState && !seenAction) {
@@ -307,7 +289,7 @@ public class SimpleRuleSet<
             }
 
             // Include rolls that do not have a move state that describes them.
-            if (state instanceof RolledGameState<P, S, R> rolledState
+            if (state instanceof RolledGameState rolledState
                     && rolledState.getAvailableMoves().isEmpty()) {
 
                 landmarkStates.add(state);

@@ -22,7 +22,7 @@ public class FastSimpleFlags {
     public static final int DARK_PATH_INDEX_SHIFT = 8;
     public static final int DARK_PATH_INDEX_MASK = 0b11111;
 
-    public final GameSettings<?> settings;
+    public final GameSettings settings;
     private final int startingPieceCount;
 
     public final int boardIndexCount;
@@ -31,7 +31,7 @@ public class FastSimpleFlags {
     public final int warTileCount;
     public final int safeTileCountPerPlayer;
 
-    public FastSimpleFlags(GameSettings<?> settings) {
+    public FastSimpleFlags(GameSettings settings) {
         if (!isSymmetrical(settings))
             throw new IllegalArgumentException("Light & dark paths are not symmetrical");
 
@@ -137,7 +137,7 @@ public class FastSimpleFlags {
         }
     }
 
-    private static boolean isSymmetrical(GameSettings<?> settings) {
+    private static boolean isSymmetrical(GameSettings settings) {
         BoardShape shape = settings.getBoardShape();
         int width = shape.getWidth();
 
@@ -158,12 +158,12 @@ public class FastSimpleFlags {
         return true;
     }
 
-    private static int calculateBoardIndexCount(GameSettings<?> settings) {
+    private static int calculateBoardIndexCount(GameSettings settings) {
         BoardShape shape = settings.getBoardShape();
         return shape.getWidth() * shape.getHeight();
     }
 
-    private static int[] calculateTileFlags(GameSettings<?> settings, int boardIndexCount) {
+    private static int[] calculateTileFlags(GameSettings settings, int boardIndexCount) {
         BoardShape shape = settings.getBoardShape();
         int width = shape.getWidth();
         int height = shape.getHeight();
@@ -203,7 +203,7 @@ public class FastSimpleFlags {
         return tileFlags;
     }
 
-    private static int[] calculateNextBoardIndices(GameSettings<?> settings, int[] tileFlags) {
+    private static int[] calculateNextBoardIndices(GameSettings settings, int[] tileFlags) {
         BoardShape shape = settings.getBoardShape();
         int width = shape.getWidth();
         int height = shape.getHeight();

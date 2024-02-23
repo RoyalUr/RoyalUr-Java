@@ -12,9 +12,7 @@ import net.royalur.rules.state.ActionGameState;
 import net.royalur.rules.state.MovedGameState;
 import net.royalur.rules.state.RolledGameState;
 import net.royalur.rules.RuleSet;
-import net.royalur.util.Cast;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +26,7 @@ import java.util.Map;
  * contributors from the Royal Game of Ur Discord server:
  * Diego Raposo, Monomino, Sachertorte, kapfab, and Raph.
  */
-public class RGN<
-    P extends Piece, S extends PlayerState, R extends Roll
-> implements Notation<P, S, R> {
+public class RGN implements Notation {
 
     /**
      * The default maximum length for lines in RGN that
@@ -90,7 +86,11 @@ public class RGN<
      * Instantiates the RGN notation to encode and decode games.
      */
     public RGN() {
-        this(PathType.FACTORIES, BoardType.FACTORIES, DEFAULT_MAX_ACTION_LINE_LENGTH, DEFAULT_MAX_TURN_LINE_LENGTH);
+        this(
+                PathType.FACTORIES, BoardType.FACTORIES,
+                DEFAULT_MAX_ACTION_LINE_LENGTH,
+                DEFAULT_MAX_TURN_LINE_LENGTH
+        );
     }
 
     /**
@@ -121,14 +121,11 @@ public class RGN<
      * @param rules The rules of the game in which the dice are being encoded.
      * @param builder The builder into which to append the encoded dice roll.
      * @param rolledState The state of the game that contains the dice roll to encode.
-     * @param <P> The type of pieces that exist on the board in the given state.
-     * @param <S> The type of the player state that is stored in the given state.
-     * @param <R> The type of the dice rolls that was made in the given state.
      */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void appendDiceRoll(
-            RuleSet<P, S, R> rules,
+    protected void appendDiceRoll(
+            RuleSet rules,
             StringBuilder builder,
-            RolledGameState<P, S, R> rolledState
+            RolledGameState rolledState
     ) {
         Roll roll = rolledState.getRoll();
         builder.append(roll.value());
@@ -139,16 +136,13 @@ public class RGN<
      * @param rules The rules of the game in which the dice are being encoded.
      * @param builder The builder into which to append the encoded move.
      * @param movedState The state of the game that contains the move to encode.
-     * @param <P> The type of pieces that exist on the board in the given state.
-     * @param <S> The type of the player state that is stored in the given state.
-     * @param <R> The type of the dice rolls that was used in the given state.
      */
-    protected <P extends Piece, S extends PlayerState, R extends Roll> void appendMove(
-            RuleSet<P, S, R> rules,
+    protected void appendMove(
+            RuleSet rules,
             StringBuilder builder,
-            MovedGameState<P, S, R> movedState
+            MovedGameState movedState
     ) {
-        Move<?> move = movedState.getMove();
+        Move move = movedState.getMove();
         Tile from, to;
 
         // Get the origin tile.
@@ -166,6 +160,7 @@ public class RGN<
         }
 
         // Include the source coordinate.
+        // TODO
 //        if (from.getX() != to.getX()) {
             from.encodeXLowerCase(builder);
 //        }
@@ -189,7 +184,7 @@ public class RGN<
     }
 
     @Override
-    public String encodeGame(Game<P, S, R> game) {
+    public String encodeGame(Game game) {
         StringBuilder builder = new StringBuilder();
 
         // Encode the metadata.
@@ -214,11 +209,11 @@ public class RGN<
         StringBuilder turnBuilder = new StringBuilder();
         StringBuilder actionBuilder = new StringBuilder();
 
-        List<ActionGameState<P, S, R>> states = game.getActionStates();
+        List<ActionGameState> states = game.getActionStates();
         for (int index = 0; index < states.size(); ++index) {
-            ActionGameState<P, S, R> actionState = states.get(index);
-            RolledGameState<P, S, R> rollState = null;
-            MovedGameState<P, S, R> moveState = null;
+            ActionGameState actionState = states.get(index);
+            RolledGameState rollState = null;
+            MovedGameState moveState = null;
 
             if (actionState instanceof RolledGameState) {
                 // If a roll is followed by a move, then wait for the move to encode it.
@@ -226,14 +221,15 @@ public class RGN<
                     continue;
 
                 // Otherwise, encode it on its own.
-                rollState = Cast.unsafeCast(actionState);
+                rollState = (RolledGameState) actionState;
+
             } else if (actionState instanceof MovedGameState) {
                 // Get the move.
-                moveState = Cast.unsafeCast(actionState);
+                moveState = (MovedGameState) actionState;
 
                 // Try to find a roll to associate with this move.
                 if (index > 0 && states.get(index - 1) instanceof RolledGameState) {
-                    rollState = Cast.unsafeCast(states.get(index - 1));
+                    rollState = (RolledGameState) states.get(index - 1);
                 }
             } else {
                 throw new IllegalArgumentException("Unknown action state type " + actionState.getClass());
@@ -252,6 +248,7 @@ public class RGN<
                 } else {
                     actionBuilder.append("/ ");
                 }
+                // TODO
 //                actionBuilder.append(currentPlayer.getCharacter()).append(" ");
             }
 
@@ -314,7 +311,7 @@ public class RGN<
     }
 
     @Override
-    public Game<P, S, R> decodeGame(String encoded) {
+    public Game decodeGame(String encoded) {
         throw new UnsupportedOperationException("TODO");
     }
 }

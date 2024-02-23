@@ -1,7 +1,5 @@
 package net.royalur.name;
 
-import javax.annotation.Nonnull;
-
 /**
  * A thing that has a {@link Name}.
  */

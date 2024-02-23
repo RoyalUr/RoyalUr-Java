@@ -2,9 +2,7 @@ package net.royalur.rules.simple.fast;
 
 import net.royalur.Game;
 import net.royalur.model.*;
-import net.royalur.model.dice.Roll;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -32,7 +30,7 @@ public class FastSimpleGame {
     public int rollValue;
     public boolean isFinished;
 
-    public FastSimpleGame(GameSettings<?> settings) {
+    public FastSimpleGame(GameSettings settings) {
         this.areRosettesSafe = settings.areRosettesSafe();
         this.rosettesGrantExtraRoll = settings.doRosettesGrantExtraRolls();
         this.capturesGrantExtraRoll = settings.doCapturesGrantExtraRolls();
@@ -67,13 +65,7 @@ public class FastSimpleGame {
         this.isFinished = other.isFinished;
     }
 
-    public void copyFrom(
-            Game<
-                    ? extends Piece,
-                    ? extends PlayerState,
-                    ? extends Roll
-            > game
-    ) {
+    public void copyFrom(Game game) {
         board.copyFrom(game.getBoard());
         light.copyFrom(game.getLightPlayer());
         dark.copyFrom(game.getDarkPlayer());

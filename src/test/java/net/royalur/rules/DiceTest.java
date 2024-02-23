@@ -18,16 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DiceTest {
 
-    public static final Function<Dice<?>, Integer> ROLLVALUE_FN = Dice::rollValue;
-    public static final Function<Dice<?>, Integer> ROLL_FN = dice -> dice.roll().value();
+    public static final Function<Dice, Integer> ROLLVALUE_FN = Dice::rollValue;
+    public static final Function<Dice, Integer> ROLL_FN = dice -> dice.roll().value();
 
     public static class NamedRollFunction {
         public final String name;
-        public final Function<Dice<?>, Integer> rollFunction;
+        public final Function<Dice, Integer> rollFunction;
 
         public NamedRollFunction(
                 String name,
-                Function<Dice<?>, Integer> rollFunction
+                Function<Dice, Integer> rollFunction
         ) {
             this.name = name;
             this.rollFunction = rollFunction;
@@ -83,12 +83,12 @@ public class DiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(DiceFactoryProvider.class)
-    public void testNoInvalidRolls(DiceFactory<?> diceFactory) {
+    public void testNoInvalidRolls(DiceFactory diceFactory) {
         int diceSamples = 10;
         int samplesPerDice = 10_000;
         for (int diceIndex = 0; diceIndex < diceSamples; ++diceIndex) {
-            Dice<?> dice1 = diceFactory.createDice();
-            Dice<?> dice2 = diceFactory.createDice();
+            Dice dice1 = diceFactory.createDice();
+            Dice dice2 = diceFactory.createDice();
 
             for (int sample = 0; sample < samplesPerDice; ++sample) {
                 int value1 = dice1.rollValue();
@@ -102,9 +102,9 @@ public class DiceTest {
     @ParameterizedTest
     @ArgumentsSource(RollFunctionProvider.class)
     public void testFourBinaryDiceDistribution(NamedRollFunction nrf) {
-        Function<Dice<?>, Integer> rollFunction = nrf.rollFunction;
+        Function<Dice, Integer> rollFunction = nrf.rollFunction;
 
-        Dice<?> dice = DiceType.FOUR_BINARY.createDice(new Random(47));
+        Dice dice = DiceType.FOUR_BINARY.createDice(new Random(47));
         assertEquals(dice.getMaxRollValue(), 4);
 
         int samples = 160_000;
@@ -131,10 +131,10 @@ public class DiceTest {
     }
 
     private double testDiceCorrelation(
-            Dice<?> dice1,
-            Dice<?> dice2,
-            Function<Dice<?>, Integer> rollFunction1,
-            Function<Dice<?>, Integer> rollFunction2
+            Dice dice1,
+            Dice dice2,
+            Function<Dice, Integer> rollFunction1,
+            Function<Dice, Integer> rollFunction2
     ) {
         assertEquals(dice1.getMaxRollValue(), dice2.getMaxRollValue());
         int maxRollValue = dice1.getMaxRollValue();
@@ -172,9 +172,9 @@ public class DiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(DiceFactoryProvider.class)
-    public void testDiceNoSeed(DiceFactory<?> diceFactory) {
-        Dice<?> dice1 = diceFactory.createDice();
-        Dice<?> dice2 = diceFactory.createDice();
+    public void testDiceNoSeed(DiceFactory diceFactory) {
+        Dice dice1 = diceFactory.createDice();
+        Dice dice2 = diceFactory.createDice();
         double diceMatchRatio;
 
         // The roll function used should not affect correlation.
@@ -195,8 +195,8 @@ public class DiceTest {
     @ArgumentsSource(DiceTypeProvider.class)
     public void testDiceWithSeed(DiceType diceType) {
         int seed = 763;
-        Dice<?> dice1 = diceType.createDice(new Random(seed));
-        Dice<?> dice2 = diceType.createDice(new Random(seed));
+        Dice dice1 = diceType.createDice(new Random(seed));
+        Dice dice2 = diceType.createDice(new Random(seed));
         double diceMatchRatio;
 
         // The roll function used should not affect correlation.

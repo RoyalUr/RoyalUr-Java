@@ -1,6 +1,5 @@
 package net.royalur.lut.buffer;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 public enum ValueType {

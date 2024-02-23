@@ -6,7 +6,6 @@ import net.royalur.name.Name;
 import net.royalur.name.Named;
 import net.royalur.name.TextName;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 

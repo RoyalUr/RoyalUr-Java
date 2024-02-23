@@ -4,30 +4,22 @@ import net.royalur.Game;
 import net.royalur.agent.utility.UtilityFunction;
 import net.royalur.model.*;
 import net.royalur.model.dice.Dice;
-import net.royalur.model.dice.Roll;
 import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
-import net.royalur.util.Cast;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * An agent that makes deterministic move choices for testing. This is not thread-safe.
- * @param <P> The type of pieces that this agent can interact with.
- * @param <S> The type of player state that this agent can interact with.
- * @param <R> The type of rolls that may be made by this agent.
  */
-public class LikelihoodAgent<
-        P extends Piece,
-        S extends PlayerState
-> extends BaseAgent<P, S> {
+public class LikelihoodAgent extends BaseAgent {
 
     /**
      * The rules used for games given to this agent.
      */
-    private final SimpleRuleSet<P, S, R> rules;
+    private final SimpleRuleSet rules;
 
     /**
      * The utility function to use to evaluate game states.
@@ -56,7 +48,7 @@ public class LikelihoodAgent<
      * Dice used to hold the state of dice while exploring
      * the game tree.
      */
-    private Dice<R>[] diceHolders;
+    private Dice[] diceHolders;
 
     /**
      * Instantiates a likelihood agent.
@@ -65,7 +57,7 @@ public class LikelihoodAgent<
      *                            sequence of rolls to further depth.
      */
     public LikelihoodAgent(
-            SimpleRuleSet<P, S, R> rules,
+            SimpleRuleSet rules,
             UtilityFunction utilityFunction,
             float likelihoodThreshold
     ) {
@@ -74,7 +66,7 @@ public class LikelihoodAgent<
         this.likelihoodThreshold = likelihoodThreshold;
         this.gameHolders = new FastSimpleGame[0];
         this.moveListHolders = new FastSimpleMoveList[0];
-        this.diceHolders = Cast.unsafeCast(new Dice[0]);
+        this.diceHolders = new Dice[0];
     }
 
     /**
@@ -123,7 +115,7 @@ public class LikelihoodAgent<
      * @param depth The depth to find the holding object for.
      * @return A holding object for the state of a die.
      */
-    private Dice<R> getDiceHolder(int depth) {
+    private Dice getDiceHolder(int depth) {
         if (depth >= diceHolders.length) {
             int newLength = Math.max(4, diceHolders.length * 2);
             while (depth >= newLength) {
@@ -141,7 +133,7 @@ public class LikelihoodAgent<
     private float calculateBestMoveUtility(
             FastSimpleGame precedingGame,
             FastSimpleMoveList availableMoves,
-            Dice<R> dice,
+            Dice dice,
             float likelihood,
             int depth
     ) {
@@ -174,7 +166,7 @@ public class LikelihoodAgent<
 
     private float calculateProbabilityWeightedUtility(
             FastSimpleGame precedingGame,
-            Dice<R> precedingDice,
+            Dice precedingDice,
             float likelihood,
             int depth
     ) {
@@ -188,7 +180,7 @@ public class LikelihoodAgent<
 
         FastSimpleGame game = getGameHolder(depth);
         FastSimpleMoveList moveList = getMoveListHolder(depth);
-        Dice<R> dice = getDiceHolder(depth);
+        Dice dice = getDiceHolder(depth);
 
         for (int roll = 0; roll < probabilities.length; ++roll) {
             float prob = probabilities[roll];
@@ -225,22 +217,20 @@ public class LikelihoodAgent<
     }
 
     @Override
-    public Move<P> decideMove(
-            Game<P, S, R> game,
-            List<Move<P>> moves
-    ) {
+    public Move decideMove(Game game, List<Move> moves) {
+
         if (moves.isEmpty())
             throw new IllegalArgumentException("No moves available");
         if (moves.size() == 1)
             return moves.get(0);
 
-        Move<P> bestMove = null;
+        Move bestMove = null;
         float bestUtility = 0.0f;
 
         FastSimpleGame gameHolder = getGameHolder(0);
-        Dice<R> diceHolder = getDiceHolder(0);
-        for (Move<P> move : moves) {
-            Game<P, S, R> newGame = game.copy();
+        Dice diceHolder = getDiceHolder(0);
+        for (Move move : moves) {
+            Game newGame = game.copy();
             newGame.makeMove(move);
             gameHolder.copyFrom(newGame);
             diceHolder.copyFrom(newGame.getDice());

@@ -1,8 +1,6 @@
 package net.royalur;
 
 import net.royalur.model.Move;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
 import net.royalur.model.dice.Roll;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +12,7 @@ public class ReadmeExamplesTest {
     @Test
     public void testReadmeExample() {
         // Create a new game using the Finkel rules.
-        Game<Piece, PlayerState, Roll> game = Game.createFinkel();
+        Game game = Game.createFinkel();
 
         // Play through a game making random moves.
         Random rand = new Random();
@@ -28,8 +26,8 @@ public class ReadmeExamplesTest {
                 System.out.println(turnPlayerName + ": Roll " + roll.value());
             } else {
                 // Make a random move.
-                List<Move<Piece>> moves = game.findAvailableMoves();
-                Move<Piece> randomMove = moves.get(rand.nextInt(moves.size()));
+                List<Move> moves = game.findAvailableMoves();
+                Move randomMove = moves.get(rand.nextInt(moves.size()));
                 game.makeMove(randomMove);
                 System.out.println(turnPlayerName + ": " + randomMove.describe());
             }

@@ -7,7 +7,6 @@ import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.DataSource;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
-import net.royalur.model.GameSettings;
 import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleBoard;
@@ -23,19 +22,19 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 
-public class Lut<R extends Roll> {
+public class Lut {
 
     public static final byte[] MAGIC = new byte[] {0x52, 0x47, 0x55};
     public static final byte VERSION_0 = (byte) 0;
     public static final byte LATEST_VERSION = VERSION_0;
 
     private final GameStateEncoding encoding;
-    private final LutMetadata<R> metadata;
+    private final LutMetadata metadata;
     private final LutMap[] maps;
 
     public Lut(
             GameStateEncoding encoding,
-            LutMetadata<R> metadata,
+            LutMetadata metadata,
             LutMap[] maps
     ) {
         this.encoding = encoding;
@@ -55,7 +54,7 @@ public class Lut<R extends Roll> {
         return encoding;
     }
 
-    public LutMetadata<R> getMetadata() {
+    public LutMetadata getMetadata() {
         return metadata;
     }
 
@@ -150,7 +149,7 @@ public class Lut<R extends Roll> {
         return newBuffer;
     }
 
-    public Lut<R> copyValuesToFloat32() {
+    public Lut copyValuesToFloat32() {
         LutMap[] newMaps = new LutMap[maps.length];
         for (int index = 0; index < maps.length; ++index) {
             LutMap oldMap = maps[index];
@@ -159,27 +158,23 @@ public class Lut<R extends Roll> {
                     oldMap.getEntryCount(), oldMap.getKeyBuffer(), valueBuffer
             );
         }
-        return new Lut<>(
-                encoding,
-                metadata,
-                newMaps
-        );
+        return new Lut(encoding, metadata, newMaps);
     }
 
-    public void write(JsonNotation<?, ?, R> notation, File file) throws IOException {
+    public void write(JsonNotation notation, File file) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             write(notation, fos.getChannel());
         }
     }
 
-    public void write(JsonNotation<?, ?, R> notation, FileChannel channel) throws IOException {
+    public void write(JsonNotation notation, FileChannel channel) throws IOException {
         ByteBuffer outputBuffer = ByteBuffer.allocateDirect(1024 * 1024);
         outputBuffer.order(ByteOrder.BIG_ENDIAN);
         DataSink output = new DataSink.FileDataSink(channel, outputBuffer);
         write(notation, output);
     }
 
-    public void write(JsonNotation<?, ?, R> notation, DataSink output) throws IOException {
+    public void write(JsonNotation notation, DataSink output) throws IOException {
         output.write(buffer -> {
             buffer.put(MAGIC);
             buffer.put(LATEST_VERSION);
@@ -207,8 +202,8 @@ public class Lut<R extends Roll> {
         }
     }
 
-    public static <R extends Roll> Lut<R> read(
-            JsonNotation<?, ?, R> jsonNotation,
+    public static <R extends Roll> Lut read(
+            JsonNotation jsonNotation,
             GameStateEncoding encoding,
             File file
     ) throws IOException {
@@ -218,8 +213,8 @@ public class Lut<R extends Roll> {
         }
     }
 
-    public static <R extends Roll> Lut<R> read(
-            JsonNotation<?, ?, R> jsonNotation,
+    public static <R extends Roll> Lut read(
+            JsonNotation jsonNotation,
             GameStateEncoding encoding,
             FileChannel channel
     ) throws IOException {
@@ -230,8 +225,8 @@ public class Lut<R extends Roll> {
         return read(jsonNotation, encoding, source);
     }
 
-    public static <R extends Roll> Lut<R> read(
-            JsonNotation<?, ?, R> jsonNotation,
+    public static <R extends Roll> Lut read(
+            JsonNotation jsonNotation,
             GameStateEncoding encoding,
             DataSource source
     ) throws IOException {
@@ -248,7 +243,7 @@ public class Lut<R extends Roll> {
         int metadataByteCount = source.readInt();
         byte[] metadataBytes = source.readBytes(metadataByteCount);
         String metadataJson = new String(metadataBytes, StandardCharsets.UTF_8);
-        LutMetadata<R> metadata = LutMetadata.decode(jsonNotation, metadataJson);
+        LutMetadata metadata = LutMetadata.decode(jsonNotation, metadataJson);
 
         int mapCount = source.readInt();
         int[] mapEntryCounts = new int[mapCount];
@@ -276,6 +271,6 @@ public class Lut<R extends Roll> {
                     mapValueBuffers[index]
             );
         }
-        return new Lut<>(encoding, metadata, maps);
+        return new Lut(encoding, metadata, maps);
     }
 }

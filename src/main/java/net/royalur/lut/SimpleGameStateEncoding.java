@@ -17,7 +17,7 @@ import java.util.function.Function;
  */
 public class SimpleGameStateEncoding implements GameStateEncoding {
 
-    protected final GameSettings<?> settings;
+    protected final GameSettings settings;
     protected final FastSimpleFlags flags;
     protected final int warTileCompressionTileCount;
     protected final int warTileSegmentCount;
@@ -29,7 +29,7 @@ public class SimpleGameStateEncoding implements GameStateEncoding {
     protected final int[] lightSafeBoardIndices;
     protected final int[] darkSafeBoardIndices;
 
-    public SimpleGameStateEncoding(GameSettings<?> settings) {
+    public SimpleGameStateEncoding(GameSettings settings) {
         if (settings.getStartingPieceCount() > 7)
             throw new IllegalArgumentException("Starting piece counts above 7 are not supported");
 

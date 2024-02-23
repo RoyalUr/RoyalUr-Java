@@ -4,8 +4,6 @@ import net.royalur.name.Name;
 import net.royalur.name.NameMap;
 import net.royalur.name.UniqueNameMap;
 
-import javax.annotation.Nonnull;
-
 /**
  * The type of path to use in a game.
  */

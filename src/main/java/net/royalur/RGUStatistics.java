@@ -1,14 +1,10 @@
 package net.royalur;
 
 import net.royalur.agent.Agent;
-import net.royalur.agent.FinkelLUTAgent;
+import net.royalur.agent.LutAgent;
 import net.royalur.agent.GreedyAgent;
-import net.royalur.agent.RandomAgent;
 import net.royalur.lut.*;
 import net.royalur.model.GameSettings;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
@@ -23,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * This file intends to hold tests that can be performed
@@ -36,23 +31,17 @@ public class RGUStatistics {
      * and played by two AI agents.
      */
     private GameStats testAgentActions(
-            GameSettings<Roll> settings,
-            Function<
-                    SimpleRuleSet<Piece, PlayerState, Roll>,
-                    Agent<Piece, PlayerState, Roll>
-            > lightAgentGenerator,
-            Function<
-                    SimpleRuleSet<Piece, PlayerState, Roll>,
-                    Agent<Piece, PlayerState, Roll>
-            > darkAgentGenerator
+            GameSettings settings,
+            Function<SimpleRuleSet, Agent> lightAgentGenerator,
+            Function<SimpleRuleSet, Agent> darkAgentGenerator
     ) {
-        Game<Piece, PlayerState, Roll> game = Game.create(settings);
-        RuleSet<Piece, PlayerState, Roll> rules = game.getRules();
-        if (!(rules instanceof SimpleRuleSet<Piece, PlayerState, Roll> simpleRules))
+        Game game = Game.create(settings);
+        RuleSet rules = game.getRules();
+        if (!(rules instanceof SimpleRuleSet simpleRules))
             throw new IllegalArgumentException("Game does not use simple rules");
 
-        Agent<Piece, PlayerState, Roll> light = lightAgentGenerator.apply(simpleRules);
-        Agent<Piece, PlayerState, Roll> dark = darkAgentGenerator.apply(simpleRules);
+        Agent light = lightAgentGenerator.apply(simpleRules);
+        Agent dark = darkAgentGenerator.apply(simpleRules);
         Agent.playAutonomously(game, light, dark);
         return GameStats.gather(game);
     }
@@ -61,41 +50,12 @@ public class RGUStatistics {
      * Runs tests using AI agents with many game settings.
      */
     public void testAgentActions(
-            List<GameSettings<Roll>> settingsList,
-            Function<
-                    SimpleRuleSet<Piece, PlayerState, Roll>,
-                    Agent<Piece, PlayerState, Roll>
-            > agent1Generator,
-            Function<
-                    SimpleRuleSet<Piece, PlayerState, Roll>,
-                    Agent<Piece, PlayerState, Roll>
-            > agent2Generator,
+            List<GameSettings> settingsList,
+            Function<SimpleRuleSet, Agent> agent1Generator,
+            Function<SimpleRuleSet, Agent> agent2Generator,
             int tests,
             GameStatsTarget[] reportTargets
     ) {
-
-        List<Supplier<Game<Piece, PlayerState, Roll>>> generators = List.of(
-//                () -> Game.builder().finkel().build()//,
-//                () -> Game.builder().finkel().safeRosettes(false).build(),
-//                () -> Game.builder().finkel().rosettesGrantExtraRolls(false).build(),
-//                () -> Game.builder().finkel().capturesGrantExtraRolls(true).build(),
-//
-//                // Blitz
-                () -> Game.builder()
-                        .masters()
-                        .startingPieceCount(5)
-                        .safeRosettes(false)
-                        .capturesGrantExtraRolls(true)
-                        .build()//,
-//
-//                () -> Game.builder().masters().safeRosettes(true).build(),
-//                () -> Game.builder().masters().safeRosettes(false).build(),
-//                () -> Game.builder().finkel().paths(new SkiriukPathPair()).build(),
-//                () -> Game.builder().finkel().paths(new MurrayPathPair()).build(),
-//                () -> Game.builder().aseb().build()
-//                () -> Game.builder().finkel().dice(DiceType.THREE_BINARY_0MAX).build()
-        );
-
         System.out.println("Testing " + settingsList.size() + " sets of rules:");
         System.out.println("* <measure>: <mean> ± <std dev> -");
         System.out.println("      Q1=<25th-percentile>, Q2=<50th>, Q3=<75th>");
@@ -104,8 +64,8 @@ public class RGUStatistics {
         System.out.println("* turns-in-lead = # of turns the winner had the lead before winning");
 
         for (int index = 0; index < settingsList.size(); ++index) {
-            GameSettings<Roll> settings = settingsList.get(index);
-            Game<Piece, PlayerState, Roll> sample = Game.create(settings);
+            GameSettings settings = settingsList.get(index);
+            Game sample = Game.create(settings);
             String desc = sample.getBoard().getShape().getName().getTextName()
                     + ", " + sample.getRules().getPaths().getName().getTextName()
                     + ", " + sample.getRules().getPlayerStateProvider().getStartingPieceCount() + " pieces"
@@ -225,7 +185,7 @@ public class RGUStatistics {
 
     /*
     public void testMoveStats(
-            GameSettings<Roll> settings,
+            GameSettings settings,
             LutTrainer lut,
             OrderedUInt32BufferSet states,
             Function<FastSimpleGame, Boolean> gameFilter
@@ -442,7 +402,7 @@ public class RGUStatistics {
     }
 
     private static void runOverallMoveStatsTests() throws IOException {
-        GameSettings<Roll> settings = GameSettings.FINKEL;
+        GameSettings settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
         OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
@@ -451,7 +411,7 @@ public class RGUStatistics {
     }
 
     private static void runBucketedMoveStatsTests(int buckets) throws IOException {
-        GameSettings<Roll> settings = GameSettings.FINKEL;
+        GameSettings settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
         OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
@@ -473,24 +433,24 @@ public class RGUStatistics {
     }
 
     private static void runGames() throws IOException {
-        GameSettings<Roll> settings = GameSettings.FINKEL;
+        GameSettings settings = GameSettings.FINKEL;
         LutTrainer lut = new LutTrainer(settings);
         OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));
 
         RGUStatistics statistics = new RGUStatistics();
         statistics.testAgentActions(
-                rules -> new GreedyAgent<>(),
-                rules -> new FinkelLUTAgent<>(states),
+                rules -> new GreedyAgent(),
+                rules -> new FinkelLUTAgent(states),
                 1000_000,
                 GameStatsTarget.values()
         );
     }*/
 
     private static void runGames() throws IOException {
-        GameSettings<Roll> settings = GameSettings.MASTERS;
+        GameSettings settings = GameSettings.MASTERS;
         GameStateEncoding encoding = new SimpleGameStateEncoding(settings);
-        JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
-        Lut<Roll> lut = Lut.read(jsonNotation, encoding, new File("./models/masters.rgu"));
+        JsonNotation jsonNotation = JsonNotation.createSimple();
+        Lut lut = Lut.read(jsonNotation, encoding, new File("./models/masters.rgu"));
 
         FastSimpleGame game = new FastSimpleGame(settings);
         game.copyFrom(Game.create(settings));
@@ -499,8 +459,8 @@ public class RGUStatistics {
         long start = System.nanoTime();
         new RGUStatistics().testAgentActions(
                 List.of(settings),
-                (rules) -> new GreedyAgent<>(),
-                (rules) -> new FinkelLUTAgent<>(lut),
+                (rules) -> new GreedyAgent(),
+                (rules) -> new LutAgent(lut),
                 1000000,
                 GameStatsTarget.values()
         );
@@ -519,7 +479,7 @@ public class RGUStatistics {
         runGames();
 //        LutCLI.main(args);
 
-        /*GameSettings<Roll> settings = GameSettings.FINKEL;
+        /*GameSettings settings = GameSettings.FINKEL;
         FinkelGameStateEncoding encoding = new FinkelGameStateEncoding();
         LutTrainer lut = new LutTrainer(settings);
         OrderedUInt32BufferSet states = lut.readStateStore(new File("./finkel.rgu"));

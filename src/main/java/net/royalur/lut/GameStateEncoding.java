@@ -32,7 +32,7 @@ public interface GameStateEncoding {
     /**
      * Creates an encoding for a simple set of rules.
      */
-    static GameStateEncoding createSimple(GameSettings<?> settings) {
+    static GameStateEncoding createSimple(GameSettings settings) {
         if (GameSettings.FINKEL.equals(settings))
             return new FinkelGameStateEncoding();
 

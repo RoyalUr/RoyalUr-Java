@@ -3,9 +3,7 @@ package net.royalur.lut.buffer;
 import net.royalur.lut.store.DataSink;
 import net.royalur.lut.store.DataSource;
 
-import javax.annotation.Nonnull;
 import java.io.*;
-import java.nio.ByteBuffer;
 
 /**
  * Stores binary values and provides efficient methods to manipulate it.

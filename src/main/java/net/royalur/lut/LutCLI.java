@@ -1,7 +1,6 @@
 package net.royalur.lut;
 
 import net.royalur.model.GameSettings;
-import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonNotation;
 
 import java.io.File;
@@ -13,20 +12,18 @@ public class LutCLI {
     public static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
 
     public static void main(String[] args) throws IOException {
-        GameSettings<Roll> settings = GameSettings.ASEB ;
+        GameSettings settings = GameSettings.ASEB ;
         SimpleGameStateEncoding encoding = new SimpleGameStateEncoding(settings);
-        JsonNotation<?, ?, Roll> jsonNotation = JsonNotation.createSimple();
-        LutTrainer<Roll> trainer = new LutTrainer<>(settings, encoding, jsonNotation);
+        JsonNotation jsonNotation = JsonNotation.createSimple();
+        LutTrainer trainer = new LutTrainer(settings, encoding, jsonNotation);
 
         File inputFile = new File("./models/aseb.rgu");
         File checkpointFile = new File("./aseb_ckpt.rgu");
         File outputFile = new File("./aseb.rgu");
 
         long readStart = System.nanoTime();
-        Lut<Roll> lut = trainer.populateNewLut();
-//        Lut<Roll> lut = Lut.read(jsonNotation, encoding, inputFile);
-        lut.getMetadata().getAdditionalMetadata().clear();
-        lut.getMetadata().addMetadata("author", "Padraig Lamont");
+        Lut lut = trainer.populateNewLut();
+//        Lut lut = Lut.read(jsonNotation, encoding, inputFile);
         double readDurationMs = (System.nanoTime() - readStart) / 1e6;
         System.out.println("Read or populate took " + MS_DURATION.format(readDurationMs) + " ms");
 

@@ -2,28 +2,23 @@ package net.royalur.rules.simple;
 
 import net.royalur.model.GameMetadata;
 import net.royalur.model.GameSettings;
-import net.royalur.model.Piece;
-import net.royalur.model.PlayerState;
-import net.royalur.model.dice.Roll;
 import net.royalur.rules.*;
-
-import javax.annotation.Nonnull;
 
 /**
  * A provider that creates simple rule sets.
  */
-public class SimpleRuleSetProvider implements RuleSetProvider<Piece, PlayerState> {
+public class SimpleRuleSetProvider implements RuleSetProvider {
 
     @Override
-    public <R extends Roll> SimpleRuleSet<Piece, PlayerState, R> create(
-            GameSettings<R> settings,
+    public SimpleRuleSet create(
+            GameSettings settings,
             GameMetadata metadata
     ) {
         SimplePieceProvider pieceProvider = new SimplePieceProvider();
         SimplePlayerStateProvider stateProvider = new SimplePlayerStateProvider(
                 settings.getStartingPieceCount()
         );
-        return new SimpleRuleSet<>(
+        return new SimpleRuleSet(
                 settings.getBoardShape(),
                 settings.getPaths(),
                 settings.getDice(),

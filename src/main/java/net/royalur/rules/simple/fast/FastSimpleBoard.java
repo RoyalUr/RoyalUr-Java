@@ -6,7 +6,6 @@ import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
 import net.royalur.model.shape.BoardShape;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 /**
@@ -51,7 +50,7 @@ public class FastSimpleBoard {
         System.arraycopy(other.pieces, 0, pieces, 0, pieces.length);
     }
 
-    public void copyFrom(Board<? extends Piece> board) {
+    public void copyFrom(Board board) {
         if (!shape.isEquivalent(board.getShape()))
             throw new IllegalArgumentException("board has a different shape");
 

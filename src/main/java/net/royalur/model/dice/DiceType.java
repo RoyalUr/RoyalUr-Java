@@ -4,8 +4,6 @@ import net.royalur.name.Name;
 import net.royalur.name.NameMap;
 import net.royalur.name.UniqueNameMap;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.random.RandomGenerator;
@@ -110,10 +108,8 @@ public enum DiceType implements Name, DiceFactory {
      * @param randomProvider The provider of the source of randomness for each dice.
      * @return A factory for these dice.
      */
-    public DiceFactory createFactory(
-            Supplier<RandomGenerator> randomProvider
-    ) {
-        return new DiceFactory<>() {
+    public DiceFactory createFactory(Supplier<RandomGenerator> randomProvider) {
+        return new DiceFactory() {
             @Override
             public Dice createDice() {
                 return DiceType.this.createDice(randomProvider.get());

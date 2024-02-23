@@ -1,7 +1,5 @@
 package net.royalur.name;
 
-import javax.annotation.Nonnull;
-
 /**
  * A name given to a type of thing to differentiate it
  * when serialising, de-serialising, or logging.
