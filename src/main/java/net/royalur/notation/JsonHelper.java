@@ -37,6 +37,14 @@ public class JsonHelper {
 
     private JsonHelper() {}
 
+    public static @Nullable JsonNode readNullableValue(ObjectNode json, String key) {
+        JsonNode node = json.get(key);
+        if (node == null || node.isNull())
+            return null;
+
+        return node;
+    }
+
     public static JsonNode readValue(ObjectNode json, String key) {
         if (!json.has(key))
             throw new JsonKeyError("Missing " + key);
@@ -56,8 +64,8 @@ public class JsonHelper {
     }
 
     public static @Nullable ObjectNode readNullableDict(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
-        if (value.isNull())
+        JsonNode value = readNullableValue(json, key);
+        if (value == null)
             return null;
 
         if (!(value instanceof ObjectNode)) {
@@ -81,8 +89,8 @@ public class JsonHelper {
     }
 
     public static @Nullable ArrayNode readNullableArray(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
-        if (value.isNull())
+        JsonNode value = readNullableValue(json, key);
+        if (value == null)
             return null;
 
         if (!(value instanceof ArrayNode)) {
@@ -124,8 +132,8 @@ public class JsonHelper {
     }
 
     public static @Nullable String readNullableString(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
-        if (value.isNull())
+        JsonNode value = readNullableValue(json, key);
+        if (value == null)
             return null;
 
         if (!value.isTextual()) {

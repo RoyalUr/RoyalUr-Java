@@ -1,14 +1,13 @@
 package net.royalur;
 
-import net.royalur.agent.Agent;
-import net.royalur.agent.LutAgent;
-import net.royalur.agent.GreedyAgent;
+import net.royalur.agent.*;
 import net.royalur.lut.*;
 import net.royalur.model.GameSettings;
-import net.royalur.notation.JsonNotation;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.fast.FastSimpleFlags;
 import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.simple.fast.FastSimpleMoveList;
 import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
@@ -183,10 +182,19 @@ public class RGUStatistics {
     }
 
     private static void runGames() throws IOException {
-        GameSettings settings = GameSettings.MASTERS;
-        GameStateEncoding encoding = new SimpleGameStateEncoding(settings);
-        JsonNotation jsonNotation = JsonNotation.createSimple();
-        Lut lut = Lut.read(jsonNotation, encoding, new File("./models/masters.rgu"));
+        Lut lut = Lut.read(new File("./models/masters.rgu"));
+        GameSettings settings = lut.getMetadata().getGameSettings();
+
+        FastSimpleFlags flags = new FastSimpleFlags(settings);
+
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleGame tempGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        double[] moveValues = new double[settings.getStartingPieceCount()];
+
+        System.out.println(lut.getMaps().length);
 
         FastSimpleGame game = new FastSimpleGame(settings);
         game.copyFrom(Game.create(settings));
@@ -195,8 +203,8 @@ public class RGUStatistics {
         long start = System.nanoTime();
         new RGUStatistics().testAgentActions(
                 List.of(settings),
-                (rules) -> new GreedyAgent(),
-                (rules) -> new LutAgent(lut),
+                (rules) -> new GreedyAgent(), //new LutAgent(lut),
+                (rules) -> new BetterGreedyAgent(), //new LutAgent(lut),
                 1000000,
                 GameStatsTarget.values()
         );
@@ -209,7 +217,10 @@ public class RGUStatistics {
      * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
      */
     public static void main(String[] args) throws IOException {
-        runGames();
+//        runGames();
 //        LutCLI.main(args);
+
+        Lut lut = Lut.read(new File("./models/finkel.rgu"));
+        new LutVisualisation(lut).calculateDepths(new File("./finkel_depths.dat"));
     }
 }

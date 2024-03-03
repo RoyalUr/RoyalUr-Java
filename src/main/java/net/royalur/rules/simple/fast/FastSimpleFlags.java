@@ -5,8 +5,11 @@ import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -52,11 +55,66 @@ public class FastSimpleFlags {
     public int countStates(Function<FastSimpleGame, Boolean> gameFilter) {
         AtomicLong stateCount = new AtomicLong();
         loopLightGameStates((game) -> {
+            game.isLightTurn = false;
+            if (gameFilter.apply(game)) {
+                stateCount.incrementAndGet();
+            }
+
+            game.isLightTurn = true;
             if (gameFilter.apply(game)) {
                 stateCount.incrementAndGet();
             }
         });
         return Math.toIntExact(stateCount.get());
+    }
+
+    public void loopLightGameStatesAndNeighbours(
+            BiConsumer<FastSimpleGame, Collection<FastSimpleGame>> consumer
+    ) {
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleGame tempGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+
+        int maxRequiredGameObjects = settings.getStartingPieceCount() * probabilities.length;
+        List<FastSimpleGame> gameObjects = new ArrayList<>(maxRequiredGameObjects);
+        List<FastSimpleGame> neighbourList = new ArrayList<>(maxRequiredGameObjects);
+        for (int index = 0; index < maxRequiredGameObjects; ++index) {
+            gameObjects.add(new FastSimpleGame(settings));
+        }
+
+        loopLightGameStates(game -> {
+            if (game.isFinished)
+                return;
+
+            int gameObjectIndex = 0;
+            neighbourList.clear();
+
+            for (int roll = 0; roll < probabilities.length; ++roll) {
+                if (probabilities[roll] <= 0.0f)
+                    continue;
+
+                rollGame.copyFrom(game);
+                rollGame.applyRoll(roll, moveList);
+
+                if (rollGame.isWaitingForMove()) {
+                    for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                        moveGame.copyFrom(rollGame);
+                        moveGame.applyMove(moveList.moves[moveIndex]);
+
+                        FastSimpleGame gameObject = gameObjects.get(gameObjectIndex++);
+                        gameObject.copyFrom(moveGame);
+                        neighbourList.add(gameObject);
+                    }
+                } else {
+                    FastSimpleGame gameObject = gameObjects.get(gameObjectIndex++);
+                    gameObject.copyFrom(rollGame);
+                    neighbourList.add(gameObject);
+                }
+            }
+            consumer.accept(game, neighbourList);
+        });
     }
 
     /**

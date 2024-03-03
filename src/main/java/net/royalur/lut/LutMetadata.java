@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import net.royalur.model.GameSettings;
-import net.royalur.model.dice.Roll;
 import net.royalur.notation.JsonHelper;
 import net.royalur.notation.JsonNotation;
 
@@ -96,7 +95,7 @@ public class LutMetadata {
         }
     }
 
-    public static <R extends Roll> LutMetadata decode(
+    public static LutMetadata decode(
             JsonNotation notation,
             String encoded
     ) {
@@ -115,7 +114,7 @@ public class LutMetadata {
         }
     }
 
-    public static <R extends Roll> LutMetadata read(
+    public static LutMetadata read(
             JsonNotation notation,
             ObjectNode json
     ) {

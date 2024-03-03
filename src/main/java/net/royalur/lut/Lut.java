@@ -7,9 +7,8 @@ import net.royalur.lut.buffer.UInt32ValueBuffer;
 import net.royalur.lut.store.DataSource;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
-import net.royalur.model.dice.Roll;
+import net.royalur.model.GameSettings;
 import net.royalur.notation.JsonNotation;
-import net.royalur.rules.simple.fast.FastSimpleBoard;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
 import javax.annotation.Nullable;
@@ -21,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 public class Lut {
 
@@ -58,43 +58,16 @@ public class Lut {
         return metadata;
     }
 
+    public GameSettings getGameSettings() {
+        return metadata.getGameSettings();
+    }
+
     public LutMap getMap(int upperKey) {
         return maps[upperKey];
     }
 
-    private static void reversePlayers(FastSimpleGame input, FastSimpleGame output) {
-        output.isLightTurn = !input.isLightTurn;
-        output.isFinished = input.isFinished;
-        output.rollValue = input.rollValue;
-        output.dark.score = input.light.score;
-        output.dark.pieces = input.light.pieces;
-        output.light.score = input.dark.score;
-        output.light.pieces = input.dark.pieces;
-
-        FastSimpleBoard inputBoard = input.board;
-        FastSimpleBoard outputBoard = output.board;
-
-        int width = input.board.width;
-        int height = input.board.height;
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                int fromIndex = inputBoard.calcTileIndex(x, y);
-                int toIndex = outputBoard.calcTileIndex(width - x - 1, y);
-                outputBoard.set(toIndex, -1 * inputBoard.get(fromIndex));
-            }
-        }
-    }
-
-    private long calcSymmetricalKey(FastSimpleGame game, @Nullable FastSimpleGame tempGame) {
-        FastSimpleGame keyGame = game;
-        if (!game.isLightTurn) {
-            if (tempGame == null) {
-                tempGame = new FastSimpleGame(metadata.getGameSettings());
-            }
-            reversePlayers(game, tempGame);
-            keyGame = tempGame;
-        }
-        return encoding.encodeGameState(keyGame);
+    public LutMap[] getMaps() {
+        return maps;
     }
 
     /**
@@ -109,7 +82,7 @@ public class Lut {
      * Assumes that the game is using symmetrical paths.
      */
     public double getLightWinPercent(FastSimpleGame game, @Nullable FastSimpleGame tempGame) {
-        long key = calcSymmetricalKey(game, tempGame);
+        long key = encoding.encodeSymmetricalGameState(game, tempGame);
         int upperKey = GameStateEncoding.calcUpperKey(key);
         int lowerKey = GameStateEncoding.calcLowerKey(key);
         double winPercent = maps[upperKey].getDouble(lowerKey);
@@ -202,32 +175,40 @@ public class Lut {
         }
     }
 
-    public static <R extends Roll> Lut read(
+    public static Lut read(File file) throws IOException {
+        return read(
+                JsonNotation.createSimple(),
+                GameStateEncoding::createSimple,
+                file
+        );
+    }
+
+    public static Lut read(
             JsonNotation jsonNotation,
-            GameStateEncoding encoding,
+            Function<GameSettings, GameStateEncoding> encodingGenerator,
             File file
     ) throws IOException {
 
         try (FileInputStream fis = new FileInputStream(file)) {
-            return read(jsonNotation, encoding, fis.getChannel());
+            return read(jsonNotation, encodingGenerator, fis.getChannel());
         }
     }
 
-    public static <R extends Roll> Lut read(
+    public static Lut read(
             JsonNotation jsonNotation,
-            GameStateEncoding encoding,
+            Function<GameSettings, GameStateEncoding> encodingGenerator,
             FileChannel channel
     ) throws IOException {
 
         ByteBuffer workingBuffer = ByteBuffer.allocateDirect(1024 * 1024);
         workingBuffer.order(ByteOrder.BIG_ENDIAN);
         DataSource source = new DataSource.FileDataSource(channel, workingBuffer);
-        return read(jsonNotation, encoding, source);
+        return read(jsonNotation, encodingGenerator, source);
     }
 
-    public static <R extends Roll> Lut read(
+    public static Lut read(
             JsonNotation jsonNotation,
-            GameStateEncoding encoding,
+            Function<GameSettings, GameStateEncoding> encodingGenerator,
             DataSource source
     ) throws IOException {
 
@@ -244,6 +225,7 @@ public class Lut {
         byte[] metadataBytes = source.readBytes(metadataByteCount);
         String metadataJson = new String(metadataBytes, StandardCharsets.UTF_8);
         LutMetadata metadata = LutMetadata.decode(jsonNotation, metadataJson);
+        GameStateEncoding encoding = encodingGenerator.apply(metadata.getGameSettings());
 
         int mapCount = source.readInt();
         int[] mapEntryCounts = new int[mapCount];

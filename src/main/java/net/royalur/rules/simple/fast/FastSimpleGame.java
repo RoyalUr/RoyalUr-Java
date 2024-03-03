@@ -3,6 +3,7 @@ package net.royalur.rules.simple.fast;
 import net.royalur.Game;
 import net.royalur.model.*;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class FastSimpleGame {
     public static final int MOVE_STATUS_CAPTURED = 0x04;
     public static final int MOVE_STATUS_GRANTED_EXTRA_ROLL = 0x08;
 
+    public final GameSettings settings;
     public final boolean areRosettesSafe;
     public final boolean rosettesGrantExtraRoll;
     public final boolean capturesGrantExtraRoll;
@@ -31,6 +33,7 @@ public class FastSimpleGame {
     public boolean isFinished;
 
     public FastSimpleGame(GameSettings settings) {
+        this.settings = settings;
         this.areRosettesSafe = settings.areRosettesSafe();
         this.rosettesGrantExtraRoll = settings.doRosettesGrantExtraRolls();
         this.capturesGrantExtraRoll = settings.doCapturesGrantExtraRolls();
@@ -241,6 +244,40 @@ public class FastSimpleGame {
             resultStatus |= MOVE_STATUS_GRANTED_EXTRA_ROLL;
         }
         return resultStatus;
+    }
+
+    /**
+     * Copies the state of this game with the players swapped. If output is
+     * provided, the copy is placed into it. Otherwise, a new game is created.
+     * @param output An optional game to update with the reversed state of this
+     *               game, instead of creating a new game.
+     * @return A game with the reversed state of this game.
+     */
+    public FastSimpleGame reversePlayers(@Nullable FastSimpleGame output) {
+        if (output == null) {
+            output = new FastSimpleGame(settings);
+        }
+        output.isLightTurn = !isLightTurn;
+        output.isFinished = isFinished;
+        output.rollValue = rollValue;
+        output.dark.score = light.score;
+        output.dark.pieces = light.pieces;
+        output.light.score = dark.score;
+        output.light.pieces = dark.pieces;
+
+        FastSimpleBoard inputBoard = board;
+        FastSimpleBoard outputBoard = output.board;
+
+        int width = inputBoard.width;
+        int height = inputBoard.height;
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int fromIndex = inputBoard.calcTileIndex(x, y);
+                int toIndex = outputBoard.calcTileIndex(width - x - 1, y);
+                outputBoard.set(toIndex, -1 * inputBoard.get(fromIndex));
+            }
+        }
+        return output;
     }
 
     public static boolean didMoveIntroducePiece(int moveStatus) {
