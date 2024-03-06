@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 /**
  * Contains type checking helper methods for retrieving JSON values,
@@ -232,5 +233,35 @@ public class JsonHelper {
             );
         }
         return value.booleanValue();
+    }
+
+    public static Instant parseDate(String value) {
+        return Instant.parse(value);
+    }
+
+    public static String encodeDate(Instant instant) {
+        return instant.toString();
+    }
+
+    public static @Nullable String encodeNullableDate(@Nullable Instant instant) {
+        return (instant != null ? encodeDate(instant) : null);
+    }
+
+    /**
+     * Reads an ISO date string.
+     */
+    public static Instant readDate(ObjectNode json, String key) {
+        return parseDate(readString(json, key));
+    }
+
+    /**
+     * Reads an ISO date string.
+     */
+    public static @Nullable Instant readNullableDate(ObjectNode json, String key) {
+        String value = readNullableString(json, key);
+        if (value == null)
+            return null;
+
+        return parseDate(value);
     }
 }
