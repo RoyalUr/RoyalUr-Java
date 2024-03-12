@@ -53,47 +53,26 @@ public class JsonHelper {
         return json.get(key);
     }
 
-    public static ObjectNode readDict(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
+    public static ObjectNode checkedToObject(JsonNode value, String key) {
         if (!(value instanceof ObjectNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, not "
-                        + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be an object, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return (ObjectNode) value;
     }
 
-    public static @Nullable ObjectNode readNullableDict(ObjectNode json, String key) {
-        JsonNode value = readNullableValue(json, key);
-        if (value == null)
-            return null;
-
-        if (!(value instanceof ObjectNode)) {
-            throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, not "
-                        + value.getNodeType().name().toLowerCase()
-            );
-        }
-        return (ObjectNode) value;
+    public static ObjectNode readObject(ObjectNode json, String key) {
+        return checkedToObject(readValue(json, key), key);
     }
 
-    public static ArrayNode readArray(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
-        if (!(value instanceof ArrayNode)) {
-            throw new JsonTypeError(
-                "Expected " + key + " to be a dictionary, not "
-                        + value.getNodeType().name().toLowerCase()
-            );
-        }
-        return (ArrayNode) value;
+    public static @Nullable ObjectNode readNullableObject(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToObject(value, key) : null);
     }
 
-    public static @Nullable ArrayNode readNullableArray(ObjectNode json, String key) {
-        JsonNode value = readNullableValue(json, key);
-        if (value == null)
-            return null;
-
+    public static ArrayNode checkedToArray(JsonNode value, String key) {
         if (!(value instanceof ArrayNode)) {
             throw new JsonTypeError(
                     "Expected " + key + " to be a dictionary, not "
@@ -103,6 +82,15 @@ public class JsonHelper {
         return (ArrayNode) value;
     }
 
+    public static ArrayNode readArray(ObjectNode json, String key) {
+        return checkedToArray(readValue(json, key), key);
+    }
+
+    public static @Nullable ArrayNode readNullableArray(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToArray(value, key) : null);
+    }
+
     public static JsonNode readArrayEntry(ArrayNode json, int index) {
         if (!json.has(index))
             throw new JsonKeyError("Missing " + index + ". Array has only " + json.size() + " entries");
@@ -110,19 +98,11 @@ public class JsonHelper {
         return json.get(index);
     }
 
-    public static ObjectNode readArrayDictEntry(ArrayNode json, int index) {
-        JsonNode value = readArrayEntry(json, index);
-        if (!(value instanceof ObjectNode)) {
-            throw new JsonTypeError(
-                    "Expected the " + index + "'th entry to be a dictionary, not "
-                            + value.getNodeType().name().toLowerCase()
-            );
-        }
-        return (ObjectNode) value;
+    public static ObjectNode readArrayObjectEntry(ArrayNode json, int index) {
+        return checkedToObject(readArrayEntry(json, index), "the " + index + "'th entry");
     }
 
-    public static String readString(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
+    public static String checkedToString(JsonNode value, String key) {
         if (!value.isTextual()) {
             throw new JsonTypeError(
                     "Expected " + key + " to be a string, not "
@@ -130,24 +110,23 @@ public class JsonHelper {
             );
         }
         return value.textValue();
+    }
+
+    public static String readString(ObjectNode json, String key) {
+        return checkedToString(readValue(json, key), key);
     }
 
     public static @Nullable String readNullableString(ObjectNode json, String key) {
         JsonNode value = readNullableValue(json, key);
-        if (value == null)
-            return null;
-
-        if (!value.isTextual()) {
-            throw new JsonTypeError(
-                    "Expected " + key + " to be a string, not "
-                            + value.getNodeType().name().toLowerCase()
-            );
-        }
-        return value.textValue();
+        return (value != null ? checkedToString(value, key) : null);
     }
 
-    public static char readChar(ObjectNode json, String key) {
-        String value = readString(json, key);
+    public static String readStringWithDefault(ObjectNode json, String key, String defaultValue) {
+        String value = readNullableString(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static char checkedToChar(String value, String key) {
         if (value.length() != 1) {
             throw new JsonTypeError(
                     "Expected " + key + " to be a single character, but it was "
@@ -157,19 +136,41 @@ public class JsonHelper {
         return value.charAt(0);
     }
 
-    public static JsonNode readNumber(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
+    public static char readChar(ObjectNode json, String key) {
+        return checkedToChar(readString(json, key), key);
+    }
+
+    public static @Nullable Character readNullableChar(ObjectNode json, String key) {
+        String value = readNullableString(json, key);
+        return (value != null ? checkedToChar(value, key) : null);
+    }
+
+    public static char readCharWithDefault(ObjectNode json, String key, char defaultValue) {
+        Character value = readNullableChar(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static JsonNode checkedToNumber(JsonNode value, String key) {
         if (!value.isNumber()) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a number, not "
-                        + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be a number, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return value;
     }
 
-    public static int readInt(ObjectNode json, String key) {
-        JsonNode value = readNumber(json, key);
+    public static JsonNode readNumber(ObjectNode json, String key) {
+        return checkedToNumber(readValue(json, key), key);
+    }
+
+    public static @Nullable JsonNode readNullableNumber(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToNumber(value, key) : null);
+    }
+
+    public static int checkedToInt(JsonNode value, String key) {
+        value = checkedToNumber(value, key);
         if (value.isFloatingPointNumber())
             throw new JsonTypeError("Expected " + key + " to be an integer");
         if (!value.canConvertToInt())
@@ -178,8 +179,22 @@ public class JsonHelper {
         return value.intValue();
     }
 
-    public static long readLong(ObjectNode json, String key) {
-        JsonNode value = readNumber(json, key);
+    public static int readInt(ObjectNode json, String key) {
+        return checkedToInt(readValue(json, key), key);
+    }
+
+    public static @Nullable Integer readNullableInt(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToInt(value, key) : null);
+    }
+
+    public static int readIntWithDefault(ObjectNode json, String key, int defaultValue) {
+        Integer value = readNullableInt(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static long checkedToLong(JsonNode value, String key) {
+        value = checkedToNumber(value, key);
         if (value.isFloatingPointNumber())
             throw new JsonTypeError("Expected " + key + " to be an integer");
         if (!value.canConvertToLong())
@@ -188,8 +203,22 @@ public class JsonHelper {
         return value.longValue();
     }
 
-    public static float readFloat(ObjectNode json, String key) {
-        JsonNode value = readNumber(json, key);
+    public static long readLong(ObjectNode json, String key) {
+        return checkedToLong(readValue(json, key), key);
+    }
+
+    public static @Nullable Long readNullableLong(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToLong(value, key) : null);
+    }
+
+    public static long readLongWithDefault(ObjectNode json, String key, long defaultValue) {
+        Long value = readNullableLong(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static float checkedToFloat(JsonNode value, String key) {
+        value = checkedToNumber(value, key);
         float valueFloat = value.floatValue();
         if (value.isFloat())
             return valueFloat;
@@ -206,8 +235,22 @@ public class JsonHelper {
         return valueFloat;
     }
 
-    public static double readDouble(ObjectNode json, String key) {
-        JsonNode value = readNumber(json, key);
+    public static float readFloat(ObjectNode json, String key) {
+        return checkedToFloat(readValue(json, key), key);
+    }
+
+    public static @Nullable Float readNullableFloat(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToFloat(value, key) : null);
+    }
+
+    public static float readFloatWithDefault(ObjectNode json, String key, float defaultValue) {
+        Float value = readNullableFloat(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static double checkedToDouble(JsonNode value, String key) {
+        value = checkedToNumber(value, key);
         double valueDouble = value.doubleValue();
         if (value.isDouble() || value.isFloat() || value.isInt())
             return valueDouble;
@@ -224,15 +267,42 @@ public class JsonHelper {
         return valueDouble;
     }
 
-    public static boolean readBool(ObjectNode json, String key) {
-        JsonNode value = readValue(json, key);
+    public static double readDouble(ObjectNode json, String key) {
+        return checkedToDouble(readValue(json, key), key);
+    }
+
+    public static @Nullable Double readNullableDouble(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToDouble(value, key) : null);
+    }
+
+    public static double readDoubleWithDefault(ObjectNode json, String key, double defaultValue) {
+        Double value = readNullableDouble(json, key);
+        return (value != null ? value : defaultValue);
+    }
+
+    public static boolean checkedToBool(JsonNode value, String key) {
         if (!(value instanceof BooleanNode)) {
             throw new JsonTypeError(
-                "Expected " + key + " to be a boolean, not "
-                        + value.getNodeType().name().toLowerCase()
+                    "Expected " + key + " to be a boolean, not "
+                            + value.getNodeType().name().toLowerCase()
             );
         }
         return value.booleanValue();
+    }
+
+    public static boolean readBool(ObjectNode json, String key) {
+        return checkedToBool(readValue(json, key), key);
+    }
+
+    public static @Nullable Boolean readNullableBool(ObjectNode json, String key) {
+        JsonNode value = readNullableValue(json, key);
+        return (value != null ? checkedToBool(value, key) : null);
+    }
+
+    public static boolean readBoolWithDefault(ObjectNode json, String key, boolean defaultValue) {
+        Boolean value = readNullableBool(json, key);
+        return (value != null ? value : defaultValue);
     }
 
     public static Instant parseDate(String value) {
@@ -259,9 +329,14 @@ public class JsonHelper {
      */
     public static @Nullable Instant readNullableDate(ObjectNode json, String key) {
         String value = readNullableString(json, key);
-        if (value == null)
-            return null;
+        return (value != null ? parseDate(value) : null);
+    }
 
-        return parseDate(value);
+    /**
+     * Reads an ISO date string.
+     */
+    public static Instant readDateWithDefault(ObjectNode json, String key, Instant defaultValue) {
+        Instant value = readNullableDate(json, key);
+        return (value != null ? value : defaultValue);
     }
 }

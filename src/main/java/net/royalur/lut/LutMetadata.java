@@ -118,7 +118,7 @@ public class LutMetadata {
             JsonNotation notation,
             ObjectNode json
     ) {
-        ObjectNode gameSettingsJson = JsonHelper.readDict(json, GAME_SETTINGS_KEY);
+        ObjectNode gameSettingsJson = JsonHelper.readObject(json, GAME_SETTINGS_KEY);
         GameSettings gameSettings = notation.readGameSettings(gameSettingsJson);
 
         Map<String, JsonNode> additionalMetadata = new HashMap<>();

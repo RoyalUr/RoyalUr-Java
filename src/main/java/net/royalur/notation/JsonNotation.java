@@ -683,15 +683,15 @@ public class JsonNotation implements Notation {
     public Move readMove(RuleSet rules, ObjectNode json) {
         PathPair paths = rules.getPaths();
 
-        ObjectNode sourceJson = JsonHelper.readNullableDict(json, MOVE_SOURCE_KEY);
+        ObjectNode sourceJson = JsonHelper.readNullableObject(json, MOVE_SOURCE_KEY);
         Piece source = (sourceJson != null ? readPiece(rules, sourceJson) : null);
         Tile sourceTile = (source != null ? getTileFromPiece(paths, source) : null);
 
-        ObjectNode destJson = JsonHelper.readNullableDict(json, MOVE_DEST_KEY);
+        ObjectNode destJson = JsonHelper.readNullableObject(json, MOVE_DEST_KEY);
         Piece dest = (destJson != null ? readPiece(rules, destJson) : null);
         Tile destTile = (dest != null ? getTileFromPiece(paths, dest) : null);
 
-        ObjectNode capturedJson = JsonHelper.readNullableDict(json, MOVE_CAPTURED_KEY);
+        ObjectNode capturedJson = JsonHelper.readNullableObject(json, MOVE_CAPTURED_KEY);
         Piece captured = (capturedJson != null ? readPiece(rules, capturedJson) : null);
 
         PlayerType player = (source != null ? source.getOwner() : (dest != null ? dest.getOwner() : null));
@@ -709,7 +709,7 @@ public class JsonNotation implements Notation {
     public List<Move> readMoveList(RuleSet rules, ArrayNode json) {
         List<Move> moves = new ArrayList<>();
         for (int index = 0; index < json.size(); ++index) {
-            ObjectNode moveJson = JsonHelper.readArrayDictEntry(json, index);
+            ObjectNode moveJson = JsonHelper.readArrayObjectEntry(json, index);
             moves.add(readMove(rules, moveJson));
         }
         return moves;
@@ -717,13 +717,13 @@ public class JsonNotation implements Notation {
 
     public Board readBoard(RuleSet rules, ObjectNode json) {
         Board board = new Board(rules.getBoardShape());
-        ObjectNode piecesJson = JsonHelper.readDict(json, BOARD_PIECES_KEY);
+        ObjectNode piecesJson = JsonHelper.readObject(json, BOARD_PIECES_KEY);
 
         Iterator<String> keyIterator = piecesJson.fieldNames();
         while (keyIterator.hasNext()) {
             String tileKey = keyIterator.next();
             Tile tile = Tile.fromString(tileKey);
-            ObjectNode pieceJson = JsonHelper.readDict(piecesJson, tileKey);
+            ObjectNode pieceJson = JsonHelper.readObject(piecesJson, tileKey);
             Piece piece = readPiece(rules, pieceJson);
             board.set(tile, piece);
         }
@@ -762,7 +762,7 @@ public class JsonNotation implements Notation {
             ObjectNode json,
             PlayerType turn
     ) {
-        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readObject(json, ROLL_KEY);
         Roll roll = readRoll(rules, rollJson);
         return stateSource.createRolledState(rules, turn, roll);
     }
@@ -773,10 +773,10 @@ public class JsonNotation implements Notation {
             ObjectNode json,
             PlayerType turn
     ) {
-        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readObject(json, ROLL_KEY);
         Roll roll = readRoll(rules, rollJson);
 
-        ObjectNode moveJson = JsonHelper.readDict(json, MOVE_KEY);
+        ObjectNode moveJson = JsonHelper.readObject(json, MOVE_KEY);
         Move move = readMove(rules, moveJson);
 
         return stateSource.createMovedState(rules, turn, roll, move);
@@ -797,7 +797,7 @@ public class JsonNotation implements Notation {
             ObjectNode json,
             PlayerType turn
     ) {
-        ObjectNode rollJson = JsonHelper.readDict(json, ROLL_KEY);
+        ObjectNode rollJson = JsonHelper.readObject(json, ROLL_KEY);
         Roll roll = readRoll(rules, rollJson);
         return stateSource.createWaitingForMoveState(rules, turn, roll);
     }
@@ -891,10 +891,10 @@ public class JsonNotation implements Notation {
             RuleSet rules,
             ObjectNode json
     ) {
-        ObjectNode boardJson = JsonHelper.readDict(json, BOARD_KEY);
-        ObjectNode playersJson = JsonHelper.readDict(json, PLAYERS_KEY);
-        ObjectNode lightPlayerJson = JsonHelper.readDict(playersJson, PlayerType.LIGHT.getCharStr());
-        ObjectNode darkPlayerJson = JsonHelper.readDict(playersJson, PlayerType.DARK.getCharStr());
+        ObjectNode boardJson = JsonHelper.readObject(json, BOARD_KEY);
+        ObjectNode playersJson = JsonHelper.readObject(json, PLAYERS_KEY);
+        ObjectNode lightPlayerJson = JsonHelper.readObject(playersJson, PlayerType.LIGHT.getCharStr());
+        ObjectNode darkPlayerJson = JsonHelper.readObject(playersJson, PlayerType.DARK.getCharStr());
 
         Board board = readBoard(rules, boardJson);
         PlayerState lightPlayer = readPlayerState(rules, PlayerType.LIGHT, lightPlayerJson);
@@ -914,7 +914,7 @@ public class JsonNotation implements Notation {
         DerivedStateSource stateSource = new DerivedStateSource(initialState);
         int lastIndex = -1;
         for (int jsonIndex = 0; jsonIndex < json.size(); ++jsonIndex) {
-            ObjectNode stateJson = JsonHelper.readArrayDictEntry(json, jsonIndex);
+            ObjectNode stateJson = JsonHelper.readArrayObjectEntry(json, jsonIndex);
             GameState state = readState(rules, stateSource, stateJson);
 
             int index = stateSource.lastIndexOf(state);
@@ -954,14 +954,14 @@ public class JsonNotation implements Notation {
     }
 
     public Game readGameV1(ObjectNode json) {
-        ObjectNode metadataJson = JsonHelper.readDict(json, METADATA_KEY);
+        ObjectNode metadataJson = JsonHelper.readObject(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
 
-        ObjectNode settingsJson = JsonHelper.readDict(json, SETTINGS_KEY);
+        ObjectNode settingsJson = JsonHelper.readObject(json, SETTINGS_KEY);
         GameSettings settings = readGameSettings(settingsJson);
         RuleSet rules = ruleSetProvider.create(settings, metadata);
 
-        ObjectNode initialStateJson = JsonHelper.readDict(json, INITIAL_STATE_KEY);
+        ObjectNode initialStateJson = JsonHelper.readObject(json, INITIAL_STATE_KEY);
         GameState initialState = readInitialState(rules, initialStateJson);
 
         ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
