@@ -42,7 +42,7 @@ public class JsonNotation implements Notation {
      * are made to the JSON notation, then this field will be updated
      * to reflect that.
      */
-    public static final int LATEST_VERSION = 1;
+    public static final int LATEST_VERSION = 2;
 
     /**
      * The key in the JSON for the version of the notation.
@@ -170,14 +170,14 @@ public class JsonNotation implements Notation {
     public static final String AVAILABLE_MOVES_KEY = "moves";
 
     /**
-     * The key in the JSON for the owner of a piece.
+     * The old key in the JSON for the owner of a piece.
      */
-    public static final String PIECE_OWNER_KEY = "owner";
+    public static final String OLD_PIECE_OWNER_KEY = "owner";
 
     /**
-     * The key in the JSON for the index of a piece on its path.
+     * The old key in the JSON for the index of a piece on its path.
      */
-    public static final String PIECE_INDEX_KEY = "index";
+    public static final String OLD_PIECE_INDEX_KEY = "index";
 
     /**
      * The key in the JSON for the player whose turn it is in a state.
@@ -289,9 +289,17 @@ public class JsonNotation implements Notation {
         generator.writeNumberField(ROLL_VALUE_KEY, roll.value());
     }
 
-    public void writePiece(JsonGenerator generator, Piece piece) throws IOException {
-        generator.writeStringField(PIECE_OWNER_KEY, piece.getOwner().getCharStr());
-        generator.writeNumberField(PIECE_INDEX_KEY, piece.getPathIndex());
+    public int encodePiece(Piece piece) {
+        PlayerType owner = piece.getOwner();
+        int sign;
+        if (owner == PlayerType.LIGHT) {
+            sign = 1;
+        } else if (owner == PlayerType.DARK) {
+            sign = -1;
+        } else {
+            throw new IllegalArgumentException("Unknown player type " + owner.getTextName());
+        }
+        return sign * (piece.getPathIndex() + 1);
     }
 
     protected void writePieceField(
@@ -301,14 +309,7 @@ public class JsonNotation implements Notation {
     ) throws IOException {
 
         if (piece != null) {
-            generator.writeObjectFieldStart(fieldName);
-            try {
-                writePiece(generator, piece);
-            } finally {
-                generator.writeEndObject();
-            }
-        } else {
-            generator.writeNullField(fieldName);
+            generator.writeNumberField(fieldName, encodePiece(piece));
         }
     }
 
@@ -340,12 +341,7 @@ public class JsonNotation implements Notation {
             for (Tile tile : board.getShape().getTiles()) {
                 Piece piece = board.get(tile);
                 if (piece != null) {
-                    generator.writeObjectFieldStart(tile.toString());
-                    try {
-                        writePiece(generator, piece);
-                    } finally {
-                        generator.writeEndObject();
-                    }
+                    writePieceField(generator, tile.toString(), piece);
                 }
             }
         } finally {
@@ -666,14 +662,32 @@ public class JsonNotation implements Notation {
         return rules.getDiceFactory().createRoll(rollValue);
     }
 
-    public Piece readPiece(RuleSet rules, ObjectNode json) {
-        char ownerChar = JsonHelper.readChar(json, JsonNotation.PIECE_OWNER_KEY);
+    public Piece readOldPiece(RuleSet rules, ObjectNode json) {
+        char ownerChar = JsonHelper.readChar(json, JsonNotation.OLD_PIECE_OWNER_KEY);
         PlayerType owner = PlayerType.getByChar(ownerChar);
+        int pathIndex = JsonHelper.readInt(json, JsonNotation.OLD_PIECE_INDEX_KEY);
+        return rules.getPieceProvider().create(owner, pathIndex);
+    }
 
-        int pathIndex = JsonHelper.readInt(json, JsonNotation.PIECE_INDEX_KEY);
-        return rules.getPieceProvider().create(
-                owner, pathIndex
-        );
+    public @Nullable Piece readNullablePiece(RuleSet rules, ObjectNode json, String key) {
+        JsonNode node = JsonHelper.readNullableValue(json, key);
+        if (node == null)
+            return null;
+        if (node instanceof ObjectNode pieceJson)
+            return readOldPiece(rules, pieceJson);
+
+        int value = JsonHelper.checkedToInt(node, key);
+        PlayerType owner = (value < 0 ? PlayerType.DARK : PlayerType.LIGHT);
+        int pathIndex = Math.abs(value) - 1;
+        return rules.getPieceProvider().create(owner, pathIndex);
+    }
+
+    public Piece readPiece(RuleSet rules, ObjectNode json, String key) {
+        Piece piece = readNullablePiece(rules, json, key);
+        if (piece == null)
+            throw new JsonHelper.JsonTypeError("Missing " + key);
+
+        return piece;
     }
 
     private Tile getTileFromPiece(PathPair paths, Piece piece) {
@@ -683,16 +697,11 @@ public class JsonNotation implements Notation {
     public Move readMove(RuleSet rules, ObjectNode json) {
         PathPair paths = rules.getPaths();
 
-        ObjectNode sourceJson = JsonHelper.readNullableObject(json, MOVE_SOURCE_KEY);
-        Piece source = (sourceJson != null ? readPiece(rules, sourceJson) : null);
+        Piece source = readNullablePiece(rules, json, MOVE_SOURCE_KEY);
         Tile sourceTile = (source != null ? getTileFromPiece(paths, source) : null);
-
-        ObjectNode destJson = JsonHelper.readNullableObject(json, MOVE_DEST_KEY);
-        Piece dest = (destJson != null ? readPiece(rules, destJson) : null);
+        Piece dest = readNullablePiece(rules, json, MOVE_DEST_KEY);
         Tile destTile = (dest != null ? getTileFromPiece(paths, dest) : null);
-
-        ObjectNode capturedJson = JsonHelper.readNullableObject(json, MOVE_CAPTURED_KEY);
-        Piece captured = (capturedJson != null ? readPiece(rules, capturedJson) : null);
+        Piece captured = readNullablePiece(rules, json, MOVE_CAPTURED_KEY);
 
         PlayerType player = (source != null ? source.getOwner() : (dest != null ? dest.getOwner() : null));
         if (player == null)
@@ -723,8 +732,7 @@ public class JsonNotation implements Notation {
         while (keyIterator.hasNext()) {
             String tileKey = keyIterator.next();
             Tile tile = Tile.fromString(tileKey);
-            ObjectNode pieceJson = JsonHelper.readObject(piecesJson, tileKey);
-            Piece piece = readPiece(rules, pieceJson);
+            Piece piece = readPiece(rules, piecesJson, tileKey);
             board.set(tile, piece);
         }
         return board;
@@ -953,7 +961,7 @@ public class JsonNotation implements Notation {
         return new GameMetadata();
     }
 
-    public Game readGameV1(ObjectNode json) {
+    public Game readGameV1Or2(ObjectNode json) {
         ObjectNode metadataJson = JsonHelper.readObject(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
 
@@ -975,8 +983,8 @@ public class JsonNotation implements Notation {
 
     public Game readGame(ObjectNode json) {
         int version = JsonHelper.readInt(json, VERSION_KEY);
-        if (version == 1)
-            return readGameV1(json);
+        if (version == 1 || version == 2)
+            return readGameV1Or2(json);
 
         throw new JsonHelper.JsonReadError("Unknown JSON-Notation version: " + version);
     }
