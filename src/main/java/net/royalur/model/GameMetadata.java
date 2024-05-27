@@ -85,6 +85,13 @@ public class GameMetadata {
     }
 
     /**
+     * Removes all metadata.
+     */
+    public void clear() {
+        metadata.clear();
+    }
+
+    /**
      * Add a new metadata value, {@code value}, associated with {@code key}.
      * @param key The metadata key to set the value for.
      * @param value The value to associate with the given key.
