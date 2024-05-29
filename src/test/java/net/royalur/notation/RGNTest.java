@@ -24,24 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RGNTest {
 
-    public static class ProvidedRules implements Arguments {
-        public final String name;
-        public final RuleSet rules;
-
-        public ProvidedRules(String name, RuleSet rules) {
-            this.name = name;
-            this.rules = rules;
-        }
-
+    public record ProvidedRules(String name, RuleSet rules) implements Arguments {
         @Override
         public String toString() {
-            return name;
-        }
+        return name;
+            }
 
         @Override
         public Object[] get() {
-            return new Object[] {this};
-        }
+                return new Object[]{this};
+            }
     }
 
     public static class RulesProvider implements ArgumentsProvider {
@@ -159,7 +151,7 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMoveIntroducingPiece();
+                game.makeMove(rules.rules.getPaths().getLightStart());
                 games.add(new ProvidedGame("One Move, " + rules.name, game));
             }
 
@@ -167,7 +159,8 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMoveIntroducingPiece();
+                game.makeMove(rules.rules.getPaths().getLightStart());
+                game.rollDice(1);
                 games.add(new ProvidedGame("One Move One Roll, " + rules.name, game));
             }
 
@@ -175,10 +168,65 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMoveIntroducingPiece();
+                game.makeMove(rules.rules.getPaths().getLightStart());
                 game.rollDice(1);
-                game.makeMoveIntroducingPiece();
+                game.makeMove(rules.rules.getPaths().getDarkStart());
                 games.add(new ProvidedGame("Two Moves, " + rules.name, game));
+            }
+
+            // One move by light, and one move by dark, and resign.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                for (PlayerType resigner : PlayerType.values()) {
+                    Game game = new Game(rules.rules);
+                    game.rollDice(1);
+                    game.makeMove(rules.rules.getPaths().getLightStart());
+                    game.rollDice(1);
+                    game.makeMove(rules.rules.getPaths().getDarkStart());
+                    game.resign(resigner);
+                    games.add(new ProvidedGame("Two Moves and Resign, " + rules.name, game));
+                }
+            }
+
+            // One move by light, and one move by dark, and abandon.
+            for (ProvidedRules rules : RulesProvider.get()) {
+                for (AbandonReason abandonReason : AbandonReason.values()) {
+                    if (!abandonReason.requiresPlayer())
+                        continue;
+
+                    for (PlayerType abandoner : PlayerType.values()) {
+                        Game game = new Game(rules.rules);
+                        game.rollDice(1);
+                        game.makeMove(rules.rules.getPaths().getLightStart());
+                        game.rollDice(1);
+                        game.makeMove(rules.rules.getPaths().getDarkStart());
+                        game.abandon(abandonReason, abandoner);
+                        games.add(new ProvidedGame(
+                                "Two Moves and Abandon"
+                                        + " (" + abandoner.getTextName() + " "
+                                        + abandonReason.getName() + "), "
+                                        + rules.name,
+                                game
+                        ));
+                    }
+                }
+
+                for (AbandonReason abandonReason : AbandonReason.values()) {
+                    if (abandonReason.requiresPlayer())
+                        continue;
+
+                    Game game = new Game(rules.rules);
+                    game.rollDice(1);
+                    game.makeMove(rules.rules.getPaths().getLightStart());
+                    game.rollDice(1);
+                    game.makeMove(rules.rules.getPaths().getDarkStart());
+                    game.abandon(abandonReason, null);
+                    games.add(new ProvidedGame(
+                            "Two Moves and Abandon"
+                                    + " (" + abandonReason.getName() + "), "
+                                    + rules.name,
+                            game
+                    ));
+                }
             }
 
             // Game where light always rolls 1, and dark always rolls 0.

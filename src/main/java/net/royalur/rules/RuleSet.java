@@ -8,10 +8,10 @@ import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
 import net.royalur.rules.simple.SimpleRuleSet;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
-import net.royalur.rules.state.GameState;
-import net.royalur.rules.state.WaitingForMoveGameState;
-import net.royalur.rules.state.WaitingForRollGameState;
+import net.royalur.rules.state.*;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -199,6 +199,48 @@ public abstract class RuleSet {
             WaitingForMoveGameState state,
             Move move
     );
+
+    /**
+     * Applies a resignation by {@code player} to generate the new state of the game.
+     * @param state The current state of the game.
+     * @param player The player that resigned the game.
+     * @return A list of game states representing the resignation and the end of the game.
+     */
+    public List<GameState> applyResign(
+            GameState state,
+            PlayerType player
+    ) {
+        Board board = state.getBoard();
+        PlayerState light = state.getLightPlayer();
+        PlayerState dark = state.getDarkPlayer();
+        return Arrays.asList(
+                new ResignedGameState(board, light, dark, player),
+                new EndGameState(board, light, dark, player.getOtherPlayer())
+        );
+    }
+
+    /**
+     * Applies an abandonment of the game due to {@code reason}. If the abandonment was
+     * caused by a player, then {@code player} should be provided.
+     * @param state The current state of the game.
+     * @param reason The reason that the game was abandoned.
+     * @param player The player that abandoned the game, or {@code null}.
+     * @return A list of game states representing the resignation and the end of the game.
+     */
+    public List<GameState> applyAbandon(
+            GameState state,
+            AbandonReason reason,
+            @Nullable PlayerType player
+    ) {
+        Board board = state.getBoard();
+        PlayerState light = state.getLightPlayer();
+        PlayerState dark = state.getDarkPlayer();
+        PlayerType winner = (player != null ? player.getOtherPlayer() : null);
+        return Arrays.asList(
+                new AbandonedGameState(board, light, dark, reason, player),
+                new EndGameState(board, light, dark, winner)
+        );
+    }
 
     /**
      * Selects only the states that are required to reproduce

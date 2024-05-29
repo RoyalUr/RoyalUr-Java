@@ -1,29 +1,33 @@
 package net.royalur.rules.state;
 
-import net.royalur.model.*;
+import net.royalur.model.Board;
+import net.royalur.model.PlayerState;
+import net.royalur.model.PlayerType;
+
+import javax.annotation.Nullable;
 
 /**
  * A game state where a player has won the game.
  */
-public class WinGameState extends GameState {
+public class EndGameState extends GameState {
 
     /**
      * The player that won the game.
      */
-    private final PlayerType winner;
+    private final @Nullable PlayerType winner;
 
     /**
      * Instantiates a game state where a player has won the game.
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
-     * @param winner The winning player.
+     * @param winner      The winning player, or {@code null} if neither player won.
      */
-    public WinGameState(
+    public EndGameState(
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
-            PlayerType winner
+            @Nullable PlayerType winner
     ) {
         super(board, lightPlayer, darkPlayer);
         this.winner = winner;
@@ -40,11 +44,29 @@ public class WinGameState extends GameState {
     }
 
     /**
+     * Gets whether the game ended with a winner.
+     * @return Whether the game ended with a winner.
+     */
+    public boolean hasWinner() {
+        return winner != null;
+    }
+
+    /**
+     * Gets whether the game ended with a loser.
+     * @return Whether the game ended with a loser.
+     */
+    public boolean hasLoser() {
+        return winner != null;
+    }
+
+    /**
      * Gets the player that won the game.
      * @return The player that won the game.
      */
     public PlayerType getWinner() {
-        return this.winner;
+        if (winner == null)
+            throw new IllegalStateException("This game ended without a winner");
+        return winner;
     }
 
     /**
@@ -52,7 +74,9 @@ public class WinGameState extends GameState {
      * @return The player that lost the game.
      */
     public PlayerType getLoser() {
-        return this.winner.getOtherPlayer();
+        if (winner == null)
+            throw new IllegalStateException("This game ended without a loser");
+        return winner.getOtherPlayer();
     }
 
     /**
@@ -73,6 +97,9 @@ public class WinGameState extends GameState {
 
     @Override
     public String describe() {
+        if (winner == null)
+            return "The game ended without a winner";
+
         return "The " + winner.getTextName().toLowerCase() + " player has won!";
     }
 }

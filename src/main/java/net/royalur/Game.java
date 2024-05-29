@@ -8,6 +8,7 @@ import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -155,7 +156,7 @@ public class Game {
      * Retrieve the state that the game is currently in.
      * @return The state that the game is currently in.
      */
-    public GameState getCurrentState() {
+    public GameState getState() {
         return states.get(states.size() - 1);
     }
 
@@ -188,7 +189,7 @@ public class Game {
      * @return Whether the game is currently in a playable state.
      */
     public boolean isPlayable() {
-        return getCurrentState() instanceof PlayableGameState;
+        return getState() instanceof PlayableGameState;
     }
 
     /**
@@ -196,7 +197,7 @@ public class Game {
      * @return Whether the game is currently waiting for a roll from a player.
      */
     public boolean isWaitingForRoll() {
-        return getCurrentState() instanceof WaitingForRollGameState;
+        return getState() instanceof WaitingForRollGameState;
     }
 
     /**
@@ -204,7 +205,7 @@ public class Game {
      * @return Whether the game is currently waiting for a move from a player.
      */
     public boolean isWaitingForMove() {
-        return getCurrentState() instanceof WaitingForMoveGameState;
+        return getState() instanceof WaitingForMoveGameState;
     }
 
     /**
@@ -212,7 +213,7 @@ public class Game {
      * @return Whether the game is currently in a finished state.
      */
     public boolean isFinished() {
-        return getCurrentState() instanceof WinGameState;
+        return getState() instanceof EndGameState;
     }
 
     /**
@@ -220,8 +221,8 @@ public class Game {
      * This will throw an error if the game is not in a playable state.
      * @return The playable state that the game is currently in.
      */
-    public PlayableGameState getCurrentPlayableState() {
-        GameState state = getCurrentState();
+    public PlayableGameState getPlayableState() {
+        GameState state = getState();
         if (state instanceof PlayableGameState)
             return (PlayableGameState) state;
 
@@ -233,8 +234,8 @@ public class Game {
      * This will throw an error if the game is not waiting for a roll from a player.
      * @return The waiting for roll state that the game is currently in.
      */
-    public WaitingForRollGameState getCurrentWaitingForRollState() {
-        GameState state = getCurrentState();
+    public WaitingForRollGameState getWaitingForRollState() {
+        GameState state = getState();
         if (state instanceof WaitingForRollGameState)
             return (WaitingForRollGameState) state;
 
@@ -246,8 +247,8 @@ public class Game {
      * This will throw an error if the game is not waiting for a move from a player.
      * @return The waiting for move state that the game is currently in.
      */
-    public WaitingForMoveGameState getCurrentWaitingForMoveState() {
-        GameState state = getCurrentState();
+    public WaitingForMoveGameState getWaitingForMoveState() {
+        GameState state = getState();
         if (state instanceof WaitingForMoveGameState)
             return (WaitingForMoveGameState) state;
 
@@ -255,14 +256,14 @@ public class Game {
     }
 
     /**
-     * Gets the current state of this game as an instance of {@link WinGameState}.
+     * Gets the current state of this game as an instance of {@link EndGameState}.
      * This will throw an error if the game has not ended.
      * @return The win state that the game is currently in.
      */
-    public WinGameState getCurrentWinState() {
-        GameState state = getCurrentState();
-        if (state instanceof WinGameState)
-            return (WinGameState) state;
+    public EndGameState getEndState() {
+        GameState state = getState();
+        if (state instanceof EndGameState endState)
+            return endState;
 
         throw new IllegalStateException("This game has not ended");
     }
@@ -273,8 +274,7 @@ public class Game {
      * @param roll The value of the dice that is to be rolled.
      */
     public void rollDice(Roll roll) {
-        WaitingForRollGameState state = getCurrentWaitingForRollState();
-        addStates(rules.applyRoll(state, roll));
+        addStates(rules.applyRoll(getWaitingForRollState(), roll));
     }
 
     /**
@@ -304,7 +304,32 @@ public class Game {
      * @return All moves that can be made from the current position.
      */
     public List<Move> findAvailableMoves() {
-        return getCurrentWaitingForMoveState().getAvailableMoves();
+        return getWaitingForMoveState().getAvailableMoves();
+    }
+
+    /**
+     * Finds the move of the piece {@code piece}.
+     * @param piece The piece to find the move for.
+     */
+    public Move findMove(Piece piece) {
+        for (Move move : findAvailableMoves()) {
+            if (move.hasSource() && move.getSourcePiece().equals(piece))
+                return move;
+        }
+        throw new IllegalStateException("The piece cannot be moved, " + piece);
+    }
+
+    /**
+     * Finds the move of the piece on {@code tile}.
+     * @param sourceTile The tile of the piece to find the move for.
+     */
+    public Move findMove(Tile sourceTile) {
+        PathPair paths = rules.getPaths();
+        for (Move move : findAvailableMoves()) {
+            if (move.getSource(paths).equals(sourceTile))
+                return move;
+        }
+        throw new IllegalStateException("The piece on " + sourceTile + " cannot be moved");
     }
 
     /**
@@ -313,8 +338,7 @@ public class Game {
      * @param move The move to make from the current state of the game.
      */
     public void makeMove(Move move) {
-        WaitingForMoveGameState state = getCurrentWaitingForMoveState();
-        addStates(rules.applyMove(state, move));
+        addStates(rules.applyMove(getWaitingForMoveState(), move));
     }
 
     /**
@@ -322,14 +346,7 @@ public class Game {
      * @param piece The piece to be moved.
      */
     public void makeMove(Piece piece) {
-        for (Move move : findAvailableMoves()) {
-            if (!move.hasSource() || !move.getSourcePiece().equals(piece))
-                continue;
-
-            makeMove(move);
-            return;
-        }
-        throw new IllegalStateException("The piece cannot be moved, " + piece);
+        makeMove(findMove(piece));
     }
 
     /**
@@ -337,30 +354,33 @@ public class Game {
      * @param sourceTile The tile where the piece to be moved resides.
      */
     public void makeMove(Tile sourceTile) {
-        WaitingForMoveGameState state = getCurrentWaitingForMoveState();
-        PathPair paths = rules.getPaths();
-        for (Move move : findAvailableMoves()) {
-            if (!move.getSource(paths).equals(sourceTile))
-                continue;
-
-            makeMove(move);
-            return;
-        }
-        throw new IllegalStateException("There is no available move from " + sourceTile);
+        makeMove(findMove(sourceTile));
     }
 
     /**
-     * Moves a new piece onto the board.
+     * Marks that {@code player} resigned the game.
+     * @param player The player to resign the game.
      */
-    public void makeMoveIntroducingPiece() {
-        for (Move move : findAvailableMoves()) {
-            if (!move.isIntroducingPiece())
-                continue;
+    public void resign(PlayerType player) {
+        if (isFinished())
+            throw new IllegalStateException("The game is already finished");
 
-            makeMove(move);
-            return;
-        }
-        throw new IllegalStateException("There is no available move to introduce a piece to the board");
+        addStates(rules.applyResign(getState(), player));
+    }
+
+    /**
+     * Marks that the game was abandoned due to {@code reason}. The person that
+     * abandoned the game can be provided using {@code player}, or {@code null}
+     * can be passed if a specific player did not abandon the game. For example,
+     * if a game had to end due to a venue closing, a player should not be provided.
+     * @param reason The reason the game was abandoned.
+     * @param player The player that abandoned the game, or {@code null}.
+     */
+    public void abandon(AbandonReason reason, @Nullable PlayerType player) {
+        if (isFinished())
+            throw new IllegalStateException("The game is already finished");
+
+        addStates(rules.applyAbandon(getState(), reason, player));
     }
 
     /**
@@ -368,7 +388,7 @@ public class Game {
      * @return The current state of the board.
      */
     public Board getBoard() {
-        return getCurrentState().getBoard();
+        return getState().getBoard();
     }
 
     /**
@@ -376,7 +396,7 @@ public class Game {
      * @return The current state of the light player.
      */
     public PlayerState getLightPlayer() {
-        return getCurrentState().getLightPlayer();
+        return getState().getLightPlayer();
     }
 
     /**
@@ -384,7 +404,7 @@ public class Game {
      * @return The current state of the dark player.
      */
     public PlayerState getDarkPlayer() {
-        return getCurrentState().getDarkPlayer();
+        return getState().getDarkPlayer();
     }
 
     /**
@@ -393,7 +413,7 @@ public class Game {
      * @return The state of the player {@code player}.
      */
     public PlayerState getPlayer(PlayerType player) {
-        return getCurrentState().getPlayer(player);
+        return getState().getPlayer(player);
     }
 
     /**
@@ -401,7 +421,81 @@ public class Game {
      * @return The player who can make the next interaction with the game.
      */
     public PlayerType getTurn() {
-        return getCurrentPlayableState().getTurn();
+        return getPlayableState().getTurn();
+    }
+
+    /**
+     * Gets the state of the player whose turn it is.
+     * @return The state of the player whose turn it is.
+     */
+    public PlayerState getTurnPlayer() {
+        return getPlayableState().getTurnPlayer();
+    }
+
+    /**
+     * Gets the player that is waiting whilst the other player makes the
+     * next interaction with the game.
+     * @return The player who is waiting for the other player to interact
+     *         with the game.
+     */
+    public PlayerType getWaiting() {
+        return getPlayableState().getWaiting();
+    }
+
+    /**
+     * Gets the state of the player that is waiting as it is not their turn.
+     * @return The state of the player that is waiting as it is not their turn.
+     */
+    public PlayerState getWaitingPlayer() {
+        return getPlayableState().getWaitingPlayer();
+    }
+
+    /**
+     * Gets whether this game has a winner.
+     * @return Whether this game has a winner.
+     */
+    public boolean hasWinner() {
+        return isFinished() && getEndState().hasWinner();
+    }
+
+    /**
+     * Gets the player that won the game.
+     * @return The player that won the game.
+     */
+    public PlayerType getWinner() {
+        return getEndState().getWinner();
+    }
+
+    /**
+     * Gets whether this game has a winner.
+     * @return Whether this game has a winner.
+     */
+    public boolean hasLoser() {
+        return isFinished() && getEndState().hasLoser();
+    }
+
+    /**
+     * Gets the player that lost the game.
+     * @return The player that lost the game.
+     */
+    public PlayerType getLoser() {
+        return getEndState().getLoser();
+    }
+
+    /**
+     * Gets the state of the winning player.
+     * @return The state of the winning player.
+     */
+    public PlayerState getWinningPlayer() {
+        return getEndState().getWinningPlayer();
+    }
+
+    /**
+     * Gets the state of the losing player.
+     * @return The state of the losing player.
+     */
+    public PlayerState getLosingPlayer() {
+        return getEndState().getLosingPlayer();
     }
 
     /**
@@ -417,55 +511,7 @@ public class Game {
         if (isFinished())
             return getWinner();
 
-        throw new IllegalStateException("The game is not in a playable or won state");
-    }
-
-    /**
-     * Gets the state of the player whose turn it is.
-     * @return The state of the player whose turn it is.
-     */
-    public PlayerState getTurnPlayer() {
-        return getCurrentPlayableState().getTurnPlayer();
-    }
-
-    /**
-     * Gets the state of the player that is waiting as it is not their turn.
-     * @return The state of the player that is waiting as it is not their turn.
-     */
-    public PlayerState getWaitingPlayer() {
-        return getCurrentPlayableState().getWaitingPlayer();
-    }
-
-    /**
-     * Gets the player that won the game.
-     * @return The player that won the game.
-     */
-    public PlayerType getWinner() {
-        return getCurrentWinState().getWinner();
-    }
-
-    /**
-     * Gets the player that lost the game.
-     * @return The player that lost the game.
-     */
-    public PlayerType getLoser() {
-        return getCurrentWinState().getLoser();
-    }
-
-    /**
-     * Gets the state of the winning player.
-     * @return The state of the winning player.
-     */
-    public PlayerState getWinningPlayer() {
-        return getCurrentWinState().getWinningPlayer();
-    }
-
-    /**
-     * Gets the state of the losing player.
-     * @return The state of the losing player.
-     */
-    public PlayerState getLosingPlayer() {
-        return getCurrentWinState().getLosingPlayer();
+        throw new IllegalStateException("The game is not playable or finished");
     }
 
     /**
@@ -474,7 +520,7 @@ public class Game {
      * @return The roll that was made that can now be used to make a move.
      */
     public Roll getRoll() {
-        return getCurrentWaitingForMoveState().getRoll();
+        return getWaitingForMoveState().getRoll();
     }
 
     /**

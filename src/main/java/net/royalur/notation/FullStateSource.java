@@ -5,6 +5,7 @@ import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -87,11 +88,32 @@ public class FullStateSource extends StateSource {
     }
 
     @Override
-    public WinGameState createWinState(
+    public ResignedGameState createResignedState(
             RuleSet rules,
-            PlayerType winner
+            PlayerType player
     ) {
-        return new WinGameState(
+        return new ResignedGameState(
+                board, lightPlayer, darkPlayer, player
+        );
+    }
+
+    @Override
+    public AbandonedGameState createAbandonedState(
+            RuleSet rules,
+            AbandonReason abandonReason,
+            @Nullable PlayerType player
+    ) {
+        return new AbandonedGameState(
+                board, lightPlayer, darkPlayer, abandonReason, player
+        );
+    }
+
+    @Override
+    public EndGameState createEndState(
+            RuleSet rules,
+            @Nullable PlayerType winner
+    ) {
+        return new EndGameState(
                 board, lightPlayer, darkPlayer, winner
         );
     }

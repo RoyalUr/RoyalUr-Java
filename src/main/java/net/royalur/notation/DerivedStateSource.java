@@ -5,6 +5,7 @@ import net.royalur.model.dice.Roll;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.state.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,21 +162,59 @@ public class DerivedStateSource extends StateSource {
     }
 
     @Override
-    public WinGameState createWinState(
+    public ResignedGameState createResignedState(
             RuleSet rules,
-            PlayerType winner
+            PlayerType player
+    ) {
+        GameState currentState = nextState();
+        if (currentState instanceof EndGameState)
+            throw new IllegalStateException("Game is already finished");
+
+        pushStates(rules.applyResign(currentState, player));
+        GameState state = nextState();
+        if (!(state instanceof ResignedGameState resignedState))
+            throw new IllegalStateException("The state was not a ResignedGameState after applying a resign");
+
+        return resignedState;
+    }
+
+    @Override
+    public AbandonedGameState createAbandonedState(
+            RuleSet rules,
+            AbandonReason reason,
+            @Nullable PlayerType player
+    ) {
+        GameState currentState = nextState();
+        if (currentState instanceof EndGameState)
+            throw new IllegalStateException("Game is already finished");
+
+        pushStates(rules.applyAbandon(currentState, reason, player));
+        GameState state = nextState();
+        if (!(state instanceof AbandonedGameState abandonedState))
+            throw new IllegalStateException("The state was not an AbandonedGameState after applying an abandon");
+
+        return abandonedState;
+    }
+
+    @Override
+    public EndGameState createEndState(
+            RuleSet rules,
+            @Nullable PlayerType winner
     ) {
         GameState state = getCurrentState();
-        if (!(state instanceof WinGameState winState))
-            throw new IllegalStateException("The state is not a WinGameState");
+        if (!(state instanceof EndGameState endState))
+            throw new IllegalStateException("The state is not an EndGameState");
 
-        if (winState.getWinner() != winner) {
+        PlayerType actualWinner = (endState.hasWinner() ? endState.getWinner() : null);
+        if (actualWinner != winner) {
             throw new IllegalStateException(
                     "Inconsistent derivation! "
-                            + "Expected winner = " + winner.getTextName()
-                            + ", actual winner = " + winState.getWinner().getTextName()
+                            + "Expected winner = "
+                            + (winner != null ? winner.getTextName() : null)
+                            + ", actual winner = "
+                            + (actualWinner != null ? actualWinner.getTextName() : null)
             );
         }
-        return winState;
+        return endState;
     }
 }

@@ -130,9 +130,19 @@ public class JsonNotation implements Notation {
     public static final String STATE_TYPE_WAITING_FOR_MOVE = "wait4move";
 
     /**
-     * Represents states of type {@link WinGameState}.
+     * Represents states of type {@link ResignedGameState}.
      */
-    public static final String STATE_TYPE_WIN = "win";
+    public static final String STATE_TYPE_RESIGNED = "resigned";
+
+    /**
+     * Represents states of type {@link AbandonedGameState}.
+     */
+    public static final String STATE_TYPE_ABANDONED = "abandoned";
+
+    /**
+     * Represents states of type {@link EndGameState}.
+     */
+    public static final String STATE_TYPE_END = "win";
 
     /**
      * The key in the JSON for the roll that was made.
@@ -183,6 +193,16 @@ public class JsonNotation implements Notation {
      * The key in the JSON for the player whose turn it is in a state.
      */
     public static final String TURN_KEY = "turn";
+
+    /**
+     * The key in the JSON for the player that abandoned the game.
+     */
+    public static final String CONTROL_PLAYER_KEY = "player";
+
+    /**
+     * The key in the JSON for the reason that a game was abandoned.
+     */
+    public static final String ABANDONED_REASON_KEY = "reason";
 
     /**
      * The key in the JSON for the player that won the game.
@@ -475,17 +495,50 @@ public class JsonNotation implements Notation {
         }
     }
 
-    public void writeWinState(
+    public void writeResignedState(
             JsonGenerator generator,
-            WinGameState state
+            ResignedGameState state
     ) throws IOException {
-
-        generator.writeStringField(WINNER_KEY, state.getWinner().getCharStr());
+         // Nothing to write.
     }
 
-    public String getStateType(
-            GameState state
-    ) {
+    public void writeAbandonedState(
+            JsonGenerator generator,
+            AbandonedGameState state
+    ) throws IOException {
+        generator.writeStringField(ABANDONED_REASON_KEY, state.getReason().getID());
+    }
+
+    public void writeControlState(
+            JsonGenerator generator,
+            ControlGameState state
+    ) throws IOException {
+
+        if (state.hasPlayer()) {
+            generator.writeStringField(CONTROL_PLAYER_KEY, state.getPlayer().getCharStr());
+        }
+
+        if (state instanceof ResignedGameState resignedState) {
+            writeResignedState(generator, resignedState);
+
+        } else if (state instanceof AbandonedGameState abandonedState) {
+            writeAbandonedState(generator, abandonedState);
+
+        } else {
+            throw new IllegalArgumentException("Unknown control state type " + state.getClass());
+        }
+    }
+
+    public void writeEndState(
+            JsonGenerator generator,
+            EndGameState state
+    ) throws IOException {
+        if (state.hasWinner()) {
+            generator.writeStringField(WINNER_KEY, state.getWinner().getCharStr());
+        }
+    }
+
+    public String getStateType(GameState state) {
         if (state instanceof RolledGameState)
             return STATE_TYPE_ROLLED;
         if (state instanceof MovedGameState)
@@ -494,8 +547,12 @@ public class JsonNotation implements Notation {
             return STATE_TYPE_WAITING_FOR_ROLL;
         if (state instanceof WaitingForMoveGameState)
             return STATE_TYPE_WAITING_FOR_MOVE;
-        if (state instanceof WinGameState)
-            return STATE_TYPE_WIN;
+        if (state instanceof ResignedGameState)
+            return STATE_TYPE_RESIGNED;
+        if (state instanceof AbandonedGameState)
+            return STATE_TYPE_ABANDONED;
+        if (state instanceof EndGameState)
+            return STATE_TYPE_END;
 
         throw new IllegalArgumentException("Unknown game state type " + state.getClass());
     }
@@ -510,8 +567,11 @@ public class JsonNotation implements Notation {
         if (state instanceof OngoingGameState ongoingState) {
             writeOngoingState(generator, ongoingState);
 
-        } else if (state instanceof WinGameState winState) {
-            writeWinState(generator, winState);
+        } else if (state instanceof ControlGameState controlState) {
+            writeControlState(generator, controlState);
+
+        } else if (state instanceof EndGameState winState) {
+            writeEndState(generator, winState);
 
         } else {
             throw new IllegalArgumentException("Unknown game state type " + state.getClass());
@@ -750,18 +810,23 @@ public class JsonNotation implements Notation {
         );
     }
 
-    public boolean isActionStateType(String stateType) {
+    public boolean isActionState(String stateType) {
         return stateType.equals(STATE_TYPE_ROLLED)
                 || stateType.equals(STATE_TYPE_MOVED);
     }
 
-    public boolean isPlayableGameState(String stateType) {
+    public boolean isPlayableState(String stateType) {
         return stateType.equals(STATE_TYPE_WAITING_FOR_ROLL)
                 || stateType.equals(STATE_TYPE_WAITING_FOR_MOVE);
     }
 
-    public boolean isOngoingGameState(String stateType) {
-        return isActionStateType(stateType) || isPlayableGameState(stateType);
+    public boolean isOngoingState(String stateType) {
+        return isActionState(stateType) || isPlayableState(stateType);
+    }
+
+    public boolean isControlState(String stateType) {
+        return stateType.equals(STATE_TYPE_RESIGNED)
+                || stateType.equals(STATE_TYPE_ABANDONED);
     }
 
     public RolledGameState readRolledState(
@@ -855,10 +920,10 @@ public class JsonNotation implements Notation {
         char turnChar = JsonHelper.readChar(json, TURN_KEY);
         PlayerType turn = PlayerType.getByChar(turnChar);
 
-        if (isActionStateType(stateType)) {
+        if (isActionState(stateType)) {
             return readActionState(rules, stateSource, json, stateType, turn);
 
-        } else if (isPlayableGameState(stateType)) {
+        } else if (isPlayableState(stateType)) {
             return readPlayableState(rules, stateSource, json, stateType, turn);
 
         } else {
@@ -866,15 +931,54 @@ public class JsonNotation implements Notation {
         }
     }
 
-    public WinGameState readWinState(
+    public ResignedGameState readResignedState(
+            RuleSet rules,
+            StateSource stateSource,
+            ObjectNode json,
+            PlayerType player
+    ) {
+        return stateSource.createResignedState(rules, player);
+    }
+
+    public AbandonedGameState readAbandonedState(
+            RuleSet rules,
+            StateSource stateSource,
+            ObjectNode json,
+            @Nullable PlayerType player
+    ) {
+        String reasonID = JsonHelper.readString(json, ABANDONED_REASON_KEY);
+        AbandonReason reason = AbandonReason.getByID(reasonID);
+        return stateSource.createAbandonedState(rules, reason, player);
+    }
+
+    public ControlGameState readControlState(
+            RuleSet rules,
+            StateSource stateSource,
+            ObjectNode json,
+            String stateType
+    ) {
+        Character playerChar = JsonHelper.readNullableChar(json, CONTROL_PLAYER_KEY);
+        PlayerType player = (playerChar != null ? PlayerType.getByChar(playerChar) : null);
+
+        if (stateType.equals(STATE_TYPE_RESIGNED)) {
+            return readResignedState(rules, stateSource, json, player);
+
+        } else if (stateType.equals(STATE_TYPE_ABANDONED)) {
+            return readAbandonedState(rules, stateSource, json, player);
+
+        } else {
+            throw new JsonHelper.JsonReadError("Unknown ongoing state type: " + stateType);
+        }
+    }
+
+    public EndGameState readEndState(
             RuleSet rules,
             StateSource stateSource,
             ObjectNode json
     ) {
-        char winnerChar = JsonHelper.readChar(json, WINNER_KEY);
-        PlayerType winner = PlayerType.getByChar(winnerChar);
-
-        return stateSource.createWinState(rules, winner);
+        Character winnerChar = JsonHelper.readNullableChar(json, WINNER_KEY);
+        PlayerType winner = (winnerChar != null ? PlayerType.getByChar(winnerChar) : null);
+        return stateSource.createEndState(rules, winner);
     }
 
     public GameState readState(
@@ -884,11 +988,14 @@ public class JsonNotation implements Notation {
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
 
-        if (isOngoingGameState(stateType)) {
+        if (isOngoingState(stateType)) {
             return readOngoingState(rules, stateSource, json, stateType);
 
-        } else if (stateType.equals(STATE_TYPE_WIN)) {
-            return readWinState(rules, stateSource, json);
+        } else if (isControlState(stateType)) {
+            return readControlState(rules, stateSource, json, stateType);
+
+        } else if (stateType.equals(STATE_TYPE_END)) {
+            return readEndState(rules, stateSource, json);
 
         } else {
             throw new JsonHelper.JsonReadError("Unknown state type: " + stateType);

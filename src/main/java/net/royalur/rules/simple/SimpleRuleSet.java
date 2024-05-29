@@ -256,7 +256,7 @@ public class SimpleRuleSet extends RuleSet {
         // Check if the player has won the game.
         int turnPlayerPieces = turnPlayer.getPieceCount();
         if (move.isScoringPiece() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
-            return List.of(movedState, new WinGameState(
+            return List.of(movedState, new EndGameState(
                     board, lightPlayer, darkPlayer, turn
             ));
         }
@@ -282,7 +282,7 @@ public class SimpleRuleSet extends RuleSet {
                 continue;
             }
 
-            // Moves are important.
+            // Moves are always important.
             if (state instanceof MovedGameState) {
                 landmarkStates.add(state);
                 continue;
@@ -293,6 +293,12 @@ public class SimpleRuleSet extends RuleSet {
                     && rolledState.getAvailableMoves().isEmpty()) {
 
                 landmarkStates.add(state);
+                continue;
+            }
+
+            // Always include control states.
+            if (state instanceof ControlGameState controlState) {
+                landmarkStates.add(controlState);
                 continue;
             }
 
