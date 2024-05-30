@@ -106,6 +106,12 @@ public class Game {
                 throw new IllegalArgumentException("The states list should not contain any null entries");
 
             addState(state);
+
+            if (state instanceof ControlGameState && getLastControlState() != null) {
+                throw new IllegalArgumentException(
+                        "Only a single control game state per game is currently supported"
+                );
+            }
         }
         if (seen == 0)
             throw new IllegalArgumentException("There were no states to add");
@@ -256,6 +262,46 @@ public class Game {
     }
 
     /**
+     * Gets the last control state in this game, or {@code null} if there
+     * is no control state in this game.
+     * @return The last control state in this game, or {@code null}.
+     */
+    public @Nullable ControlGameState getLastControlState() {
+        for (int index = states.size() - 1; index >= 0; --index) {
+            GameState state = states.get(index);
+            if (state instanceof ControlGameState controlState)
+                return controlState;
+        }
+        return null;
+    }
+
+    /**
+     * Gets the last control state in this game as an instance of {@link ResignedGameState}.
+     * is no control state in this game.
+     * @return The last control state in this game, or {@code null}.
+     */
+    public ResignedGameState getResignedState() {
+        ControlGameState state = getLastControlState();
+        if (state instanceof ResignedGameState resignedState)
+            return resignedState;
+
+        throw new IllegalStateException("A player did not resign");
+    }
+
+    /**
+     * Gets the last control state in this game as an instance of {@link AbandonedGameState}.
+     * is no control state in this game.
+     * @return The last control state in this game, or {@code null}.
+     */
+    public AbandonedGameState getAbandonedState() {
+        ControlGameState state = getLastControlState();
+        if (state instanceof AbandonedGameState abandonedState)
+            return abandonedState;
+
+        throw new IllegalStateException("The game was not abandoned");
+    }
+
+    /**
      * Gets the current state of this game as an instance of {@link EndGameState}.
      * This will throw an error if the game has not ended.
      * @return The win state that the game is currently in.
@@ -381,6 +427,54 @@ public class Game {
             throw new IllegalStateException("The game is already finished");
 
         addStates(rules.applyAbandon(getState(), reason, player));
+    }
+
+    /**
+     * Gets whether a player resigned from this game.
+     * @return Whether a player resigned from this game.
+     */
+    public boolean wasResigned() {
+        return getLastControlState() instanceof ResignedGameState;
+    }
+
+    /**
+     * Gets the player that resigned from this game.
+     * @return The player that resigned from this game.
+     */
+    public PlayerType getResigningPlayer() {
+        return getResignedState().getPlayer();
+    }
+
+    /**
+     * Gets whether this game was abandoned.
+     * @return Whether this game was abandoned.
+     */
+    public boolean wasAbandoned() {
+        return getLastControlState() instanceof AbandonedGameState;
+    }
+
+    /**
+     * Gets the reason this game was abandoned.
+     * @return The reason this game was abandoned.
+     */
+    public AbandonReason getAbandonReason() {
+        return getAbandonedState().getReason();
+    }
+
+    /**
+     * Gets whether a specific player abandoned the game.
+     * @return Whether a specific player abandoned the game.
+     */
+    public boolean wasAbandonedByPlayer() {
+        return getAbandonedState().hasPlayer();
+    }
+
+    /**
+     * Gets the player that abandoned the game.
+     * @return The player that abandoned the game.
+     */
+    public PlayerType getAbandoningPlayer() {
+        return getAbandonedState().getPlayer();
     }
 
     /**
