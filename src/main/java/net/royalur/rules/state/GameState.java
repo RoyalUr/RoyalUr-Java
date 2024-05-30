@@ -72,7 +72,7 @@ public abstract class GameState {
      * @param player The player to retrieve the state of.
      * @return The state of the player {@code player}.
      */
-    public PlayerState getPlayer(PlayerType player) {
+    public PlayerState getPlayerState(PlayerType player) {
         return switch (player) {
             case LIGHT -> getLightPlayer();
             case DARK -> getDarkPlayer();

@@ -104,14 +104,13 @@ public class Game {
             seen += 1;
             if (state == null)
                 throw new IllegalArgumentException("The states list should not contain any null entries");
-
-            addState(state);
-
             if (state instanceof ControlGameState && getLastControlState() != null) {
                 throw new IllegalArgumentException(
                         "Only a single control game state per game is currently supported"
                 );
             }
+
+            addState(state);
         }
         if (seen == 0)
             throw new IllegalArgumentException("There were no states to add");
@@ -507,7 +506,7 @@ public class Game {
      * @return The state of the player {@code player}.
      */
     public PlayerState getPlayer(PlayerType player) {
-        return getState().getPlayer(player);
+        return getState().getPlayerState(player);
     }
 
     /**

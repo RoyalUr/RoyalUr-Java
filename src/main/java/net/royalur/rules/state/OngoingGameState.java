@@ -59,7 +59,7 @@ public abstract class OngoingGameState extends GameState {
      * @return The state of the player that we are waiting on to interact with the game.
      */
     public PlayerState getTurnPlayer() {
-        return getPlayer(getTurn());
+        return getPlayerState(getTurn());
     }
 
     /**
@@ -69,6 +69,6 @@ public abstract class OngoingGameState extends GameState {
      *         with the game.
      */
     public PlayerState getWaitingPlayer() {
-        return getPlayer(getWaiting());
+        return getPlayerState(getWaiting());
     }
 }

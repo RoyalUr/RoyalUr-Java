@@ -84,7 +84,7 @@ public class EndGameState extends GameState {
      * @return The state of the player that won the game.
      */
     public PlayerState getWinningPlayer() {
-        return getPlayer(getWinner());
+        return getPlayerState(getWinner());
     }
 
     /**
@@ -92,7 +92,7 @@ public class EndGameState extends GameState {
      * @return The state of the player that lost the game.
      */
     public PlayerState getLosingPlayer() {
-        return getPlayer(getLoser());
+        return getPlayerState(getLoser());
     }
 
     @Override
