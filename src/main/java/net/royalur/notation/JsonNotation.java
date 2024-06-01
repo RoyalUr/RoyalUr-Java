@@ -561,7 +561,6 @@ public class JsonNotation implements Notation {
             JsonGenerator generator,
             GameState state
     ) throws IOException {
-
         generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
 
         if (state instanceof OngoingGameState ongoingState) {
@@ -582,7 +581,6 @@ public class JsonNotation implements Notation {
             JsonGenerator generator,
             List<GameState> states
     ) throws IOException {
-
         for (GameState state : states) {
             generator.writeStartObject();
             try {
@@ -961,13 +959,15 @@ public class JsonNotation implements Notation {
         PlayerType player = (playerChar != null ? PlayerType.getByChar(playerChar) : null);
 
         if (stateType.equals(STATE_TYPE_RESIGNED)) {
+            if (player == null)
+                throw new IllegalArgumentException("player should not be null for a resigned game state");
             return readResignedState(rules, stateSource, json, player);
 
         } else if (stateType.equals(STATE_TYPE_ABANDONED)) {
             return readAbandonedState(rules, stateSource, json, player);
 
         } else {
-            throw new JsonHelper.JsonReadError("Unknown ongoing state type: " + stateType);
+            throw new JsonHelper.JsonReadError("Unknown control state type: " + stateType);
         }
     }
 
