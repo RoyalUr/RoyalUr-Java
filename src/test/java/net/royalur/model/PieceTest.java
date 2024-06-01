@@ -87,13 +87,13 @@ public class PieceTest {
         Piece light = new Piece(PlayerType.LIGHT, 1);
         Piece dark = new Piece(PlayerType.DARK, 2);
 
-        assertEquals(PlayerType.LIGHT.getTextName(), light.toString());
-        assertEquals(PlayerType.DARK.getTextName(), dark.toString());
+        assertEquals("(Light, advanced 2)", light.toString());
+        assertEquals("(Dark, advanced 3)", dark.toString());
 
         light = new Piece(PlayerType.LIGHT, 3);
         dark = new Piece(PlayerType.DARK, 4);
 
-        assertEquals(PlayerType.LIGHT.getTextName(), light.toString());
-        assertEquals(PlayerType.DARK.getTextName(), dark.toString());
+        assertEquals("(Light, advanced 4)", light.toString());
+        assertEquals("(Dark, advanced 5)", dark.toString());
     }
 }

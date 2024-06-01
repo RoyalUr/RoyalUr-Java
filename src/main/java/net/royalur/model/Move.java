@@ -94,7 +94,8 @@ public class Move {
     }
 
     /**
-     * Determines whether this move is moving a piece on the board.
+     * Determines whether this move is moving a piece on the board. If a move
+     * introduces a new piece to the board, then it won't have a source piece.
      * @return Whether this move is moving a piece on the board.
      */
     public boolean hasSource() {
@@ -105,12 +106,13 @@ public class Move {
      * Determines whether this move is moving a new piece onto the board.
      * @return Whether this move is moving a new piece onto the board.
      */
-    public boolean isIntroducingPiece() {
+    public boolean isIntroduction() {
         return source == null;
     }
 
     /**
      * Determines whether this moves a piece to a destination on the board.
+     If a piece is being scored, then it won't have a destination.
      * @return Whether this moves a piece to a destination on the board.
      */
     public boolean hasDest() {
@@ -118,10 +120,10 @@ public class Move {
     }
 
     /**
-     * Determines whether this move is moving a piece off of the board.
-     * @return Whether this move is moving a piece off of the board.
+     * Determines whether this move is moving a piece off of the board to score it.
+     * @return Whether this move is moving a piece off of the board to score it.
      */
-    public boolean isScoringPiece() {
+    public boolean isScore() {
         return dest == null;
     }
 
@@ -310,8 +312,8 @@ public class Move {
      * @return An English description of this move.
      */
     public String describe() {
-        boolean scoring = isScoringPiece();
-        boolean introducing = isIntroducingPiece();
+        boolean scoring = isScore();
+        boolean introducing = isIntroduction();
 
         if (scoring && introducing)
             return "Introduce and score a piece.";

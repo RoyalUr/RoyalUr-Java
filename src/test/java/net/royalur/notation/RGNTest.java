@@ -120,7 +120,7 @@ public class RGNTest {
                             // Moving the last piece helps to avoid deadlocks, although
                             // this does assume that the available moves list is ordered.
                             Move move = moves.get(moves.size() - 1);
-                            game.makeMove(move);
+                            game.move(move);
                         }
                     }
                     case DARK -> game.rollDice(0);
@@ -151,7 +151,7 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMove(rules.rules.getPaths().getLightStart());
+                game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 games.add(new ProvidedGame("One Move, " + rules.name, game));
             }
 
@@ -159,7 +159,7 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMove(rules.rules.getPaths().getLightStart());
+                game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 game.rollDice(1);
                 games.add(new ProvidedGame("One Move One Roll, " + rules.name, game));
             }
@@ -168,9 +168,9 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 Game game = new Game(rules.rules);
                 game.rollDice(1);
-                game.makeMove(rules.rules.getPaths().getLightStart());
+                game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 game.rollDice(1);
-                game.makeMove(rules.rules.getPaths().getDarkStart());
+                game.movePieceOnTile(rules.rules.getPaths().getDarkStart());
                 games.add(new ProvidedGame("Two Moves, " + rules.name, game));
             }
 
@@ -179,9 +179,9 @@ public class RGNTest {
                 for (PlayerType resigner : PlayerType.values()) {
                     Game game = new Game(rules.rules);
                     game.rollDice(1);
-                    game.makeMove(rules.rules.getPaths().getLightStart());
+                    game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                     game.rollDice(1);
-                    game.makeMove(rules.rules.getPaths().getDarkStart());
+                    game.movePieceOnTile(rules.rules.getPaths().getDarkStart());
                     game.resign(resigner);
                     games.add(new ProvidedGame("Two Moves and Resign, " + rules.name, game));
                 }
@@ -196,9 +196,9 @@ public class RGNTest {
                     for (PlayerType abandoner : PlayerType.values()) {
                         Game game = new Game(rules.rules);
                         game.rollDice(1);
-                        game.makeMove(rules.rules.getPaths().getLightStart());
+                        game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                         game.rollDice(1);
-                        game.makeMove(rules.rules.getPaths().getDarkStart());
+                        game.movePieceOnTile(rules.rules.getPaths().getDarkStart());
                         game.abandon(abandonReason, abandoner);
                         games.add(new ProvidedGame(
                                 "Two Moves and Abandon"
@@ -216,9 +216,9 @@ public class RGNTest {
 
                     Game game = new Game(rules.rules);
                     game.rollDice(1);
-                    game.makeMove(rules.rules.getPaths().getLightStart());
+                    game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                     game.rollDice(1);
-                    game.makeMove(rules.rules.getPaths().getDarkStart());
+                    game.movePieceOnTile(rules.rules.getPaths().getDarkStart());
                     game.abandon(abandonReason, null);
                     games.add(new ProvidedGame(
                             "Two Moves and Abandon"

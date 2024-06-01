@@ -232,11 +232,11 @@ public class SimpleRuleSet extends RuleSet {
 
         // Apply the move to the player that made the move.
         PlayerState turnPlayer = state.getTurnPlayer();
-        if (move.isIntroducingPiece()) {
+        if (move.isIntroduction()) {
             Piece introducedPiece = move.getDestPiece();
             turnPlayer = playerStateProvider.applyPieceIntroduced(turnPlayer, introducedPiece);
         }
-        if (move.isScoringPiece()) {
+        if (move.isScore()) {
             Piece scoredPiece = move.getSourcePiece();
             turnPlayer = playerStateProvider.applyPieceScored(turnPlayer, scoredPiece);
         }
@@ -255,7 +255,7 @@ public class SimpleRuleSet extends RuleSet {
 
         // Check if the player has won the game.
         int turnPlayerPieces = turnPlayer.getPieceCount();
-        if (move.isScoringPiece() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
+        if (move.isScore() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
             return List.of(movedState, new EndGameState(
                     board, lightPlayer, darkPlayer, turn
             ));

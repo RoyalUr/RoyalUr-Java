@@ -147,14 +147,14 @@ public class RGN implements Notation {
         Tile to;
 
         // Get the origin tile.
-        if (move.isIntroducingPiece()) {
+        if (move.isIntroduction()) {
             from = rules.getPaths().getStart(move.getPlayer());
         } else {
             from = move.getSource();
         }
 
         // Get the destination tile.
-        if (move.isScoringPiece()) {
+        if (move.isScore()) {
             to = rules.getPaths().getEnd(move.getPlayer());
         } else {
             to = move.getDest();

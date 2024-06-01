@@ -231,7 +231,7 @@ public class LikelihoodAgent extends BaseAgent {
         Dice diceHolder = getDiceHolder(0);
         for (Move move : moves) {
             Game newGame = game.copy();
-            newGame.makeMove(move);
+            newGame.move(move);
             gameHolder.copyFrom(newGame);
             diceHolder.copyFrom(newGame.getDice());
 

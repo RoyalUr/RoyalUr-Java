@@ -63,8 +63,8 @@ public class MovedGameState extends ActionGameState {
         builder.append(getTurn().getTextName().toLowerCase());
         builder.append(" player ");
 
-        boolean introducing = move.isIntroducingPiece();
-        boolean scoring = move.isScoringPiece();
+        boolean introducing = move.isIntroduction();
+        boolean scoring = move.isScore();
 
         if (introducing && scoring) {
             builder.append("scored a newly introduced piece.");

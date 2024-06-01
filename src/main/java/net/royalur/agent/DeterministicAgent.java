@@ -20,7 +20,7 @@ public class DeterministicAgent extends BaseAgent {
             }
 
             // Always introduce a piece if it is possible.
-            if (move.isIntroducingPiece()) {
+            if (move.isIntroduction()) {
                 chosen = move;
                 break;
             }

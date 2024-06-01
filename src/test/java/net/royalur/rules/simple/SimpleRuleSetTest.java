@@ -184,7 +184,7 @@ public class SimpleRuleSetTest {
                     for (int moveIndex = 0; moveIndex < moves.size(); ++moveIndex) {
                         Move move = moves.get(moveIndex);
                         int movePathIndex = moveList.moves[moveIndex];
-                        if (move.isIntroducingPiece()) {
+                        if (move.isIntroduction()) {
                             assertEquals(-1, movePathIndex);
                         } else {
                             assertEquals(move.getSourcePiece().getPathIndex(), movePathIndex);
@@ -192,7 +192,7 @@ public class SimpleRuleSetTest {
                     }
 
                     int moveIndex = moveChoiceRandom.nextInt(moves.size());
-                    game.makeMove(moves.get(moveIndex));
+                    game.move(moves.get(moveIndex));
                     fastGame.applyMove(moveList.moves[moveIndex]);
 
                 } else {

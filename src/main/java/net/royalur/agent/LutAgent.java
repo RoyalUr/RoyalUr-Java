@@ -34,7 +34,7 @@ public class LutAgent extends BaseAgent {
         Move bestMove = null;
         for (Move move : availableMoves) {
             Game moveGame = game.copy();
-            moveGame.makeMove(move);
+            moveGame.move(move);
 
             fastGame.copyFrom(moveGame);
             double score = lut.getLightWinPercent(fastGame, tempGame);

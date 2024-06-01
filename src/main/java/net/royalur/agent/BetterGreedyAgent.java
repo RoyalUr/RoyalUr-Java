@@ -34,7 +34,7 @@ public class BetterGreedyAgent extends BaseAgent {
 
         // Greedily introduce a piece.
         for (Move move : moves) {
-            if (move.isIntroducingPiece())
+            if (move.isIntroduction())
                 return move;
         }
 

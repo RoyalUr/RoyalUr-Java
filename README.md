@@ -66,7 +66,7 @@ while (!game.isFinished()) {
         // Make a random move.
         List<Move> moves = game.findAvailableMoves();
         Move randomMove = moves.get(rand.nextInt(moves.size()));
-        game.makeMove(randomMove);
+        game.move(randomMove);
         System.out.println(turnPlayerName + ": " + randomMove.describe());
     }
 }

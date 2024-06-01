@@ -40,7 +40,7 @@ public abstract class BaseAgent implements Agent {
         if (game.isWaitingForMove()) {
             List<Move> moves = game.findAvailableMoves();
             Move chosenMove = decideMove(game, moves);
-            game.makeMove(chosenMove);
+            game.move(chosenMove);
             return;
         }
         throw new IllegalStateException("The game is in an unexpected state");

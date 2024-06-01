@@ -104,7 +104,7 @@ public class Game {
             seen += 1;
             if (state == null)
                 throw new IllegalArgumentException("The states list should not contain any null entries");
-            if (state instanceof ControlGameState && getLastControlState() != null) {
+            if (state instanceof ControlGameState && getLastControlStateOrNull() != null) {
                 throw new IllegalArgumentException(
                         "Only a single control game state per game is currently supported"
                 );
@@ -265,7 +265,7 @@ public class Game {
      * is no control state in this game.
      * @return The last control state in this game, or {@code null}.
      */
-    public @Nullable ControlGameState getLastControlState() {
+    public @Nullable ControlGameState getLastControlStateOrNull() {
         for (int index = states.size() - 1; index >= 0; --index) {
             GameState state = states.get(index);
             if (state instanceof ControlGameState controlState)
@@ -280,7 +280,7 @@ public class Game {
      * @return The last control state in this game, or {@code null}.
      */
     public ResignedGameState getResignedState() {
-        ControlGameState state = getLastControlState();
+        ControlGameState state = getLastControlStateOrNull();
         if (state instanceof ResignedGameState resignedState)
             return resignedState;
 
@@ -293,7 +293,7 @@ public class Game {
      * @return The last control state in this game, or {@code null}.
      */
     public AbandonedGameState getAbandonedState() {
-        ControlGameState state = getLastControlState();
+        ControlGameState state = getLastControlStateOrNull();
         if (state instanceof AbandonedGameState abandonedState)
             return abandonedState;
 
@@ -356,7 +356,7 @@ public class Game {
      * Finds the move of the piece {@code piece}.
      * @param piece The piece to find the move for.
      */
-    public Move findMove(Piece piece) {
+    public Move findMoveByPiece(Piece piece) {
         for (Move move : findAvailableMoves()) {
             if (move.hasSource() && move.getSourcePiece().equals(piece))
                 return move;
@@ -368,13 +368,37 @@ public class Game {
      * Finds the move of the piece on {@code tile}.
      * @param sourceTile The tile of the piece to find the move for.
      */
-    public Move findMove(Tile sourceTile) {
+    public Move findMoveByTile(Tile sourceTile) {
         PathPair paths = rules.getPaths();
         for (Move move : findAvailableMoves()) {
             if (move.getSource(paths).equals(sourceTile))
                 return move;
         }
-        throw new IllegalStateException("The piece on " + sourceTile + " cannot be moved");
+        throw new IllegalStateException("There is no piece that can be moved on " + sourceTile);
+    }
+
+    /**
+     * Finds a move that introduces a new piece to the board.
+     * @return A move that introduces a new piece to the board.
+     */
+    public Move findMoveIntroducingPiece() {
+        for (Move move : findAvailableMoves()) {
+            if (move.isIntroduction())
+                return move;
+        }
+        throw new IllegalStateException("There is no available move that introduces a piece");
+    }
+
+    /**
+     * Finds a move that scores a piece.
+     * @return A move that scores a piece.
+     */
+    public Move findMoveScoringPiece() {
+        for (Move move : findAvailableMoves()) {
+            if (move.isScore())
+                return move;
+        }
+        throw new IllegalStateException("There is no available move that scores a piece");
     }
 
     /**
@@ -382,24 +406,25 @@ public class Game {
      * This does not check whether the move is valid.
      * @param move The move to make from the current state of the game.
      */
-    public void makeMove(Move move) {
-        addStates(rules.applyMove(getWaitingForMoveState(), move));
+    public void move(Move move) {
+        WaitingForMoveGameState state = getWaitingForMoveState();
+        addStates(rules.applyMove(state, move));
     }
 
     /**
      * Moves the piece {@code piece}, and updates the state of the game.
      * @param piece The piece to be moved.
      */
-    public void makeMove(Piece piece) {
-        makeMove(findMove(piece));
+    public void movePiece(Piece piece) {
+        move(findMoveByPiece(piece));
     }
 
     /**
      * Moves the piece on the given source tile, and updates the state of the game.
      * @param sourceTile The tile where the piece to be moved resides.
      */
-    public void makeMove(Tile sourceTile) {
-        makeMove(findMove(sourceTile));
+    public void movePieceOnTile(Tile sourceTile) {
+        move(findMoveByTile(sourceTile));
     }
 
     /**
@@ -433,7 +458,7 @@ public class Game {
      * @return Whether a player resigned from this game.
      */
     public boolean wasResigned() {
-        return getLastControlState() instanceof ResignedGameState;
+        return getLastControlStateOrNull() instanceof ResignedGameState;
     }
 
     /**
@@ -449,7 +474,7 @@ public class Game {
      * @return Whether this game was abandoned.
      */
     public boolean wasAbandoned() {
-        return getLastControlState() instanceof AbandonedGameState;
+        return getLastControlStateOrNull() instanceof AbandonedGameState;
     }
 
     /**
