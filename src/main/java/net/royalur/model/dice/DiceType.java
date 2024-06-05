@@ -17,7 +17,7 @@ public enum DiceType implements DiceFactory {
      * Represents rolling four binary die and counting the number
      * of ones that were rolled.
      */
-    FOUR_BINARY("four_binary", "Four Binary") {
+    FOUR_BINARY("four_binary", "Four Binary", 4) {
         @Override
         public Dice createDice(RandomGenerator random) {
             return new BinaryDice(getID(), random, 4);
@@ -29,7 +29,7 @@ public enum DiceType implements DiceFactory {
      * of ones that were rolled. If no ones are rolled, then a value
      * of four is given.
      */
-    THREE_BINARY_0EQ4("three_binary_0eq4", "Three Binary 0 Equals 4") {
+    THREE_BINARY_0EQ4("three_binary_0eq4", "Three Binary 0 Equals 4", 3) {
         @Override
         public Dice createDice(RandomGenerator random) {
             return new BinaryDice0AsMax(getID(), random, 3);
@@ -61,13 +61,20 @@ public enum DiceType implements DiceFactory {
     private final String name;
 
     /**
-     * Instantiates a type of dice.
-     * @param id   A fixed numerical identifier to represent this dice.
-     * @param name The name given to this dice.
+     * The number of dice.
      */
-    DiceType(String id, String name) {
+    private final int dieCount;
+
+    /**
+     * Instantiates a type of dice.
+     * @param id A fixed numerical identifier to represent this dice.
+     * @param name The name given to this dice.
+     * @param dieCount The number of dice.
+     */
+    DiceType(String id, String name, int dieCount) {
         this.id = id;
         this.name = name;
+        this.dieCount = dieCount;
     }
 
     /**
@@ -84,6 +91,14 @@ public enum DiceType implements DiceFactory {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the number of dice.
+     * @return The number of dice.
+     */
+    public int getDieCount() {
+        return dieCount;
     }
 
     @Override

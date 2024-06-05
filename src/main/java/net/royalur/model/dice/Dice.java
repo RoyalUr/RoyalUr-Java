@@ -26,6 +26,23 @@ public abstract class Dice {
     }
 
     /**
+     * Gets whether this dice has an associated dice type.
+     * Custom dice may not have an associated dice type.
+     * @return Whether this dice has an associated dice type.
+     */
+    public boolean hasDiceType() {
+        return DiceType.getByIDOrNull(id) != null;
+    }
+
+    /**
+     * Gets the type of this dice.
+     * @return The type of this dice.
+     */
+    public DiceType getDiceType() {
+        return DiceType.getByID(id);
+    }
+
+    /**
      * Returns whether this dice holds any state that affects its dice rolls.
      * If this is overridden, then {@link #copyFrom(Dice)} should also be overriden.
      * @return Whether this dice holds any state that affects its dice rolls.
