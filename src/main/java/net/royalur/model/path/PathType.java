@@ -1,5 +1,6 @@
 package net.royalur.model.path;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,4 +114,33 @@ public enum PathType implements PathPairFactory {
      * @return The instance of the paths.
      */
     public abstract PathPair createPathPair();
+
+    /**
+     * Get the path type with an ID of {@param id}.
+     * @param id The ID of the path type.
+     * @return The path type with the given ID.
+     */
+    public static PathType getByID(String id) {
+        for (PathType pathType : values()) {
+            if (pathType.id.equals(id))
+                return pathType;
+        }
+        throw new IllegalArgumentException("Unknown path type " + id);
+    }
+
+    /**
+     * Get the path type with an ID of {@param id}, or else {@code null}.
+     * @param id The ID of the path type to look for.
+     * @return The path type with the given ID, or null.
+     */
+    public static @Nullable PathType getByIDOrNull(@Nullable String id) {
+        if (id == null)
+            return null;
+
+        for (PathType pathType : values()) {
+            if (pathType.id.equals(id))
+                return pathType;
+        }
+        return null;
+    }
 }

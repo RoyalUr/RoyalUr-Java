@@ -1,5 +1,6 @@
 package net.royalur.model.dice;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,5 +116,34 @@ public enum DiceType implements DiceFactory {
                 return DiceType.this.createDice(randomProvider.get());
             }
         };
+    }
+
+    /**
+     * Get the dice type with an ID of {@param id}.
+     * @param id The ID of the dice type.
+     * @return The dice type with the given ID.
+     */
+    public static DiceType getByID(String id) {
+        for (DiceType diceType : values()) {
+            if (diceType.id.equals(id))
+                return diceType;
+        }
+        throw new IllegalArgumentException("Unknown dice type " + id);
+    }
+
+    /**
+     * Get the dice type with an ID of {@param id}, or else {@code null}.
+     * @param id The ID of the dice type to look for.
+     * @return The dice type with the given ID, or null.
+     */
+    public static @Nullable DiceType getByIDOrNull(@Nullable String id) {
+        if (id == null)
+            return null;
+
+        for (DiceType diceType : values()) {
+            if (diceType.id.equals(id))
+                return diceType;
+        }
+        return null;
     }
 }

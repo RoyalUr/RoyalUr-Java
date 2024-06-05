@@ -1,5 +1,6 @@
 package net.royalur.model.shape;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,4 +84,33 @@ public enum BoardType implements BoardShapeFactory {
      * @return The instance of the board shape.
      */
     public abstract BoardShape createBoardShape();
+
+    /**
+     * Get the board type with an ID of {@param id}.
+     * @param id The ID of the board type.
+     * @return The board type with the given ID.
+     */
+    public static BoardType getByID(String id) {
+        for (BoardType boardType : values()) {
+            if (boardType.id.equals(id))
+                return boardType;
+        }
+        throw new IllegalArgumentException("Unknown board type " + id);
+    }
+
+    /**
+     * Get the board type with an ID of {@param id}, or else {@code null}.
+     * @param id The ID of the board type to look for.
+     * @return The board type with the given ID, or null.
+     */
+    public static @Nullable BoardType getByIDOrNull(@Nullable String id) {
+        if (id == null)
+            return null;
+
+        for (BoardType boardType : values()) {
+            if (boardType.id.equals(id))
+                return boardType;
+        }
+        return null;
+    }
 }
