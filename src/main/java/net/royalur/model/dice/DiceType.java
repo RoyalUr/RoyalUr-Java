@@ -40,14 +40,21 @@ public enum DiceType implements DiceFactory {
     /**
      * A store to be used to parse dice.
      */
-    public static final Map<String, DiceFactory> BY_ID;
+    public static final Map<String, DiceFactory> PARSING_MAP;
 
     static {
-        Map<String, DiceFactory> byID = new HashMap<>();
+        Map<String, DiceFactory> parsingMap = new HashMap<>();
+
+        // Old names given to dice types that we changed.
+        parsingMap.put("FourBinary", DiceType.FOUR_BINARY);
+        parsingMap.put("fourbinary", DiceType.FOUR_BINARY);
+        parsingMap.put("ThreeBinary0Max", DiceType.THREE_BINARY_0EQ4);
+        parsingMap.put("threebinary0max", DiceType.THREE_BINARY_0EQ4);
+
         for (DiceType type : values()) {
-            byID.put(type.id, type);
+            parsingMap.put(type.id, type);
         }
-        BY_ID = Collections.unmodifiableMap(byID);
+        PARSING_MAP = Collections.unmodifiableMap(parsingMap);
     }
 
     /**

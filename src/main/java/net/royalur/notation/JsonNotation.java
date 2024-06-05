@@ -292,9 +292,9 @@ public class JsonNotation implements Notation {
      */
     public JsonNotation() {
         this(
-                BoardType.BY_ID,
-                PathType.BY_ID,
-                DiceType.BY_ID,
+                BoardType.PARSING_MAP,
+                PathType.PARSING_MAP,
+                DiceType.PARSING_MAP,
                 new SimpleRuleSetProvider()
         );
     }

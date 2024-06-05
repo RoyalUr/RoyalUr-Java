@@ -33,14 +33,19 @@ public enum BoardType implements BoardShapeFactory {
     /**
      * A store to be used to parse board shapes.
      */
-    public static final Map<String, BoardShapeFactory> BY_ID;
+    public static final Map<String, BoardShapeFactory> PARSING_MAP;
 
     static {
-        Map<String, BoardShapeFactory> byID = new HashMap<>();
+        Map<String, BoardShapeFactory> parsingMap = new HashMap<>();
+
+        // Old names given to board types that we changed.
+        parsingMap.put("Standard", BoardType.STANDARD);
+        parsingMap.put("Aseb", BoardType.ASEB);
+
         for (BoardType type : values()) {
-            byID.put(type.id, type);
+            parsingMap.put(type.id, type);
         }
-        BY_ID = Collections.unmodifiableMap(byID);
+        PARSING_MAP = Collections.unmodifiableMap(parsingMap);
     }
 
     /**

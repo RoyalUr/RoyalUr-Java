@@ -86,8 +86,8 @@ public class RGN implements Notation {
      */
     public RGN() {
         this(
-                PathType.BY_ID,
-                BoardType.BY_ID,
+                PathType.PARSING_MAP,
+                BoardType.PARSING_MAP,
                 DEFAULT_MAX_ACTION_LINE_LENGTH,
                 DEFAULT_MAX_TURN_LINE_LENGTH
         );

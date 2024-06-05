@@ -1,5 +1,7 @@
 package net.royalur.model.path;
 
+import net.royalur.model.shape.BoardType;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,14 +65,22 @@ public enum PathType implements PathPairFactory {
     /**
      * A store to be used to parse path pairs.
      */
-    public static final Map<String, PathPairFactory> BY_ID;
+    public static final Map<String, PathPairFactory> PARSING_MAP;
 
     static {
-        Map<String, PathPairFactory> byID = new HashMap<>();
+        Map<String, PathPairFactory> parsingMap = new HashMap<>();
+
+        // Old names given to path types that we changed.
+        parsingMap.put("Bell", PathType.BELL);
+        parsingMap.put("Aseb", PathType.ASEB);
+        parsingMap.put("Masters", PathType.MASTERS);
+        parsingMap.put("Murray", PathType.MURRAY);
+        parsingMap.put("Skiriuk", PathType.SKIRIUK);
+
         for (PathType type : values()) {
-            byID.put(type.id, type);
+            parsingMap.put(type.id, type);
         }
-        BY_ID = Collections.unmodifiableMap(byID);
+        PARSING_MAP = Collections.unmodifiableMap(parsingMap);
     }
 
     /**
