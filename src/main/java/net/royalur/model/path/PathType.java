@@ -1,7 +1,5 @@
 package net.royalur.model.path;
 
-import net.royalur.model.shape.BoardType;
-
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
