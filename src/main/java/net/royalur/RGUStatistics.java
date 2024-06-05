@@ -64,10 +64,10 @@ public class RGUStatistics {
 
         for (int index = 0; index < settingsList.size(); ++index) {
             GameSettings settings = settingsList.get(index);
-            String desc = settings.getBoardShape().getName().getTextName()
-                    + ", " + settings.getPaths().getName().getTextName()
+            String desc = settings.getBoardShape().getID()
+                    + ", " + settings.getPaths().getID()
                     + ", " + settings.getStartingPieceCount() + " pieces"
-                    + ", " + settings.getDice().getName().getTextName()
+                    + ", " + settings.getDice().getID()
                     + ", " + (settings.areRosettesSafe() ? "safe" : "unsafe")
                     + ", " + (settings.doRosettesGrantExtraRolls() ? "rosettes+" : "rosettes-")
                     + ", " + (settings.doCapturesGrantExtraRolls() ? "captures+" : "captures-");

@@ -1,18 +1,18 @@
 package net.royalur.model.path;
 
-import net.royalur.name.Name;
-import net.royalur.name.NameMap;
-import net.royalur.name.UniqueNameMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The type of path to use in a game.
  */
-public enum PathType implements Name, PathPairFactory {
+public enum PathType implements PathPairFactory {
 
     /**
      * The path proposed by Bell for the Royal Game of Ur.
      */
-    BELL(1, "Bell") {
+    BELL("bell", "Bell") {
         @Override
         public PathPair createPathPair() {
             return new BellPathPair();
@@ -22,7 +22,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The standard path used for Aseb.
      */
-    ASEB(2, "Aseb") {
+    ASEB("aseb", "Aseb") {
         @Override
         public PathPair createPathPair() {
             return new AsebPathPair();
@@ -32,7 +32,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The path proposed by Masters for the Royal Game of Ur.
      */
-    MASTERS(3, "Masters") {
+    MASTERS("masters", "Masters") {
         @Override
         public PathPair createPathPair() {
             return new MastersPathPair();
@@ -42,7 +42,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The path proposed by Murray for the Royal Game of Ur.
      */
-    MURRAY(4, "Murray") {
+    MURRAY("murray", "Murray") {
         @Override
         public PathPair createPathPair() {
             return new MurrayPathPair();
@@ -52,7 +52,7 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * The path proposed by Skiriuk for the Royal Game of Ur.
      */
-    SKIRIUK(5, "Skiriuk") {
+    SKIRIUK("skiriuk", "Skiriuk") {
         @Override
         public PathPair createPathPair() {
             return new SkiriukPathPair();
@@ -62,21 +62,20 @@ public enum PathType implements Name, PathPairFactory {
     /**
      * A store to be used to parse path pairs.
      */
-    public static final NameMap<PathType, PathPairFactory> FACTORIES;
+    public static final Map<String, PathPairFactory> BY_ID;
 
     static {
-        NameMap<PathType, PathPairFactory> factories = new UniqueNameMap<>();
+        Map<String, PathPairFactory> byID = new HashMap<>();
         for (PathType type : values()) {
-            factories.put(type, type);
+            byID.put(type.id, type);
         }
-        FACTORIES = factories.unmodifiableCopy();
+        BY_ID = Collections.unmodifiableMap(byID);
     }
 
     /**
-     * A constant numerical ID representing the path.
-     * This ID will never change.
+     * An ID to refer to this path type.
      */
-    private final int id;
+    private final String id;
 
     /**
      * The name given to this path.
@@ -88,29 +87,25 @@ public enum PathType implements Name, PathPairFactory {
      * @param id   A fixed numerical identifier to represent this path.
      * @param name The name given to this path.
      */
-    PathType(int id, String name) {
+    PathType(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    @Override
-    public Name getName() {
-        return this;
-    }
-
-    @Override
-    public String getTextName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasID() {
-        return true;
-    }
-
-    @Override
-    public int getID() {
+    /**
+     * Gets the ID that refers to this path type.
+     * @return The ID that refers to this path type.
+     */
+    public String getID() {
         return id;
+    }
+
+    /**
+     * Gets the name of this path type.
+     * @return The name of this path type.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

@@ -202,7 +202,7 @@ public class RGNTest {
                         game.abandon(abandonReason, abandoner);
                         games.add(new ProvidedGame(
                                 "Two Moves and Abandon"
-                                        + " (" + abandoner.getTextName() + " "
+                                        + " (" + abandoner.getName() + " "
                                         + abandonReason.getName() + "), "
                                         + rules.name,
                                 game

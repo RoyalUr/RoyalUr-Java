@@ -16,7 +16,7 @@ public class LutCLI {
     public static void main(String[] args) throws IOException {
         GameSettings settings = GameSettings.ASEB;
         SimpleGameStateEncoding encoding = new SimpleGameStateEncoding(settings);
-        JsonNotation jsonNotation = JsonNotation.createSimple();
+        JsonNotation jsonNotation = new JsonNotation();
         LutTrainer trainer = new LutTrainer(settings, encoding, jsonNotation);
 
         File inputFile = new File("./models/aseb.rgu");

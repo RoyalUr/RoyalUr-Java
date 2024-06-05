@@ -47,6 +47,6 @@ public class MastersPathPair extends PathPair {
      * Instantiates Masters' paths for the light and dark player.
      */
     public MastersPathPair() {
-        super(PathType.MASTERS, LIGHT_PATH, DARK_PATH);
+        super(PathType.MASTERS.getID(), LIGHT_PATH, DARK_PATH);
     }
 }

@@ -61,9 +61,9 @@ public abstract class RuleSet {
     ) {
         if (!boardShape.isCompatible(paths)) {
             throw new IllegalArgumentException(
-                    "The " + paths.getName().getTextName()
+                    "The " + paths.getID()
                             + " paths are not compatible with the "
-                            + boardShape.getName().getTextName() + " board shape"
+                            + boardShape.getID() + " board shape"
             );
         }
         this.boardShape = boardShape;

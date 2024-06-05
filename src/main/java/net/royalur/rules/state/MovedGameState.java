@@ -60,7 +60,7 @@ public class MovedGameState extends ActionGameState {
     public String describe() {
         StringBuilder builder = new StringBuilder();
         builder.append("The ");
-        builder.append(getTurn().getTextName().toLowerCase());
+        builder.append(getTurn().getName().toLowerCase());
         builder.append(" player ");
 
         boolean introducing = move.isIntroduction();

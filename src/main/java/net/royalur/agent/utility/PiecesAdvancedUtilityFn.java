@@ -1,6 +1,6 @@
 package net.royalur.agent.utility;
 
-import net.royalur.name.TextName;
+
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
@@ -13,8 +13,6 @@ public class PiecesAdvancedUtilityFn extends UtilityFunction {
     private final int scoredPieceUtility;
 
     public PiecesAdvancedUtilityFn(RuleSet rules) {
-        super(new TextName("PiecesAdvanced"));
-
         int pathLength = rules.getPaths().getLight().size();
         if (pathLength != rules.getPaths().getDark().size()) {
             throw new IllegalArgumentException(

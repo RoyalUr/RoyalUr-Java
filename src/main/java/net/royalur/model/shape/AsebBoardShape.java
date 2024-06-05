@@ -38,6 +38,6 @@ public class AsebBoardShape extends BoardShape {
      * Instantiates the board shape used for Aseb.
      */
     public AsebBoardShape() {
-        super(BoardType.ASEB, BOARD_TILES, ROSETTE_TILES);
+        super(BoardType.ASEB.getID(), BOARD_TILES, ROSETTE_TILES);
     }
 }

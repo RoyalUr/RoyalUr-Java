@@ -1,9 +1,8 @@
 package net.royalur.model.dice;
 
-import net.royalur.name.Name;
-import net.royalur.name.NameMap;
-import net.royalur.name.UniqueNameMap;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.random.RandomGenerator;
@@ -11,16 +10,16 @@ import java.util.random.RandomGenerator;
 /**
  * The type of dice to be used in a game.
  */
-public enum DiceType implements Name, DiceFactory {
+public enum DiceType implements DiceFactory {
 
     /**
      * Represents rolling four binary die and counting the number
      * of ones that were rolled.
      */
-    FOUR_BINARY(1, "FourBinary") {
+    FOUR_BINARY("four_binary", "Four Binary") {
         @Override
         public Dice createDice(RandomGenerator random) {
-            return new BinaryDice(this, random, 4);
+            return new BinaryDice(getID(), random, 4);
         }
     },
 
@@ -29,10 +28,10 @@ public enum DiceType implements Name, DiceFactory {
      * of ones that were rolled. If no ones are rolled, then a value
      * of four is given.
      */
-    THREE_BINARY_0MAX(2, "ThreeBinary0Max") {
+    THREE_BINARY_0EQ4("three_binary_0eq4", "Three Binary 0 Equals 4") {
         @Override
         public Dice createDice(RandomGenerator random) {
-            return new BinaryDice0AsMax(this, random, 3);
+            return new BinaryDice0AsMax(getID(), random, 3);
         }
     },
     ;
@@ -40,21 +39,20 @@ public enum DiceType implements Name, DiceFactory {
     /**
      * A store to be used to parse dice.
      */
-    public static final NameMap<DiceType, DiceFactory> FACTORIES;
+    public static final Map<String, DiceFactory> BY_ID;
 
     static {
-        NameMap<DiceType, DiceFactory> factories = new UniqueNameMap<>();
+        Map<String, DiceFactory> byID = new HashMap<>();
         for (DiceType type : values()) {
-            factories.put(type, type);
+            byID.put(type.id, type);
         }
-        FACTORIES = factories.unmodifiableCopy();
+        BY_ID = Collections.unmodifiableMap(byID);
     }
 
     /**
-     * A constant numerical ID representing the dice.
-     * This ID will never change.
+     * An ID representing this type of die.
      */
-    private final int id;
+    private final String id;
 
     /**
      * The name given to this dice.
@@ -66,29 +64,25 @@ public enum DiceType implements Name, DiceFactory {
      * @param id   A fixed numerical identifier to represent this dice.
      * @param name The name given to this dice.
      */
-    DiceType(int id, String name) {
+    DiceType(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    @Override
-    public Name getName() {
-        return this;
-    }
-
-    @Override
-    public String getTextName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasID() {
-        return true;
-    }
-
-    @Override
-    public int getID() {
+    /**
+     * Gets the ID that refers to this dice type.
+     * @return The ID that refers to this dice type.
+     */
+    public String getID() {
         return id;
+    }
+
+    /**
+     * Gets the name of this dice type.
+     * @return The name of this dice type.
+     */
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -112,13 +106,13 @@ public enum DiceType implements Name, DiceFactory {
     public DiceFactory createFactory(Supplier<RandomGenerator> randomProvider) {
         return new DiceFactory() {
             @Override
-            public Dice createDice() {
-                return DiceType.this.createDice(randomProvider.get());
+            public String getID() {
+                return DiceType.this.id;
             }
 
             @Override
-            public Name getName() {
-                return DiceType.this;
+            public Dice createDice() {
+                return DiceType.this.createDice(randomProvider.get());
             }
         };
     }

@@ -1,12 +1,9 @@
 package net.royalur.model.shape;
 
-import net.royalur.name.Name;
-import net.royalur.name.Named;
-
 /**
  * A factory that creates a board shape.
  */
-public interface BoardShapeFactory extends Named<Name> {
+public interface BoardShapeFactory {
 
     /**
      * Create an instance of the board shape.

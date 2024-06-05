@@ -1,12 +1,15 @@
 package net.royalur.model.dice;
 
-import net.royalur.name.Name;
-import net.royalur.name.Named;
-
 /**
  * A factory that creates dice.
  */
-public interface DiceFactory extends Named<Name> {
+public interface DiceFactory {
+
+    /**
+     * Gets the ID of this dice type.
+     * @return The ID of this dice type.
+     */
+    String getID();
 
     /**
      * Create an instance of the dice using a default source of randomness.

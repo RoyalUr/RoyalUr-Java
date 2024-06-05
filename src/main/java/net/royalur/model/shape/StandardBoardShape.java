@@ -40,7 +40,7 @@ public class StandardBoardShape extends BoardShape {
      * Instantiates the standard board shape used for the Royal Game of Ur.
      */
     public StandardBoardShape() {
-        super(BoardType.STANDARD, BOARD_TILES, ROSETTE_TILES);
+        super(BoardType.STANDARD.getID(), BOARD_TILES, ROSETTE_TILES);
     }
 
     @Override

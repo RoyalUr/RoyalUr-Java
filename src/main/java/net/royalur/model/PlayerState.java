@@ -87,7 +87,7 @@ public class PlayerState {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(player.getTextName()).append(": ");
+        builder.append(player.getName()).append(": ");
 
         builder.append(pieceCount).append(" Piece");
         if (pieceCount != 1) {

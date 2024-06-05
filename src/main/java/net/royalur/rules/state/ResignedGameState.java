@@ -27,6 +27,6 @@ public class ResignedGameState extends ControlGameState {
 
     @Override
     public String describe() {
-        return "The " + getPlayer().getTextName().toLowerCase() + " player resigned";
+        return "The " + getPlayer().getName().toLowerCase() + " player resigned";
     }
 }

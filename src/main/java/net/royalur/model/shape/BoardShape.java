@@ -2,9 +2,6 @@ package net.royalur.model.shape;
 
 import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
-import net.royalur.name.Name;
-import net.royalur.name.Named;
-import net.royalur.name.TextName;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -12,12 +9,12 @@ import java.util.*;
 /**
  * A type of board shape available for the Royal Game of Ur.
  */
-public class BoardShape implements Named<Name> {
+public class BoardShape {
 
     /**
-     * The name of this board shape.
+     * The ID of this board shape.
      */
-    private final Name name;
+    private final String id;
 
     /**
      * The set of tiles that fall within the bounds of this board shape.
@@ -42,19 +39,19 @@ public class BoardShape implements Named<Name> {
     /**
      * Instantiates a board shape with {@code tiles} representing the tiles
      * on the board.
-     * @param name     The name of this board shape.
+     * @param id       The ID of this board shape.
      * @param tiles    The set of tiles that fall within this board shape.
      * @param rosettes The set of tiles that represent rosettes in this board shape.
      */
     public BoardShape(
-            Name name,
+            String id,
             Set<Tile> tiles,
             Set<Tile> rosettes
     ) {
         if (tiles.isEmpty())
             throw new IllegalArgumentException("A board shape requires at least one tile");
 
-        this.name = name;
+        this.id = id;
         this.tiles = Set.copyOf(tiles);
         this.rosettes = Set.copyOf(rosettes);
 
@@ -85,9 +82,12 @@ public class BoardShape implements Named<Name> {
         this.height = maxY;
     }
 
-    @Override
-    public Name getName() {
-        return name;
+    /**
+     * Gets the ID of this board shape.
+     * @return The ID of this board shape.
+     */
+    public String getID() {
+        return id;
     }
 
     /**
@@ -257,24 +257,6 @@ public class BoardShape implements Named<Name> {
             return false;
 
         BoardShape other = (BoardShape) obj;
-        return name.equals(other.name) && isEquivalent(other);
-    }
-
-    /**
-     * Create a new board shape with the name {@code name}, the tiles
-     * {@code tiles}, and the rosettes on {@code rosetteTiles}.
-     * @param name         The name of the board shape.
-     * @param tiles        The set of tiles that fall within the bounds of
-     *                     this board shape.
-     * @param rosetteTiles The set of tiles that represent rosette tiles in
-     *                     this board shape.
-     * @return A new board shape with the given name.
-     */
-    public static BoardShape create(
-            String name,
-            Set<Tile> tiles,
-            Set<Tile> rosetteTiles
-    ) {
-        return new BoardShape(new TextName(name), tiles, rosetteTiles);
+        return id.equals(other.id) && isEquivalent(other);
     }
 }

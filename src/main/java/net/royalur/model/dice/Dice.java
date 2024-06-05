@@ -1,30 +1,33 @@
 package net.royalur.model.dice;
 
-import net.royalur.name.Name;
-import net.royalur.name.Named;
-
 /**
  * A generator of dice rolls, that is _not_ necessarily thread-safe.
  */
-public abstract class Dice implements Named<Name> {
+public abstract class Dice {
 
     /**
-     * The name of this dice.
+     * The ID of this dice.
      */
-    private final Name name;
+    private final String id;
 
     /**
-     * Instantiates this dice with {@code random} as the source
-     * of randomness to generate dice rolls.
-     * @param name The name of this dice.
+     * Instantiates this dice with the given ID.
      */
-    public Dice(Name name) {
-        this.name = name;
+    public Dice(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the ID of this dice type.
+     * @return The ID of this dice type.
+     */
+    public String getID() {
+        return id;
     }
 
     /**
      * Returns whether this dice holds any state that affects its dice rolls.
-     * If this is overriden, then {@link #copyFrom(Dice)} should also be overriden.
+     * If this is overridden, then {@link #copyFrom(Dice)} should also be overriden.
      * @return Whether this dice holds any state that affects its dice rolls.
      */
     public boolean hasState() {
@@ -40,11 +43,6 @@ public abstract class Dice implements Named<Name> {
      */
     public void copyFrom(Dice other) {
         // Nothing to do.
-    }
-
-    @Override
-    public Name getName() {
-        return name;
     }
 
     /**

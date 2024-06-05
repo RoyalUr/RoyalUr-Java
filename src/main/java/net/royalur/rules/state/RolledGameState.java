@@ -66,7 +66,7 @@ public class RolledGameState extends ActionGameState {
     public String describe() {
         StringBuilder builder = new StringBuilder();
         builder.append("The ")
-                .append(getTurn().getTextName().toLowerCase())
+                .append(getTurn().getName().toLowerCase())
                 .append(" player rolled ")
                 .append(roll.value());
 

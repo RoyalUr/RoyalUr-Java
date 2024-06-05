@@ -1,29 +1,21 @@
 package net.royalur.model;
 
-import net.royalur.name.Name;
-
 import javax.annotation.Nullable;
 
 /**
  * Represents the players of a game.
  */
-public enum PlayerType implements Name {
+public enum PlayerType {
 
     /**
      * The light player. Following chess, the light player moves first.
      */
-    LIGHT(1, "Light", 'L'),
+    LIGHT('L', "Light"),
 
     /**
      * The dark player. Following chess, the dark player moves second.
      */
-    DARK(2, "Dark", 'D');
-
-    /**
-     * A constant numerical ID representing the player.
-     * This ID will never change.
-     */
-    private final int id;
+    DARK('D', "Dark");
 
     /**
      * An English name for this player, capitalised.
@@ -44,30 +36,13 @@ public enum PlayerType implements Name {
 
     /**
      * Instantiates a type of player.
-     * @param id A fixed numerical identifier to represent this player.
-     * @param name An English name for this player.
      * @param character A fixed character to represent this player.
+     * @param name An English name for this player.
      */
-    PlayerType(int id, String name, char character) {
-        this.id = id;
-        this.name = name;
+    PlayerType(char character, String name) {
         this.character = character;
         this.characterString = Character.toString(character);
-    }
-
-    @Override
-    public String getTextName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasID() {
-        return true;
-    }
-
-    @Override
-    public int getID() {
-        return id;
+        this.name = name;
     }
 
     /**
@@ -86,6 +61,14 @@ public enum PlayerType implements Name {
      */
     public String getCharStr() {
         return characterString;
+    }
+
+    /**
+     * Gets the name of this player type.
+     * @return The name of this player type.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

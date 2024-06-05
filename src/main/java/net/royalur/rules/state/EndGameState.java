@@ -100,6 +100,6 @@ public class EndGameState extends GameState {
         if (winner == null)
             return "The game ended without a winner";
 
-        return "The " + winner.getTextName().toLowerCase() + " player has won!";
+        return "The " + winner.getName().toLowerCase() + " player has won!";
     }
 }

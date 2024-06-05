@@ -64,7 +64,7 @@ public class WaitingForMoveGameState extends PlayableGameState {
 
     @Override
     public String describe() {
-        return "Waiting for the " + getTurn().getTextName().toLowerCase()
+        return "Waiting for the " + getTurn().getName().toLowerCase()
                 + " player to make a move with their roll of " + roll.value();
     }
 }

@@ -40,6 +40,6 @@ public class BellPathPair extends PathPair {
      * Instantiates Bell's paths for the light and dark player.
      */
     public BellPathPair() {
-        super(PathType.BELL, LIGHT_PATH, DARK_PATH);
+        super(PathType.BELL.getID(), LIGHT_PATH, DARK_PATH);
     }
 }

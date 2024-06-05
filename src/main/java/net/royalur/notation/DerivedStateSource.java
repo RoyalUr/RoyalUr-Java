@@ -127,8 +127,8 @@ public class DerivedStateSource extends StateSource {
         if (waitingState.getTurn() != turn) {
             throw new IllegalStateException(
                     "Inconsistent derivation! "
-                            + "Expected turn = " + turn.getTextName()
-                            + ", actual turn = " + waitingState.getTurn().getTextName()
+                            + "Expected turn = " + turn.getName()
+                            + ", actual turn = " + waitingState.getTurn().getName()
             );
         }
         return waitingState;
@@ -147,8 +147,8 @@ public class DerivedStateSource extends StateSource {
         if (waitingState.getTurn() != turn) {
             throw new IllegalStateException(
                     "Inconsistent derivation! "
-                            + "Expected turn = " + turn.getTextName()
-                            + ", actual turn = " + waitingState.getTurn().getTextName()
+                            + "Expected turn = " + turn.getName()
+                            + ", actual turn = " + waitingState.getTurn().getName()
             );
         }
         if (waitingState.getRoll().value() != roll.value()) {
@@ -210,9 +210,9 @@ public class DerivedStateSource extends StateSource {
             throw new IllegalStateException(
                     "Inconsistent derivation! "
                             + "Expected winner = "
-                            + (winner != null ? winner.getTextName() : null)
+                            + (winner != null ? winner.getName() : null)
                             + ", actual winner = "
-                            + (actualWinner != null ? actualWinner.getTextName() : null)
+                            + (actualWinner != null ? actualWinner.getName() : null)
             );
         }
         return endState;

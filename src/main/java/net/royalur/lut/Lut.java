@@ -177,7 +177,7 @@ public class Lut {
 
     public static Lut read(File file) throws IOException {
         return read(
-                JsonNotation.createSimple(),
+                new JsonNotation(),
                 GameStateEncoding::createSimple,
                 file
         );

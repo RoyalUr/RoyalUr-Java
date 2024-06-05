@@ -26,24 +26,12 @@ public class PathPairTest {
     private static final Tile T31 = new Tile(3, 1);
     private static final Tile T32 = new Tile(3, 2);
 
-    public static class PathPairConstructors {
-        public final String name;
-        public final Supplier<PathPair> pair;
-        public final Supplier<List<Tile>> lightWithStartEnd;
-        public final Supplier<List<Tile>> darkWithStartEnd;
-
-        public PathPairConstructors(
-                String name,
-                Supplier<PathPair> pair,
-                Supplier<List<Tile>> lightWithStartEnd,
-                Supplier<List<Tile>> darkWithStartEnd
-        ) {
-            this.name = name;
-            this.pair = pair;
-            this.lightWithStartEnd = lightWithStartEnd;
-            this.darkWithStartEnd = darkWithStartEnd;
-        }
-
+    public record PathPairConstructors(
+            String name,
+            Supplier<PathPair> pair,
+            Supplier<List<Tile>> lightWithStartEnd,
+            Supplier<List<Tile>> darkWithStartEnd
+    ) {
         @Override
         public String toString() {
             return name;
@@ -75,7 +63,7 @@ public class PathPairTest {
         List<Tile> lightPath = List.of(T12, T11, T21);
         List<Tile> darkPath = List.of(T32, T31, T21);
 
-        PathPair pair = PathPair.create("Pair", lightPath, darkPath);
+        PathPair pair = new PathPair("Pair", lightPath, darkPath);
         assertEquals(lightPath, pair.getLightWithStartEnd());
         assertEquals(darkPath, pair.getDarkWithStartEnd());
         assertEquals(lightPath, pair.getWithStartEnd(PlayerType.LIGHT));
@@ -117,26 +105,26 @@ public class PathPairTest {
         List<Tile> lightPath2 = List.of(T12, T11, T21, T22);
         List<Tile> darkPath2 = List.of(T32, T31, T21, T22);
 
-        PathPair pair1 = PathPair.create("Pair1", lightPath1, darkPath1);
-        PathPair pair2 = PathPair.create("2", lightPath1, darkPath1);
+        PathPair pair1 = new PathPair("Pair1", lightPath1, darkPath1);
+        PathPair pair2 = new PathPair("2", lightPath1, darkPath1);
         assertTrue(pair1.isEquivalent(pair2));
-        assertTrue(pair1.isEquivalent(PathPair.create("Test1", lightPath1, darkPath1)));
-        assertFalse(pair1.isEquivalent(PathPair.create("Test2", lightPath2, darkPath1)));
-        assertFalse(pair1.isEquivalent(PathPair.create("12", lightPath1, darkPath2)));
-        assertFalse(pair1.isEquivalent(PathPair.create("22", lightPath2, darkPath2)));
+        assertTrue(pair1.isEquivalent(new PathPair("Test1", lightPath1, darkPath1)));
+        assertFalse(pair1.isEquivalent(new PathPair("Test2", lightPath2, darkPath1)));
+        assertFalse(pair1.isEquivalent(new PathPair("12", lightPath1, darkPath2)));
+        assertFalse(pair1.isEquivalent(new PathPair("22", lightPath2, darkPath2)));
 
-        PathPair pair3 = PathPair.create("Pair3", lightPath2, darkPath2);
-        PathPair pair4 = PathPair.create("Pair4", lightPath2, darkPath2);
+        PathPair pair3 = new PathPair("Pair3", lightPath2, darkPath2);
+        PathPair pair4 = new PathPair("Pair4", lightPath2, darkPath2);
         assertTrue(pair3.isEquivalent(pair4));
         assertFalse(pair1.isEquivalent(pair3));
         assertFalse(pair3.isEquivalent(pair1));
-        assertTrue(pair3.isEquivalent(PathPair.create("Test1", lightPath2, darkPath2)));
-        assertFalse(pair3.isEquivalent(PathPair.create("Test2", lightPath2, darkPath1)));
-        assertFalse(pair3.isEquivalent(PathPair.create("12", lightPath1, darkPath2)));
-        assertFalse(pair3.isEquivalent(PathPair.create("11", lightPath1, darkPath1)));
+        assertTrue(pair3.isEquivalent(new PathPair("Test1", lightPath2, darkPath2)));
+        assertFalse(pair3.isEquivalent(new PathPair("Test2", lightPath2, darkPath1)));
+        assertFalse(pair3.isEquivalent(new PathPair("12", lightPath1, darkPath2)));
+        assertFalse(pair3.isEquivalent(new PathPair("11", lightPath1, darkPath1)));
 
         PathPair aseb1 = new AsebPathPair();
-        PathPair aseb2 = PathPair.create("Aseb", AsebPathPair.LIGHT_PATH, AsebPathPair.DARK_PATH);
+        PathPair aseb2 = new PathPair("Aseb", AsebPathPair.LIGHT_PATH, AsebPathPair.DARK_PATH);
         assertTrue(aseb1.isEquivalent(aseb2));
         assertTrue(aseb2.isEquivalent(aseb1));
         assertFalse(aseb1.isEquivalent(pair1));
@@ -152,7 +140,7 @@ public class PathPairTest {
         asebDarkPath.add(aseb1.getDarkStart());
         asebDarkPath.addAll(aseb1.getDark());
         asebDarkPath.add(aseb1.getDarkEnd());
-        PathPair aseb3 = PathPair.create("Aseb", asebLightPath, asebDarkPath);
+        PathPair aseb3 = new PathPair("Aseb", asebLightPath, asebDarkPath);
         assertTrue(aseb1.isEquivalent(aseb3));
 
         List<Tile> asebMixedPathLight = new ArrayList<>();
@@ -163,7 +151,7 @@ public class PathPairTest {
         asebMixedPathDark.add(aseb1.getLightStart());
         asebMixedPathDark.addAll(aseb1.getDark());
         asebMixedPathDark.add(aseb1.getLightEnd());
-        PathPair aseb4 = PathPair.create("Aseb", asebMixedPathLight, asebMixedPathDark);
+        PathPair aseb4 = new PathPair("Aseb", asebMixedPathLight, asebMixedPathDark);
         assertTrue(aseb1.isEquivalent(aseb4));
     }
 
@@ -172,10 +160,10 @@ public class PathPairTest {
     public void testIsEquivalent(PathPairConstructors constructors) {
         List<Tile> genericLightPath = List.of(T12, T11, T21);
         List<Tile> genericDarkPath = List.of(T32, T31, T21);
-        PathPair generic = PathPair.create("Generic", genericLightPath, genericDarkPath);
+        PathPair generic = new PathPair("Generic", genericLightPath, genericDarkPath);
 
         PathPair pair1 = constructors.pair.get();
-        PathPair pair2 = PathPair.create(
+        PathPair pair2 = new PathPair(
                 "Pair2",
                 constructors.lightWithStartEnd.get(),
                 constructors.darkWithStartEnd.get()
@@ -193,7 +181,7 @@ public class PathPairTest {
         darkPath.add(pair2.getDarkStart());
         darkPath.addAll(pair2.getDark());
         darkPath.add(pair2.getDarkEnd());
-        PathPair pair3 = PathPair.create("Pair3", lightPath, darkPath);
+        PathPair pair3 = new PathPair("Pair3", lightPath, darkPath);
         assertTrue(pair3.isEquivalent(pair1));
 
         List<Tile> mixedPathLight = new ArrayList<>();
@@ -204,7 +192,7 @@ public class PathPairTest {
         mixedPathDark.add(pair2.getLightStart());
         mixedPathDark.addAll(pair2.getDark());
         mixedPathDark.add(pair2.getLightEnd());
-        PathPair pair4 = PathPair.create("Pair4", mixedPathLight, mixedPathDark);
+        PathPair pair4 = new PathPair("Pair4", mixedPathLight, mixedPathDark);
         assertTrue(pair4.isEquivalent(pair1));
     }
 }

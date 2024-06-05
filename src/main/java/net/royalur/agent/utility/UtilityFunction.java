@@ -1,31 +1,11 @@
 package net.royalur.agent.utility;
 
-import net.royalur.name.Name;
-import net.royalur.name.Named;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 
 /**
  * A function that is used to score game states.
  */
-public abstract class UtilityFunction implements Named<Name> {
-
-    /**
-     * The name of this path pair.
-     */
-    private final Name name;
-
-    /**
-     * Instantiates a utility function.
-     * @param name The name of this utility function.
-     */
-    public UtilityFunction(Name name) {
-        this.name = name;
-    }
-
-    @Override
-    public Name getName() {
-        return name;
-    }
+public abstract class UtilityFunction {
 
     /**
      * Scores the state of the game numerically, where a positive

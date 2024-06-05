@@ -2,9 +2,6 @@ package net.royalur.model.path;
 
 import net.royalur.model.PlayerType;
 import net.royalur.model.Tile;
-import net.royalur.name.Name;
-import net.royalur.name.Named;
-import net.royalur.name.TextName;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -13,12 +10,12 @@ import java.util.List;
  * Represents a pair of paths for the light and dark players to
  * move their pieces along in a game of the Royal Game of Ur.
  */
-public class PathPair implements Named<Name> {
+public class PathPair {
 
     /**
-     * The name of this path pair.
+     * The ID of this path pair.
      */
-    private final Name name;
+    private final String id;
 
     /**
      * The path that light players take around the board, including
@@ -66,7 +63,7 @@ public class PathPair implements Named<Name> {
 
     /**
      * Instantiates a pair of paths.
-     * @param name The name of this path.
+     * @param id The ID of this path.
      * @param lightWithStartEnd The path that light players take around
      *                          the board, including the start and end
      *                          tiles that exist off the board.
@@ -75,11 +72,11 @@ public class PathPair implements Named<Name> {
      *                         tiles that exist off the board.
      */
     public PathPair(
-            Name name,
+            String id,
             List<Tile> lightWithStartEnd,
             List<Tile> darkWithStartEnd
     ) {
-        this.name = name;
+        this.id = id;
         this.lightWithStartEnd = List.copyOf(lightWithStartEnd);
         this.darkWithStartEnd = List.copyOf(darkWithStartEnd);
         this.light = this.lightWithStartEnd.subList(1, lightWithStartEnd.size() - 1);
@@ -90,9 +87,12 @@ public class PathPair implements Named<Name> {
         this.darkEnd = darkWithStartEnd.get(darkWithStartEnd.size() - 1);
     }
 
-    @Override
-    public Name getName() {
-        return name;
+    /**
+     * Gets the ID of this path pair.
+     * @return The ID of this path pair.
+     */
+    public String getID() {
+        return id;
     }
 
     /**
@@ -237,30 +237,8 @@ public class PathPair implements Named<Name> {
             return false;
 
         PathPair other = (PathPair) obj;
-        return name.equals(other.name)
+        return id.equals(other.id)
                 && getLightWithStartEnd().equals(other.getLightWithStartEnd())
                 && getDarkWithStartEnd().equals(other.getDarkWithStartEnd());
-    }
-
-    /**
-     * Create a new path pair called {@code name} with
-     * paths {@code lightPath} and {@code darkPath}.
-     * @param name The name of the path pair.
-     * @param lightPathWithStartEnd The path for light pieces, including the
-     *                              start and end tiles that exist off the board.
-     * @param darkPathWithStartEnd The path for dark pieces, including the
-     *                             start and end tiles that exist off the board.
-     * @return A new path pair with the given name and paths.
-     */
-    public static PathPair create(
-            String name,
-            List<Tile> lightPathWithStartEnd,
-            List<Tile> darkPathWithStartEnd
-    ) {
-        return new PathPair(
-                new TextName(name),
-                lightPathWithStartEnd,
-                darkPathWithStartEnd
-        );
     }
 }

@@ -7,7 +7,6 @@ import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
-import net.royalur.name.NameMap;
 import net.royalur.rules.state.ActionGameState;
 import net.royalur.rules.state.MovedGameState;
 import net.royalur.rules.state.RolledGameState;
@@ -24,7 +23,7 @@ import java.util.Map;
  * <p>
  * RGN was developed by Padraig Lamont with help from several
  * contributors from the Royal Game of Ur Discord server:
- * Diego Raposo, Monomino, Sachertorte, kapfab, and Raph.
+ * Airis, Diego Raposo, Monomino, Sachertorte, Capt. Fab., and Raph.
  */
 public class RGN implements Notation {
 
@@ -44,12 +43,12 @@ public class RGN implements Notation {
     /**
      * A map of factories for identifying path pairs for parsing.
      */
-    private final NameMap<?, ? extends PathPairFactory> pathPairs;
+    private final Map<String, ? extends PathPairFactory> pathPairs;
 
     /**
      * A map of factories for identifying board shapes for parsing.
      */
-    private final NameMap<?, ? extends BoardShapeFactory> boardShapes;
+    private final Map<String, ? extends BoardShapeFactory> boardShapes;
 
     /**
      * The maximum length of the lines that contain moves.
@@ -71,8 +70,8 @@ public class RGN implements Notation {
      * @param maxTurnLineLength The maximum length of a turn before it is split onto another line.
      */
     public RGN(
-            NameMap<?, ? extends PathPairFactory> pathPairs,
-            NameMap<?, ? extends BoardShapeFactory> boardShapes,
+            Map<String, ? extends PathPairFactory> pathPairs,
+            Map<String, ? extends BoardShapeFactory> boardShapes,
             int maxActionLineLength,
             int maxTurnLineLength
     ) {
@@ -87,7 +86,8 @@ public class RGN implements Notation {
      */
     public RGN() {
         this(
-                PathType.FACTORIES, BoardType.FACTORIES,
+                PathType.BY_ID,
+                BoardType.BY_ID,
                 DEFAULT_MAX_ACTION_LINE_LENGTH,
                 DEFAULT_MAX_TURN_LINE_LENGTH
         );

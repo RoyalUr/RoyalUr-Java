@@ -17,7 +17,6 @@ import net.royalur.model.path.PathPairFactory;
 import net.royalur.model.path.PathType;
 import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
-import net.royalur.name.NameMap;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.RuleSetProvider;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
@@ -234,9 +233,9 @@ public class JsonNotation implements Notation {
      */
     public static final String PLAYER_SCORE_KEY = "score";
 
-    private final NameMap<?, ? extends BoardShapeFactory> boardShapes;
-    private final NameMap<?, ? extends PathPairFactory> pathPairs;
-    private final NameMap<?, ? extends DiceFactory> dice;
+    private final Map<String, ? extends BoardShapeFactory> boardShapes;
+    private final Map<String, ? extends PathPairFactory> pathPairs;
+    private final Map<String, ? extends DiceFactory> dice;
     private final RuleSetProvider ruleSetProvider;
 
     /**
@@ -258,9 +257,9 @@ public class JsonNotation implements Notation {
      * @param jsonFactory A factory to build generators to write the JSON.
      */
     public JsonNotation(
-            NameMap<?, ? extends BoardShapeFactory> boardShapes,
-            NameMap<?, ? extends PathPairFactory> pathPairs,
-            NameMap<?, ? extends DiceFactory> dice,
+            Map<String, ? extends BoardShapeFactory> boardShapes,
+            Map<String, ? extends PathPairFactory> pathPairs,
+            Map<String, ? extends DiceFactory> dice,
             RuleSetProvider ruleSetProvider,
             JsonFactory jsonFactory
     ) {
@@ -280,19 +279,22 @@ public class JsonNotation implements Notation {
      * @param ruleSetProvider The provider to create rule sets from game settings.
      */
     public JsonNotation(
-            NameMap<?, ? extends BoardShapeFactory> boardShapes,
-            NameMap<?, ? extends PathPairFactory> pathPairs,
-            NameMap<?, ? extends DiceFactory> dice,
+            Map<String, ? extends BoardShapeFactory> boardShapes,
+            Map<String, ? extends PathPairFactory> pathPairs,
+            Map<String, ? extends DiceFactory> dice,
             RuleSetProvider ruleSetProvider
     ) {
         this(boardShapes, pathPairs, dice, ruleSetProvider, JsonFactory.builder().build());
     }
 
-    public static JsonNotation createSimple() {
-        return new JsonNotation(
-                BoardType.FACTORIES,
-                PathType.FACTORIES,
-                DiceType.FACTORIES,
+    /**
+     * Instantiates a default JSON notation to read simple games.
+     */
+    public JsonNotation() {
+        this(
+                BoardType.BY_ID,
+                PathType.BY_ID,
+                DiceType.BY_ID,
                 new SimpleRuleSetProvider()
         );
     }
@@ -317,7 +319,7 @@ public class JsonNotation implements Notation {
         } else if (owner == PlayerType.DARK) {
             sign = -1;
         } else {
-            throw new IllegalArgumentException("Unknown player type " + owner.getTextName());
+            throw new IllegalArgumentException("Unknown player type " + owner.getName());
         }
         return sign * (piece.getPathIndex() + 1);
     }
@@ -630,15 +632,9 @@ public class JsonNotation implements Notation {
             GameSettings settings
     ) throws IOException {
 
-        generator.writeStringField(
-                BOARD_SHAPE_KEY, settings.getBoardShape().getName().getTextName()
-        );
-        generator.writeStringField(
-                PATHS_KEY, settings.getPaths().getName().getTextName()
-        );
-        generator.writeStringField(
-                DICE_KEY, settings.getDice().getName().getTextName()
-        );
+        generator.writeStringField(BOARD_SHAPE_KEY, settings.getBoardShape().getID());
+        generator.writeStringField(PATHS_KEY, settings.getPaths().getID());
+        generator.writeStringField(DICE_KEY, settings.getDice().getID());
         generator.writeNumberField(
                 STARTING_PIECE_COUNT_KEY, settings.getStartingPieceCount()
         );
@@ -1042,9 +1038,9 @@ public class JsonNotation implements Notation {
     }
 
     public GameSettings readGameSettings(ObjectNode json) {
-        String boardShapeName = JsonHelper.readString(json, BOARD_SHAPE_KEY);
-        String pathsName = JsonHelper.readString(json, PATHS_KEY);
-        String diceName = JsonHelper.readString(json, DICE_KEY);
+        String boardShapeName = JsonHelper.readString(json, BOARD_SHAPE_KEY).toLowerCase();
+        String pathsName = JsonHelper.readString(json, PATHS_KEY).toLowerCase();
+        String diceName = JsonHelper.readString(json, DICE_KEY).toLowerCase();
         int startingPieceCount = JsonHelper.readInt(json, STARTING_PIECE_COUNT_KEY);
         boolean safeRosettes = JsonHelper.readBool(json, SAFE_ROSETTES_KEY);
         boolean rosettesGrantExtraRolls = JsonHelper.readBool(

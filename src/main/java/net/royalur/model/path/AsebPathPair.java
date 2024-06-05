@@ -39,6 +39,6 @@ public class AsebPathPair extends PathPair {
      * Instantiates the standard paths for the light and dark player in Aseb.
      */
     public AsebPathPair() {
-        super(PathType.ASEB, LIGHT_PATH, DARK_PATH);
+        super(PathType.ASEB.getID(), LIGHT_PATH, DARK_PATH);
     }
 }

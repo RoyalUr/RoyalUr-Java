@@ -10,7 +10,7 @@ public class JsonNotationTest {
     @ArgumentsSource(RGNTest.GameProvider.class)
     public void testRunsWithoutError(RGNTest.ProvidedGame providedGame) {
         Game game = providedGame.game;
-        JsonNotation notation = JsonNotation.createSimple();
+        JsonNotation notation = new JsonNotation();
         String encoded = notation.encodeGame(game);
         System.out.println(encoded);
         System.out.println(notation.decodeGame(encoded));

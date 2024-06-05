@@ -1,7 +1,5 @@
 package net.royalur.model.dice;
 
-import net.royalur.name.Name;
-
 import java.util.random.RandomGenerator;
 
 /**
@@ -23,12 +21,12 @@ public class BinaryDice0AsMax extends BinaryDice {
     /**
      * Instantiates this binary dice with {@code random} as the source
      * of randomness to generate rolls.
-     * @param name The name of this dice.
+     * @param id The ID of this dice.
      * @param random The source of randomness used to generate dice rolls.
      * @param numDie The number of binary dice to roll.
      */
-    public BinaryDice0AsMax(Name name, RandomGenerator random, int numDie) {
-        super(name, random, numDie);
+    public BinaryDice0AsMax(String id, RandomGenerator random, int numDie) {
+        super(id, random, numDie);
         this.maxRollValue = numDie + 1;
         this.rollProbabilities = new float[maxRollValue + 1];
 

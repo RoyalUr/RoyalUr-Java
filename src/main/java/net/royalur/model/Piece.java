@@ -65,7 +65,7 @@ public class Piece {
 
     @Override
     public String toString() {
-        return "(" + owner.getTextName() + ", advanced " + (pathIndex + 1) + ")";
+        return "(" + owner.getName() + ", advanced " + (pathIndex + 1) + ")";
     }
 
     /**

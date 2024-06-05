@@ -52,6 +52,6 @@ public class MurrayPathPair extends PathPair {
      * Instantiates Murray's paths for the light and dark player.
      */
     public MurrayPathPair() {
-        super(PathType.MURRAY, LIGHT_PATH, DARK_PATH);
+        super(PathType.MURRAY.getID(), LIGHT_PATH, DARK_PATH);
     }
 }

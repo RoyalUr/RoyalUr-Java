@@ -1,18 +1,18 @@
 package net.royalur.model.shape;
 
-import net.royalur.name.Name;
-import net.royalur.name.NameMap;
-import net.royalur.name.UniqueNameMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The type of board to use in a game.
  */
-public enum BoardType implements Name, BoardShapeFactory {
+public enum BoardType implements BoardShapeFactory {
 
     /**
      * The standard board shape.
      */
-    STANDARD(1, "Standard") {
+    STANDARD("standard", "Standard") {
         @Override
         public BoardShape createBoardShape() {
             return new StandardBoardShape();
@@ -22,7 +22,7 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * The Aseb board shape.
      */
-    ASEB(2, "Aseb") {
+    ASEB("aseb", "Aseb") {
         @Override
         public BoardShape createBoardShape() {
             return new AsebBoardShape();
@@ -32,21 +32,20 @@ public enum BoardType implements Name, BoardShapeFactory {
     /**
      * A store to be used to parse board shapes.
      */
-    public static final NameMap<BoardType, BoardShapeFactory> FACTORIES;
+    public static final Map<String, BoardShapeFactory> BY_ID;
 
     static {
-        NameMap<BoardType, BoardShapeFactory> factories = new UniqueNameMap<>();
+        Map<String, BoardShapeFactory> byID = new HashMap<>();
         for (BoardType type : values()) {
-            factories.put(type, type);
+            byID.put(type.id, type);
         }
-        FACTORIES = factories.unmodifiableCopy();
+        BY_ID = Collections.unmodifiableMap(byID);
     }
 
     /**
-     * A constant numerical ID representing the board shape.
-     * This ID will never change.
+     * An ID representing this board shape.
      */
-    private final int id;
+    private final String id;
 
     /**
      * The name of this board shape.
@@ -54,33 +53,29 @@ public enum BoardType implements Name, BoardShapeFactory {
     private final String name;
 
     /**
-     * Instantiates a type of path.
-     * @param id   A fixed numerical identifier to represent this board shape.
+     * Instantiates a type of board.
+     * @param id   A constant ID representing this board shape.
      * @param name The name of this board shape.
      */
-    BoardType(int id, String name) {
+    BoardType(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    @Override
-    public Name getName() {
-        return this;
-    }
-
-    @Override
-    public String getTextName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasID() {
-        return true;
-    }
-
-    @Override
-    public int getID() {
+    /**
+     * Gets the ID that refers to this board type.
+     * @return The ID that refers to this board type.
+     */
+    public String getID() {
         return id;
+    }
+
+    /**
+     * Gets the name of this board type.
+     * @return The name of this board type.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

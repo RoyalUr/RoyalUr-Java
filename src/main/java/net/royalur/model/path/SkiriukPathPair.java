@@ -50,6 +50,6 @@ public class SkiriukPathPair extends PathPair {
      * Instantiates Skiriuk's paths for the light and dark player.
      */
     public SkiriukPathPair() {
-        super(PathType.SKIRIUK, LIGHT_PATH, DARK_PATH);
+        super(PathType.SKIRIUK.getID(), LIGHT_PATH, DARK_PATH);
     }
 }

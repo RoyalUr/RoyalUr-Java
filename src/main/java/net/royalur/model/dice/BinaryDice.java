@@ -1,7 +1,5 @@
 package net.royalur.model.dice;
 
-import net.royalur.name.Name;
-
 import java.util.random.RandomGenerator;
 
 /**
@@ -27,12 +25,12 @@ public class BinaryDice extends Dice {
     /**
      * Instantiates this binary dice with {@code random} as the source
      * of randomness to generate rolls.
-     * @param name The name of this dice.
+     * @param id The ID of this dice.
      * @param random The source of randomness used to generate dice rolls.
      * @param numDie The number of binary dice to roll.
      */
-    public BinaryDice(Name name, RandomGenerator random, int numDie) {
-        super(name);
+    public BinaryDice(String id, RandomGenerator random, int numDie) {
+        super(id);
         if (numDie <= 0)
             throw new IllegalArgumentException("numDie must be at least 1");
         if (numDie >= 31)

@@ -51,7 +51,7 @@ public class AbandonedGameState extends ControlGameState {
     @Override
     public String describe() {
         return switch (reason) {
-            case PLAYER_LEFT -> "The " + getPlayer().getTextName().toLowerCase() + " player left the game";
+            case PLAYER_LEFT -> "The " + getPlayer().getName().toLowerCase() + " player left the game";
             case EXTERNAL -> "An external event ended the game";
         };
     }
