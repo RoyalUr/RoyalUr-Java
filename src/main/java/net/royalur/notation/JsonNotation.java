@@ -1038,9 +1038,9 @@ public class JsonNotation implements Notation {
     }
 
     public GameSettings readGameSettings(ObjectNode json) {
-        String boardShapeName = JsonHelper.readString(json, BOARD_SHAPE_KEY).toLowerCase();
-        String pathsName = JsonHelper.readString(json, PATHS_KEY).toLowerCase();
-        String diceName = JsonHelper.readString(json, DICE_KEY).toLowerCase();
+        String boardID = JsonHelper.readString(json, BOARD_SHAPE_KEY).toLowerCase();
+        String pathID = JsonHelper.readString(json, PATHS_KEY).toLowerCase();
+        String diceID = JsonHelper.readString(json, DICE_KEY).toLowerCase();
         int startingPieceCount = JsonHelper.readInt(json, STARTING_PIECE_COUNT_KEY);
         boolean safeRosettes = JsonHelper.readBool(json, SAFE_ROSETTES_KEY);
         boolean rosettesGrantExtraRolls = JsonHelper.readBool(
@@ -1049,10 +1049,21 @@ public class JsonNotation implements Notation {
         boolean capturesGrantExtraRolls = JsonHelper.readBool(
                 json, CAPTURES_GRANT_EXTRA_ROLLS_KEY
         );
+
+        BoardShapeFactory board = this.boardShapes.get(boardID);
+        PathPairFactory path = this.pathPairs.get(pathID);
+        DiceFactory dice = this.dice.get(diceID);
+        if (board == null)
+            throw new IllegalArgumentException("Unknown board shape " + boardID);
+        if (path == null)
+            throw new IllegalArgumentException("Unknown path pair " + pathID);
+        if (dice == null)
+            throw new IllegalArgumentException("Unknown dice " + diceID);
+
         return new GameSettings(
-                boardShapes.get(boardShapeName).createBoardShape(),
-                pathPairs.get(pathsName).createPathPair(),
-                dice.get(diceName),
+                board.createBoardShape(),
+                path.createPathPair(),
+                dice,
                 startingPieceCount,
                 safeRosettes,
                 rosettesGrantExtraRolls,
