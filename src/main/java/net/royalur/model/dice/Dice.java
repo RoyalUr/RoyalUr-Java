@@ -43,6 +43,14 @@ public abstract class Dice {
     }
 
     /**
+     * Gets the name of this dice.
+     * @return The name of this dice.
+     */
+    public String getName() {
+        return getDiceType().getName();
+    }
+
+    /**
      * Returns whether this dice holds any state that affects its dice rolls.
      * If this is overridden, then {@link #copyFrom(Dice)} should also be overriden.
      * @return Whether this dice holds any state that affects its dice rolls.

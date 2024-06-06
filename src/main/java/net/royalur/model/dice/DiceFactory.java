@@ -12,6 +12,31 @@ public interface DiceFactory {
     String getID();
 
     /**
+     * Gets whether this dice has an associated dice type.
+     * Custom dice may not have an associated dice type.
+     * @return Whether this dice has an associated dice type.
+     */
+    default boolean hasDiceType() {
+        return DiceType.getByIDOrNull(getID()) != null;
+    }
+
+    /**
+     * Gets the type of this dice.
+     * @return The type of this dice.
+     */
+    default DiceType getDiceType() {
+        return DiceType.getByID(getID());
+    }
+
+    /**
+     * Gets the name of this dice.
+     * @return The name of this dice.
+     */
+    default String getName() {
+        return getDiceType().getName();
+    }
+
+    /**
      * Create an instance of the dice using a default source of randomness.
      * @return The instance of the dice using a default source of randomness.
      */

@@ -91,6 +91,31 @@ public class BoardShape {
     }
 
     /**
+     * Gets whether this board has an associated board type.
+     * Custom board may not have an associated board type.
+     * @return Whether this board has an associated board type.
+     */
+    public boolean hasBoardType() {
+        return BoardType.getByIDOrNull(id) != null;
+    }
+
+    /**
+     * Gets the type of this board.
+     * @return The type of this board.
+     */
+    public BoardType getBoardType() {
+        return BoardType.getByID(id);
+    }
+
+    /**
+     * Gets the name of this board.
+     * @return The name of this board.
+     */
+    public String getName() {
+        return getBoardType().getName();
+    }
+
+    /**
      * Gets the set of tiles that fall within the bounds of this board shape.
      * @return The set of tiles that fall within the bounds of this board shape.
      */

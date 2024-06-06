@@ -96,6 +96,31 @@ public class PathPair {
     }
 
     /**
+     * Gets whether this path has an associated path type.
+     * Custom path may not have an associated path type.
+     * @return Whether this path has an associated path type.
+     */
+    public boolean hasPathType() {
+        return PathType.getByIDOrNull(id) != null;
+    }
+
+    /**
+     * Gets the type of this path.
+     * @return The type of this path.
+     */
+    public PathType getPathType() {
+        return PathType.getByID(id);
+    }
+
+    /**
+     * Gets the name of this path.
+     * @return The name of this path.
+     */
+    public String getName() {
+        return getPathType().getName();
+    }
+
+    /**
      * Gets the path that the light player's pieces must take, excluding
      * the start and end tiles that exist off the board.
      * @return The path that the light player's pieces must take
