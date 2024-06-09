@@ -124,8 +124,7 @@ public abstract class RuleSet {
     /**
      * Gets a sample dice that can be used for parsing, but should
      * not be used for running games.
-     * @return A sample dice that can be used for parsing, but should
-     *         not be used for running games.
+     * @return A sample dice that can be used for parsing.
      */
     public Dice getSampleDice() {
         return sampleDice;
