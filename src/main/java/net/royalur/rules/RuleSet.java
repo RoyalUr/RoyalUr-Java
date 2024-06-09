@@ -2,6 +2,7 @@ package net.royalur.rules;
 
 import net.royalur.model.GameMetadata;
 import net.royalur.model.*;
+import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.DiceFactory;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
@@ -33,6 +34,12 @@ public abstract class RuleSet {
      * The generator of dice that are used to generate dice rolls.
      */
     protected final DiceFactory diceFactory;
+
+    /**
+     * A sample dice that can be used for parsing, but should not
+     * be used for running games.
+     */
+    protected final Dice sampleDice;
 
     /**
      * Provides the manipulation of piece values.
@@ -69,6 +76,7 @@ public abstract class RuleSet {
         this.boardShape = boardShape;
         this.paths = paths;
         this.diceFactory = diceFactory;
+        this.sampleDice = diceFactory.createDice();
         this.pieceProvider = pieceProvider;
         this.playerStateProvider = playerStateProvider;
     }
@@ -111,6 +119,16 @@ public abstract class RuleSet {
      */
     public DiceFactory getDiceFactory() {
         return diceFactory;
+    }
+
+    /**
+     * Gets a sample dice that can be used for parsing, but should
+     * not be used for running games.
+     * @return A sample dice that can be used for parsing, but should
+     *         not be used for running games.
+     */
+    public Dice getSampleDice() {
+        return sampleDice;
     }
 
     /**
