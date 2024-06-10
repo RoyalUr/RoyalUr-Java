@@ -96,4 +96,16 @@ public abstract class GameState {
      * @return An English text description of the state of the game.
      */
     public abstract String describe();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof GameState other))
+            return false;
+
+        return board.equals(other.board)
+                && lightPlayer.equals(other.lightPlayer)
+                && darkPlayer.equals(other.darkPlayer);
+    }
 }

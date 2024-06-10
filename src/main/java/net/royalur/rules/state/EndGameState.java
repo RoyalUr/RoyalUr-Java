@@ -102,4 +102,14 @@ public class EndGameState extends GameState {
 
         return "The " + winner.getName().toLowerCase() + " player has won!";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof EndGameState other))
+            return false;
+
+        return super.equals(other) && winner == other.winner;
+    }
 }

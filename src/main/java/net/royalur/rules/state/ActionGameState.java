@@ -28,4 +28,14 @@ public abstract class ActionGameState extends OngoingGameState {
     public boolean isPlayable() {
         return false;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ActionGameState other))
+            return false;
+
+        return super.equals(other);
+    }
 }

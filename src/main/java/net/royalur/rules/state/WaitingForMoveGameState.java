@@ -67,4 +67,16 @@ public class WaitingForMoveGameState extends PlayableGameState {
         return "Waiting for the " + getTurn().getName().toLowerCase()
                 + " player to make a move with their roll of " + roll.value();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof WaitingForMoveGameState other))
+            return false;
+
+        return super.equals(other)
+                && roll.equals(other.roll)
+                && availableMoves.equals(other.availableMoves);
+    }
 }

@@ -27,4 +27,14 @@ public abstract class PlayableGameState extends OngoingGameState {
     public boolean isPlayable() {
         return true;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof PlayableGameState other))
+            return false;
+
+        return super.equals(other);
+    }
 }

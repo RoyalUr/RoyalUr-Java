@@ -74,4 +74,14 @@ public abstract class ControlGameState extends GameState {
             throw new IllegalStateException("This control state does not have an associated player");
         return player;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ControlGameState other))
+            return false;
+
+        return super.equals(other) && player == other.player;
+    }
 }

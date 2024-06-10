@@ -1088,11 +1088,7 @@ public class JsonNotation implements Notation {
 
         ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
         List<GameState> states = readStates(rules, initialState, statesJson);
-
-        List<GameState> allStates = new ArrayList<>(states.size() + 1);
-        allStates.add(initialState);
-        allStates.addAll(states);
-        return new Game(rules, metadata, allStates);
+        return new Game(rules, metadata, states);
     }
 
     public Game readGame(ObjectNode json) {

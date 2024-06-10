@@ -28,4 +28,14 @@ public class WaitingForRollGameState extends PlayableGameState {
         return "Waiting for the " + getTurn().getName().toLowerCase()
                 + " player to roll the dice";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof WaitingForRollGameState other))
+            return false;
+
+        return super.equals(other);
+    }
 }

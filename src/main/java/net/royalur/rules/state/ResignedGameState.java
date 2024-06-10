@@ -29,4 +29,14 @@ public class ResignedGameState extends ControlGameState {
     public String describe() {
         return "The " + getPlayer().getName().toLowerCase() + " player resigned";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ResignedGameState other))
+            return false;
+
+        return super.equals(other);
+    }
 }

@@ -71,4 +71,14 @@ public abstract class OngoingGameState extends GameState {
     public PlayerState getWaitingPlayer() {
         return getPlayerState(getWaiting());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof OngoingGameState other))
+            return false;
+
+        return super.equals(other) && turn == other.turn;
+    }
 }

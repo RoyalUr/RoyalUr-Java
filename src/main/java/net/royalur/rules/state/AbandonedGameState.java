@@ -55,4 +55,14 @@ public class AbandonedGameState extends ControlGameState {
             case EXTERNAL -> "An external event ended the game";
         };
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof AbandonedGameState other))
+            return false;
+
+        return super.equals(other) && reason == other.reason;
+    }
 }

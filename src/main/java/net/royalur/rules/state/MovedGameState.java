@@ -83,4 +83,16 @@ public class MovedGameState extends ActionGameState {
         }
         return builder.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof MovedGameState other))
+            return false;
+
+        return super.equals(other)
+                && roll.equals(other.roll)
+                && move.equals(other.move);
+    }
 }
