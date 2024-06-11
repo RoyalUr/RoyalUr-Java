@@ -2,6 +2,8 @@ package net.royalur.rules.simple.fast;
 
 import net.royalur.Game;
 import net.royalur.model.*;
+import net.royalur.rules.state.GameState;
+import net.royalur.rules.state.WaitingForMoveGameState;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -68,13 +70,17 @@ public class FastSimpleGame {
         this.isFinished = other.isFinished;
     }
 
+    public void copyFrom(GameState state) {
+        board.copyFrom(state.getBoard());
+        light.copyFrom(state.getLightPlayer());
+        dark.copyFrom(state.getDarkPlayer());
+        this.isLightTurn = (state.getSubject() == PlayerType.LIGHT);
+        this.rollValue = (state instanceof WaitingForMoveGameState wfm ? wfm.getRoll().value() : -1);
+        this.isFinished = state.isFinished();
+    }
+
     public void copyFrom(Game game) {
-        board.copyFrom(game.getBoard());
-        light.copyFrom(game.getLightPlayer());
-        dark.copyFrom(game.getDarkPlayer());
-        this.isLightTurn = (game.getTurn() == PlayerType.LIGHT);
-        this.rollValue = (game.isWaitingForMove() ? game.getRoll().value() : -1);
-        this.isFinished = game.isFinished();
+        copyFrom(game.getState());
     }
 
     /**

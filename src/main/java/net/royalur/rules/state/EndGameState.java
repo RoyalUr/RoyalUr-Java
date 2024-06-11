@@ -96,6 +96,11 @@ public class EndGameState extends GameState {
     }
 
     @Override
+    public @Nullable PlayerType getSubject() {
+        return winner;
+    }
+
+    @Override
     public String describe() {
         if (winner == null)
             return "The game ended without a winner";

@@ -73,6 +73,11 @@ public abstract class OngoingGameState extends GameState {
     }
 
     @Override
+    public PlayerType getSubject() {
+        return turn;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;

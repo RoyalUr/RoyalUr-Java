@@ -2,6 +2,8 @@ package net.royalur.rules.state;
 
 import net.royalur.model.*;
 
+import javax.annotation.Nullable;
+
 /**
  * A game state represents a single point within a game.
  */
@@ -78,6 +80,12 @@ public abstract class GameState {
             case DARK -> getDarkPlayer();
         };
     }
+
+    /**
+     * Get the subject player of the game state. e.g., player
+     * to roll/move, player that rolled/moved, player that won.
+     */
+    public abstract @Nullable PlayerType getSubject();
 
     /**
      * Returns whether this state is a valid state to be played from.

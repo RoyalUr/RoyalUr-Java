@@ -48,6 +48,11 @@ public abstract class ControlGameState extends GameState {
     }
 
     @Override
+    public @Nullable PlayerType getSubject() {
+        return player;
+    }
+
+    @Override
     public boolean isPlayable() {
         return false;
     }
