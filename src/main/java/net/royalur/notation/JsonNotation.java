@@ -559,7 +559,7 @@ public class JsonNotation implements Notation {
         throw new IllegalArgumentException("Unknown game state type " + state.getClass());
     }
 
-    public void writeState(
+    public void writeDerivedState(
             JsonGenerator generator,
             GameState state
     ) throws IOException {
@@ -586,14 +586,14 @@ public class JsonNotation implements Notation {
         for (GameState state : states) {
             generator.writeStartObject();
             try {
-                writeState(generator, state);
+                writeDerivedState(generator, state);
             } finally {
                 generator.writeEndObject();
             }
         }
     }
 
-    public void writeInitialState(
+    public void writeCompleteState(
             JsonGenerator generator,
             GameState state
     ) throws IOException {
@@ -624,7 +624,7 @@ public class JsonNotation implements Notation {
             generator.writeEndObject();
         }
 
-        writeState(generator, state);
+        writeDerivedState(generator, state);
     }
 
     public void writeGameSettings(
@@ -679,7 +679,7 @@ public class JsonNotation implements Notation {
         List<GameState> states = game.getLandmarkStates();
         generator.writeObjectFieldStart(INITIAL_STATE_KEY);
         try {
-            writeInitialState(generator, states.get(0));
+            writeCompleteState(generator, states.get(0));
         } finally {
             generator.writeEndObject();
         }
@@ -977,7 +977,7 @@ public class JsonNotation implements Notation {
         return stateSource.createEndState(rules, winner);
     }
 
-    public GameState readState(
+    public GameState readDerivedState(
             RuleSet rules,
             StateSource stateSource,
             ObjectNode json
@@ -998,7 +998,7 @@ public class JsonNotation implements Notation {
         }
     }
 
-    public GameState readInitialState(
+    public GameState readCompleteState(
             RuleSet rules,
             ObjectNode json
     ) {
@@ -1014,7 +1014,7 @@ public class JsonNotation implements Notation {
         StateSource stateSource = new FullStateSource(
                 board, lightPlayer, darkPlayer
         );
-        return readState(rules, stateSource, json);
+        return readDerivedState(rules, stateSource, json);
     }
 
     public List<GameState> readStates(
@@ -1026,7 +1026,7 @@ public class JsonNotation implements Notation {
         int lastIndex = -1;
         for (int jsonIndex = 0; jsonIndex < json.size(); ++jsonIndex) {
             ObjectNode stateJson = JsonHelper.readArrayObjectEntry(json, jsonIndex);
-            GameState state = readState(rules, stateSource, stateJson);
+            GameState state = readDerivedState(rules, stateSource, stateJson);
 
             int index = stateSource.lastIndexOf(state);
             if (index <= lastIndex)
@@ -1084,7 +1084,7 @@ public class JsonNotation implements Notation {
         RuleSet rules = ruleSetProvider.create(settings, metadata);
 
         ObjectNode initialStateJson = JsonHelper.readObject(json, INITIAL_STATE_KEY);
-        GameState initialState = readInitialState(rules, initialStateJson);
+        GameState initialState = readCompleteState(rules, initialStateJson);
 
         ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
         List<GameState> states = readStates(rules, initialState, statesJson);
