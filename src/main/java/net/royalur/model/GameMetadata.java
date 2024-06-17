@@ -31,6 +31,20 @@ public class GameMetadata {
     public static final String END_DATETIME_KEY = "EndTime";
 
     /**
+     * The key for storing the time control of a game.
+     */
+    public static final String TIME_CONTROL_KEY = "TimeControl";
+
+    /**
+     * The standard known keys that are used for game metadata.
+     */
+    public static final String[] STANDARD_KEYS = {
+            START_DATETIME_KEY,
+            END_DATETIME_KEY,
+            TIME_CONTROL_KEY
+    };
+
+    /**
      * Arbitrary metadata about a game.
      */
     private final Map<String, String> metadata;
@@ -146,6 +160,27 @@ public class GameMetadata {
         return DATETIME_FORMATTER.parse(formatted);
     }
 
+    /**
+     * Sets the time control used for this game.
+     * @param timeControl The time control used for this game.
+     */
+    public void setTimeControl(TimeControl timeControl) {
+        put(TIME_CONTROL_KEY, timeControl.toString());
+    }
+
+    /**
+     * Gets the time control used for this game, or {@code null} if no
+     * time control was included in this game's metadata.
+     * @return The time control used for this game, or else {@code null}.
+     */
+    public @Nullable TimeControl getTimeControl() {
+        String text = get(TIME_CONTROL_KEY);
+        if (text == null)
+            return null;
+
+        return TimeControl.fromString(text);
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == null || !getClass().equals(obj.getClass()))
@@ -173,9 +208,7 @@ public class GameMetadata {
      * @param settings The settings used for the game.
      * @return Metadata for a new game.
      */
-    public static GameMetadata createForNewGame(
-            GameSettings settings
-    ) {
+    public static GameMetadata createForNewGame(GameSettings settings) {
         GameMetadata metadata = new GameMetadata();
         metadata.initialiseForNewGame(settings);
         return metadata;
