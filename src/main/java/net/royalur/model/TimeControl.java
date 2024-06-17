@@ -21,7 +21,7 @@ public class TimeControl {
         this.perMoveSeconds = perMoveSeconds;
     }
 
-    public static TimeControl perMoveSeconds(int perMoveSeconds) {
+    public static TimeControl withPerMoveSeconds(int perMoveSeconds) {
         return new TimeControl(perMoveSeconds);
     }
 
@@ -52,7 +52,6 @@ public class TimeControl {
             return "no time control";
         if (perMoveSeconds == 1)
             return "1 second per move";
-
         return perMoveSeconds + " seconds per move";
     }
 

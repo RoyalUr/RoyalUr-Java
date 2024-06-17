@@ -36,15 +36,6 @@ public class GameMetadata {
     public static final String TIME_CONTROL_KEY = "TimeControl";
 
     /**
-     * The standard known keys that are used for game metadata.
-     */
-    public static final String[] STANDARD_KEYS = {
-            START_DATETIME_KEY,
-            END_DATETIME_KEY,
-            TIME_CONTROL_KEY
-    };
-
-    /**
      * Arbitrary metadata about a game.
      */
     private final Map<String, String> metadata;
