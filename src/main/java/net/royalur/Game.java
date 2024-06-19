@@ -10,14 +10,15 @@ import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nullable;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 /**
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
  * and methods to support the retrieval of history about the moves that were made.
  */
-public class Game {
+public class Game implements TimeProvider {
 
     /**
      * The set of rules that are being used for this game.
@@ -28,11 +29,6 @@ public class Game {
      * The metadata of this game.
      */
     private final GameMetadata metadata;
-
-    /**
-     * Provides timing for the game.
-     */
-    private final TimeProvider timeProvider;
 
     /**
      * The dice to be used to generate dice rolls.
@@ -48,13 +44,11 @@ public class Game {
     /**
      * Instantiates a game of the Royal Game of Ur.
      * @param rules The set of rules that are being used for this game.
-     * @param timeProvider Provides timing for the game.
      * @param metadata The metadata of this game.
      * @param states The states that have occurred so far in the game.
      */
     public Game(
             RuleSet rules,
-            TimeProvider timeProvider,
             GameMetadata metadata,
             List<GameState> states
     ) {
@@ -62,16 +56,9 @@ public class Game {
             throw new IllegalArgumentException("Games must have at least one state");
 
         this.rules = rules;
-        this.timeProvider = timeProvider;
         this.metadata = metadata;
         this.dice = rules.getDiceFactory().createDice();
         this.states = new ArrayList<>();
-
-        // Initialise the metadata of the game.
-        ZonedDateTime startTime = timeProvider.getGameStartTime();
-        if (startTime != null && !metadata.hasStartTime()) {
-            metadata.setStartTime(startTime);
-        }
 
         addStates(states);
     }
@@ -83,8 +70,7 @@ public class Game {
     public Game(RuleSet rules) {
         this(
                 rules,
-                TimeProvider.createStartingNow(),
-                new GameMetadata(),
+                GameMetadata.startingNow(),
                 List.of(rules.generateInitialGameState())
         );
     }
@@ -94,7 +80,7 @@ public class Game {
      * @param game The rules of the game.
      */
     protected Game(Game game) {
-        this(game.rules, game.timeProvider, game.metadata.copy(), game.states);
+        this(game.rules, game.metadata.copy(), game.states);
         dice.copyFrom(game.dice);
     }
 
@@ -105,7 +91,6 @@ public class Game {
     public static Game createUntimed(RuleSet rules) {
         return new Game(
                 rules,
-                TimeProvider.createUntimed(),
                 new GameMetadata(),
                 List.of(rules.generateInitialGameState())
         );
@@ -163,19 +148,34 @@ public class Game {
     }
 
     /**
-     * Gets the provider of time for this game.
-     * @return The provider of time for this game.
-     */
-    public TimeProvider getTimeProvider() {
-        return timeProvider;
-    }
-
-    /**
      * Gets the metadata of this game.
      * @return The metadata of this game.
      */
     public GameMetadata getMetadata() {
         return metadata;
+    }
+
+    @Override
+    public boolean isTimed() {
+        return metadata.hasStartTime();
+    }
+
+    @Override
+    public long getGameStartEpochMs() {
+        TemporalAccessor startTime = metadata.getStartTime();
+        if (startTime == null)
+            return 0;
+
+        return Instant.from(startTime).toEpochMilli();
+    }
+
+    @Override
+    public long getTimeSinceGameStartMs() {
+        long gameStartEpochMs = getGameStartEpochMs();
+        if (gameStartEpochMs == 0)
+            return 0;
+
+        return System.currentTimeMillis() - gameStartEpochMs;
     }
 
     /**
@@ -359,7 +359,7 @@ public class Game {
     public void rollDice(Roll roll) {
         addStates(rules.applyRoll(
                 getWaitingForRollState(),
-                timeProvider.getTimeSinceGameStartMs(),
+                getTimeSinceGameStartMs(),
                 roll
         ));
     }
@@ -452,7 +452,7 @@ public class Game {
         WaitingForMoveGameState state = getWaitingForMoveState();
         addStates(rules.applyMove(
                 state,
-                timeProvider.getTimeSinceGameStartMs(),
+                getTimeSinceGameStartMs(),
                 move
         ));
     }
@@ -483,7 +483,7 @@ public class Game {
 
         addStates(rules.applyResign(
                 getState(),
-                timeProvider.getTimeSinceGameStartMs(),
+                getTimeSinceGameStartMs(),
                 player
         ));
     }
@@ -502,7 +502,7 @@ public class Game {
 
         addStates(rules.applyAbandon(
                 getState(),
-                timeProvider.getTimeSinceGameStartMs(),
+                getTimeSinceGameStartMs(),
                 reason,
                 player
         ));

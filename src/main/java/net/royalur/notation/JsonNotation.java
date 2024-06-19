@@ -1122,7 +1122,6 @@ public class JsonNotation implements Notation {
     public Game readGameV1Or2(ObjectNode json) {
         ObjectNode metadataJson = JsonHelper.readObject(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
-        TimeProvider timeProvider = TimeProvider.fromMetadata(metadata);
 
         ObjectNode settingsJson = JsonHelper.readObject(json, SETTINGS_KEY);
         GameSettings settings = readGameSettings(settingsJson);
@@ -1133,7 +1132,7 @@ public class JsonNotation implements Notation {
 
         ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
         List<GameState> states = readStates(rules, initialState, statesJson);
-        return new Game(rules, timeProvider, metadata, states);
+        return new Game(rules, metadata, states);
     }
 
     public Game readGame(ObjectNode json) {

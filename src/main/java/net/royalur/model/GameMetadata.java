@@ -1,6 +1,9 @@
 package net.royalur.model;
 
+import net.royalur.rules.TimeProvider;
+
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collections;
@@ -52,6 +55,12 @@ public class GameMetadata {
      */
     public GameMetadata() {
         this(Collections.emptyMap());
+    }
+
+    public static GameMetadata startingNow() {
+        GameMetadata metadata = new GameMetadata();
+        metadata.setStartTime(Instant.ofEpochMilli(System.currentTimeMillis()));
+        return metadata;
     }
 
     /**
