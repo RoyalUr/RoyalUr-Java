@@ -1,26 +1,17 @@
 package net.royalur.model;
 
-import net.royalur.rules.TimeProvider;
-
 import javax.annotation.Nullable;
-import java.time.Instant;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAccessor;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Stores the metadata of games, such as the date the game was played,
  * the players of the game, and the game rules.
  */
 public class GameMetadata {
-
-    /**
-     * The format used for parsing and serialising date times to text.
-     */
-    public static final DateTimeFormatter DATETIME_FORMATTER =
-            DateTimeFormatter.ISO_DATE;
 
     /**
      * The key for storing when a game started.
@@ -38,16 +29,30 @@ public class GameMetadata {
     public static final String TIME_CONTROL_KEY = "TimeControl";
 
     /**
+     * Standard metadata keys that are commonly used.
+     */
+    public static final Set<String> STANDARD_KEYS = Set.of(
+            START_DATETIME_KEY, END_DATETIME_KEY, TIME_CONTROL_KEY
+    );
+
+    /**
      * Arbitrary metadata about a game.
      */
     private final Map<String, String> metadata;
+
+    private @Nullable ZonedDateTime startTime;
+    private @Nullable ZonedDateTime endTime;
+    private @Nullable TimeControl timeControl;
 
     /**
      * Instantiates metadata for a game of the Royal Game of Ur.
      * @param metadata The metadata of the game.
      */
     public GameMetadata(Map<String, String> metadata) {
+        // We use a LinkedHashMap to maintain order.
         this.metadata = new LinkedHashMap<>(metadata);
+
+        parseStandardEntries();
     }
 
     /**
@@ -69,6 +74,17 @@ public class GameMetadata {
      */
     public GameMetadata copy() {
         return new GameMetadata(metadata);
+    }
+
+    private void parseStandardEntries() {
+        String startTime = metadata.get(START_DATETIME_KEY);
+        this.startTime = (startTime != null ? parseDatetime(startTime) : null);
+
+        String endTime = metadata.get(END_DATETIME_KEY);
+        this.endTime = (endTime != null ? parseDatetime(endTime) : null);
+
+        String timeControl = metadata.get(TIME_CONTROL_KEY);
+        this.timeControl = (timeControl != null ? TimeControl.fromString(timeControl) : null);
     }
 
     /**
@@ -104,6 +120,9 @@ public class GameMetadata {
      */
     public void remove(String key) {
         metadata.remove(key);
+        if (STANDARD_KEYS.contains(key)) {
+            parseStandardEntries();
+        }
     }
 
     /**
@@ -111,6 +130,7 @@ public class GameMetadata {
      */
     public void clear() {
         metadata.clear();
+        parseStandardEntries();
     }
 
     /**
@@ -120,6 +140,9 @@ public class GameMetadata {
      */
     public void put(String key, String value) {
         metadata.put(key, value);
+        if (STANDARD_KEYS.contains(key)) {
+            parseStandardEntries();
+        }
     }
 
     /**
@@ -127,7 +150,7 @@ public class GameMetadata {
      * @return Whether this metadata contains the date and time when this game began.
      */
     public boolean hasStartTime() {
-        return has(START_DATETIME_KEY);
+        return startTime != null;
     }
 
     /**
@@ -136,12 +159,8 @@ public class GameMetadata {
      * @return The date and time when this game began,
      *         or else {@code null}.
      */
-    public @Nullable TemporalAccessor getStartTime() {
-        String formatted = get(START_DATETIME_KEY);
-        if (formatted == null)
-            return null;
-
-        return DATETIME_FORMATTER.parse(formatted);
+    public @Nullable ZonedDateTime getStartTime() {
+        return startTime;
     }
 
     /**
@@ -149,8 +168,7 @@ public class GameMetadata {
      * @param datetime The date and time when this game began.
      */
     public void setStartTime(TemporalAccessor datetime) {
-        String formatted = DATETIME_FORMATTER.format(datetime);
-        put(START_DATETIME_KEY, formatted);
+        put(START_DATETIME_KEY, formatDatetime(datetime));
     }
 
     /**
@@ -158,7 +176,7 @@ public class GameMetadata {
      * @return Whether this metadata contains the date and time when this game was finished.
      */
     public boolean hasEndTime() {
-        return has(END_DATETIME_KEY);
+        return endTime != null;
     }
 
     /**
@@ -167,12 +185,8 @@ public class GameMetadata {
      * @return The date and time when this game was finished,
      *         or else {@code null}.
      */
-    public @Nullable TemporalAccessor getEndTime() {
-        String formatted = get(END_DATETIME_KEY);
-        if (formatted == null)
-            return null;
-
-        return DATETIME_FORMATTER.parse(formatted);
+    public @Nullable ZonedDateTime getEndTime() {
+        return endTime;
     }
 
     /**
@@ -180,8 +194,7 @@ public class GameMetadata {
      * @param datetime The date and time when this game was finished.
      */
     public void setEndTime(TemporalAccessor datetime) {
-        String formatted = DATETIME_FORMATTER.format(datetime);
-        put(END_DATETIME_KEY, formatted);
+        put(END_DATETIME_KEY, formatDatetime(datetime));
     }
 
     /**
@@ -189,7 +202,7 @@ public class GameMetadata {
      * @return Whether this metadata contains the time control used for the game.
      */
     public boolean hasTimeControl() {
-        return has(TIME_CONTROL_KEY);
+        return timeControl != null;
     }
 
     /**
@@ -198,11 +211,7 @@ public class GameMetadata {
      * @return The time control used for this game, or else {@code null}.
      */
     public @Nullable TimeControl getTimeControl() {
-        String text = get(TIME_CONTROL_KEY);
-        if (text == null)
-            return null;
-
-        return TimeControl.fromString(text);
+        return timeControl;
     }
 
     /**
@@ -225,5 +234,55 @@ public class GameMetadata {
     @Override
     public String toString() {
         return metadata.toString();
+    }
+
+    /**
+     * ISO date format, with some allowances.
+     */
+    private static final DateTimeFormatter DATETIME_FORMATTER;
+
+    static {
+        DATETIME_FORMATTER = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                .optionalStart()
+                .appendLiteral('T')
+                .append(DateTimeFormatter.ISO_LOCAL_TIME)
+                .optionalStart()
+                .appendOffsetId()
+                .optionalStart()
+                .appendLiteral('[')
+                .parseCaseSensitive()
+                .appendZoneRegionId()
+                .appendLiteral(']')
+                .toFormatter(Locale.US);
+    }
+
+    public static ZonedDateTime parseDatetime(String datetime) {
+        TemporalAccessor result = DATETIME_FORMATTER.parseBest(
+                datetime,
+                ZonedDateTime::from,
+                LocalDateTime::from,
+                LocalDate::from
+        );
+        if (result instanceof ZonedDateTime zonedResult)
+            return zonedResult;
+        if (result instanceof LocalDateTime localResult)
+            return localResult.atZone(ZoneOffset.UTC);
+        if (result instanceof LocalDate localResult)
+            return localResult.atStartOfDay(ZoneOffset.UTC);
+
+        throw new IllegalArgumentException("Unable to parse date: " + datetime);
+    }
+
+    public static String formatDatetime(TemporalAccessor datetime) {
+        if (datetime instanceof Instant instant) {
+            datetime = instant.atZone(ZoneOffset.UTC);
+        } else if (datetime instanceof LocalDateTime localTime) {
+            datetime = localTime.atZone(ZoneOffset.UTC);
+        } else if (datetime instanceof LocalDate localTime) {
+            datetime = localTime.atStartOfDay(ZoneOffset.UTC);
+        }
+        return DATETIME_FORMATTER.format(datetime);
     }
 }

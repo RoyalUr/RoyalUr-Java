@@ -291,7 +291,7 @@ public class RGNTest {
 //        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
 //        assertTrue(lines.contains("[Light " + RGN.escape(game.getLightPlayer().name) + "]"));
 //        assertTrue(lines.contains("[Dark " + RGN.escape(game.getDarkPlayer().name) + "]"));
-        if (game.getTimeProvider().isTimed()) {
+        if (game.isTimed()) {
             assertTrue(lines.stream().anyMatch(
                     line -> line.startsWith("[StartTime \"") && line.endsWith("\"]")
             ));

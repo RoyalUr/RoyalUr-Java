@@ -19,7 +19,6 @@ import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.RuleSetProvider;
-import net.royalur.rules.TimeProvider;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 

@@ -11,7 +11,7 @@ import net.royalur.rules.state.*;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
-import java.time.temporal.TemporalAccessor;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -162,7 +162,7 @@ public class Game implements TimeProvider {
 
     @Override
     public long getGameStartEpochMs() {
-        TemporalAccessor startTime = metadata.getStartTime();
+        ZonedDateTime startTime = metadata.getStartTime();
         if (startTime == null)
             return 0;
 

@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAccessor;
 
 /**
  * Provides timing information for recording the history of a game.
@@ -76,7 +75,7 @@ public interface TimeProvider {
      * @return A new time provider that takes the game start time from {@code metadata}.
      */
     static TimeProvider fromMetadata(GameMetadata metadata) {
-        TemporalAccessor startTime = metadata.getStartTime();
+        ZonedDateTime startTime = metadata.getStartTime();
         if (startTime != null)
             return createStartingAtEpochMs(Instant.from(startTime).toEpochMilli());
 
