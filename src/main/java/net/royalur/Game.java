@@ -244,7 +244,7 @@ public class Game implements TimeProvider {
     }
 
     /**
-     * Determines whether the game is currently waiting for a move from a player.
+     * Checks whether the game is currently waiting for a move from a player.
      * @return Whether the game is currently waiting for a move from a player.
      */
     public boolean isWaitingForMove() {
@@ -252,11 +252,24 @@ public class Game implements TimeProvider {
     }
 
     /**
-     * Determines whether the game is currently in a finished state.
+     * Checks whether the game is currently in a finished state.
      * @return Whether the game is currently in a finished state.
      */
     public boolean isFinished() {
         return getState() instanceof EndGameState;
+    }
+
+    /**
+     * Checks whether the given player has made any actions in this game.
+     * @param player The player to check.
+     * @return Whether the given player has made any actions in this game.
+     */
+    public boolean hasPlayerMadeAnyActions(PlayerType player) {
+        for (GameState state : states) {
+            if (state instanceof ActionGameState action && action.getTurn() == player)
+                return true;
+        }
+        return false;
     }
 
     /**

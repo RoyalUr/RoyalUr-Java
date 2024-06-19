@@ -1115,7 +1115,14 @@ public class JsonNotation implements Notation {
     }
 
     public GameMetadata readMetadata(ObjectNode json) {
-        return new GameMetadata();
+        GameMetadata metadata = new GameMetadata();
+        Iterator<String> fieldIterator = json.fieldNames();
+        while (fieldIterator.hasNext()) {
+            String key = fieldIterator.next();
+            String value = JsonHelper.readString(json, key);
+            metadata.put(key, value);
+        }
+        return metadata;
     }
 
     public Game readGameV1Or2(ObjectNode json) {
