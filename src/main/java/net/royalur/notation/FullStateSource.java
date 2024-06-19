@@ -37,6 +37,7 @@ public class FullStateSource extends StateSource {
     @Override
     public RolledGameState createRolledState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll
     ) {
@@ -45,36 +46,40 @@ public class FullStateSource extends StateSource {
         );
         return new RolledGameState(
                 board, lightPlayer, darkPlayer,
-                turn, roll, availableMoves
+                timeSinceGameStartMs, turn, roll, availableMoves
         );
     }
 
     @Override
     public MovedGameState createMovedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll,
             Move move
     ) {
         return new MovedGameState(
                 board, lightPlayer, darkPlayer,
-                turn, roll, move
+                timeSinceGameStartMs, turn, roll, move
         );
     }
 
     @Override
     public WaitingForRollGameState createWaitingForRollState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn
     ) {
         return new WaitingForRollGameState(
-                board, lightPlayer, darkPlayer, turn
+                board, lightPlayer, darkPlayer,
+                timeSinceGameStartMs, turn
         );
     }
 
     @Override
     public WaitingForMoveGameState createWaitingForMoveState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll
     ) {
@@ -83,38 +88,43 @@ public class FullStateSource extends StateSource {
         );
         return new WaitingForMoveGameState(
                 board, lightPlayer, darkPlayer,
-                turn, roll, availableMoves
+                timeSinceGameStartMs, turn, roll, availableMoves
         );
     }
 
     @Override
     public ResignedGameState createResignedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType player
     ) {
         return new ResignedGameState(
-                board, lightPlayer, darkPlayer, player
+                board, lightPlayer, darkPlayer, timeSinceGameStartMs, player
         );
     }
 
     @Override
     public AbandonedGameState createAbandonedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             AbandonReason abandonReason,
             @Nullable PlayerType player
     ) {
         return new AbandonedGameState(
-                board, lightPlayer, darkPlayer, abandonReason, player
+                board, lightPlayer, darkPlayer,
+                timeSinceGameStartMs, abandonReason, player
         );
     }
 
     @Override
     public EndGameState createEndState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             @Nullable PlayerType winner
     ) {
         return new EndGameState(
-                board, lightPlayer, darkPlayer, winner
+                board, lightPlayer, darkPlayer,
+                timeSinceGameStartMs, winner
         );
     }
 }

@@ -22,6 +22,7 @@ public class AbandonedGameState extends ControlGameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param reason      The reason that the game was abandoned.
      * @param player      The player that abandoned the game, or {@code null}
      *                    if the game was not abandoned by a specific player.
@@ -30,10 +31,11 @@ public class AbandonedGameState extends ControlGameState {
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             AbandonReason reason,
             @Nullable PlayerType player
     ) {
-        super(board, lightPlayer, darkPlayer, player);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs, player);
         if (reason.requiresPlayer() && player == null)
             throw new IllegalArgumentException(reason.getName() + " abandonment requires a player");
 

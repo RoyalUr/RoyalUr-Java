@@ -73,6 +73,7 @@ public class DerivedStateSource extends StateSource {
     @Override
     public RolledGameState createRolledState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll
     ) {
@@ -80,7 +81,7 @@ public class DerivedStateSource extends StateSource {
         if (!(precedingState instanceof WaitingForRollGameState waitingState))
             throw new IllegalStateException("Preceding state is not a WaitingForRollGameState");
 
-        pushStates(rules.applyRoll(waitingState, roll));
+        pushStates(rules.applyRoll(waitingState, timeSinceGameStartMs, roll));
         GameState state = nextState();
         if (!(state instanceof RolledGameState rolledState))
             throw new IllegalStateException("The state was not a RolledGameState after applying a roll");
@@ -91,20 +92,21 @@ public class DerivedStateSource extends StateSource {
     @Override
     public MovedGameState createMovedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll,
             Move move
     ) {
         // Support for implied roll states from moves.
         if (peekState() instanceof WaitingForRollGameState) {
-            createRolledState(rules, turn, roll);
+            createRolledState(rules, timeSinceGameStartMs, turn, roll);
         }
 
         GameState precedingState = nextState();
         if (!(precedingState instanceof WaitingForMoveGameState waitingState))
             throw new IllegalStateException("Preceding state is not a WaitingForMoveGameState");
 
-        pushStates(rules.applyMove(waitingState, move));
+        pushStates(rules.applyMove(waitingState, timeSinceGameStartMs, move));
         GameState state = nextState();
         if (!(state instanceof MovedGameState movedState))
             throw new IllegalStateException("The state was not a MovedGameState after applying a move");
@@ -115,6 +117,7 @@ public class DerivedStateSource extends StateSource {
     @Override
     public WaitingForRollGameState createWaitingForRollState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn
     ) {
         GameState state = getCurrentState();
@@ -137,6 +140,7 @@ public class DerivedStateSource extends StateSource {
     @Override
     public WaitingForMoveGameState createWaitingForMoveState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll
     ) {
@@ -164,13 +168,14 @@ public class DerivedStateSource extends StateSource {
     @Override
     public ResignedGameState createResignedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             PlayerType player
     ) {
         GameState currentState = nextState();
         if (currentState instanceof EndGameState)
             throw new IllegalStateException("Game is already finished");
 
-        pushStates(rules.applyResign(currentState, player));
+        pushStates(rules.applyResign(currentState, timeSinceGameStartMs, player));
         GameState state = nextState();
         if (!(state instanceof ResignedGameState resignedState))
             throw new IllegalStateException("The state was not a ResignedGameState after applying a resign");
@@ -181,6 +186,7 @@ public class DerivedStateSource extends StateSource {
     @Override
     public AbandonedGameState createAbandonedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             AbandonReason reason,
             @Nullable PlayerType player
     ) {
@@ -188,7 +194,7 @@ public class DerivedStateSource extends StateSource {
         if (currentState instanceof EndGameState)
             throw new IllegalStateException("Game is already finished");
 
-        pushStates(rules.applyAbandon(currentState, reason, player));
+        pushStates(rules.applyAbandon(currentState, timeSinceGameStartMs, reason, player));
         GameState state = nextState();
         if (!(state instanceof AbandonedGameState abandonedState))
             throw new IllegalStateException("The state was not an AbandonedGameState after applying an abandon");
@@ -199,6 +205,7 @@ public class DerivedStateSource extends StateSource {
     @Override
     public EndGameState createEndState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             @Nullable PlayerType winner
     ) {
         GameState state = getCurrentState();

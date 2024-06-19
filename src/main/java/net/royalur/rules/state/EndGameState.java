@@ -21,15 +21,17 @@ public class EndGameState extends GameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param winner      The winning player, or {@code null} if neither player won.
      */
     public EndGameState(
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             @Nullable PlayerType winner
     ) {
-        super(board, lightPlayer, darkPlayer);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs);
         this.winner = winner;
     }
 

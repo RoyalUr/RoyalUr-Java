@@ -23,6 +23,7 @@ public class MovedGameState extends ActionGameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param turn        The player who made the move.
      * @param roll        The roll of the dice that was used to move the piece.
      * @param move        The move that was made on the board.
@@ -31,11 +32,12 @@ public class MovedGameState extends ActionGameState {
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll,
             Move move
     ) {
-        super(board, lightPlayer, darkPlayer, turn);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs, turn);
         this.roll = roll;
         this.move = move;
     }

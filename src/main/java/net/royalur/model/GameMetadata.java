@@ -1,7 +1,6 @@
 package net.royalur.model;
 
 import javax.annotation.Nullable;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collections;
@@ -72,6 +71,15 @@ public class GameMetadata {
     }
 
     /**
+     * Checks whether there is any metadata associated with {@code key}.
+     * @param key The metadata key to check.
+     * @return Whether there is any metadata associated with {@code key}.
+     */
+    public boolean has(String key) {
+        return metadata.containsKey(key);
+    }
+
+    /**
      * Get the metadata value associated with {@code key}, or {@code null}
      * if there is no value associated with the key.
      * @param key The metadata key to retrieve.
@@ -106,12 +114,11 @@ public class GameMetadata {
     }
 
     /**
-     * Sets the date and time when this game began.
-     * @param datetime The date and time when this game began.
+     * Checks whether this metadata contains the date and time when this game began.
+     * @return Whether this metadata contains the date and time when this game began.
      */
-    public void setStartTime(TemporalAccessor datetime) {
-        String formatted = DATETIME_FORMATTER.format(datetime);
-        put(START_DATETIME_KEY, formatted);
+    public boolean hasStartTime() {
+        return has(START_DATETIME_KEY);
     }
 
     /**
@@ -129,12 +136,20 @@ public class GameMetadata {
     }
 
     /**
-     * Sets the date and time when this game was finished.
-     * @param datetime The date and time when this game was finished.
+     * Sets the date and time when this game began.
+     * @param datetime The date and time when this game began.
      */
-    public void setEndTime(TemporalAccessor datetime) {
+    public void setStartTime(TemporalAccessor datetime) {
         String formatted = DATETIME_FORMATTER.format(datetime);
-        put(END_DATETIME_KEY, formatted);
+        put(START_DATETIME_KEY, formatted);
+    }
+
+    /**
+     * Checks whether this metadata contains the date and time when this game was finished.
+     * @return Whether this metadata contains the date and time when this game was finished.
+     */
+    public boolean hasEndTime() {
+        return has(END_DATETIME_KEY);
     }
 
     /**
@@ -152,11 +167,20 @@ public class GameMetadata {
     }
 
     /**
-     * Sets the time control used for this game.
-     * @param timeControl The time control used for this game.
+     * Sets the date and time when this game was finished.
+     * @param datetime The date and time when this game was finished.
      */
-    public void setTimeControl(TimeControl timeControl) {
-        put(TIME_CONTROL_KEY, timeControl.toString());
+    public void setEndTime(TemporalAccessor datetime) {
+        String formatted = DATETIME_FORMATTER.format(datetime);
+        put(END_DATETIME_KEY, formatted);
+    }
+
+    /**
+     * Checks whether this metadata contains the time control used for the game.
+     * @return Whether this metadata contains the time control used for the game.
+     */
+    public boolean hasTimeControl() {
+        return has(TIME_CONTROL_KEY);
     }
 
     /**
@@ -172,6 +196,14 @@ public class GameMetadata {
         return TimeControl.fromString(text);
     }
 
+    /**
+     * Sets the time control used for this game.
+     * @param timeControl The time control used for this game.
+     */
+    public void setTimeControl(TimeControl timeControl) {
+        put(TIME_CONTROL_KEY, timeControl.toString());
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == null || !getClass().equals(obj.getClass()))
@@ -184,24 +216,5 @@ public class GameMetadata {
     @Override
     public String toString() {
         return metadata.toString();
-    }
-
-    /**
-     * Initialises metadata for a new game.
-     * @param settings The settings used for the game.
-     */
-    public void initialiseForNewGame(GameSettings settings) {
-        setStartTime(ZonedDateTime.now());
-    }
-
-    /**
-     * Creates and initialises metadata for a new game.
-     * @param settings The settings used for the game.
-     * @return Metadata for a new game.
-     */
-    public static GameMetadata createForNewGame(GameSettings settings) {
-        GameMetadata metadata = new GameMetadata();
-        metadata.initialiseForNewGame(settings);
-        return metadata;
     }
 }

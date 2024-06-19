@@ -14,15 +14,17 @@ public class ResignedGameState extends ControlGameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param player      The player who resigned the game.
      */
     public ResignedGameState(
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             PlayerType player
     ) {
-        super(board, lightPlayer, darkPlayer, player);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs, player);
     }
 
     @Override

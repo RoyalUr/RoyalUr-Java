@@ -19,6 +19,7 @@ import net.royalur.model.shape.BoardShapeFactory;
 import net.royalur.model.shape.BoardType;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.RuleSetProvider;
+import net.royalur.rules.TimeProvider;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
@@ -107,6 +108,12 @@ public class JsonNotation implements Notation {
      * The key in the JSON for the type of state.
      */
     public static final String STATE_TYPE_KEY = "type";
+
+    /**
+     * The key in the JSON for the time this state was reached
+     * in milliseconds since the start of the game.
+     */
+    public static final String STATE_TIME_KEY = "time";
 
     /**
      * Represents states of type {@link RolledGameState}.
@@ -564,6 +571,7 @@ public class JsonNotation implements Notation {
             GameState state
     ) throws IOException {
         generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
+        generator.writeNumberField(STATE_TIME_KEY, state.getTimeSinceGameStartMs());
 
         if (state instanceof OngoingGameState ongoingState) {
             writeOngoingState(generator, ongoingState);
@@ -825,17 +833,21 @@ public class JsonNotation implements Notation {
 
     public RolledGameState readRolledState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             PlayerType turn
     ) {
         ObjectNode rollJson = JsonHelper.readObject(json, ROLL_KEY);
         Roll roll = readRoll(rules, rollJson);
-        return stateSource.createRolledState(rules, turn, roll);
+        return stateSource.createRolledState(
+                rules, timeSinceGameStartMs, turn, roll
+        );
     }
 
     public MovedGameState readMovedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             PlayerType turn
@@ -846,42 +858,53 @@ public class JsonNotation implements Notation {
         ObjectNode moveJson = JsonHelper.readObject(json, MOVE_KEY);
         Move move = readMove(rules, moveJson);
 
-        return stateSource.createMovedState(rules, turn, roll, move);
+        return stateSource.createMovedState(
+                rules, timeSinceGameStartMs, turn, roll, move
+        );
     }
 
     public WaitingForRollGameState readWaitingForRollState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             PlayerType turn
     ) {
-        return stateSource.createWaitingForRollState(rules, turn);
+        return stateSource.createWaitingForRollState(
+                rules, timeSinceGameStartMs, turn
+        );
     }
 
     public WaitingForMoveGameState readWaitingForMoveState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             PlayerType turn
     ) {
         ObjectNode rollJson = JsonHelper.readObject(json, ROLL_KEY);
         Roll roll = readRoll(rules, rollJson);
-        return stateSource.createWaitingForMoveState(rules, turn, roll);
+        return stateSource.createWaitingForMoveState(
+                rules, timeSinceGameStartMs, turn, roll
+        );
     }
 
     public ActionGameState readActionState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             String stateType,
             PlayerType turn
     ) {
         if (stateType.equals(STATE_TYPE_ROLLED)) {
-            return readRolledState(rules, stateSource, json, turn);
-
+            return readRolledState(
+                    rules, timeSinceGameStartMs, stateSource, json, turn
+            );
         } else if (stateType.equals(STATE_TYPE_MOVED)) {
-            return readMovedState(rules, stateSource, json, turn);
-
+            return readMovedState(
+                    rules, timeSinceGameStartMs, stateSource, json, turn
+            );
         } else {
             throw new JsonHelper.JsonReadError("Unknown action state type: " + stateType);
         }
@@ -889,17 +912,20 @@ public class JsonNotation implements Notation {
 
     public PlayableGameState readPlayableState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             String stateType,
             PlayerType turn
     ) {
         if (stateType.equals(STATE_TYPE_WAITING_FOR_ROLL)) {
-            return readWaitingForRollState(rules, stateSource, json, turn);
-
+            return readWaitingForRollState(
+                    rules, timeSinceGameStartMs, stateSource, json, turn
+            );
         } else if (stateType.equals(STATE_TYPE_WAITING_FOR_MOVE)) {
-            return readWaitingForMoveState(rules, stateSource, json, turn);
-
+            return readWaitingForMoveState(
+                    rules, timeSinceGameStartMs, stateSource, json, turn
+            );
         } else {
             throw new JsonHelper.JsonReadError("Unknown playable state type: " + stateType);
         }
@@ -907,6 +933,7 @@ public class JsonNotation implements Notation {
 
     public OngoingGameState readOngoingState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             String stateType
@@ -915,11 +942,13 @@ public class JsonNotation implements Notation {
         PlayerType turn = PlayerType.getByChar(turnChar);
 
         if (isActionState(stateType)) {
-            return readActionState(rules, stateSource, json, stateType, turn);
-
+            return readActionState(
+                    rules, timeSinceGameStartMs, stateSource, json, stateType, turn
+            );
         } else if (isPlayableState(stateType)) {
-            return readPlayableState(rules, stateSource, json, stateType, turn);
-
+            return readPlayableState(
+                    rules, timeSinceGameStartMs, stateSource, json, stateType, turn
+            );
         } else {
             throw new JsonHelper.JsonReadError("Unknown ongoing state type: " + stateType);
         }
@@ -927,26 +956,33 @@ public class JsonNotation implements Notation {
 
     public ResignedGameState readResignedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             PlayerType player
     ) {
-        return stateSource.createResignedState(rules, player);
+        return stateSource.createResignedState(
+                rules, timeSinceGameStartMs, player
+        );
     }
 
     public AbandonedGameState readAbandonedState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             @Nullable PlayerType player
     ) {
         String reasonID = JsonHelper.readString(json, ABANDONED_REASON_KEY);
         AbandonReason reason = AbandonReason.getByID(reasonID);
-        return stateSource.createAbandonedState(rules, reason, player);
+        return stateSource.createAbandonedState(
+                rules, timeSinceGameStartMs, reason, player
+        );
     }
 
     public ControlGameState readControlState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json,
             String stateType
@@ -957,11 +993,14 @@ public class JsonNotation implements Notation {
         if (stateType.equals(STATE_TYPE_RESIGNED)) {
             if (player == null)
                 throw new IllegalArgumentException("player should not be null for a resigned game state");
-            return readResignedState(rules, stateSource, json, player);
 
+            return readResignedState(
+                    rules, timeSinceGameStartMs, stateSource, json, player
+            );
         } else if (stateType.equals(STATE_TYPE_ABANDONED)) {
-            return readAbandonedState(rules, stateSource, json, player);
-
+            return readAbandonedState(
+                    rules, timeSinceGameStartMs, stateSource, json, player
+            );
         } else {
             throw new JsonHelper.JsonReadError("Unknown control state type: " + stateType);
         }
@@ -969,12 +1008,13 @@ public class JsonNotation implements Notation {
 
     public EndGameState readEndState(
             RuleSet rules,
+            long timeSinceGameStartMs,
             StateSource stateSource,
             ObjectNode json
     ) {
         Character winnerChar = JsonHelper.readNullableChar(json, WINNER_KEY);
         PlayerType winner = (winnerChar != null ? PlayerType.getByChar(winnerChar) : null);
-        return stateSource.createEndState(rules, winner);
+        return stateSource.createEndState(rules, timeSinceGameStartMs, winner);
     }
 
     public GameState readDerivedState(
@@ -983,16 +1023,20 @@ public class JsonNotation implements Notation {
             ObjectNode json
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
+        long timeSinceGameStartMs = JsonHelper.readLongWithDefault(json, STATE_TIME_KEY, 0);
 
         if (isOngoingState(stateType)) {
-            return readOngoingState(rules, stateSource, json, stateType);
-
+            return readOngoingState(
+                    rules, timeSinceGameStartMs, stateSource, json, stateType
+            );
         } else if (isControlState(stateType)) {
-            return readControlState(rules, stateSource, json, stateType);
-
+            return readControlState(
+                    rules, timeSinceGameStartMs, stateSource, json, stateType
+            );
         } else if (stateType.equals(STATE_TYPE_END)) {
-            return readEndState(rules, stateSource, json);
-
+            return readEndState(
+                    rules, timeSinceGameStartMs, stateSource, json
+            );
         } else {
             throw new JsonHelper.JsonReadError("Unknown state type: " + stateType);
         }
@@ -1078,6 +1122,7 @@ public class JsonNotation implements Notation {
     public Game readGameV1Or2(ObjectNode json) {
         ObjectNode metadataJson = JsonHelper.readObject(json, METADATA_KEY);
         GameMetadata metadata = readMetadata(metadataJson);
+        TimeProvider timeProvider = TimeProvider.fromMetadata(metadata);
 
         ObjectNode settingsJson = JsonHelper.readObject(json, SETTINGS_KEY);
         GameSettings settings = readGameSettings(settingsJson);
@@ -1088,7 +1133,7 @@ public class JsonNotation implements Notation {
 
         ArrayNode statesJson = JsonHelper.readArray(json, STATES_KEY);
         List<GameState> states = readStates(rules, initialState, statesJson);
-        return new Game(rules, metadata, states);
+        return new Game(rules, timeProvider, metadata, states);
     }
 
     public Game readGame(ObjectNode json) {

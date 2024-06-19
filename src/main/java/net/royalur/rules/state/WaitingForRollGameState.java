@@ -12,15 +12,17 @@ public class WaitingForRollGameState extends PlayableGameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param turn        The player who can roll the dice.
      */
     public WaitingForRollGameState(
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             PlayerType turn
     ) {
-        super(board, lightPlayer, darkPlayer, turn);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs, turn);
     }
 
     @Override

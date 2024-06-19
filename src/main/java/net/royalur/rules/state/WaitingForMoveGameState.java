@@ -25,6 +25,7 @@ public class WaitingForMoveGameState extends PlayableGameState {
      * @param board          The state of the pieces on the board.
      * @param lightPlayer    The state of the light player.
      * @param darkPlayer     The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param turn           The player who can make the next move.
      * @param roll           The value of the dice that was rolled that can be
      *                       used as the number of places to move a piece.
@@ -34,11 +35,12 @@ public class WaitingForMoveGameState extends PlayableGameState {
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             PlayerType turn,
             Roll roll,
             List<Move> availableMoves
     ) {
-        super(board, lightPlayer, darkPlayer, turn);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs, turn);
         if (availableMoves.isEmpty())
             throw new IllegalArgumentException("There must be available moves for a waiting for move state");
 

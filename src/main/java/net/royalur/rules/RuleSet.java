@@ -189,6 +189,8 @@ public abstract class RuleSet {
      * states for maintaining history. However, the latest or highest-index
      * game state will represent the state of the game after the roll was made.
      * @param state The current state of the game.
+     * @param timeSinceGameStartMs The time that this roll took place, measured
+     *                             relative to the start of the game.
      * @param roll The roll that the player made.
      * @return A list of new game states after the given move was made. The
      *         list may include historical information game states, and will
@@ -196,6 +198,7 @@ public abstract class RuleSet {
      */
     public abstract List<GameState> applyRoll(
             WaitingForRollGameState state,
+            long timeSinceGameStartMs,
             Roll roll
     );
 
@@ -207,6 +210,8 @@ public abstract class RuleSet {
      * <p>
      * This method does not check that the given move is valid.
      * @param state The current state of the game.
+     * @param timeSinceGameStartMs The time that this roll took place, measured
+     *                             relative to the start of the game.
      * @param move The move that the player chose to make from this position.
      * @return A list of new game states after the given move was made. The
      *         list may include historical information game states, and will
@@ -214,25 +219,29 @@ public abstract class RuleSet {
      */
     public abstract List<GameState> applyMove(
             WaitingForMoveGameState state,
+            long timeSinceGameStartMs,
             Move move
     );
 
     /**
      * Applies a resignation by {@code player} to generate the new state of the game.
      * @param state The current state of the game.
+     * @param timeSinceGameStartMs The time that this roll took place, measured
+     *                             relative to the start of the game.
      * @param player The player that resigned the game.
      * @return A list of game states representing the resignation and the end of the game.
      */
     public List<GameState> applyResign(
             GameState state,
+            long timeSinceGameStartMs,
             PlayerType player
     ) {
         Board board = state.getBoard();
         PlayerState light = state.getLightPlayer();
         PlayerState dark = state.getDarkPlayer();
         return Arrays.asList(
-                new ResignedGameState(board, light, dark, player),
-                new EndGameState(board, light, dark, player.getOtherPlayer())
+                new ResignedGameState(board, light, dark, timeSinceGameStartMs, player),
+                new EndGameState(board, light, dark, timeSinceGameStartMs, player.getOtherPlayer())
         );
     }
 
@@ -240,12 +249,15 @@ public abstract class RuleSet {
      * Applies an abandonment of the game due to {@code reason}. If the abandonment was
      * caused by a player, then {@code player} should be provided.
      * @param state The current state of the game.
+     * @param timeSinceGameStartMs The time that this roll took place, measured
+     *                             relative to the start of the game.
      * @param reason The reason that the game was abandoned.
      * @param player The player that abandoned the game, or {@code null}.
      * @return A list of game states representing the resignation and the end of the game.
      */
     public List<GameState> applyAbandon(
             GameState state,
+            long timeSinceGameStartMs,
             AbandonReason reason,
             @Nullable PlayerType player
     ) {
@@ -254,8 +266,8 @@ public abstract class RuleSet {
         PlayerState dark = state.getDarkPlayer();
         PlayerType winner = (player != null ? player.getOtherPlayer() : null);
         return Arrays.asList(
-                new AbandonedGameState(board, light, dark, reason, player),
-                new EndGameState(board, light, dark, winner)
+                new AbandonedGameState(board, light, dark, timeSinceGameStartMs, reason, player),
+                new EndGameState(board, light, dark, timeSinceGameStartMs, winner)
         );
     }
 

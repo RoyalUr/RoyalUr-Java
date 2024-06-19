@@ -15,7 +15,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -136,20 +139,20 @@ public class RGNTest {
             for (ProvidedRules rules : RulesProvider.get()) {
                 games.add(new ProvidedGame(
                         "Empty, " + rules.name,
-                        new Game(rules.rules)
+                        Game.createUntimed(rules.rules)
                 ));
             }
 
             // One roll by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 game.rollDice(1);
                 games.add(new ProvidedGame("One Roll, " + rules.name, game));
             }
 
             // One move by light.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 game.rollDice(1);
                 game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 games.add(new ProvidedGame("One Move, " + rules.name, game));
@@ -157,7 +160,7 @@ public class RGNTest {
 
             // One move by light, and one roll.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 game.rollDice(1);
                 game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 game.rollDice(1);
@@ -166,7 +169,7 @@ public class RGNTest {
 
             // One move by light, and one move by dark.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 game.rollDice(1);
                 game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                 game.rollDice(1);
@@ -177,7 +180,7 @@ public class RGNTest {
             // One move by light, and one move by dark, and resign.
             for (ProvidedRules rules : RulesProvider.get()) {
                 for (PlayerType resigner : PlayerType.values()) {
-                    Game game = new Game(rules.rules);
+                    Game game = Game.createUntimed(rules.rules);
                     game.rollDice(1);
                     game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                     game.rollDice(1);
@@ -194,7 +197,7 @@ public class RGNTest {
                         continue;
 
                     for (PlayerType abandoner : PlayerType.values()) {
-                        Game game = new Game(rules.rules);
+                        Game game = Game.createUntimed(rules.rules);
                         game.rollDice(1);
                         game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                         game.rollDice(1);
@@ -214,7 +217,7 @@ public class RGNTest {
                     if (abandonReason.requiresPlayer())
                         continue;
 
-                    Game game = new Game(rules.rules);
+                    Game game = Game.createUntimed(rules.rules);
                     game.rollDice(1);
                     game.movePieceOnTile(rules.rules.getPaths().getLightStart());
                     game.rollDice(1);
@@ -231,7 +234,7 @@ public class RGNTest {
 
             // Game where light always rolls 1, and dark always rolls 0.
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 playRiggedGame(rules.name, game);
                 games.add(new ProvidedGame("Rigged, " + rules.name, game));
             }
@@ -240,9 +243,19 @@ public class RGNTest {
             Random random = new Random(53);
             Agent randomAgent = new RandomAgent(random);
             for (ProvidedRules rules : RulesProvider.get()) {
-                Game game = new Game(rules.rules);
+                Game game = Game.createUntimed(rules.rules);
                 Agent.playAutonomously(game, randomAgent, randomAgent);
                 games.add(new ProvidedGame("Random, " + rules.name, game));
+            }
+
+            int numberOfGames = games.size();
+            for (int index = 0; index < numberOfGames; ++index) {
+                ProvidedGame provided = games.get(index);
+                Game game = provided.game.copy();
+                game.getMetadata().setStartTime(Instant.now().atZone(ZoneOffset.UTC));
+                games.add(new ProvidedGame(
+                        provided.name + ", with StartTime Metadata", game
+                ));
             }
             return games;
         }
@@ -267,6 +280,8 @@ public class RGNTest {
         for (String line : allLines) {
             String trimmed = line.trim();
             if (trimmed.isEmpty())
+                continue;
+            if (!trimmed.startsWith("["))
                 break;
 
             assertTrue(line.startsWith("["), line);
@@ -277,8 +292,10 @@ public class RGNTest {
 //        assertTrue(lines.contains("[Rules " + RGN.escape(game.rules.getDescriptor()) + "]"));
 //        assertTrue(lines.contains("[Light " + RGN.escape(game.getLightPlayer().name) + "]"));
 //        assertTrue(lines.contains("[Dark " + RGN.escape(game.getDarkPlayer().name) + "]"));
-        assertTrue(lines.stream().anyMatch(
-                line -> line.startsWith("[StartTime \"") && line.endsWith("\"]")
-        ));
+        if (game.getTimeProvider().isTimed()) {
+            assertTrue(lines.stream().anyMatch(
+                    line -> line.startsWith("[StartTime \"") && line.endsWith("\"]")
+            ));
+        }
     }
 }

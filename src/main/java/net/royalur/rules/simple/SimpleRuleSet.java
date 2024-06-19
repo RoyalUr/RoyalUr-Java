@@ -89,6 +89,7 @@ public class SimpleRuleSet extends RuleSet {
                 new Board(boardShape),
                 playerStateProvider.createStartingState(PlayerType.LIGHT),
                 playerStateProvider.createStartingState(PlayerType.DARK),
+                0,
                 PlayerType.LIGHT
         );
     }
@@ -167,7 +168,11 @@ public class SimpleRuleSet extends RuleSet {
     }
 
     @Override
-    public List<GameState> applyRoll(WaitingForRollGameState state, Roll roll) {
+    public List<GameState> applyRoll(
+            WaitingForRollGameState state,
+            long timeSinceGameStartMs,
+            Roll roll
+    ) {
         // Construct the state representing the roll that was made.
         List<Move> availableMoves = findAvailableMoves(
                 state.getBoard(), state.getTurnPlayer(), roll
@@ -176,6 +181,7 @@ public class SimpleRuleSet extends RuleSet {
                 state.getBoard(),
                 state.getLightPlayer(),
                 state.getDarkPlayer(),
+                timeSinceGameStartMs,
                 state.getTurn(),
                 roll,
                 availableMoves
@@ -188,6 +194,7 @@ public class SimpleRuleSet extends RuleSet {
                     state.getBoard(),
                     state.getLightPlayer(),
                     state.getDarkPlayer(),
+                    timeSinceGameStartMs,
                     newTurn
             ));
         }
@@ -197,6 +204,7 @@ public class SimpleRuleSet extends RuleSet {
                 state.getBoard(),
                 state.getLightPlayer(),
                 state.getDarkPlayer(),
+                timeSinceGameStartMs,
                 state.getTurn(),
                 roll,
                 availableMoves
@@ -219,11 +227,15 @@ public class SimpleRuleSet extends RuleSet {
     }
 
     @Override
-    public List<GameState> applyMove(WaitingForMoveGameState state, Move move) {
+    public List<GameState> applyMove(
+            WaitingForMoveGameState state,
+            long timeSinceGameStartMs,
+            Move move
+    ) {
         // Generate the state representing the move that was made.
         MovedGameState movedState = new MovedGameState(
                 state.getBoard(), state.getLightPlayer(), state.getDarkPlayer(),
-                state.getTurn(), state.getRoll(), move
+                timeSinceGameStartMs, state.getTurn(), state.getRoll(), move
         );
 
         // Apply the move to the board.
@@ -257,14 +269,14 @@ public class SimpleRuleSet extends RuleSet {
         int turnPlayerPieces = turnPlayer.getPieceCount();
         if (move.isScore() && turnPlayerPieces + board.countPieces(turn) <= 0)  {
             return List.of(movedState, new EndGameState(
-                    board, lightPlayer, darkPlayer, turn
+                    board, lightPlayer, darkPlayer, timeSinceGameStartMs, turn
             ));
         }
 
         // Determine whose turn it will be in the next state.
         PlayerType nextTurn = (shouldGrantExtraRoll(movedState) ? turn : turn.getOtherPlayer());
         return List.of(movedState, new WaitingForRollGameState(
-                board, lightPlayer, darkPlayer, nextTurn
+                board, lightPlayer, darkPlayer, timeSinceGameStartMs, nextTurn
         ));
     }
 

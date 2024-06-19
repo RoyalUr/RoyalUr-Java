@@ -4,6 +4,7 @@ import net.royalur.model.GameMetadata;
 import net.royalur.model.GameSettings;
 import net.royalur.rules.*;
 
+
 /**
  * A provider that creates simple rule sets.
  */

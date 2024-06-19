@@ -5,10 +5,12 @@ import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.rules.RuleSet;
+import net.royalur.rules.TimeProvider;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
 import javax.annotation.Nullable;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -28,6 +30,11 @@ public class Game {
     private final GameMetadata metadata;
 
     /**
+     * Provides timing for the game.
+     */
+    private final TimeProvider timeProvider;
+
+    /**
      * The dice to be used to generate dice rolls.
      */
     private final Dice dice;
@@ -41,11 +48,13 @@ public class Game {
     /**
      * Instantiates a game of the Royal Game of Ur.
      * @param rules The set of rules that are being used for this game.
+     * @param timeProvider Provides timing for the game.
      * @param metadata The metadata of this game.
      * @param states The states that have occurred so far in the game.
      */
     public Game(
             RuleSet rules,
+            TimeProvider timeProvider,
             GameMetadata metadata,
             List<GameState> states
     ) {
@@ -53,9 +62,16 @@ public class Game {
             throw new IllegalArgumentException("Games must have at least one state");
 
         this.rules = rules;
+        this.timeProvider = timeProvider;
         this.metadata = metadata;
         this.dice = rules.getDiceFactory().createDice();
         this.states = new ArrayList<>();
+
+        // Initialise the metadata of the game.
+        ZonedDateTime startTime = timeProvider.getGameStartTime();
+        if (startTime != null && !metadata.hasStartTime()) {
+            metadata.setStartTime(startTime);
+        }
 
         addStates(states);
     }
@@ -67,7 +83,8 @@ public class Game {
     public Game(RuleSet rules) {
         this(
                 rules,
-                GameMetadata.createForNewGame(rules.getSettings()),
+                TimeProvider.createStartingNow(),
+                new GameMetadata(),
                 List.of(rules.generateInitialGameState())
         );
     }
@@ -77,8 +94,21 @@ public class Game {
      * @param game The rules of the game.
      */
     protected Game(Game game) {
-        this(game.rules, game.metadata.copy(), game.states);
+        this(game.rules, game.timeProvider, game.metadata.copy(), game.states);
         dice.copyFrom(game.dice);
+    }
+
+    /**
+     * Instantiates a new game of the Royal Game of Ur that is untimed.
+     * @param rules The rules of the game.
+     */
+    public static Game createUntimed(RuleSet rules) {
+        return new Game(
+                rules,
+                TimeProvider.createUntimed(),
+                new GameMetadata(),
+                List.of(rules.generateInitialGameState())
+        );
     }
 
     /**
@@ -130,6 +160,14 @@ public class Game {
      */
     public RuleSet getRules() {
         return rules;
+    }
+
+    /**
+     * Gets the provider of time for this game.
+     * @return The provider of time for this game.
+     */
+    public TimeProvider getTimeProvider() {
+        return timeProvider;
     }
 
     /**
@@ -319,7 +357,11 @@ public class Game {
      * @param roll The value of the dice that is to be rolled.
      */
     public void rollDice(Roll roll) {
-        addStates(rules.applyRoll(getWaitingForRollState(), roll));
+        addStates(rules.applyRoll(
+                getWaitingForRollState(),
+                timeProvider.getTimeSinceGameStartMs(),
+                roll
+        ));
     }
 
     /**
@@ -408,7 +450,11 @@ public class Game {
      */
     public void move(Move move) {
         WaitingForMoveGameState state = getWaitingForMoveState();
-        addStates(rules.applyMove(state, move));
+        addStates(rules.applyMove(
+                state,
+                timeProvider.getTimeSinceGameStartMs(),
+                move
+        ));
     }
 
     /**
@@ -435,7 +481,11 @@ public class Game {
         if (isFinished())
             throw new IllegalStateException("The game is already finished");
 
-        addStates(rules.applyResign(getState(), player));
+        addStates(rules.applyResign(
+                getState(),
+                timeProvider.getTimeSinceGameStartMs(),
+                player
+        ));
     }
 
     /**
@@ -450,7 +500,12 @@ public class Game {
         if (isFinished())
             throw new IllegalStateException("The game is already finished");
 
-        addStates(rules.applyAbandon(getState(), reason, player));
+        addStates(rules.applyAbandon(
+                getState(),
+                timeProvider.getTimeSinceGameStartMs(),
+                reason,
+                player
+        ));
     }
 
     /**

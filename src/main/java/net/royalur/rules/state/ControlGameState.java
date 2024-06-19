@@ -21,15 +21,17 @@ public abstract class ControlGameState extends GameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      * @param player      The player that performed the control action.
      */
     public ControlGameState(
             Board board,
             PlayerState lightPlayer,
             PlayerState darkPlayer,
+            long timeSinceGameStartMs,
             @Nullable PlayerType player
     ) {
-        super(board, lightPlayer, darkPlayer);
+        super(board, lightPlayer, darkPlayer, timeSinceGameStartMs);
         this.player = player;
     }
 
@@ -38,13 +40,15 @@ public abstract class ControlGameState extends GameState {
      * @param board       The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer  The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      */
     public ControlGameState(
             Board board,
             PlayerState lightPlayer,
-            PlayerState darkPlayer
+            PlayerState darkPlayer,
+            long timeSinceGameStartMs
     ) {
-        this(board, lightPlayer, darkPlayer, null);
+        this(board, lightPlayer, darkPlayer, timeSinceGameStartMs, null);
     }
 
     @Override

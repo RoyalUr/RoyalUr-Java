@@ -25,24 +25,35 @@ public abstract class GameState {
     private final PlayerState darkPlayer;
 
     /**
+     * Gets the time this state was created, measured by the number of
+     * milliseconds elapsed since the start of the game.
+     */
+    private final long timeSinceGameStartMs;
+
+    /**
      * Instantiates a game state.
      * @param board The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
      * @param darkPlayer The state of the dark player.
+     * @param timeSinceGameStartMs The time this state was created.
      */
     public GameState(
             Board board,
             PlayerState lightPlayer,
-            PlayerState darkPlayer
+            PlayerState darkPlayer,
+            long timeSinceGameStartMs
     ) {
         if (lightPlayer.getPlayer() != PlayerType.LIGHT)
             throw new IllegalArgumentException("lightPlayer should be a Player.LIGHT, not " + lightPlayer.getPlayer());
         if (darkPlayer.getPlayer() != PlayerType.DARK)
             throw new IllegalArgumentException("darkPlayer should be a Player.DARK, not " + darkPlayer.getPlayer());
+        if (timeSinceGameStartMs < 0)
+            throw new IllegalArgumentException("secondsSinceGameStart must be >= 0");
 
         this.board = board;
         this.lightPlayer = lightPlayer;
         this.darkPlayer = darkPlayer;
+        this.timeSinceGameStartMs = timeSinceGameStartMs;
     }
 
     /**
@@ -82,6 +93,15 @@ public abstract class GameState {
     }
 
     /**
+     * Gets the time this state was created, measured by the number of
+     * milliseconds elapsed since the start of the game.
+     * @return The time this state was created.
+     */
+    public long getTimeSinceGameStartMs() {
+        return timeSinceGameStartMs;
+    }
+
+    /**
      * Get the subject player of the game state. e.g., player
      * to roll/move, player that rolled/moved, player that won.
      */
@@ -114,6 +134,7 @@ public abstract class GameState {
 
         return board.equals(other.board)
                 && lightPlayer.equals(other.lightPlayer)
-                && darkPlayer.equals(other.darkPlayer);
+                && darkPlayer.equals(other.darkPlayer)
+                && timeSinceGameStartMs == other.timeSinceGameStartMs;
     }
 }
