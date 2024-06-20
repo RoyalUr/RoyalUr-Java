@@ -12,14 +12,6 @@ import java.util.List;
 public abstract class BaseAgent implements Agent {
 
     /**
-     * Determines the move to be executed from the current state of the game.
-     * @param game The game to find the best move in.
-     * @param availableMoves The list of available moves to be chosen from.
-     * @return The move that the agent chose to play.
-     */
-    public abstract Move decideMove(Game game, List<Move> availableMoves);
-
-    /**
      * Initiates the agent to play their turn in the given game.
      * @param game The game to play a turn in.
      */

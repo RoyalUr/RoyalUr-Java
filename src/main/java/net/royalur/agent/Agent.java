@@ -1,7 +1,10 @@
 package net.royalur.agent;
 
 import net.royalur.Game;
+import net.royalur.model.Move;
 import net.royalur.model.PlayerState;
+
+import java.util.List;
 
 /**
  * An agent that can autonomously play the Royal Game of Ur. Agents are designed
@@ -14,6 +17,14 @@ public interface Agent {
      * @param game The game to play a turn in.
      */
     void playTurn(Game game);
+
+    /**
+     * Determines the move to be executed from the current state of the game.
+     * @param game The game to find the best move in.
+     * @param availableMoves The list of available moves to be chosen from.
+     * @return The move that the agent chose to play.
+     */
+    Move decideMove(Game game, List<Move> availableMoves);
 
     /**
      * Completes this game using the two agents to play its moves.
