@@ -25,6 +25,10 @@ public class TimeControl {
         return new TimeControl(perMoveSeconds);
     }
 
+    public boolean isTimed() {
+        return hasPerMoveSeconds();
+    }
+
     public boolean hasPerMoveSeconds() {
         return perMoveSeconds > 0;
     }
