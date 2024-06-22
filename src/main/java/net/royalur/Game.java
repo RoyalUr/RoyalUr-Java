@@ -273,6 +273,19 @@ public class Game implements TimeProvider {
     }
 
     /**
+     * Checks whether the given player has made any moves in this game.
+     * @param player The player to check.
+     * @return Whether the given player has made any moves in this game.
+     */
+    public boolean hasPlayerMadeAnyMoves(PlayerType player) {
+        for (GameState state : states) {
+            if (state instanceof MovedGameState move && move.getTurn() == player)
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Gets the current state of this game as a {@link PlayableGameState}.
      * This will throw an error if the game is not in a playable state.
      * @return The playable state that the game is currently in.
