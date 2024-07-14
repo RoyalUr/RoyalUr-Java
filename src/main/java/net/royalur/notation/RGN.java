@@ -122,7 +122,7 @@ public class RGN implements Notation {
      * @param builder The builder into which to append the encoded dice roll.
      * @param rolledState The state of the game that contains the dice roll to encode.
      */
-    protected void appendDiceRoll(
+    public void appendDiceRoll(
             RuleSet rules,
             StringBuilder builder,
             RolledGameState rolledState
@@ -135,52 +135,54 @@ public class RGN implements Notation {
      * Encodes the move from {@code movedState} into {@code builder}.
      * @param rules The rules of the game in which the dice are being encoded.
      * @param builder The builder into which to append the encoded move.
-     * @param movedState The state of the game that contains the move to encode.
+     * @param move The move to encode.
      */
-    protected void appendMove(
+    public void appendMove(
             RuleSet rules,
             StringBuilder builder,
-            MovedGameState movedState
+            Move move
     ) {
-        Move move = movedState.getMove();
-        Tile from;
-        Tile to;
+        appendMove(rules, builder, move, false);
+    }
 
-        // Get the origin tile.
+    /**
+     * Encodes the move from {@code movedState} into {@code builder}.
+     * @param rules The rules of the game in which the dice are being encoded.
+     * @param builder The builder into which to append the encoded move.
+     * @param move The move to encode.
+     * @param spaceBeforeRosette Whether to include a space before the asterisk
+     *                           used to indicate landing on a rosette.
+     */
+    public void appendMove(
+            RuleSet rules,
+            StringBuilder builder,
+            Move move,
+            boolean spaceBeforeRosette
+    ) {
+        List<Tile> path = rules.getPaths().getWithStartEnd(move.getPlayer());
+
         if (move.isIntroduction()) {
-            from = rules.getPaths().getStart(move.getPlayer());
+            path.get(0).encodeX(builder);
+            builder.append('@');
         } else {
-            from = move.getSource();
+            move.getSource().encode(builder);
         }
 
-        // Get the destination tile.
         if (move.isScore()) {
-            to = rules.getPaths().getEnd(move.getPlayer());
+            path.get(path.size() - 1).encodeX(builder);
+            builder.append('+');
         } else {
-            to = move.getDest();
+            move.getDest().encode(builder);
         }
 
-        // Include the source coordinate.
-        // TODO
-//        if (from.getX() != to.getX()) {
-            from.encodeXLowerCase(builder);
-//        }
-//        if (from.getY() != to.getY()) {
-            from.encodeY(builder);
-//        }
-
-        // Include the destination coordinates.
-        to.encodeXLowerCase(builder);
-        to.encodeY(builder);
-
-        // Record that a piece was captured.
         if (move.isCapture()) {
-            builder.append("x");
+            builder.append('x');
         }
-
-        // Mark if a rosette was reached.
         if (move.isDestRosette(rules.getBoardShape())) {
-            builder.append("+");
+            if (spaceBeforeRosette) {
+                builder.append(' ');
+            }
+            builder.append('*');
         }
     }
 
@@ -227,11 +229,6 @@ public class RGN implements Notation {
             } else if (actionState instanceof MovedGameState) {
                 // Get the move.
                 moveState = (MovedGameState) actionState;
-
-                // Try to find a roll to associate with this move.
-                if (index > 0 && states.get(index - 1) instanceof RolledGameState) {
-                    rollState = (RolledGameState) states.get(index - 1);
-                }
             } else {
                 throw new IllegalArgumentException("Unknown action state type " + actionState.getClass());
             }
@@ -249,8 +246,6 @@ public class RGN implements Notation {
                 } else {
                     actionBuilder.append("/ ");
                 }
-                // TODO
-//                actionBuilder.append(currentPlayer.getCharacter()).append(" ");
             }
 
             // Rolls are only included if there was no move, as the roll
@@ -261,10 +256,9 @@ public class RGN implements Notation {
 
             // If there was a move, include it.
             if (moveState != null) {
-                appendMove(game.getRules(), actionBuilder, moveState);
+                appendMove(game.getRules(), actionBuilder, moveState.getMove(), true);
             } else {
-                // TODO : Only show this if there were no moves...
-                actionBuilder.append("-");
+                actionBuilder.append(" --");
             }
             if (index == states.size() - 1 && game.isFinished()) {
                 actionBuilder.append("#");

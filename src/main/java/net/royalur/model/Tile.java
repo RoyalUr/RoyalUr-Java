@@ -121,6 +121,15 @@ public class Tile {
     }
 
     /**
+     * Encodes the location of this tile into {@code builder}.
+     * @param builder The builder to place the encoded tile coordinates into.
+     */
+    public void encode(StringBuilder builder) {
+        encodeX(builder);
+        encodeY(builder);
+    }
+
+    /**
      * Encodes the x-coordinate as an upper-case letter, and appends it to {@code builder}.
      * @param builder The builder to place the encoded x-coordinate into.
      */
@@ -152,8 +161,7 @@ public class Tile {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        encodeX(builder);
-        encodeY(builder);
+        encode(builder);
         return builder.toString();
     }
 
