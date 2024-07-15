@@ -8,8 +8,12 @@ import net.royalur.lut.store.DataSource;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
 import net.royalur.model.GameSettings;
+import net.royalur.model.PlayerType;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleGame;
+import net.royalur.rules.state.EndGameState;
+import net.royalur.rules.state.GameState;
+import net.royalur.rules.state.WaitingForRollGameState;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -31,6 +35,8 @@ public class Lut {
     private final GameStateEncoding encoding;
     private final LutMetadata metadata;
     private final LutMap[] maps;
+    private final FastSimpleGame stateConversionGame;
+    private final FastSimpleGame tempGame;
 
     public Lut(
             GameStateEncoding encoding,
@@ -40,6 +46,8 @@ public class Lut {
         this.encoding = encoding;
         this.metadata = metadata;
         this.maps = maps;
+        this.stateConversionGame = new FastSimpleGame(metadata.getGameSettings());
+        this.tempGame = new FastSimpleGame(metadata.getGameSettings());
     }
 
     public int getEntryCount() {
@@ -72,10 +80,27 @@ public class Lut {
 
     /**
      * Assumes that the game is using symmetrical paths.
-     * This function is much slower than if you provide a tempGame.
      */
     public double getLightWinPercent(FastSimpleGame game) {
-        return getLightWinPercent(game, null);
+        return getLightWinPercent(game, tempGame);
+    }
+
+    /**
+     * Assumes that the game is using symmetrical paths.
+     */
+    public double getLightWinPercent(GameState state) {
+        if (state instanceof EndGameState endState) {
+            if (endState.hasWinner())
+                return (endState.getWinner() == PlayerType.LIGHT ? 100.0 : 0.0);
+            return 50.0;
+        }
+        if (!(state instanceof WaitingForRollGameState)) {
+            throw new IllegalArgumentException(
+                    "Can only get the win percentage for end and waiting for roll game states"
+            );
+        }
+        stateConversionGame.copyFrom(state);
+        return getLightWinPercent(stateConversionGame, tempGame);
     }
 
     /**
