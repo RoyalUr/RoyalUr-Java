@@ -146,6 +146,24 @@ public class Move {
     }
 
     /**
+     * Gets the index of the source tile of this move in the player's path.
+     * If a new piece is introduced, {@code -1} will be returned.
+     * @param paths The paths used for the game where this move is to take place.
+     * @return The index of the source tile of this move in the player's path,
+     *         or else {@code -1} if this move introduces a piece.
+     */
+    public int getPathIndex(PathPair paths) {
+        if (source == null)
+            return -1;
+
+        int pathIndex = paths.get(player).indexOf(source);
+        if (pathIndex == -1)
+            throw new IllegalArgumentException("source tile of move does not exist in path");
+
+        return pathIndex;
+    }
+
+    /**
      * Gets the source tile of this move, or else returns null if there
      * is no source piece, in the case where a new piece is moved onto the board.
      * @return The source tile of this move, or null.
