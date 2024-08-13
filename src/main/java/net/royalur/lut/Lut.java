@@ -50,6 +50,13 @@ public class Lut {
         this.tempGame = new FastSimpleGame(metadata.getGameSettings());
     }
 
+    /**
+     * Can help with using the methods that are not thread-safe.
+     */
+    public Lut shallowCopy() {
+        return new Lut(encoding, metadata, maps);
+    }
+
     public int getEntryCount() {
         int size = 0;
         for (LutMap map : maps) {
@@ -80,6 +87,7 @@ public class Lut {
 
     /**
      * Assumes that the game is using symmetrical paths.
+     * NOT thread-safe.
      */
     public double getLightWinPercent(FastSimpleGame game) {
         return getLightWinPercent(game, tempGame);
@@ -87,6 +95,7 @@ public class Lut {
 
     /**
      * Assumes that the game is using symmetrical paths.
+     * NOT thread-safe.
      */
     public double getLightWinPercent(GameState state) {
         if (state instanceof EndGameState endState) {
@@ -105,6 +114,7 @@ public class Lut {
 
     /**
      * Assumes that the game is using symmetrical paths.
+     * This is thread-safe.
      */
     public double getLightWinPercent(FastSimpleGame game, @Nullable FastSimpleGame tempGame) {
         long key = encoding.encodeSymmetricalGameState(game, tempGame);
