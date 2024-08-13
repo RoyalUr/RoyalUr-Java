@@ -23,6 +23,14 @@ public class LutAgent extends BaseAgent {
         this.tempGame = new FastSimpleGame(settings);
     }
 
+    /**
+     * A different instance of Lut must be used on each thread,
+     * so this creates a copy of it.
+     */
+    public LutAgent shallowCopy() {
+        return new LutAgent(lut.shallowCopy());
+    }
+
     @Override
     public Move decideMove(Game game, List<Move> availableMoves) {
         if (availableMoves.isEmpty())

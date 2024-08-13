@@ -51,7 +51,7 @@ public class Lut {
     }
 
     /**
-     * Can help with using the methods that are not thread-safe.
+     * A different instance of Lut must be used on each thread.
      */
     public Lut shallowCopy() {
         return new Lut(encoding, metadata, maps);
