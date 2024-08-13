@@ -76,7 +76,8 @@ public class LutTrainer {
             if (upperKey != upperKeyFilter)
                 return;
 
-            float value = (game.isFinished ? 100.0f : 50.0f);
+            // TODO : CHANGE BACK
+            float value = (game.isFinished ? 100.0f : 0.0f); //50.0f);
             map.set(lowerKey, value);
         });
         return map;
@@ -274,6 +275,7 @@ public class LutTrainer {
             double tolerance
     ) throws IOException {
 
+        long trainStart = System.nanoTime();
         lut = lut.copyValuesToFloat32();
 
         int iteration = 0;
@@ -311,27 +313,32 @@ public class LutTrainer {
             }
         }
 
-        lut.write(jsonNotation, checkpointFile);
+        File visDir = new File("./vis/");
+        if (!(visDir.exists() && visDir.isDirectory()) && !visDir.mkdirs())
+            throw new IOException("Could not make directory " + visDir);
 
-        System.out.println();
-        System.out.println("Finished progressive value iteration!");
-        System.out.println("Starting full value iteration for 10 steps...");
-        int stateCount = flags.countStates();
-        for (int index = 0; index < 10; ++index) {
-            long start = System.nanoTime();
+        File visualisationFile = new File(visDir, "iter_0.csv");
+        try (OutputStream os = new FileOutputStream(visualisationFile);
+             PrintStream out = new PrintStream(os)) {
 
-            double maxChange = performTrainingIteration(
-                    lut, stateCount, game -> true
-            );
-            double durationMs = (System.nanoTime() - start) / 1e6;
-            System.out.printf(
-                    "%d. max diff = %.3f (%s ms)\n",
-                    index + 1,
-                    maxChange,
-                    LutCLI.MS_DURATION.format(durationMs)
-            );
+            LutCLI.generateDataForShapeVisualisation(lut, out);
         }
+
+        double totalDurationMs = (System.nanoTime() - trainStart) / 1e6d;
+        System.out.println();
+        System.out.printf(
+                "Finished value iteration in %s ms!\n",
+                LutCLI.MS_DURATION.format(totalDurationMs)
+        );
+
+        long writeStart = System.nanoTime();
         lut.write(jsonNotation, checkpointFile);
+        double writeDurationMs = (System.nanoTime() - writeStart) / 1e6;
+        System.out.println();
+        System.out.printf(
+                "Saving model took %s ms!\n",
+                LutCLI.MS_DURATION.format(writeDurationMs)
+        );
         return lut;
     }
 }
