@@ -34,10 +34,23 @@ public class GameSettings {
     /**
      * The settings proposed by James Masters.
      */
-    public static final GameSettings MASTERS = new GameSettings(
+    public static final GameSettings OLD_MASTERS = new GameSettings(
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.FOUR_BINARY,
+            7,
+            false,
+            true,
+            false
+    );
+
+    /**
+     * The settings proposed by James Masters.
+     */
+    public static final GameSettings MASTERS = new GameSettings(
+            new StandardBoardShape(),
+            new MastersPathPair(),
+            DiceType.THREE_BINARY_0EQ4,
             7,
             false,
             true,

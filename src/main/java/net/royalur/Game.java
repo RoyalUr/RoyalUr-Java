@@ -751,7 +751,8 @@ public class Game implements TimeProvider {
     /**
      * Creates a game that follows the rules proposed by James Masters.
      * This uses the simple rules, the standard board shape, Bell's path, unsafe
-     * rosette tiles, the standard dice, and seven starting pieces per player.
+     * rosette tiles, three binary dice where 0 allows moving 4 tiles, and seven
+     * starting pieces per player.
      * @return A game that follows Irving Finkel's proposed simple rules.
      */
     public static Game createMasters() {
