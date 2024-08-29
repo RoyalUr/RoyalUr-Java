@@ -78,6 +78,7 @@ public class LutCLI {
         LutTrainer trainer = new LutTrainer(settings, encoding, jsonNotation);
 
         if (lut == null) {
+            System.out.println("Populating new model...");
             long populateStart = System.nanoTime();
             lut = trainer.populateNewLut();
             double populateDurationMs = (System.nanoTime() - populateStart) / 1e6;
@@ -94,9 +95,9 @@ public class LutCLI {
 
     public static void main(String[] args) throws IOException {
 
-        File inputFile = new File("./models/finkel.rgu");
-        File outputFile = new File("./models/finkel_round_two.rgu");
-        File checkpointFile = new File("./finkel_checkpoint.rgu");
+//        File inputFile = new File("./models/masters3d.rgu");
+        File outputFile = new File("./models/masters3d.rgu");
+        File checkpointFile = new File("./masters3d_checkpoint.rgu");
 
         Lut lut = null;
 //        long readStart = System.nanoTime();
@@ -106,6 +107,6 @@ public class LutCLI {
 
 //        generateDataForShapeVisualisation(lut);
 
-        trainLut(GameSettings.FINKEL, lut, checkpointFile, outputFile);
+        trainLut(GameSettings.MASTERS, lut, checkpointFile, outputFile);
     }
 }

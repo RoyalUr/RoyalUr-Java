@@ -313,17 +313,6 @@ public class LutTrainer {
             }
         }
 
-        File visDir = new File("./vis/");
-        if (!(visDir.exists() && visDir.isDirectory()) && !visDir.mkdirs())
-            throw new IOException("Could not make directory " + visDir);
-
-        File visualisationFile = new File(visDir, "iter_0.csv");
-        try (OutputStream os = new FileOutputStream(visualisationFile);
-             PrintStream out = new PrintStream(os)) {
-
-            LutCLI.generateDataForShapeVisualisation(lut, out);
-        }
-
         double totalDurationMs = (System.nanoTime() - trainStart) / 1e6d;
         System.out.println();
         System.out.printf(
