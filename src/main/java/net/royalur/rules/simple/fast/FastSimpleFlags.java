@@ -4,6 +4,7 @@ import net.royalur.model.GameSettings;
 import net.royalur.model.Tile;
 import net.royalur.model.path.PathPair;
 import net.royalur.model.shape.BoardShape;
+import net.royalur.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,6 +115,59 @@ public class FastSimpleFlags {
                 }
             }
             consumer.accept(game, neighbourList);
+        });
+    }
+
+    public void loopLightGameStatesAndRolls(
+            TriConsumer<FastSimpleGame, Integer, Collection<FastSimpleGame>> consumer
+    ) {
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+
+        int maxRequiredGameObjects = settings.getStartingPieceCount() * probabilities.length;
+        List<FastSimpleGame> gameObjects = new ArrayList<>(maxRequiredGameObjects);
+        for (int index = 0; index < maxRequiredGameObjects; ++index) {
+            gameObjects.add(new FastSimpleGame(settings));
+        }
+
+        List<FastSimpleGame> neighbours = new ArrayList<>(maxRequiredGameObjects);
+
+        loopLightGameStates(game -> {
+            if (game.isFinished) {
+                return;
+            }
+
+            int gameObjectIndex = 0;
+            for (int roll = 0; roll < probabilities.length; ++roll) {
+                if (probabilities[roll] <= 0.0f) {
+                    continue;
+                }
+
+                // Clear the neighbours list for this roll.
+                neighbours.clear();
+
+                rollGame.copyFrom(game);
+                rollGame.applyRoll(roll, moveList);
+
+                if (rollGame.isWaitingForMove()) {
+                    for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                        moveGame.copyFrom(rollGame);
+                        moveGame.applyMove(moveList.moves[moveIndex]);
+
+                        FastSimpleGame neighbour = gameObjects.get(gameObjectIndex++);
+                        neighbour.copyFrom(moveGame);
+                        neighbours.add(neighbour);
+                    }
+                } else {
+                    FastSimpleGame neighbour = gameObjects.get(gameObjectIndex++);
+                    neighbour.copyFrom(rollGame);
+                    neighbours.add(neighbour);
+                }
+
+                consumer.accept(game, roll, neighbours);
+            }
         });
     }
 

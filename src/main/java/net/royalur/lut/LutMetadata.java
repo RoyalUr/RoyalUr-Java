@@ -3,8 +3,10 @@ package net.royalur.lut;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import net.royalur.lut.buffer.ValueType;
 import net.royalur.model.GameSettings;
 import net.royalur.notation.JsonHelper;
 import net.royalur.notation.JsonNotation;
@@ -23,25 +25,47 @@ import java.util.Set;
 public class LutMetadata {
 
     private static final String GAME_SETTINGS_KEY = "game_settings";
-    private static final Set<String> RESERVED_KEYS = Set.of(GAME_SETTINGS_KEY);
+    private static final String VALUE_TYPE_KEY = "value_type";
+    private static final Set<String> RESERVED_KEYS = Set.of(GAME_SETTINGS_KEY, VALUE_TYPE_KEY);
 
     private final GameSettings gameSettings;
+    private final ValueType valueType;
     private final Map<String, JsonNode> additionalMetadata;
 
     public LutMetadata(
             GameSettings gameSettings,
+            ValueType valueType,
             Map<String, JsonNode> additionalMetadata
     ) {
         this.gameSettings = gameSettings;
+        this.valueType = valueType;
         this.additionalMetadata = new HashMap<>(additionalMetadata);
     }
 
-    public LutMetadata(GameSettings gameSettings) {
-        this(gameSettings, Collections.emptyMap());
+    public LutMetadata(GameSettings gameSettings, ValueType valueType) {
+        this(gameSettings, valueType, Collections.emptyMap());
+    }
+
+    public LutMetadata copy() {
+        return new LutMetadata(
+                gameSettings, valueType,
+                new HashMap<>(additionalMetadata)
+        );
+    }
+
+    public LutMetadata copyWithValueType(ValueType valueType) {
+        return new LutMetadata(
+                gameSettings, valueType,
+                new HashMap<>(additionalMetadata)
+        );
     }
 
     public GameSettings getGameSettings() {
         return gameSettings;
+    }
+
+    public ValueType getValueType() {
+        return valueType;
     }
 
     public Map<String, JsonNode> getAdditionalMetadata() {
@@ -57,6 +81,10 @@ public class LutMetadata {
 
     public void addMetadata(String key, String value) {
         addMetadata(key, new TextNode(value));
+    }
+
+    public void addMetadata(String key, double value) {
+        addMetadata(key, new DoubleNode(value));
     }
 
     public String encode(JsonNotation notation) {
@@ -82,6 +110,7 @@ public class LutMetadata {
             JsonGenerator generator
     ) throws IOException {
 
+        generator.writeStringField(VALUE_TYPE_KEY, this.valueType.getTextID());
         for (Map.Entry<String, JsonNode> entry : additionalMetadata.entrySet()) {
             generator.writeFieldName(entry.getKey());
             notation.getObjectMapper().writeTree(generator, entry.getValue());
@@ -120,6 +149,9 @@ public class LutMetadata {
     ) {
         ObjectNode gameSettingsJson = JsonHelper.readObject(json, GAME_SETTINGS_KEY);
         GameSettings gameSettings = notation.readGameSettings(gameSettingsJson);
+        ValueType valueType = ValueType.getByTextID(JsonHelper.readStringWithDefault(
+                json, VALUE_TYPE_KEY, ValueType.PERCENT16.getTextID()
+        ));
 
         Map<String, JsonNode> additionalMetadata = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : json.properties()) {
@@ -128,6 +160,6 @@ public class LutMetadata {
 
             additionalMetadata.put(entry.getKey(), entry.getValue());
         }
-        return new LutMetadata(gameSettings, additionalMetadata);
+        return new LutMetadata(gameSettings, valueType, additionalMetadata);
     }
 }

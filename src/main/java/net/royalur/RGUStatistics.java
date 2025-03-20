@@ -1,10 +1,13 @@
 package net.royalur;
 
 import net.royalur.agent.*;
+import net.royalur.cli.CLIConstants;
 import net.royalur.lut.*;
+import net.royalur.model.GameMetadata;
 import net.royalur.model.GameSettings;
 import net.royalur.rules.RuleSet;
 import net.royalur.rules.simple.SimpleRuleSet;
+import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.simple.fast.FastSimpleFlags;
 import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
@@ -12,11 +15,17 @@ import net.royalur.stats.GameStats;
 import net.royalur.stats.GameStatsSummary;
 import net.royalur.stats.GameStatsTarget;
 import net.royalur.stats.SummaryStat;
+import net.royalur.cli.CLI;
+import net.royalur.cli.CLIHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -213,14 +222,257 @@ public class RGUStatistics {
         System.out.println("\nTook " + LutCLI.MS_DURATION.format(durationMS) + " ms");
     }
 
-    /**
-     * The main entrypoint to run statistics about the Royal Game of Ur board shapes and paths.
-     */
-    public static void main(String[] args) throws IOException {
-//        runGames();
-//        LutCLI.main(args);
+    private static String leftPad(String value, int length) {
+        return " ".repeat(
+                Math.max(0, length - value.length())
+        ) + value;
+    }
 
+    public static void countStates() {
+        for (GameSettings settings : CLIConstants.COMMONLY_PLAYED) {
+            FastSimpleFlags flags = new FastSimpleFlags(settings);
+
+            AtomicLong totalCount = new AtomicLong(0);
+            AtomicLong nonWinCount = new AtomicLong(0);
+            AtomicLong onePlayerCount = new AtomicLong(0);
+
+            flags.loopLightGameStates((game) -> {
+                totalCount.addAndGet(2);
+                onePlayerCount.incrementAndGet();
+                if (!game.isFinished) {
+                    nonWinCount.addAndGet(2);
+                }
+            });
+
+            System.out.println(settings.getName() + ":");
+            System.out.println("* Total states = " + totalCount.get());
+            System.out.println("* States excluding win states = " + nonWinCount.get());
+            System.out.println("* States per player = " + onePlayerCount.get());
+            System.out.println();
+        }
+    }
+
+    private static class RollMove {
+        public int roll;
+        public int move;
+    }
+
+    private static void loopLightGameStatesAndBestRollMoves(
+            GameSettings settings,
+            FastSimpleFlags flags,
+            Lut lut,
+            BiConsumer<FastSimpleGame, List<RollMove>> consumer
+    ) {
+        FastSimpleGame rollGame = new FastSimpleGame(settings);
+        FastSimpleGame moveGame = new FastSimpleGame(settings);
+        FastSimpleGame tempGame = new FastSimpleGame(settings);
+        FastSimpleMoveList moveList = new FastSimpleMoveList();
+        float[] probabilities = settings.getDice().createDice().getRollProbabilities();
+
+        List<RollMove> rollMoveCache = new ArrayList<>();
+        List<RollMove> bestRollMoves = new ArrayList<>();
+
+        flags.loopLightGameStates(game -> {
+            if (game.isFinished)
+                return;
+
+            double bestWinPercentage = Double.NEGATIVE_INFINITY;
+            bestRollMoves.clear();
+
+            for (int roll = 0; roll < probabilities.length; ++roll) {
+                if (probabilities[roll] <= 0.0f)
+                    continue;
+
+                rollGame.copyFrom(game);
+                rollGame.applyRoll(roll, moveList);
+
+                if (rollGame.isWaitingForMove()) {
+                    // Evaluate each possible move.
+                    for (int moveIndex = 0; moveIndex < moveList.moveCount; ++moveIndex) {
+                        moveGame.copyFrom(rollGame);
+                        moveGame.applyMove(moveList.moves[moveIndex]);
+
+                        double winPercentage = lut.getLightWinPercent(moveGame, tempGame);
+                        if (winPercentage > bestWinPercentage) {
+                            bestRollMoves.clear();
+                        }
+                        if (winPercentage >= bestWinPercentage) {
+                            bestWinPercentage = winPercentage;
+                            RollMove rollMove;
+                            if (bestRollMoves.size() == rollMoveCache.size()) {
+                                rollMove = new RollMove();
+                                rollMoveCache.add(rollMove);
+                            } else {
+                                rollMove = rollMoveCache.get(bestRollMoves.size());
+                            }
+                            rollMove.move = moveList.moves[moveIndex];
+                            rollMove.roll = roll;
+                            bestRollMoves.add(rollMove);
+                        }
+                    }
+                } else {
+                    double winPercentage = lut.getLightWinPercent(rollGame, tempGame);
+                    if (winPercentage > bestWinPercentage) {
+                        bestRollMoves.clear();
+                    }
+                    if (winPercentage >= bestWinPercentage) {
+                        bestWinPercentage = winPercentage;
+                        RollMove rollMove;
+                        if (bestRollMoves.size() == rollMoveCache.size()) {
+                            rollMove = new RollMove();
+                            rollMoveCache.add(rollMove);
+                        } else {
+                            rollMove = rollMoveCache.get(bestRollMoves.size());
+                        }
+                        // Indicate that no move was made (-1 represents introducing a piece)
+                        rollMove.move = -2;
+                        rollMove.roll = roll;
+                        bestRollMoves.add(rollMove);
+                    }
+                }
+            }
+            consumer.accept(game, bestRollMoves);
+        });
+    }
+
+    private static void findHowOftenRollsAreBest() throws IOException {
         Lut lut = Lut.read(new File("./models/finkel.rgu"));
-        new LutVisualisation(lut).calculateDepths(new File("./finkel_depths.dat"));
+        LutAgent agent = new LutAgent(lut);
+        GameSettings settings = GameSettings.FINKEL;
+
+        int pieceCount = settings.getStartingPieceCount() + 1;
+        RuleSet rules = new SimpleRuleSetProvider().create(settings, new GameMetadata());
+
+        AtomicInteger[] rollExclusivelyBestCounts = new AtomicInteger[5];
+        AtomicInteger[] bestCounts = new AtomicInteger[5];
+        AtomicInteger[] noMoveBestCounts = new AtomicInteger[5];
+        for (int roll = 0; roll <= 4; ++roll) {
+            rollExclusivelyBestCounts[roll] = new AtomicInteger(0);
+            bestCounts[roll] = new AtomicInteger(0);
+            noMoveBestCounts[roll] = new AtomicInteger(0);
+        }
+        FastSimpleFlags flags = new FastSimpleFlags(settings);
+        boolean[] seenRolls = new boolean[5];
+        loopLightGameStatesAndBestRollMoves(
+                settings, flags, lut,
+                (game, rollMoves) -> {
+                    Arrays.fill(seenRolls, false);
+
+                    // Exclusive best.
+                    if (rollMoves.size() == 1) {
+                        RollMove rollMove = rollMoves.get(0);
+                        rollExclusivelyBestCounts[rollMove.roll].incrementAndGet();
+                    }
+
+                    for (RollMove rollMove : rollMoves) {
+                        // We don't want to count when there are two best moves for one roll.
+                        // We just care about the roll being the best or not.
+                        if (seenRolls[rollMove.roll])
+                            continue;
+                        seenRolls[rollMove.roll] = true;
+
+                        // It is the best roll.
+                        bestCounts[rollMove.roll].incrementAndGet();
+
+                        // No moves *and* best.
+                        if (rollMove.move == -2) {
+                            noMoveBestCounts[rollMove.roll].incrementAndGet();
+                            if (rollMove.roll == 1 && noMoveBestCounts[0].get() < 10) {
+                                System.out.println(game);
+                            }
+                        }
+                    }
+                }
+        );
+
+        System.out.println("Roll:");
+        for (int roll = 0; roll <= 4; ++roll) {
+            System.out.println("* roll of " + roll + ":");
+            System.out.println("  - Best in " + bestCounts[roll].get() + " states");
+            System.out.println("  - Exclusively best in " + rollExclusivelyBestCounts[roll].get() + " states");
+            System.out.println("  - Best when no moves in " + noMoveBestCounts[roll].get() + " states");
+        }
+    }
+
+    private static void findEqualMoves() throws IOException {
+        Lut lut = Lut.read(new File("./models/finkel.rgu"));
+        LutAgent agent = new LutAgent(lut);
+        GameSettings settings = GameSettings.FINKEL;
+
+        int pieceCount = settings.getStartingPieceCount() + 1;
+        RuleSet rules = new SimpleRuleSetProvider().create(settings, new GameMetadata());
+
+        FastSimpleFlags flags = new FastSimpleFlags(settings);
+        FastSimpleGame tempGame = new FastSimpleGame(settings);
+
+        AtomicInteger count = new AtomicInteger(0);
+        AtomicInteger states = new AtomicInteger(0);
+
+        flags.loopLightGameStatesAndRolls((game, roll, neighbours) -> {
+            int theStates = states.incrementAndGet();
+            if (theStates % (1000000 * 5) == 0) {
+                System.out.println(
+                        ".. " + (theStates / (1000000 * 5))
+                                + " million states processed (count is " + count.get() + ")"
+                );
+            }
+            if (neighbours.size() <= 1)
+                return;
+
+            double bestWP = -1;
+            double secondBestWP = -1;
+            for (FastSimpleGame neighbour : neighbours) {
+                double wp = lut.getLightWinPercent(neighbour, tempGame);
+                if (wp > bestWP) {
+                    secondBestWP = bestWP;
+                    bestWP = wp;
+                } else if (wp > secondBestWP) {
+                    secondBestWP = wp;
+                }
+            }
+            if (secondBestWP >= 0 && bestWP >= 0) {
+                double delta = bestWP - secondBestWP;
+                if (bestWP == secondBestWP) {
+                    int theCount = count.incrementAndGet();
+                    if (theCount < 10) {
+                        System.out.printf("roll = %d, delta = %.5f\nstate =\n%s\n", roll, delta, game.toString());
+                    }
+                }
+            }
+        });
+
+        System.out.println(
+                states.get() + " state/roll combos processed, and count is " + count.get()
+        );
+    }
+
+    public static void printHelp() {
+        System.err.println("Stats Usage:");
+        System.err.println("* stats count");
+        System.err.println("* stats simulate");
+        System.err.println("* stats rolls");
+    }
+
+    public static CLIHandler routeRequest(CLI cli) throws IOException {
+        if (!cli.hasNext()) {
+            return () -> {
+                printHelp();
+                System.exit(1);
+            };
+        }
+
+        String command = cli.next();
+
+        if ("count".equalsIgnoreCase(command)) {
+            return RGUStatistics::countStates;
+        }
+        // TODO : Add lut sub-command with tools to find equal moves, analyse rolls.
+        // TODO : Add sub-command to simulate games.
+
+        return () -> {
+            System.err.println("Unknown lut sub-command: " + command);
+            printHelp();
+            System.exit(1);
+        };
     }
 }

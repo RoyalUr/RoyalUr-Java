@@ -129,11 +129,6 @@
             <message key="import.illegal" value="math is deprecated, use math3 instead."/>
         </module>
         <module name="IllegalImport">
-            <property name="id" value="BanLoggingImplementations"/>
-            <property name="illegalPkgs" value="org.apache.log4j, org.apache.logging.log4j, java.util.logging, ch.qos.logback"/>
-            <message key="import.illegal" value="Use SLF4J instead of a logging framework directly."/>
-        </module>
-        <module name="IllegalImport">
             <property name="illegalClasses" value="com.google.common.base.Optional, com.google.common.base.Supplier"/>
             <message key="import.illegal" value="Use the Java8 version of Guava objects."/>
         </module>

@@ -70,4 +70,22 @@ public abstract class ValueBuffer {
     public void readContents(DataSource input) throws IOException {
         readContents(input, 0, capacity);
     }
+
+    public ValueBuffer convertTo(ValueType valueType) {
+        // Already the correct type, no conversion needed.
+        if (getType() == valueType)
+            return this;
+
+        int capacity = getCapacity();
+        ValueBuffer newBuffer = valueType.createBuffer(capacity);
+        boolean bothIntbuffers = (valueType.isInt() && getType().isInt());
+        for (int index = 0; index < capacity; ++index) {
+            if (bothIntbuffers) {
+                newBuffer.set(index, getLong(index));
+            } else {
+                newBuffer.set(index, getDouble(index));
+            }
+        }
+        return newBuffer;
+    }
 }

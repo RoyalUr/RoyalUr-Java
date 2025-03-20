@@ -1,7 +1,6 @@
 package net.royalur.lut;
 
-import net.royalur.lut.buffer.Float32ValueBuffer;
-import net.royalur.lut.buffer.UInt32ValueBuffer;
+import net.royalur.lut.buffer.*;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
 import net.royalur.model.*;
@@ -11,6 +10,7 @@ import net.royalur.rules.simple.fast.FastSimpleGame;
 import net.royalur.rules.simple.fast.FastSimpleMoveList;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,16 +25,19 @@ public class LutTrainer {
 
     private final GameSettings settings;
     private final GameStateEncoding encoding;
+    private final ValueType trainingValueType;
     private final JsonNotation jsonNotation;
     private final FastSimpleFlags flags;
 
     public LutTrainer(
             GameSettings settings,
             GameStateEncoding encoding,
+            ValueType trainingValueType,
             JsonNotation jsonNotation
     ) {
         this.settings = settings;
         this.encoding = encoding;
+        this.trainingValueType = trainingValueType;
         this.jsonNotation = jsonNotation;
         this.flags = new FastSimpleFlags(settings);
     }
@@ -63,7 +66,7 @@ public class LutTrainer {
         UInt32ValueBuffer keys = populateKeys(upperKeyFilter);
         int entryCount = keys.getCapacity();
 
-        Float32ValueBuffer values = new Float32ValueBuffer(entryCount);
+        FloatValueBuffer values = trainingValueType.createFloatBuffer(entryCount);
         LutMap map = new LutMap(entryCount, keys, values);
 
         flags.loopLightGameStates(game -> {
@@ -76,8 +79,7 @@ public class LutTrainer {
             if (upperKey != upperKeyFilter)
                 return;
 
-            // TODO : CHANGE BACK
-            float value = (game.isFinished ? 100.0f : 0.0f); //50.0f);
+            float value = (game.isFinished ? 100.0f : 50.0f);
             map.set(lowerKey, value);
         });
         return map;
@@ -127,7 +129,7 @@ public class LutTrainer {
     }
 
     public Lut populateNewLut(int upperKeyLimit) {
-        LutMetadata metadata = new LutMetadata(settings);
+        LutMetadata metadata = new LutMetadata(settings, trainingValueType);
         LutMap[] maps = populateNewMaps(upperKeyLimit);
         return new Lut(encoding, metadata, maps);
     }
@@ -263,23 +265,41 @@ public class LutTrainer {
 
     public void train(
             Lut lut,
-            File checkpointFile
+            File checkpointFile,
+            ValueType outputValueType
     ) throws IOException {
 
-        train(lut, checkpointFile, 0.01d);
+        train(lut, checkpointFile, outputValueType, 0.001d);
     }
 
     public Lut train(
             Lut lut,
             File checkpointFile,
+            ValueType outputValueType,
             double tolerance
     ) throws IOException {
 
         long trainStart = System.nanoTime();
-        lut = lut.copyValuesToFloat32();
+        lut = lut.convertValueTypes(trainingValueType);
+
+        System.out.printf(
+                "Training in %s to a stopping precision of %.12f\n",
+                trainingValueType.getTextID(), tolerance
+        );
+        System.out.printf(
+                "Checkpoints will be saved to %s\n",
+                checkpointFile.getAbsolutePath()
+        );
+        System.out.printf(
+                "The final output will be saved in %s\n",
+                outputValueType.getTextID()
+        );
+        System.out.println();
 
         int iteration = 0;
         int pieceCount = settings.getStartingPieceCount();
+        double overallMaxChange = 0.0;
+
         for (int minScore = pieceCount - 1; minScore >= 0; --minScore) {
             for (int maxScore = pieceCount - 1; maxScore >= minScore; --maxScore) {
 
@@ -292,25 +312,69 @@ public class LutTrainer {
                 };
                 int stateCount = flags.countStates(stateFilter);
 
+                long overallStart = System.nanoTime();
+
                 double maxChange;
+                double[] lastMaxChanges = new double[10];
+                Arrays.fill(lastMaxChanges, Double.POSITIVE_INFINITY);
                 do {
                     long start = System.nanoTime();
                     maxChange = performTrainingIteration(lut, stateCount, stateFilter);
                     double durationMs = (System.nanoTime() - start) / 1e6;
                     System.out.printf(
-                            "%d. scores = [%d, %d], max diff = %.3f (%s ms)\n",
+                            "%d. scores = [%d, %d], max diff = %s (%s ms)\n",
                             iteration + 1,
                             minScore, maxScore,
-                            maxChange,
+                            formatMaxDiff(maxChange),
                             LutCLI.MS_DURATION.format(durationMs)
                     );
                     iteration += 1;
 
-                    if (iteration % 10 == 0) {
-                        lut.write(jsonNotation, checkpointFile);
+                    if (Double.isNaN(maxChange) || Double.isInfinite(maxChange)) {
+                        throw new IllegalStateException(
+                                "max diff is NaN or Infinite, which is a big problem: " + maxChange
+                        );
                     }
-                } while (maxChange > tolerance);
+
+                    // Verify that the maxChange has improved recently.
+                    boolean improved = false;
+                    for (int index = 0; index < lastMaxChanges.length; ++index) {
+                        double previousMaxChange = lastMaxChanges[index];
+                        if (index > 0) {
+                            lastMaxChanges[index - 1] = previousMaxChange;
+                        }
+                        improved |= maxChange < previousMaxChange;
+                    }
+                    lastMaxChanges[lastMaxChanges.length - 1] = maxChange;
+                    if (!improved) {
+                        System.err.println(
+                                "Max diff has not improved in " + lastMaxChanges.length + " iterations, "
+                                        + "skipping to next set of scores"
+                        );
+                        break;
+                    }
+
+                    // Save checkpoints periodically.
+                    if (iteration % 10 == 0) {
+                        lut.write(trainingValueType, jsonNotation, checkpointFile);
+                    }
+                } while ((tolerance > 0 && maxChange > tolerance) || (tolerance <= 0 && maxChange > 0));
+
+                double overallDurationMs = (System.nanoTime() - overallStart) / 1e6;
+                System.out.printf(
+                        "Finished scores = [%d, %d], max diff = %s (%s ms)\n\n",
+                        minScore, maxScore,
+                        formatMaxDiff(maxChange),
+                        LutCLI.MS_DURATION.format(overallDurationMs)
+                );
+                if (maxChange > overallMaxChange) {
+                    overallMaxChange = maxChange;
+                }
             }
+        }
+        lut.getMetadata().addMetadata("target-precision", tolerance);
+        if (!Double.isInfinite(overallMaxChange)) {
+            lut.getMetadata().addMetadata("training-precision", overallMaxChange);
         }
 
         double totalDurationMs = (System.nanoTime() - trainStart) / 1e6d;
@@ -321,7 +385,7 @@ public class LutTrainer {
         );
 
         long writeStart = System.nanoTime();
-        lut.write(jsonNotation, checkpointFile);
+        lut.write(outputValueType, jsonNotation, checkpointFile);
         double writeDurationMs = (System.nanoTime() - writeStart) / 1e6;
         System.out.println();
         System.out.printf(
@@ -329,5 +393,17 @@ public class LutTrainer {
                 LutCLI.MS_DURATION.format(writeDurationMs)
         );
         return lut;
+    }
+
+    private static final DecimalFormat MAX_DIFF_FORMAT = new DecimalFormat("0.########E0");
+    private static final String MAX_DIFF_FORMATTED_ZERO = MAX_DIFF_FORMAT.format(0d);
+    private static final DecimalFormat VERY_SMALL_MAX_DIFF_FORMAT = new DecimalFormat("0.###E0");
+
+    private static String formatMaxDiff(double maxDiff) {
+        String value = MAX_DIFF_FORMAT.format(maxDiff);
+        if (!MAX_DIFF_FORMATTED_ZERO.equals(value))
+            return value;
+
+        return VERY_SMALL_MAX_DIFF_FORMAT.format(maxDiff);
     }
 }

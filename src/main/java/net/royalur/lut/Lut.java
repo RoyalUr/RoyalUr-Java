@@ -1,9 +1,6 @@
 package net.royalur.lut;
 
-import net.royalur.lut.buffer.Float32ValueBuffer;
-import net.royalur.lut.buffer.FloatValueBuffer;
-import net.royalur.lut.buffer.Percent16ValueBuffer;
-import net.royalur.lut.buffer.UInt32ValueBuffer;
+import net.royalur.lut.buffer.*;
 import net.royalur.lut.store.DataSource;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.DataSink;
@@ -136,53 +133,54 @@ public class Lut {
         return maps[upperKey].set(lowerKey, winPercent);
     }
 
-    private static Percent16ValueBuffer convertToPercent16(FloatValueBuffer buffer) {
-        if (buffer instanceof Percent16ValueBuffer)
-            return (Percent16ValueBuffer) buffer;
-
-        int capacity = buffer.getCapacity();
-        Percent16ValueBuffer newBuffer = new Percent16ValueBuffer(capacity);
-        for (int index = 0; index < capacity; ++index) {
-            newBuffer.set(index, buffer.getDouble(index));
+    public Lut convertValueTypes(ValueType newValueType) {
+        if (!newValueType.isFloat()) {
+            throw new IllegalArgumentException(
+                    "Only floating-point value types are supported for Lut, not: " + newValueType
+            );
         }
-        return newBuffer;
-    }
 
-    private static Float32ValueBuffer copyAsFloat32(FloatValueBuffer buffer) {
-        int capacity = buffer.getCapacity();
-        Float32ValueBuffer newBuffer = new Float32ValueBuffer(capacity);
-        for (int index = 0; index < capacity; ++index) {
-            newBuffer.set(index, buffer.getDouble(index));
-        }
-        return newBuffer;
-    }
-
-    public Lut copyValuesToFloat32() {
+        LutMetadata newMetadata = metadata.copyWithValueType(newValueType);
         LutMap[] newMaps = new LutMap[maps.length];
         for (int index = 0; index < maps.length; ++index) {
             LutMap oldMap = maps[index];
-            Float32ValueBuffer valueBuffer = copyAsFloat32(oldMap.getValueBuffer());
             newMaps[index] = new LutMap(
-                    oldMap.getEntryCount(), oldMap.getKeyBuffer(), valueBuffer
+                    oldMap.getEntryCount(),
+                    oldMap.getKeyBuffer(),
+                    (FloatValueBuffer) oldMap.getValueBuffer().convertTo(newValueType)
             );
         }
-        return new Lut(encoding, metadata, newMaps);
+        return new Lut(encoding, newMetadata, newMaps);
     }
 
-    public void write(JsonNotation notation, File file) throws IOException {
+    public void write(
+            ValueType outputValueType,
+            JsonNotation notation,
+            File file
+    ) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            write(notation, fos.getChannel());
+            write(outputValueType, notation, fos.getChannel());
         }
     }
 
-    public void write(JsonNotation notation, FileChannel channel) throws IOException {
+    public void write(
+            ValueType outputValueType,
+            JsonNotation notation,
+            FileChannel channel
+    ) throws IOException {
         ByteBuffer outputBuffer = ByteBuffer.allocateDirect(1024 * 1024);
         outputBuffer.order(ByteOrder.BIG_ENDIAN);
         DataSink output = new DataSink.FileDataSink(channel, outputBuffer);
-        write(notation, output);
+        write(outputValueType, notation, output);
     }
 
-    public void write(JsonNotation notation, DataSink output) throws IOException {
+    public void write(
+            ValueType outputValueType,
+            JsonNotation notation,
+            DataSink output
+    ) throws IOException {
+        LutMetadata metadata = this.metadata.copyWithValueType(outputValueType);
+
         output.write(buffer -> {
             buffer.put(MAGIC);
             buffer.put(LATEST_VERSION);
@@ -204,9 +202,8 @@ public class Lut {
             map.getKeyBuffer().writeContents(output);
         }
         for (LutMap map : maps) {
-            FloatValueBuffer buffer = map.getValueBuffer();
-            Percent16ValueBuffer percentBuffer = convertToPercent16(buffer);
-            percentBuffer.writeContents(output);
+            ValueBuffer buffer = map.getValueBuffer();
+            buffer.convertTo(outputValueType).writeContents(output);
         }
     }
 
@@ -271,7 +268,7 @@ public class Lut {
             int entryCount = source.readInt();
             mapEntryCounts[index] = entryCount;
             mapKeyBuffers[index] = new UInt32ValueBuffer(entryCount);
-            mapValueBuffers[index] = new Percent16ValueBuffer(entryCount);
+            mapValueBuffers[index] = metadata.getValueType().createFloatBuffer(entryCount);
         }
         for (int index = 0; index < mapCount; ++index) {
             mapKeyBuffers[index].readContents(source);

@@ -22,6 +22,7 @@ public class GameSettings {
      * The rules used in the YouTube video Tom Scott vs. Irving Finkel.
      */
     public static final GameSettings FINKEL = new GameSettings(
+            "Finkel",
             new StandardBoardShape(),
             new BellPathPair(),
             DiceType.FOUR_BINARY,
@@ -32,9 +33,26 @@ public class GameSettings {
     );
 
     /**
-     * The settings proposed by James Masters.
+     * The Finkel rule set, but with 2 pieces instead of 7.
+     * This can be useful as a quick test rule set that is
+     * much much smaller than the full Finkel rule set.
      */
-    public static final GameSettings OLD_MASTERS = new GameSettings(
+    public static final GameSettings FINKEL_2P = new GameSettings(
+            "Finkel with Two Pieces",
+            new StandardBoardShape(),
+            new BellPathPair(),
+            DiceType.FOUR_BINARY,
+            2,
+            true,
+            true,
+            false
+    );
+
+    /**
+     * The settings proposed by James Masters, but with four dice instead of three.
+     */
+    public static final GameSettings MASTERS_FOUR_DICE = new GameSettings(
+            "Masters with Four Dice",
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.FOUR_BINARY,
@@ -48,6 +66,7 @@ public class GameSettings {
      * The settings proposed by James Masters.
      */
     public static final GameSettings MASTERS = new GameSettings(
+            "Masters",
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.THREE_BINARY_0EQ4,
@@ -61,6 +80,7 @@ public class GameSettings {
      * The settings used for Aseb.
      */
     public static final GameSettings ASEB = new GameSettings(
+            "Aseb",
             new AsebBoardShape(),
             new AsebPathPair(),
             DiceType.FOUR_BINARY,
@@ -74,6 +94,7 @@ public class GameSettings {
      * The settings used for Blitz.
      */
     public static final GameSettings BLITZ = new GameSettings(
+            "Blitz",
             new StandardBoardShape(),
             new MastersPathPair(),
             DiceType.FOUR_BINARY,
@@ -82,6 +103,11 @@ public class GameSettings {
             true,
             true
     );
+
+    /**
+     * An optional name for these settings.
+     */
+    private final @Nullable String name;
 
     /**
      * The shape of the game board.
@@ -122,6 +148,43 @@ public class GameSettings {
 
     /**
      * Instantiates a new set of game settings for the Royal Game of Ur.
+     * @param name An optional name for these settings.
+     * @param boardShape The shape of the game board.
+     * @param paths The paths that each player must take around the board.
+     * @param diceFactory A generator for the dice that should be used to generate dice rolls.
+     * @param startingPieceCount The number of pieces that each player starts with.
+     * @param safeRosettes Whether pieces on rosette tiles are safe from capture.
+     * @param rosettesGrantExtraRolls Whether landing on a rosette grants an extra roll.
+     * @param capturesGrantExtraRolls Whether capturing a piece grants an extra roll.
+     */
+    public GameSettings(
+            @Nullable String name,
+            BoardShape boardShape,
+            PathPair paths,
+            DiceFactory diceFactory,
+            int startingPieceCount,
+            boolean safeRosettes,
+            boolean rosettesGrantExtraRolls,
+            boolean capturesGrantExtraRolls
+    ) {
+        if (startingPieceCount < 1) {
+            throw new IllegalArgumentException(
+                    "startingPieceCount must be at least 1, not: " + startingPieceCount
+            );
+        }
+
+        this.name = name;
+        this.boardShape = boardShape;
+        this.paths = paths;
+        this.diceFactory = diceFactory;
+        this.startingPieceCount = startingPieceCount;
+        this.safeRosettes = safeRosettes;
+        this.rosettesGrantExtraRolls = rosettesGrantExtraRolls;
+        this.capturesGrantExtraRolls = capturesGrantExtraRolls;
+    }
+
+    /**
+     * Instantiates a new set of game settings for the Royal Game of Ur.
      * @param boardShape The shape of the game board.
      * @param paths The paths that each player must take around the board.
      * @param diceFactory A generator for the dice that should be used to generate dice rolls.
@@ -139,19 +202,31 @@ public class GameSettings {
             boolean rosettesGrantExtraRolls,
             boolean capturesGrantExtraRolls
     ) {
-        if (startingPieceCount < 1) {
-            throw new IllegalArgumentException(
-                    "startingPieceCount must be at least 1, not: " + startingPieceCount
-            );
-        }
+        this(
+                null, boardShape, paths, diceFactory,
+                startingPieceCount, safeRosettes,
+                rosettesGrantExtraRolls,
+                capturesGrantExtraRolls
+        );
+    }
 
-        this.boardShape = boardShape;
-        this.paths = paths;
-        this.diceFactory = diceFactory;
-        this.startingPieceCount = startingPieceCount;
-        this.safeRosettes = safeRosettes;
-        this.rosettesGrantExtraRolls = rosettesGrantExtraRolls;
-        this.capturesGrantExtraRolls = capturesGrantExtraRolls;
+    /**
+     * Checks whether these settings have a name.
+     * @return Whether these settings have a name.
+     */
+    public boolean hasName() {
+        return name != null;
+    }
+
+    /**
+     * Gets the name of these settings, if a name is available.
+     * @return The name of these settings.
+     * @throws IllegalStateException if these settings do not have a name.
+     */
+    public String getName() {
+        if (name == null)
+            throw new IllegalStateException("These settings do not have a name");
+        return name;
     }
 
     /**
@@ -344,5 +419,21 @@ public class GameSettings {
                 && safeRosettes == other.safeRosettes
                 && rosettesGrantExtraRolls == other.rosettesGrantExtraRolls
                 && capturesGrantExtraRolls == other.capturesGrantExtraRolls;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        if (hasName()) {
+            builder.append(name);
+        }
+        builder.append("{board=").append(boardShape.getID());
+        builder.append(", path=").append(paths.getID());
+        builder.append(", dice=").append(diceFactory.getID());
+        builder.append(", starting pieces=").append(startingPieceCount);
+        builder.append(", rosettes give extra rolls=").append(rosettesGrantExtraRolls);
+        builder.append(", captures give extra rolls=").append(capturesGrantExtraRolls);
+        builder.append("}");
+        return builder.toString();
     }
 }
