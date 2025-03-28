@@ -4,7 +4,8 @@
 
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
 This includes code to solve the game, and to read that solved game to make a bot play flawlessly.
-[Read more about us solving the game here](https://royalur.net/blog/solved).
+
+[Read more about us solving the game here](https://royalur.net/solved).
 
 ### What is The Royal Game of Ur?
 
