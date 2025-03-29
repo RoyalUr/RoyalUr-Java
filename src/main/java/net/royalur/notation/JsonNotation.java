@@ -101,11 +101,6 @@ public class JsonNotation implements Notation {
     public static final String STATES_KEY = "states";
 
     /**
-     * The key in the JSON for the type of state.
-     */
-    public static final String STATE_TYPE_KEY = "type";
-
-    /**
      * The key in the JSON for the time this state was reached
      * in milliseconds since the start of the game.
      */
@@ -115,6 +110,11 @@ public class JsonNotation implements Notation {
      * The key in the JSON for the metadata of the game.
      */
     public static final String STATE_METADATA_KEY = "metadata";
+
+    /**
+     * The key in the JSON for the type of state.
+     */
+    public static final String STATE_TYPE_KEY = "type";
 
     /**
      * Represents states of type {@link RolledGameState}.

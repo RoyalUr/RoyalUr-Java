@@ -135,6 +135,13 @@ public abstract class GameState {
     }
 
     /**
+     * Removes all metadata from this state.
+     */
+    public void clearMetadata() {
+        metadata.clear();
+    }
+
+    /**
      * Checks whether this state has metadata associated with the given key.
      * @param key The identifier to check for.
      * @return Whether the key exists in the metadata.
