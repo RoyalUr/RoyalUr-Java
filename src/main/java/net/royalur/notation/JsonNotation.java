@@ -24,10 +24,7 @@ import net.royalur.rules.state.*;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A notation that can be used to encode games of the Royal
@@ -51,7 +48,7 @@ public class JsonNotation implements Notation {
     /**
      * The key in the JSON for the metadata of the game.
      */
-    public static final String METADATA_KEY = "metadata";
+    public static final String GAME_METADATA_KEY = "metadata";
 
     /**
      * The key in the JSON for the settings of a game.
@@ -113,6 +110,11 @@ public class JsonNotation implements Notation {
      * in milliseconds since the start of the game.
      */
     public static final String STATE_TIME_KEY = "time";
+
+    /**
+     * The key in the JSON for the metadata of the game.
+     */
+    public static final String STATE_METADATA_KEY = "metadata";
 
     /**
      * Represents states of type {@link RolledGameState}.
@@ -565,12 +567,17 @@ public class JsonNotation implements Notation {
         throw new IllegalArgumentException("Unknown game state type " + state.getClass());
     }
 
+    public void writeStateMetadata() {
+
+    }
+
     public void writeDerivedState(
             JsonGenerator generator,
             GameState state
     ) throws IOException {
         generator.writeStringField(STATE_TYPE_KEY, getStateType(state));
         generator.writeNumberField(STATE_TIME_KEY, state.getTimeSinceGameStartMs());
+        writeMetadata(generator, STATE_METADATA_KEY, state.getMetadata());
 
         if (state instanceof OngoingGameState ongoingState) {
             writeOngoingState(generator, ongoingState);
@@ -658,23 +665,26 @@ public class JsonNotation implements Notation {
 
     public void writeMetadata(
             JsonGenerator generator,
-            GameMetadata metadata
+            String key,
+            Map<String, String> metadata
     ) throws IOException {
 
-        for (Map.Entry<String, String> entry : metadata.getAll().entrySet()) {
-            generator.writeStringField(entry.getKey(), entry.getValue());
+        if (metadata.isEmpty())
+            return;
+
+        generator.writeObjectFieldStart(GAME_METADATA_KEY);
+        try {
+            for (Map.Entry<String, String> entry : metadata.entrySet()) {
+                generator.writeStringField(entry.getKey(), entry.getValue());
+            }
+        } finally {
+            generator.writeEndObject();
         }
     }
 
     public void writeGame(JsonGenerator generator, Game game) throws IOException {
         generator.writeNumberField(VERSION_KEY, LATEST_VERSION);
-
-        generator.writeObjectFieldStart(METADATA_KEY);
-        try {
-            writeMetadata(generator, game.getMetadata());
-        } finally {
-            generator.writeEndObject();
-        }
+        writeMetadata(generator, GAME_METADATA_KEY, game.getMetadata().getAll());
 
         generator.writeObjectFieldStart(SETTINGS_KEY);
         try {
@@ -1023,22 +1033,30 @@ public class JsonNotation implements Notation {
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
         long timeSinceGameStartMs = JsonHelper.readLongWithDefault(json, STATE_TIME_KEY, 0);
+        ObjectNode metadataJson = JsonHelper.readObject(json, STATE_METADATA_KEY);
+        Map<String, String> metadata = readMetadata(metadataJson);
 
+        GameState state;
         if (isOngoingState(stateType)) {
-            return readOngoingState(
+            state = readOngoingState(
                     rules, timeSinceGameStartMs, stateSource, json, stateType
             );
         } else if (isControlState(stateType)) {
-            return readControlState(
+            state = readControlState(
                     rules, timeSinceGameStartMs, stateSource, json, stateType
             );
         } else if (stateType.equals(STATE_TYPE_END)) {
-            return readEndState(
+            state = readEndState(
                     rules, timeSinceGameStartMs, stateSource, json
             );
         } else {
             throw new JsonHelper.JsonReadError("Unknown state type: " + stateType);
         }
+
+        if (!metadata.isEmpty()) {
+            state.addMetadata(metadata);
+        }
+        return state;
     }
 
     public GameState readCompleteState(
@@ -1114,8 +1132,8 @@ public class JsonNotation implements Notation {
         );
     }
 
-    public GameMetadata readMetadata(ObjectNode json) {
-        GameMetadata metadata = new GameMetadata();
+    public Map<String, String> readMetadata(ObjectNode json) {
+        Map<String, String> metadata = new HashMap<>();
         Iterator<String> fieldIterator = json.fieldNames();
         while (fieldIterator.hasNext()) {
             String key = fieldIterator.next();
@@ -1126,8 +1144,8 @@ public class JsonNotation implements Notation {
     }
 
     public Game readGameV1Or2(ObjectNode json) {
-        ObjectNode metadataJson = JsonHelper.readObject(json, METADATA_KEY);
-        GameMetadata metadata = readMetadata(metadataJson);
+        ObjectNode metadataJson = JsonHelper.readObject(json, GAME_METADATA_KEY);
+        GameMetadata metadata = new GameMetadata(readMetadata(metadataJson));
 
         ObjectNode settingsJson = JsonHelper.readObject(json, SETTINGS_KEY);
         GameSettings settings = readGameSettings(settingsJson);

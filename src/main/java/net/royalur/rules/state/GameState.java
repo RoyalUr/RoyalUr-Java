@@ -3,6 +3,8 @@ package net.royalur.rules.state;
 import net.royalur.model.*;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A game state represents a single point within a game.
@@ -31,6 +33,11 @@ public abstract class GameState {
     private final long timeSinceGameStartMs;
 
     /**
+     * Additional miscellaneous metadata about this state.
+     */
+    private final Map<String, String> metadata = new HashMap<>();
+
+    /**
      * Instantiates a game state.
      * @param board The state of the pieces on the board.
      * @param lightPlayer The state of the light player.
@@ -48,7 +55,7 @@ public abstract class GameState {
         if (darkPlayer.getPlayer() != PlayerType.DARK)
             throw new IllegalArgumentException("darkPlayer should be a Player.DARK, not " + darkPlayer.getPlayer());
         if (timeSinceGameStartMs < 0)
-            throw new IllegalArgumentException("secondsSinceGameStart must be >= 0");
+            throw new IllegalArgumentException("timeSinceGameStartMs must be >= 0");
 
         this.board = board;
         this.lightPlayer = lightPlayer;
@@ -99,6 +106,58 @@ public abstract class GameState {
      */
     public long getTimeSinceGameStartMs() {
         return timeSinceGameStartMs;
+    }
+
+    /**
+     * Add a piece of metadata to this state.
+     * @param key The identifier for the metadata to add.
+     * @param value The value associated with the key.
+     */
+    public void addMetadata(String key, String value) {
+        metadata.put(key, value);
+    }
+
+    /**
+     * Adds many pieces of metadata to this state.
+     * @param entries The pieces of metadata to add.
+     */
+    public void addMetadata(Map<String, String> entries) {
+        metadata.putAll(entries);
+    }
+
+    /**
+     * Removes a piece of metadata from this state.
+     * @param key The identifier for the metadata to remove.
+     * @return The value that was associated with the key, or null if none existed.
+     */
+    public String removeMetadata(String key) {
+        return metadata.remove(key);
+    }
+
+    /**
+     * Checks whether this state has metadata associated with the given key.
+     * @param key The identifier to check for.
+     * @return Whether the key exists in the metadata.
+     */
+    public boolean hasMetadata(String key) {
+        return metadata.containsKey(key);
+    }
+
+    /**
+     * Retrieves the value of a specific metadata entry.
+     * @param key The identifier of the metadata to retrieve.
+     * @return The value associated with the key, or null if none exists.
+     */
+    public String getMetadata(String key) {
+        return metadata.get(key);
+    }
+
+    /**
+     * Gets the metadata associated with this state.
+     * @return The metadata associated with this state.
+     */
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
     /**

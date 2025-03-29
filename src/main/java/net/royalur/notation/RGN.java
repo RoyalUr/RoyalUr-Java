@@ -99,8 +99,29 @@ public class RGN implements Notation {
      * @return The escaped version of {@code value}.
      */
     public static String escape(String value) {
+        char[] chars = value.toCharArray();
+
+        // Check if we need to escape the value.
+        boolean needsEscaping = (chars.length == 0);
+        for (int index = 0; index < chars.length; index++) {
+            char ch = chars[index];
+            // First letter must be a letter to be left unescaped.
+            if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
+                continue;
+
+            // Remaining characters can be digits, underscores, periods, or dashes.
+            if (index > 0 && ((ch >= '0' && ch <= '9') || ch == '_' || ch == '.' || ch == '-'))
+                continue;
+
+            needsEscaping = true;
+            break;
+        }
+        if (!needsEscaping)
+            return value;
+
+        // Escape the value.
         StringBuilder builder = new StringBuilder("\"");
-        for (char ch : value.toCharArray()) {
+        for (char ch : chars) {
             if (ch == '"') {
                 builder.append("\\\"");
             } else if (ch == '\\') {
@@ -190,10 +211,10 @@ public class RGN implements Notation {
     public String encodeGame(Game game) {
         StringBuilder builder = new StringBuilder();
 
-        // Encode the metadata.
+        // Encode the game metadata.
         for (Map.Entry<String, String> item : game.getMetadata().getAll().entrySet()) {
             builder.append("[")
-                    .append(item.getKey())
+                    .append(escape(item.getKey()))
                     .append(" ")
                     .append(escape(item.getValue()))
                     .append("]\n");
