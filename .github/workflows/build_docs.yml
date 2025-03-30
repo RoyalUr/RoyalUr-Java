@@ -22,14 +22,11 @@ jobs:
       - name: Build the JavaDocs
         run: mvn org.apache.maven.plugins:maven-javadoc-plugin:javadoc -Prelease
 
-      - name: Ls
-        run: ls target && ls
-
       - name: Copy the Documentation
         run: rsync -a docs/ target/site/
 
       - name: Copy the JavaDocs
-        run: rsync -a target/apidocs/ target/site/apidocs/
+        run: rsync -a target/reports/apidocs/ target/site/apidocs/
 
       - name: Transfer Documentation to royalur.github.io
         uses: cpina/github-action-push-to-another-repository@v1.7.2
