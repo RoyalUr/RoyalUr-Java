@@ -5,7 +5,6 @@ import net.royalur.model.dice.Dice;
 import net.royalur.model.dice.Roll;
 import net.royalur.model.path.PathPair;
 import net.royalur.rules.RuleSet;
-import net.royalur.rules.TimeProvider;
 import net.royalur.rules.simple.SimpleRuleSetProvider;
 import net.royalur.rules.state.*;
 
@@ -18,7 +17,7 @@ import java.util.*;
  * A game of the Royal Game of Ur. Provides methods to allow the playing of games,
  * and methods to support the retrieval of history about the moves that were made.
  */
-public class Game implements TimeProvider {
+public class Game {
 
     /**
      * The set of rules that are being used for this game.
@@ -82,6 +81,14 @@ public class Game implements TimeProvider {
     protected Game(Game game) {
         this(game.rules, game.metadata.copy(), game.states);
         dice.copyFrom(game.dice);
+    }
+
+    /**
+     * Instantiates a new game of the Royal Game of Ur that is timed.
+     * @param rules The rules of the game.
+     */
+    public static Game createTimed(RuleSet rules) {
+        return new Game(rules);
     }
 
     /**
@@ -155,12 +162,19 @@ public class Game implements TimeProvider {
         return metadata;
     }
 
-    @Override
+    /**
+     * Checks whether this game has a start time and move times are recorded.
+     * @return Whether this game has a start time and move times are recorded.
+     */
     public boolean isTimed() {
         return metadata.hasStartTime();
     }
 
-    @Override
+    /**
+     * Gets the start time of the game in milliseconds since the epoch.
+     * If this game is untimed, {@code 0} will be returned instead.
+     * @return The start time of the game in milliseconds since the epoch.
+     */
     public long getGameStartEpochMs() {
         ZonedDateTime startTime = metadata.getStartTime();
         if (startTime == null)
@@ -169,7 +183,10 @@ public class Game implements TimeProvider {
         return Instant.from(startTime).toEpochMilli();
     }
 
-    @Override
+    /**
+     * Gets the number of milliseconds elapsed since the start of the game.
+     * @return The number of milliseconds elapsed since the start of the game.
+     */
     public long getTimeSinceGameStartMs() {
         long gameStartEpochMs = getGameStartEpochMs();
         if (gameStartEpochMs == 0)

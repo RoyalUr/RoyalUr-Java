@@ -567,10 +567,6 @@ public class JsonNotation implements Notation {
         throw new IllegalArgumentException("Unknown game state type " + state.getClass());
     }
 
-    public void writeStateMetadata() {
-
-    }
-
     public void writeDerivedState(
             JsonGenerator generator,
             GameState state
