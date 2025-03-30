@@ -101,14 +101,55 @@ public class LutCLI {
         Files.move(checkpointFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
+    public static void printTrainHelp() {
+        System.err.println("LUT Train Usage:");
+        System.err.println("* lut train");
+        System.err.println("  --output (required):");
+        System.err.println("      Path to final output file");
+        System.err.println("  --settings:");
+        System.err.println("      Game settings (default finkel)");
+        System.err.println("  --checkpoint:");
+        System.err.println("      Path to checkpoint file (default <output>.checkpoint.rgu)");
+        System.err.println("  --input:");
+        System.err.println("      Path to input file to train from");
+        System.err.println("      (default read from checkpoint, or else start from scratch)");
+        System.err.println("  --precision:");
+        System.err.println("      The stopping precision to train to (default 0.0001)");
+        System.err.println("  --training-value-type:");
+        System.err.println("      Value type to use while training (default f32)");
+        System.err.println("  --output-value-type:");
+        System.err.println("      Value type to save the final output using (default percent16)");
+        System.err.println("  --author:");
+        System.err.println("      Include metadata about who trained the model");
+        System.err.println("  --help:");
+        System.err.println("      Show this help documentation");
+    }
+
     public static CLIHandler handleTrain(CLI cli) {
+        if (cli.readKeywordPresenceIsTrue("help")) {
+            cli.clear();
+            return () -> {
+                printTrainHelp();
+                System.exit(1);
+            };
+        }
+
         GameSettings settings = cli.readKeywordMap(
                 "settings", CLIConstants.SETTINGS_BY_CLI_NAME, GameSettings.FINKEL
         );
         String settingsCLIName = CLIConstants.getCLIName(settings);
         File outputFile = cli.readKeywordFile(
-                "output", new File("./models/" + settingsCLIName + ".rgu")
+                "output", null
         );
+        if (outputFile == null) {
+            cli.clear();
+            return () -> {
+                System.err.println("Missing --output");
+                printTrainHelp();
+                System.exit(1);
+            };
+        }
+
         File inputFile = cli.readKeywordFile(
                 "input", null
         );
@@ -201,23 +242,6 @@ public class LutCLI {
         System.err.println("LUT Usage:");
         System.err.println("* lut read [file] - Read metadata from a solved map");
         System.err.println("* lut train - Train a solved map");
-        System.err.println("  --settings:");
-        System.err.println("      Game settings (default finkel)");
-        System.err.println("  --output:");
-        System.err.println("      Path to final output file (default models/<settings>.rgu)");
-        System.err.println("  --checkpoint:");
-        System.err.println("      Path to checkpoint file (default <output>.checkpoint.rgu)");
-        System.err.println("  --input:");
-        System.err.println("      Path to input file to train from");
-        System.err.println("      (default read from checkpoint, or else start from scratch)");
-        System.err.println("  --precision:");
-        System.err.println("      The stopping precision to train to (default 0.0001)");
-        System.err.println("  --training-value-type:");
-        System.err.println("      Value type to use while training (default f32)");
-        System.err.println("  --output-value-type:");
-        System.err.println("      Value type to save the final output using (default percent16)");
-        System.err.println("  --author:");
-        System.err.println("      Include metadata about who trained the model");
     }
 
     public static CLIHandler routeRequest(CLI cli) throws IOException {

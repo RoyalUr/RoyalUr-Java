@@ -68,8 +68,25 @@ public class CLI {
         return parseExistingDirectory(next());
     }
 
+    private void assertNotEmpty(String keyword, String value) {
+        if (value.isEmpty())
+            throw new CLIException("Value of --" + keyword + " is empty, expected --" + keyword + "=value");
+    }
+
+    public boolean readKeywordPresenceIsTrue(String keyword) {
+        return remainingKeywordArgs.remove(keyword) != null;
+    }
+
     public @Nullable String readKeywordOrNull(String keyword) {
         return remainingKeywordArgs.remove(keyword);
+    }
+
+    public @Nullable String readNonEmptyKeywordOrNull(String keyword) {
+        String value = remainingKeywordArgs.remove(keyword);
+        if (value != null) {
+            assertNotEmpty(keyword, value);
+        }
+        return value;
     }
 
     public String readKeyword(String keyword, String defaultValue) {
@@ -78,7 +95,7 @@ public class CLI {
     }
 
     public <T> T readKeywordMap(String keyword, Map<String, T> map, T defaultValue) {
-        String valueKey = readKeywordOrNull(keyword);
+        String valueKey = readNonEmptyKeywordOrNull(keyword);
         if (valueKey == null)
             return defaultValue;
 
@@ -90,22 +107,22 @@ public class CLI {
     }
 
     public double readKeywordDouble(String keyword, double defaultValue) {
-        String value = readKeywordOrNull(keyword);
+        String value = readNonEmptyKeywordOrNull(keyword);
         return (value != null ? Double.parseDouble(value) : defaultValue);
     }
 
     public File readKeywordFile(String keyword, File defaultValue) {
-        String value = readKeywordOrNull(keyword);
+        String value = readNonEmptyKeywordOrNull(keyword);
         return (value != null ? new File(value) : defaultValue);
     }
 
     public File readKeywordExistingFile(String keyword, File defaultValue) {
-        String value = readKeywordOrNull(keyword);
+        String value = readNonEmptyKeywordOrNull(keyword);
         return (value != null ? parseExistingFile(value) : defaultValue);
     }
 
     public File readKeywordExistingDirectory(String keyword, File defaultValue) {
-        String value = readKeywordOrNull(keyword);
+        String value = readNonEmptyKeywordOrNull(keyword);
         return (value != null ? parseExistingDirectory(value) : defaultValue);
     }
 
