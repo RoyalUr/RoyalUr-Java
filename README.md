@@ -5,7 +5,7 @@
 This library provides a Java API for the play and analysis of games of **The Royal Game of Ur**!
 This includes code to solve the game, and to read that solved game to make a bot play flawlessly.
 
-[Read more about us solving the game here](https://royalur.net/solved).
+[Read more about us solving the game here.](https://royalur.net/solved)
 
 ### What is The Royal Game of Ur?
 
@@ -45,7 +45,26 @@ You can manually install from the source code by running
 `mvn install` in the root directory of the source code.
 
 
-# 🚀 Example
+# 📖 CLI Usage
+
+The CLI provides commands to strongly solve the game by training new
+look-up tables (luts), commands to read metadata and gather statistics
+about previously generated luts, and to generate statistics about
+the game.
+
+You can invoke the CLI using `java -jar target/royalur-VERSION.jar`.
+
+```
+RoyalUr-Java CLI Usage:
+* lut - Commands for generating and managing solved game lookup tables (luts)
+    lut train: Generate a new solved game lookup-table, or refine an existing one
+    lut read [file]: Read metadata about an existing solved game lookup-table
+* stats - Commands to calculate game statistics
+    stats count [rulesets]: Count the number of states in rule sets
+```
+
+
+# 🚀 API Example
 
 The following is a small example that shows the basics of creating
 a game, autonomously playing through it by making random moves,
