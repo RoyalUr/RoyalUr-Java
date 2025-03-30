@@ -1,8 +1,11 @@
 package net.royalur.cli;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Parses CLI arguments.
@@ -13,6 +16,7 @@ public class CLI {
     private int positionalArgsIndex = 0;
 
     private final Map<String, String> remainingKeywordArgs;
+    private @Nullable Consumer<PrintStream> help;
 
     public CLI(String[] positionalArgs, Map<String, String> keywordArgs) {
         this.positionalArgs = positionalArgs;
@@ -45,13 +49,27 @@ public class CLI {
         return new CLI(positionalArgs.toArray(new String[0]), keywordArgs);
     }
 
+    /**
+     * As sub-commands are routed, they can update the help that is displayed
+     * when an error occurs.
+     */
+    public void setHelp(@Nonnull Consumer<PrintStream> help) {
+        this.help = help;
+    }
+
+    public void printHelp(PrintStream out) {
+        if (help != null) {
+            help.accept(out);
+        }
+    }
+
     public boolean hasNext() {
         return positionalArgsIndex < positionalArgs.length;
     }
 
     public String next() {
         if (positionalArgsIndex >= positionalArgs.length)
-            throw new IllegalStateException("No positional args remaining");
+            throw new CLINoRemainingArgumentsException();
 
         return positionalArgs[positionalArgsIndex++];
     }
@@ -69,11 +87,14 @@ public class CLI {
     }
 
     private void assertNotEmpty(String keyword, String value) {
-        if (value.isEmpty())
-            throw new CLIException("Value of --" + keyword + " is empty, expected --" + keyword + "=value");
+        if (value.isEmpty()) {
+            throw new CLIArgumentException(
+                    "Value of --" + keyword + " is empty, expected --" + keyword + "=value"
+            );
+        }
     }
 
-    public boolean readKeywordPresenceIsTrue(String keyword) {
+    public boolean readKeywordIsPresent(String keyword) {
         return remainingKeywordArgs.remove(keyword) != null;
     }
 
@@ -101,14 +122,18 @@ public class CLI {
 
         T value = map.get(valueKey);
         if (value == null)
-            throw new CLIException("Unknown " + keyword + " value: " + valueKey);
+            throw new CLIArgumentException("Unknown --" + keyword + " value: " + valueKey);
 
         return value;
     }
 
     public double readKeywordDouble(String keyword, double defaultValue) {
         String value = readNonEmptyKeywordOrNull(keyword);
-        return (value != null ? Double.parseDouble(value) : defaultValue);
+        try {
+            return (value != null ? Double.parseDouble(value) : defaultValue);
+        } catch (NumberFormatException e) {
+            throw new CLIArgumentException("Value of --" + keyword + " is not a valid number");
+        }
     }
 
     public File readKeywordFile(String keyword, File defaultValue) {
@@ -133,13 +158,13 @@ public class CLI {
 
     public void expectEmpty() {
         if (positionalArgsIndex < positionalArgs.length) {
-            throw new CLIException(
+            throw new CLIBadCommandException(
                     "Unrecognised positional args: "
                     + List.of(Arrays.copyOf(positionalArgs, positionalArgsIndex))
             );
         }
         if (!remainingKeywordArgs.isEmpty()) {
-            throw new CLIException(
+            throw new CLIBadCommandException(
                     "Unrecognised keyword args: "
                     + List.copyOf(remainingKeywordArgs.keySet())
             );
@@ -149,9 +174,9 @@ public class CLI {
     private static File parseExistingFile(String filename) {
         File file = new File(filename);
         if (!file.exists())
-            throw new CLIException("File does not exist: " + filename);
+            throw new CLIArgumentException("File does not exist: " + filename);
         if (!file.isFile())
-            throw new CLIException("Not a file: " + filename);
+            throw new CLIArgumentException("Not a file: " + filename);
 
         return file;
     }
@@ -159,9 +184,9 @@ public class CLI {
     private static File parseExistingDirectory(String filename) {
         File file = new File(filename);
         if (!file.exists())
-            throw new CLIException("File does not exist: " + filename);
+            throw new CLIArgumentException("File does not exist: " + filename);
         if (!file.isDirectory())
-            throw new CLIException("Not a directory: " + filename);
+            throw new CLIArgumentException("Not a directory: " + filename);
 
         return file;
     }

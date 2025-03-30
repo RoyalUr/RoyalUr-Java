@@ -1,13 +1,11 @@
 package net.royalur.lut;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import net.royalur.cli.CLIConstants;
+import net.royalur.cli.*;
 import net.royalur.lut.buffer.ValueType;
 import net.royalur.model.GameSettings;
 import net.royalur.notation.JsonNotation;
 import net.royalur.rules.simple.fast.FastSimpleFlags;
-import net.royalur.cli.CLI;
-import net.royalur.cli.CLIHandler;
 import net.royalur.util.FileUtils;
 
 import javax.annotation.Nullable;
@@ -101,39 +99,30 @@ public class LutCLI {
         Files.move(checkpointFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    public static void printTrainHelp() {
-        System.err.println("LUT Train Usage:");
-        System.err.println("* lut train");
-        System.err.println("  --output (required):");
-        System.err.println("      Path to final output file");
-        System.err.println("  --settings:");
-        System.err.println("      Game settings (default finkel)");
-        System.err.println("  --checkpoint:");
-        System.err.println("      Path to checkpoint file (default <output>.checkpoint.rgu)");
-        System.err.println("  --input:");
-        System.err.println("      Path to input file to train from");
-        System.err.println("      (default read from checkpoint, or else start from scratch)");
-        System.err.println("  --precision:");
-        System.err.println("      The stopping precision to train to (default 0.0001)");
-        System.err.println("  --training-value-type:");
-        System.err.println("      Value type to use while training (default f32)");
-        System.err.println("  --output-value-type:");
-        System.err.println("      Value type to save the final output using (default percent16)");
-        System.err.println("  --author:");
-        System.err.println("      Include metadata about who trained the model");
-        System.err.println("  --help:");
-        System.err.println("      Show this help documentation");
+    public static void printTrainHelp(PrintStream out) {
+        out.println("LUT Train Usage:");
+        out.println("* lut train");
+        out.println("  --output (required):");
+        out.println("      Path to final output file");
+        out.println("  --settings:");
+        out.println("      Game settings (default finkel)");
+        out.println("  --checkpoint:");
+        out.println("      Path to checkpoint file (default <output>.checkpoint.rgu)");
+        out.println("  --input:");
+        out.println("      Path to input file to train from");
+        out.println("      (default read from checkpoint, or else start from scratch)");
+        out.println("  --precision:");
+        out.println("      The stopping precision to train to (default 0.0001)");
+        out.println("  --training-value-type:");
+        out.println("      Value type to use while training (default f32)");
+        out.println("  --output-value-type:");
+        out.println("      Value type to save the final output using (default percent16)");
+        out.println("  --author:");
+        out.println("      Include metadata about who trained the model");
     }
 
-    public static CLIHandler handleTrain(CLI cli) {
-        if (cli.readKeywordPresenceIsTrue("help")) {
-            cli.clear();
-            return () -> {
-                printTrainHelp();
-                System.exit(1);
-            };
-        }
-
+    public static @Nullable CLIHandler handleTrain(CLI cli) {
+        cli.setHelp(LutCLI::printTrainHelp);
         GameSettings settings = cli.readKeywordMap(
                 "settings", CLIConstants.SETTINGS_BY_CLI_NAME, GameSettings.FINKEL
         );
@@ -141,14 +130,8 @@ public class LutCLI {
         File outputFile = cli.readKeywordFile(
                 "output", null
         );
-        if (outputFile == null) {
-            cli.clear();
-            return () -> {
-                System.err.println("Missing --output");
-                printTrainHelp();
-                System.exit(1);
-            };
-        }
+        if (outputFile == null)
+            throw new CLIBadCommandException("Missing --output");
 
         File inputFile = cli.readKeywordFile(
                 "input", null
@@ -166,13 +149,8 @@ public class LutCLI {
         String author = cli.readKeywordOrNull("author");
 
         File outputDir = outputFile.getParentFile();
-        if (!outputDir.exists() || !outputDir.isDirectory()) {
-            cli.clear();
-            return () -> {
-                System.err.println("Output directory does not exist: " + outputDir);
-                System.exit(1);
-            };
-        }
+        if (!outputDir.exists() || !outputDir.isDirectory())
+            throw new CLIArgumentException("Output directory does not exist: " + outputDir);
 
         File readFromFile;
         if (inputFile == null && checkpointFile.exists()) {
@@ -203,15 +181,15 @@ public class LutCLI {
         };
     }
 
-    public static CLIHandler handleRead(CLI cli) {
-        if (!cli.hasNext()) {
-            cli.clear();
-            return () -> {
-                System.err.println("Missing the LUT file to load");
-                printHelp();
-                System.exit(1);
-            };
-        }
+    public static void printReadHelp(PrintStream out) {
+        out.println("LUT Read Usage:");
+        out.println("* lut read [file] - Read metadata from a solved map");
+    }
+
+    public static @Nullable CLIHandler handleRead(CLI cli) {
+        cli.setHelp(LutCLI::printReadHelp);
+        if (!cli.hasNext())
+            return null;
 
         File file = cli.nextExistingFile();
         return () -> {
@@ -238,35 +216,23 @@ public class LutCLI {
         };
     }
 
-    public static void printHelp() {
-        System.err.println("LUT Usage:");
-        System.err.println("* lut read [file] - Read metadata from a solved map");
-        System.err.println("* lut train - Train a solved map");
+    public static void printHelp(PrintStream out) {
+        out.println("LUT Usage:");
+        out.println("* lut read [file] - Read metadata from a solved map");
+        out.println("* lut train - Train a solved map");
     }
 
-    public static CLIHandler routeRequest(CLI cli) throws IOException {
-        if (!cli.hasNext()) {
-            cli.clear();
-            return () -> {
-                printHelp();
-                System.exit(1);
-            };
-        }
+    public static @Nullable CLIHandler routeCLIRequest(CLI cli) throws IOException {
+        cli.setHelp(LutCLI::printHelp);
+        if (!cli.hasNext())
+            return null;
 
         String command = cli.next();
-
-        if ("train".equalsIgnoreCase(command)) {
+        if ("train".equalsIgnoreCase(command))
             return handleTrain(cli);
-
-        } else if ("read".equalsIgnoreCase(command)) {
+        if ("read".equalsIgnoreCase(command))
             return handleRead(cli);
-        }
 
-        cli.clear();
-        return () -> {
-            System.err.println("Unknown lut command: " + command);
-            printHelp();
-            System.exit(1);
-        };
+        throw new CLIBadCommandException("Unknown lut command: " + command);
     }
 }
