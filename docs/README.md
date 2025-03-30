@@ -9,7 +9,26 @@ here as this API is developed.
 * [JavaDocs](apidocs)
 
 
-## 🚀 Example
+# 📖 CLI Usage
+
+The CLI provides commands to strongly solve the game by training new
+look-up tables (luts), commands to read metadata and gather statistics
+about previously generated luts, and to generate statistics about
+the game.
+
+You can invoke the CLI using `java -jar target/royalur-VERSION.jar`.
+
+```
+RoyalUr-Java CLI Usage:
+* lut - Commands for generating and managing solved game lookup tables (luts)
+    lut train: Generate a new solved game lookup-table, or refine an existing one
+    lut read [file]: Read metadata about an existing solved game lookup-table
+* stats - Commands to calculate game statistics
+    stats count [rulesets]: Count the number of states in rule sets
+```
+
+
+# 🚀 API Example
 
 The following is a small example that shows the basics of creating
 a game, autonomously playing through it by making random moves,
@@ -23,7 +42,7 @@ Game game = Game.createFinkel();
 Random rand = new Random();
 
 while (!game.isFinished()) {
-    String turnPlayerName = game.getTurn().getTextName();
+    String turnPlayerName = game.getTurn().getName();
 
     if (game.isWaitingForRoll()) {
         // Roll the dice!
@@ -33,13 +52,13 @@ while (!game.isFinished()) {
         // Make a random move.
         List<Move> moves = game.findAvailableMoves();
         Move randomMove = moves.get(rand.nextInt(moves.size()));
-        game.makeMove(randomMove);
+        game.move(randomMove);
         System.out.println(turnPlayerName + ": " + randomMove.describe());
     }
 }
 
 // Report the winner!
-System.out.println("\n" + game.getWinner().getTextName() + " won the game!");
+System.out.println("\n" + game.getWinner().getName() + " won the game!");
 ```
 
 Here is a snippet from the end of the output from running
