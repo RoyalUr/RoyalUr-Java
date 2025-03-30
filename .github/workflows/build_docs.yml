@@ -25,6 +25,9 @@ jobs:
       - name: Copy the Documentation
         run: rsync -a docs/ target/site/
 
+      - name: Copy the JavaDocs
+        run: rsync -a target/apidocs/ target/site/
+
       - name: Transfer Documentation to royalur.github.io
         uses: cpina/github-action-push-to-another-repository@v1.7.2
         env:
