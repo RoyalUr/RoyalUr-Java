@@ -15,9 +15,12 @@ public class Main {
     private Main() {}
 
     public static void printHelp(PrintStream out) {
-        out.println("Usage:");
-        out.println("* lut - Commands related to the solved maps");
+        out.println("RoyalUr-Java CLI Usage:");
+        out.println("* lut - Commands for generating and managing solved game lookup tables (luts)");
+        out.println("    lut train: Generate a new solved game lookup-table, or refine an existing one");
+        out.println("    lut read [file]: Read metadata about an existing solved game lookup-table");
         out.println("* stats - Commands to calculate game statistics");
+        out.println("    stats count [rulesets]: Count the number of states in rule sets");
     }
 
     private static @Nullable CLIHandler routeCLIRequest(CLI cli) throws IOException {

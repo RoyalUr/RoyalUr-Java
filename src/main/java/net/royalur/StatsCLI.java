@@ -451,9 +451,9 @@ public class StatsCLI {
 
     public static void printCountHelp(PrintStream out) {
         out.println("Stats Count Usage:");
-        out.println("* stats count [settings]");
-        out.println("    Count the number of states under given game settings");
-        out.println("    (Defaults to list of commonly played rule sets)");
+        out.println("* stats count [rulesets]");
+        out.println("    Count the number of states under given rulesets");
+        out.println("    (Defaults to list of commonly played rulesets)");
     }
 
     public static @Nullable CLIHandler handleCount(CLI cli) {
@@ -463,7 +463,7 @@ public class StatsCLI {
 
     public static void printHelp(PrintStream out) {
         out.println("Stats Usage:");
-        out.println("* stats count [settings] - Count the number of states under given game settings");
+        out.println("* stats count [rulesets] - Count the number of states in rule sets");
     }
 
     public static @Nullable CLIHandler routeCLIRequest(CLI cli) throws IOException {

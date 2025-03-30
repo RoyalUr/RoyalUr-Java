@@ -101,7 +101,7 @@ public class LutCLI {
 
     public static void printTrainHelp(PrintStream out) {
         out.println("LUT Train Usage:");
-        out.println("* lut train");
+        out.println("* lut train - Generate a new solved game lookup-table, or refine an existing one");
         out.println("  --output (required):");
         out.println("      Path to final output file");
         out.println("  --settings:");
@@ -183,7 +183,7 @@ public class LutCLI {
 
     public static void printReadHelp(PrintStream out) {
         out.println("LUT Read Usage:");
-        out.println("* lut read [file] - Read metadata from a solved map");
+        out.println("* lut read [file] - Read metadata about an existing solved game lookup-table");
     }
 
     public static @Nullable CLIHandler handleRead(CLI cli) {
@@ -218,8 +218,8 @@ public class LutCLI {
 
     public static void printHelp(PrintStream out) {
         out.println("LUT Usage:");
-        out.println("* lut read [file] - Read metadata from a solved map");
-        out.println("* lut train - Train a solved map");
+        out.println("* lut read [file] - Read metadata about an existing solved game lookup-table");
+        out.println("* lut train - Generate a new solved game lookup-table, or refine an existing one");
     }
 
     public static @Nullable CLIHandler routeCLIRequest(CLI cli) throws IOException {
