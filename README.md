@@ -54,7 +54,8 @@ look-up tables (luts), commands to read metadata and gather statistics
 about previously generated luts, and to generate statistics about
 the game.
 
-You can invoke the CLI using `java -jar target/royalur-VERSION.jar`.
+You can invoke the CLI using `java -jar target/royalur-VERSION.jar`
+after installation.
 
 ```
 RoyalUr-Java CLI Usage:
