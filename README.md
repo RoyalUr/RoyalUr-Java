@@ -29,6 +29,8 @@ It is currently on display at the British Museum!
 
 * [Read the documentation.](https://royalur.github.io/RoyalUrJava/)
 
+* [Download solved game lookup-tables.](https://huggingface.co/sothatsit/RoyalUrModels)
+
 * Prefer Python to Java? [Check out RoyalUr-Python.](https://github.com/RoyalUr/RoyalUr-Python)
 
 * [Play The Royal Game of Ur on RoyalUr.net.](https://royalur.net/)
