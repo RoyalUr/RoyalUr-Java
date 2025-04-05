@@ -1029,8 +1029,10 @@ public class JsonNotation implements Notation {
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
         long timeSinceGameStartMs = JsonHelper.readLongWithDefault(json, STATE_TIME_KEY, 0);
-        ObjectNode metadataJson = JsonHelper.readObject(json, STATE_METADATA_KEY);
-        Map<String, String> metadata = readMetadata(metadataJson);
+        ObjectNode metadataJson = JsonHelper.readNullableObject(json, STATE_METADATA_KEY);
+        Map<String, String> metadata = (
+                metadataJson != null ? readMetadata(metadataJson) : Collections.emptyMap()
+        );
 
         GameState state;
         if (isOngoingState(stateType)) {
