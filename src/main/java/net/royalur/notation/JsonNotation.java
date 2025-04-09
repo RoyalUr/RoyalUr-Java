@@ -1028,7 +1028,7 @@ public class JsonNotation implements Notation {
             ObjectNode json
     ) {
         String stateType = JsonHelper.readString(json, STATE_TYPE_KEY);
-        long timeSinceGameStartMs = JsonHelper.readLongWithDefault(json, STATE_TIME_KEY, 0);
+        long timeSinceGameStartMs = (long) JsonHelper.readDoubleWithDefault(json, STATE_TIME_KEY, 0);
         ObjectNode metadataJson = JsonHelper.readNullableObject(json, STATE_METADATA_KEY);
         Map<String, String> metadata = (
                 metadataJson != null ? readMetadata(metadataJson) : Collections.emptyMap()
