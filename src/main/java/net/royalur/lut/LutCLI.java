@@ -74,31 +74,6 @@ public class LutCLI {
         }
     }
 
-    public static void trainLut(
-            GameSettings settings,
-            @Nullable Lut lut,
-            File checkpointFile,
-            File outputFile,
-            double precision,
-            ValueType trainingValueType,
-            ValueType outputValueType
-    ) throws IOException {
-        GameStateEncoding encoding = new SimpleGameStateEncoding(settings);
-        JsonNotation jsonNotation = new JsonNotation();
-        LutTrainer trainer = new LutTrainer(settings, encoding, trainingValueType, jsonNotation);
-
-        if (lut == null) {
-            System.out.println("Populating new map...");
-            long populateStart = System.nanoTime();
-            lut = trainer.populateNewLut();
-            double populateDurationMs = (System.nanoTime() - populateStart) / 1e6;
-            System.out.println("Populate took " + MS_DURATION.format(populateDurationMs) + " ms");
-        }
-
-        trainer.train(lut, checkpointFile, outputValueType, precision);
-        Files.move(checkpointFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }
-
     public static void printTrainHelp(PrintStream out) {
         out.println("LUT Train Usage:");
         out.println("* lut train - Generate a new solved game lookup-table, or refine an existing one");
@@ -160,12 +135,22 @@ public class LutCLI {
         }
 
         return () -> {
+            GameStateEncoding encoding = new SimpleGameStateEncoding(settings);
+            JsonNotation jsonNotation = new JsonNotation();
+            LutTrainer trainer = new LutTrainer(settings, encoding, trainingValueType, jsonNotation);
+
             // Read a checkpoint to train from.
             Lut lut = null;
             GameSettings trainSettings = settings;
             if (readFromFile != null) {
                 lut = Lut.read(readFromFile);
                 trainSettings = lut.getMetadata().getGameSettings();
+            } else {
+                System.out.println("Populating new map...");
+                long populateStart = System.nanoTime();
+                lut = trainer.populateNewLut();
+                double populateDurationMs = (System.nanoTime() - populateStart) / 1e6;
+                System.out.println("Populating new map took " + MS_DURATION.format(populateDurationMs) + " ms");
             }
 
             // Set metadata.
@@ -174,10 +159,8 @@ public class LutCLI {
             }
 
             // Train!
-            trainLut(
-                    settings, lut, checkpointFile, outputFile,
-                    precision, trainingValueType, outputValueType
-            );
+            trainer.train(lut, checkpointFile, outputValueType, precision);
+            Files.move(checkpointFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         };
     }
 
