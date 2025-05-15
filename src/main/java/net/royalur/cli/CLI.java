@@ -38,24 +38,57 @@ public class CLI {
         List<String> positionalArgs = new ArrayList<>();
         Map<String, String> keywordArgs = new HashMap<>();
 
-        for (String arg : args) {
-            if (arg.startsWith("--")) {
-                String key;
-                String value;
-                int eqIndex = arg.indexOf("=");
-                if (eqIndex >= 0) {
-                    // Handle --keyword=value.
-                    key = arg.substring(0, eqIndex);
-                    value = arg.substring(eqIndex + 1);
-                } else {
-                    // Handle --keyword.
-                    key = arg;
-                    value = "";
-                }
-                keywordArgs.put(key, value);
-            } else {
-                positionalArgs.add(arg);
+        int index = 0;
+        boolean endOfOptions = false;
+
+        for (; index < args.length; index++) {
+            String tok = args[index];
+
+            // All arguments after -- should be treated as positional.
+            if (!endOfOptions && "--".equals(tok)) {
+                endOfOptions = true;
+                continue;
             }
+
+            // Long options (e.g., --key=value, or --key value).
+            if (!endOfOptions && tok.startsWith("--") && tok.length() > 2) {
+                int eq = tok.indexOf('=');
+
+                // Inline "--key=value".
+                if (eq >= 0) {
+                    String key = tok.substring(0, eq);
+                    String val = tok.substring(eq + 1);
+                    keywordArgs.put(key, val);
+                    continue;
+                }
+
+                // Separate "--key value" or bare flag "--key".
+                String key = tok;
+                String val = "";
+                if (index + 1 < args.length && !args[index + 1].startsWith("-")) {
+                    val = args[++index]; // consume the value
+                }
+                keywordArgs.put(key, val);
+                continue;
+            }
+
+            // Short options (e.g., -a, -b, or -ab)
+            if (!endOfOptions && tok.startsWith("-") && !tok.startsWith("--") && tok.length() > 1) {
+                String flags = tok.substring(1);
+                for (int j = 0; j < flags.length(); j++) {
+                    String key = "-" + flags.charAt(j);
+                    String val = "";
+                    // last flag in bundle may take a value if next token isn't an option
+                    if (j == flags.length() - 1 && index + 1 < args.length && !args[index + 1].startsWith("-")) {
+                        val = args[++index];
+                    }
+                    keywordArgs.put(key, val);
+                }
+                continue;
+            }
+
+            // Everything else is positional.
+            positionalArgs.add(tok);
         }
         return new CLI(positionalArgs.toArray(new String[0]), keywordArgs);
     }
