@@ -1,5 +1,6 @@
 package net.royalur.lut;
 
+import net.royalur.cli.CLI;
 import net.royalur.lut.buffer.*;
 import net.royalur.lut.store.LutMap;
 import net.royalur.lut.store.OrderedUInt32BufferSet;
@@ -326,7 +327,7 @@ public class LutTrainer {
                             iteration + 1,
                             minScore, maxScore,
                             formatMaxDiff(maxChange),
-                            LutCLI.MS_DURATION.format(durationMs)
+                            CLI.MS_DURATION.format(durationMs)
                     );
                     iteration += 1;
 
@@ -365,7 +366,7 @@ public class LutTrainer {
                         "Finished scores = [%d, %d], max diff = %s (%s ms)\n\n",
                         minScore, maxScore,
                         formatMaxDiff(maxChange),
-                        LutCLI.MS_DURATION.format(overallDurationMs)
+                        CLI.MS_DURATION.format(overallDurationMs)
                 );
                 if (maxChange > overallMaxChange) {
                     overallMaxChange = maxChange;
@@ -381,7 +382,7 @@ public class LutTrainer {
         System.out.println();
         System.out.printf(
                 "Finished value iteration in %s ms!\n",
-                LutCLI.MS_DURATION.format(totalDurationMs)
+                CLI.MS_DURATION.format(totalDurationMs)
         );
 
         long writeStart = System.nanoTime();
@@ -390,7 +391,7 @@ public class LutTrainer {
         System.out.println();
         System.out.printf(
                 "Saving model took %s ms!\n",
-                LutCLI.MS_DURATION.format(writeDurationMs)
+                CLI.MS_DURATION.format(writeDurationMs)
         );
         return lut;
     }

@@ -84,6 +84,19 @@ public abstract class Dice {
     public abstract float[] getRollProbabilities();
 
     /**
+     * Counts the number of rolls with a non-zero probability of being rolled.
+     */
+    public int getPossibleRollCount() {
+        int possibleRollCount = 0;
+        for (float prob : getRollProbabilities()) {
+            if (prob > 0) {
+                possibleRollCount += 1;
+            }
+        }
+        return possibleRollCount;
+    }
+
+    /**
      * Generates a random roll using this dice, and returns just the value.
      * If this dice has state, this should call {@link #recordRoll(int)}.
      * @return A random roll of this dice, and returns just the value.

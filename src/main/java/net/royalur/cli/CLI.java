@@ -4,23 +4,34 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Parses CLI arguments.
  */
 public class CLI {
 
+    public static final DecimalFormat MS_DURATION = new DecimalFormat("#,###");
+    public static final int MIN_COMMAND_WIDTH = 24;
+    public static final int MIN_ARGUMENT_WIDTH = 34;
+
     private final String[] positionalArgs;
     private int positionalArgsIndex = 0;
 
     private final Map<String, String> remainingKeywordArgs;
-    private @Nullable Consumer<PrintStream> help;
+    private @Nullable CLICommand currentCommand;
 
     public CLI(String[] positionalArgs, Map<String, String> keywordArgs) {
         this.positionalArgs = positionalArgs;
         this.remainingKeywordArgs = keywordArgs;
+    }
+
+    /**
+     * Used for things like printing help, or for help in error reporting.
+     */
+    public void setCurrentCommand(@Nonnull CLICommand currentCommand) {
+        this.currentCommand = currentCommand;
     }
 
     public static CLI parse(String[] args) {
@@ -34,11 +45,11 @@ public class CLI {
                 int eqIndex = arg.indexOf("=");
                 if (eqIndex >= 0) {
                     // Handle --keyword=value.
-                    key = arg.substring(2, eqIndex);
+                    key = arg.substring(0, eqIndex);
                     value = arg.substring(eqIndex + 1);
                 } else {
                     // Handle --keyword.
-                    key = arg.substring(2);
+                    key = arg;
                     value = "";
                 }
                 keywordArgs.put(key, value);
@@ -49,17 +60,9 @@ public class CLI {
         return new CLI(positionalArgs.toArray(new String[0]), keywordArgs);
     }
 
-    /**
-     * As sub-commands are routed, they can update the help that is displayed
-     * when an error occurs.
-     */
-    public void setHelp(@Nonnull Consumer<PrintStream> help) {
-        this.help = help;
-    }
-
     public void printHelp(PrintStream out) {
-        if (help != null) {
-            help.accept(out);
+        if (currentCommand != null) {
+            currentCommand.printHelp(out);
         }
     }
 
@@ -89,7 +92,7 @@ public class CLI {
     private void assertNotEmpty(String keyword, String value) {
         if (value.isEmpty()) {
             throw new CLIArgumentException(
-                    "Value of --" + keyword + " is empty, expected --" + keyword + "=value"
+                    "Value of " + keyword + " is empty, expected " + keyword + "=value"
             );
         }
     }
@@ -189,5 +192,25 @@ public class CLI {
             throw new CLIArgumentException("Not a directory: " + filename);
 
         return file;
+    }
+
+    public static String rightPad(String input, int minLength) {
+        if (input.length() >= minLength)
+            return input;
+
+        StringBuilder builder = new StringBuilder(minLength);
+        builder.append(input);
+        while (builder.length() < minLength) {
+            builder.append(" ");
+        }
+        return builder.toString();
+    }
+
+    public static String rightPadCommand(String command) {
+        return rightPad(command, MIN_COMMAND_WIDTH);
+    }
+
+    public static String rightPadArgument(String argument) {
+        return rightPad(argument, MIN_ARGUMENT_WIDTH);
     }
 }

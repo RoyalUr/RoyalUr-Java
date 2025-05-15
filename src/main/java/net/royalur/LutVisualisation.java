@@ -1,8 +1,8 @@
 package net.royalur;
 
+import net.royalur.cli.CLI;
 import net.royalur.lut.GameStateEncoding;
 import net.royalur.lut.Lut;
-import net.royalur.lut.LutCLI;
 import net.royalur.lut.buffer.UInt8ValueBuffer;
 import net.royalur.lut.store.DataSink;
 import net.royalur.lut.store.LutMap;
@@ -88,7 +88,7 @@ public class LutVisualisation {
                 break;
 
             double durationMS = (System.nanoTime() - start) / 1e6d;
-            System.out.println(".. " + (++index) + " (" + LutCLI.MS_DURATION.format(durationMS) + ")");
+            System.out.println(".. " + (++index) + " (" + CLI.MS_DURATION.format(durationMS) + ")");
         }
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             ByteBuffer workingBuffer = ByteBuffer.allocateDirect(1024 * 1024);
